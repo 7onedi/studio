@@ -1,0 +1,9 @@
+@use './_global' as *; // Use `as *` to expose the styles from _global directly
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-latte;
+}
