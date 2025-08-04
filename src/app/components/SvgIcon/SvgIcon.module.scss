@@ -1,0 +1,27 @@
+.main-blue {
+  color: $main-blue; /* або твій main-blue */
+  /* Якщо треба, можна явно вказати fill */
+  fill: currentColor;
+}
+
+.main-amarant {
+  color: $main-amarant;
+  fill: currentColor;
+}
+
+.white {
+  color: white;
+  fill: currentColor;
+}
+
+.main-grey {
+  color: $main-grey;
+  fill: currentColor;
+}
+
+.main-text {
+  color: $main-text;
+  fill: currentColor;
+}
+
+/* Додай інші кольори за потребою */

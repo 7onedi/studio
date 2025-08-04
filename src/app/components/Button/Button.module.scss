@@ -1,0 +1,188 @@
+@use "sass:color";
+
+.buttonBase {
+  z-index: 0;
+  height: 48px;
+  min-width: 40px;
+  padding: 0 24px;
+  border-radius: 100px;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+}
+
+// Accent
+.accent {
+  background-color: $main-blue;
+  color: white;
+
+  &:hover {
+    background-color: color.scale($main-blue, $lightness: -10%);
+  }
+
+  &:active {
+    background-color: color.scale($main-blue, $lightness: -20%);
+  }
+
+  &:disabled {
+    background-color: $main-grey;
+    cursor: not-allowed;
+  }
+}
+
+.accent-alt {
+  background-color: white;
+  color: $main-blue;
+
+  &:hover {
+    color: darken($main-blue, 10%);
+  }
+
+  &:active {
+    color: darken($main-blue, 20%);
+  }
+  &:disabled {
+    color: white;
+    background-color: $main-grey;
+    cursor: not-allowed;
+  }
+}
+
+// Primary
+.primary {
+  background-color: $main-amarant;
+  color: white;
+
+  &:hover {
+    background-color: color.scale($main-amarant, $lightness: -10%);
+  }
+
+  &:active {
+    background-color: color.scale($main-amarant, $lightness: -20%);
+  }
+
+  &:disabled {
+    background-color: $main-grey;
+    cursor: not-allowed;
+  }
+}
+
+// Secondary
+.secondary {
+  background-color: none;
+  color: $main-blue;
+  border: 1px solid $main-blue;
+
+  &:hover {
+    color: color.scale($main-blue, $lightness: -20%);
+    border-color: color.scale($main-blue, $lightness: -20%);
+  }
+
+  &:active {
+    color: color.scale($main-blue, $lightness: -20%);
+    border-color: color.scale($main-blue, $lightness: -20%);
+  }
+
+  &:disabled {
+    border-color: $main-grey;
+    color: $main-grey;
+    cursor: not-allowed;
+  }
+}
+
+.secondary-alt{
+  background: none;
+  color: white;
+  border: 1px solid white;
+
+  &:hover {
+    color: darken(white, 10%);
+    border-color: darken(white, 10%);
+  }
+
+  &:active {
+    color: darken(white, 20%);
+    border-color: darken(white, 20%);
+  }
+
+  &:disabled {
+    border-color: $main-grey;
+    color: $main-grey;
+    cursor: not-allowed;
+  }
+}
+
+// Tertiary
+
+.tertiary{
+  background: none;
+  color: $main-blue;
+
+  &:hover {
+  color: $main-amarant;
+  text-decoration: underline
+  }
+
+  &:active {
+  color: $main-amarant;
+  text-decoration: underline
+  }
+
+  &:disabled {
+    color: $main-grey;
+    cursor: not-allowed;
+  }
+}
+
+.tertiary-alt{
+  background: none;
+  color: white;
+
+  &:hover {
+  color: darken(white, 10%);
+  text-decoration: underline
+  }
+
+  &:active {
+  color: darken(white, 20%);
+  text-decoration: underline
+  }
+
+  &:disabled {
+    color: $main-grey;
+    cursor: not-allowed;
+    text-decoration: none;
+  }
+}
+
+.iconOnly {
+  padding: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  aspect-ratio: 1/1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.size-sm {
+  width: 32px;
+  height: 32px;
+}
+
+.size-md {
+  width: 48px;
+  height: 48px;
+}
+
+.size-lg {
+  width: 64px;
+  height: 64px;
+}

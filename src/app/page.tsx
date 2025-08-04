@@ -1,10 +1,10 @@
-import Image from "next/image";
+
 
 export default function Home() {
   return (
     <div >
       <main >
-        <h1 className="bg-latte text-coffee">Головна сторінка</h1>
+        <h1 className="bg-main-blue font-heading text-headline_1">Головна сторінка</h1>
       </main>
     </div>
   );
