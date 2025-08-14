@@ -1,0 +1,20 @@
+version: "3.7"
+services:
+  studio_pangeya_app:
+    working_dir: /app
+    env_file: .env
+    restart: always
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    volumes:
+      - .:/app
+    entrypoint: /entrypoint.sh
+    ports:
+      - "3000:3000"
+  studio_pangeya_nginx:
+    image: nginx:1.19
+    volumes:
+      - ./docker/nginx:/etc/nginx/conf.d
+    depends_on:
+      - studio_pangeya_app
