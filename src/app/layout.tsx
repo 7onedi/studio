@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@styles/globals.scss";
 import { Fira_Sans } from 'next/font/google';
-import  Header  from "@components/Header"
+import Header from "@components/Header";
 
 const firaSans = Fira_Sans({
   weight: ['400', '700'],
   subsets: ['latin'],
-  variable: '--font-fira', // <— це обов’язково для роботи з Tailwind
+  variable: '--font-fira',
 });
 
 const geistSans = Geist({
@@ -27,21 +27,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={firaSans.variable}>
-      <div className="container grid grid-cols-6">
-        <div className="col-span-6">
-          <Header/>
-          <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-          >
+    <html lang="en" className={`${firaSans.variable} ${geistSans.variable} ${geistMono.variable}`}>
+      <body className="antialiased bg-indigo-50">
+        <div className="container grid grid-cols-6">
+          <div className="col-span-6">
+            <Header />
             {children}
-          </body>
+          </div>
         </div>
-      </div>
+      </body>
     </html>
   );
 }

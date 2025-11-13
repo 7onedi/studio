@@ -22,7 +22,7 @@ const config: Config = {
       center: true,
       padding: {
         DEFAULT: '24px',
-        '3xl': '32px',
+        '3xl': '0px',
       },
       screens: {
         xs: '100%',

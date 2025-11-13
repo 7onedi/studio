@@ -6,6 +6,7 @@ import { SvgIcon } from "@components/SvgIcon";
 import { usePathname } from "next/navigation";
 import Link from 'next/link'
 import { Button } from "@components/Button";
+import styles from "./Header.module.scss";
 
 export const navButtons = [
   {name:"Про мережу", link:"/AboutNetwork"},
@@ -27,6 +28,8 @@ export default function Header() {
     { label: 'Moldovenească',flag:'🇲🇩', value: 'MD' },
   ];
 
+  const iconNames = ["facebook","instagram","tiktok","youtube","pangeya"];
+
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -37,11 +40,11 @@ export default function Header() {
   
 
   return (
-    <header className="bg-white text-white">
+    <header className={`mb-6 bg-white text-white ${styles["header-wrapper"]}`}>
       <div className="grid grid-cols-12 mb-5 flex items-center justify-between h-16">
 
         {/* Logo */}
-        <div className="col-span-4 flex items-center pb-1">
+        <div className="col-span-4 lg:col-span-1 flex items-center pb-1">
           <Image
             src="/mobile/icys.webp"
             alt="Intercultural Youth Studio Logo"
@@ -50,63 +53,51 @@ export default function Header() {
           />
         </div>
 
-        <div className="col-span-5 pl-4 text-main-text">
-            <span className="text-headline_4_mobile">Intecultural Youth Studio</span>
-          </div>
+        <div className="col-span-5 pl-4 lg:pl-0 text-main-text">
+          <span className="text-headline_4_mobile lg:text-headline_4">Intecultural Youth Studio</span>
+        </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center space-x-8 xl:space-x-12">
-          <ul className="flex space-x-6 xl:space-x-8 font-sans text-body">
-            <li>
-              <a href="/AboutNetwork" className="hover:text-main-blue transition-colors duration-200">
-                ПРО ПРОЕКТ
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-main-blue transition-colors duration-200">
-                ІСТОРИКИ
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-main-blue transition-colors duration-200">
-                НАПРЯМКИ
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-main-blue transition-colors duration-200">
-                НОВИНИ
-              </a>
-            </li>
-          </ul>
+        <nav className="lg:col-span-6 col-span-6 flex items-center justify-between w-full pl-0 pr-0">
+          <div className="flex items-center space-x-8 w-full justify-between font-sans text-main-text">
+            {navButtons.map((navButton, index) => (
+              <Link
+                key={index}
+                href={navButton.link}
+                className="flex items-center hover:text-main-blue transition-colors duration-200"
+              >
+                <span className="text-button uppercase text-center">{navButton.name}</span>
+              </Link>
+            ))}
 
-          {/* Language Switcher */}
-          <div className="relative">
-            <button
-              onClick={toggleLanguageDropdown}
-              className="flex items-center text-body hover:text-main-blue transition-colors duration-200 focus:outline-none"
-            >
-              <span className="mr-2">🇺🇦</span> UA
-              <SvgIcon name="down" />
-            </button>
-            {isLanguageDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-24 bg-white rounded-md shadow-lg py-1 z-10">
-                <a
-                  href="#"
-                  className="block px-4 py-2 text-sm text-main-text hover:bg-gray-100"
-                  onClick={() => setIsLanguageDropdownOpen(false)}
-                >
-                  <span className="mr-2 inline-block">🇬🇧</span> EN
-                </a>
-                {/* Add more languages as needed */}
-              </div>
-            )}
+            {/* Language Switcher */}
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={toggleLanguageDropdown}
+                className="flex items-center text-main-text hover:text-main-blue transition-colors duration-200 focus:outline-none"
+              >
+                <span className="text-button pr-2">UA</span>
+                <span className="pr-4">🇺🇦</span>
+                <SvgIcon name="down" />
+              </button>
+              {isLanguageDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-24 bg-white rounded-md shadow-lg py-1 z-10">
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-sm text-main-text hover:bg-gray-100"
+                    onClick={() => setIsLanguageDropdownOpen(false)}
+                  >
+                    <span className="mr-2 inline-block">🇬🇧</span> EN
+                  </a>
+                </div>
+              )}
+            </div>
+
+            {/* Support Button */}
+            <Button variant="primary">ПІДТРИМАТИ</Button>
           </div>
-
-          {/* Support Button */}
-          <Button variant="primary">
-            ПІДТРИМАТИ
-          </Button>
         </nav>
+
 
         {/* Mobile Menu Button */}
         <div className="col-span-3 lg:hidden flex items-end justify-end">
@@ -118,7 +109,7 @@ export default function Header() {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden text-button_mobile">
+        <div className="pb-4 rounded-b-lg lg:hidden text-button_mobile">
           <nav className="flex flex-col items-center space-y-4">
             {navButtons.map((navButton, i) =>(
               <Link key={i} href={navButton.link} className={`py-3 block hover:text-main-amarant transition-colors duration-200 ${pathname === navButton.link ? 'text-main-amarant' : 'text-main-text'}`}>
@@ -127,16 +118,32 @@ export default function Header() {
             ))}
 
             {/* Mobile Language Switcher */}
-            <div className="relative flex  justify-between ">
+            <div className="pt-4 relative flex justify-between w-full">
               {languages.map((lang,inx) => (
                 <button
                   key={inx}
                   className="flex items-center justify-center w-full py-2 text-headline_5_mobile text-main-text hover:text-main-blue transition-colors duration-200 focus:outline-none"
                 >
-                  <span className="mr-2">{lang.flag}</span> {lang.value}
+                  <span className='mr-1'>{lang.value}</span>
+                  <span >{lang.flag}</span>
                 </button>
               ))}
-
+            </div>
+            <div className=" relative flex justify-between w-full">
+              {iconNames.map((iconName,i) => (
+                <div
+                  key={i}
+                  className="py-2 hover:text-main-blue transition-colors duration-200 focus:outline-none"
+                >
+                  <Button
+                    variant="accent-alt"
+                    iconOnly
+                    className="shadow-[0_4px_6px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_8px_rgba(0,0,0,0.15)] transition-shadow duration-200"
+                  >
+                    <SvgIcon name={iconName} size={24} color="main-blue" />
+                  </Button>
+                </div>
+              ))}
             </div>
 
             {/* Mobile Support Button */}
