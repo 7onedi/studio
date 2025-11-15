@@ -58,7 +58,7 @@ export default function Header() {
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="lg:col-span-6 col-span-6 flex items-center justify-between w-full pl-0 pr-0">
+        <nav className="hidden lg:block lg:col-span-6 col-span-6 flex items-center justify-between w-full pl-0 pr-0">
           <div className="flex items-center space-x-8 w-full justify-between font-sans text-main-text">
             {navButtons.map((navButton, index) => (
               <Link

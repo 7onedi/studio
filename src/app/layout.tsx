@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "@styles/globals.scss";
 import { Fira_Sans } from 'next/font/google';
 import Header from "@components/Header";
+import Footer from "@components/Footer";
 
 const firaSans = Fira_Sans({
   weight: ['400', '700'],
@@ -35,6 +36,7 @@ export default function RootLayout({
           <div className="col-span-6">
             <Header />
             {children}
+            <Footer />
           </div>
         </div>
       </body>
