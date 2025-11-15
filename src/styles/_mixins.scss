@@ -1,4 +1,6 @@
 // 🔹 Міксин для min-width (Mobile First)
+@use './variables' as *;
+
 @mixin min-media($size) {
   @if map-has-key($breakpoints, $size) {
     @media (min-width: #{map-get($breakpoints, $size)}) {
