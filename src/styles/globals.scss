@@ -4,6 +4,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Додайте стилі Leaflet */
+@import 'leaflet/dist/leaflet.css';
+
+/* Переконайтеся, що карта має розмір */
+.leaflet-container {
+  height: 100vh; /* Або будь-яка інша висота */
+  width: 100%;
+}
+
 body {
   @apply bg-white;
 }

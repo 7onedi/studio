@@ -40,7 +40,7 @@ export default function Header() {
   
 
   return (
-    <header className={`mb-6 bg-white text-white ${styles["header-wrapper"]}`}>
+    <header className={`mb-6 bg-transparant text-white ${styles["header-wrapper"]}`}>
       <div className="grid grid-cols-12 mb-5 flex items-center justify-between h-16">
 
         {/* Logo */}
@@ -71,7 +71,7 @@ export default function Header() {
             ))}
 
             {/* Language Switcher */}
-            <div className="flex items-center space-x-2">
+            <div className="relative flex items-center space-x-2">
               <button
                 onClick={toggleLanguageDropdown}
                 className="flex items-center text-main-text hover:text-main-blue transition-colors duration-200 focus:outline-none"
@@ -80,15 +80,15 @@ export default function Header() {
                 <span className="pr-4">🇺🇦</span>
                 <SvgIcon name="down" />
               </button>
+
               {isLanguageDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-24 bg-white rounded-md shadow-lg py-1 z-10">
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-main-text hover:bg-gray-100"
+                <div className="absolute top-full left-0 mt-2 w-24 bg-white rounded-md shadow-lg py-1 z-10">
+                  <button
+                    className="block w-full text-left px-4 py-2 text-sm text-main-text hover:bg-gray-100"
                     onClick={() => setIsLanguageDropdownOpen(false)}
                   >
                     <span className="mr-2 inline-block">🇬🇧</span> EN
-                  </a>
+                  </button>
                 </div>
               )}
             </div>
