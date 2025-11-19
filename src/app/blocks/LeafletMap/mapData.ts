@@ -23,7 +23,7 @@ export const initialCategories: Category[] = [
   {
     id: '#nfk',
     name: '#nfk',
-    icon: '❤️',
+    icon: '/map/Mark1.png',
     color: 'text-red-600',
     markers: [
       {
@@ -51,27 +51,27 @@ export const initialCategories: Category[] = [
   {
     id: 'youthinsight',
     name: 'Youthinsight фестиваль',
-    icon: '💡',
+    icon: '/map/Mark2.png',
     color: 'text-pink-600',
     markers: [
       {
         id: 'yi-1',
-        position: [49.24, 28.48],
+        position: [48.48, 28.40],
         popupContent: {
-          title: 'Сцена Youthinsight',
-          description: 'Головна сцена фестивалю.',
-          imageUrl: 'https://picsum.photos/id/20/200/100',
-          linkUrl: 'https://example.com/youthinsight',
+          title: 'Локація #nfk 1',
+          description: 'Опис першої локації #nfk',
+          imageUrl: 'https://picsum.photos/id/10/200/100',
+          linkUrl: 'https://example.com/nfk1',
         },
       },
       {
         id: 'yi-2',
         position: [49.22, 28.47],
         popupContent: {
-          title: 'Food-корт Youthinsight',
-          description: 'Місце, де можна поїсти.',
-          imageUrl: 'https://picsum.photos/id/21/200/100',
-          linkUrl: 'https://example.com/food',
+          title: 'Локація #nfk 1',
+          description: 'Опис першої локації #nfk',
+          imageUrl: 'https://picsum.photos/id/10/200/100',
+          linkUrl: 'https://example.com/nfk1',
         },
       },
     ],
@@ -79,15 +79,57 @@ export const initialCategories: Category[] = [
   {
     id: 'mozaika',
     name: 'mozaika',
-    icon: '🎨',
+    icon: '/map/Mark3.png',
     color: 'text-purple-600',
-    markers: [/* ... 2 маркери ... */],
+    markers: [
+      {
+        id: 'mozaika-1',
+        position: [48.45, 28.42],
+        popupContent: {
+          title: 'Локація #nfk 1',
+          description: 'Опис першої локації #nfk',
+          imageUrl: 'https://picsum.photos/id/10/200/100',
+          linkUrl: 'https://example.com/nfk1',
+        },
+      },
+      {
+        id: 'mozaika-2',
+        position: [48.46, 28.44],
+        popupContent: {
+          title: 'Локація #nfk 2',
+          description: 'Опис другої локації #nfk',
+          imageUrl: 'https://picsum.photos/id/11/200/100',
+          linkUrl: 'https://example.com/nfk2',
+        },
+      },
+    ],
   },
   {
     id: 'movers&shakers',
     name: 'Movers&Shakers',
-    icon: '🕺',
+    icon: '/map/Mark4.png',
     color: 'text-blue-600',
-    markers: [/* ... 2 маркери ... */],
+    markers: [
+      {
+        id: 'ms-1',
+        position: [49.250, 28.495],
+        popupContent: {
+          title: 'Локація #nfk 1',
+          description: 'Опис першої локації #nfk',
+          imageUrl: 'https://picsum.photos/id/10/200/100',
+          linkUrl: 'https://example.com/nfk1',
+        },
+      },
+      {
+        id: 'ms-2',
+        position: [49.25, 28.48],
+        popupContent: {
+          title: 'Локація #nfk 2',
+          description: 'Опис другої локації #nfk',
+          imageUrl: 'https://picsum.photos/id/11/200/100',
+          linkUrl: 'https://example.com/nfk2',
+        },
+      },
+    ],
   },
 ];
