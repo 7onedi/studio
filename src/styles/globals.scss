@@ -7,11 +7,31 @@
 /* Додайте стилі Leaflet */
 @import 'leaflet/dist/leaflet.css';
 
-/* Переконайтеся, що карта має розмір */
 .leaflet-container {
-  height: 100vh; /* Або будь-яка інша висота */
+  height: 60vh;
   width: 100%;
+  border-radius: 20px;
 }
+
+.home-desktop-bg {
+  background-image: url('/background/mainBGtriangles.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  // Тільки десктопи
+  @media (max-width: 1023px) {
+    background-image: none;
+  }
+}
+
+// .mainpage_wrapper {
+//   background-image: url('/background/mainBGtriangles.png');
+//   background-repeat: no-repeat;
+//   background-size: cover;
+//   background-position: absolute;
+// }
+
+
 
 body {
   @apply bg-white;

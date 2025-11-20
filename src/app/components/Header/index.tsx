@@ -83,12 +83,17 @@ export default function Header() {
 
               {isLanguageDropdownOpen && (
                 <div className="absolute top-full left-0 mt-2 w-24 bg-white rounded-md shadow-lg py-1 z-10">
-                  <button
-                    className="block w-full text-left px-4 py-2 text-sm text-main-text hover:bg-gray-100"
-                    onClick={() => setIsLanguageDropdownOpen(false)}
-                  >
-                    <span className="mr-2 inline-block">🇬🇧</span> EN
-                  </button>
+                  {languages.map((lang, inx) => (
+                    <div key={inx}>
+                      <button
+                        className="block w-full text-left px-4 py-2 text-sm text-main-text hover:bg-gray-100 flex justify-between"
+                        onClick={() => setIsLanguageDropdownOpen(false)}
+                      >
+                        <span className="mr-2 text-button inline-block">{lang.value}</span>
+                        <span className="mr-2 inline-block">{lang.flag}</span>
+                      </button>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

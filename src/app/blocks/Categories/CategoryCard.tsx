@@ -31,6 +31,8 @@ export default function CategoryCard({
   return (
     <div
       className={`
+        hover:scale-110 transition-transform duration-300
+        group cursor-pointer
         relative 
         w-[345px] h-[388px] 
         md:w-[472px] md:h-[531px]
@@ -48,7 +50,7 @@ export default function CategoryCard({
       <div
         className={`
           w-full h-full relative overflow-hidden group cursor-pointer 
-          transition-transform duration-700
+          transition-transform duration-300
           ${isReversed ? "rotate-180 origin-center" : ""}
         `}
         style={{ clipPath: `url(#${clipId})` }}

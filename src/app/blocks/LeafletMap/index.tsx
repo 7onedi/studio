@@ -90,18 +90,20 @@ export default function MapComponent() {
       </MapContainer>
 
       {/* Кнопки категорій */}
-      <div className="absolute top-5 right-5 flex flex-col space-y-2 z-[600] pointer-events-none">
+      <div className="absolute top-5 right-5 space-y-2 z-[600] pointer-events-none">
         {initialCategories.map((cat) => (
           <button
             key={cat.id}
             onClick={() => setActiveCategory(activeCategory === cat.id ? null : cat.id)}
-            className={`p-3 rounded-xl shadow-md transition-all flex items-center space-x-2 pointer-events-auto ${
+            className={`pr-4 rounded-full shadow-md transition-all flex items-center space-x-2 pointer-events-auto  ${
               activeCategory === cat.id
-                ? 'bg-white bg-opacity-90 ring-2 ring-blue-600'
-                : 'bg-white bg-opacity-70 hover:bg-opacity-90'
+                ? 'bg-white bg-opacity-90 ring-2 ring-red-600'
+                : 'bg-gray-300 bg-opacity-70 hover:bg-opacity-90'
             }`}
           >
-            <Image src={cat.icon} alt={cat.name} width={40} height={40} />
+            <div className='bg-white rounded-full p-3'>
+              <Image src={cat.icon} alt={cat.name} width={40} height={40} />
+            </div>
             <span>{cat.name}</span>
           </button>
         ))}

@@ -1,65 +1,69 @@
-.triangleCard {
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.7s;
+// .triangleCard {
+//   position: relative;
+//   overflow: hidden;
+//   cursor: pointer;
+//   transition: transform 0.7s;
 
-  // Мобільні розміри
-  width: 345px;
-  height: 388px;
+//   // Мобільні розміри
+//   width: 345px;
+//   height: 388px;
 
-  @include min-media(lg) {
-    width: 472px;
-    height: 531px;
-  }
+//   @include min-media(lg) {
+//     width: 472px;
+//     height: 531px;
+//   }
 
-  &__content {
-    width: 100%;
-    height: 100%;
-    transition: transform 0.7s;
+//   &__content {
+//     width: 100%;
+//     height: 100%;
+//     transition: transform 0.7s;
 
-    &:hover {
-      transform: scale(1.05);
-    }
-  }
+//     &:hover {
+//       transform: scale(1.05);
+//     }
+//   }
 
-  &__clip {
-    clip-path: url(#clip-triangle);
-  }
+//   &__clip {
+//     clip-path: url(#clip-triangle);
+//   }
 
-  &__gradient {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    transition: opacity 0.5s;
+//   &__gradient {
+//     position: absolute;
+//     inset: 0;
+//     pointer-events: none;
+//     transition: opacity 0.5s;
 
-    &:hover {
-      opacity: 0;
-    }
-  }
+//     &:hover {
+//       opacity: 0;
+//     }
+//   }
 
-  &__pattern,
-  &__image {
-    position: absolute;
-    inset: 0;
-    object-fit: cover;
-  }
+//   &__pattern,
+//   &__image {
+//     position: absolute;
+//     inset: 0;
+//     object-fit: cover;
+//   }
 
-  &__title {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-    text-align: center;
-    font-weight: bold;
-    color: white;
-    padding: 0 1rem;
-    @include typography(body);
+//   &__title {
+//     position: absolute;
+//     inset: 0;
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     pointer-events: none;
+//     text-align: center;
+//     font-weight: bold;
+//     color: white;
+//     padding: 0 1rem;
+//     @include typography(body);
 
-    @include min-media(lg) {
-      @include typography(body-bold);
-    }
-  }
+//     @include min-media(lg) {
+//       @include typography(body-bold);
+//     }
+//   }
+// }
+
+.button_primary{
+  margin-top: 290px;
 }

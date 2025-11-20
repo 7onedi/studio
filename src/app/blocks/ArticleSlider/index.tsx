@@ -22,7 +22,6 @@ const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
   },
 });
 
-  // ЮзЕфект для чекання повного завантаження всіх слайдів
   useEffect(() => {
     const totalSlides = slides.length;
     loadedCount.current = 0;
@@ -30,12 +29,9 @@ const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
     const handleLoad = () => {
       loadedCount.current += 1;
       if (loadedCount.current === totalSlides) {
-        setImagesLoaded(true); // всі зображення завантажені
+        setImagesLoaded(true);
       }
     };
-
-    // можна обійтися без querySelector, Next.js Image підтримує onLoad
-    // але для кожного Image передамо onLoad={handleLoad}
   }, []);
 
   return (
@@ -43,7 +39,7 @@ const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
       {/* SLIDER */}
       <div
         ref={sliderRef}
-        className={`keen-slider w-full h-[500px] ${!imagesLoaded ? "opacity-0" : "opacity-100 transition-opacity duration-500"}`}
+        className={`keen-slider w-full h-[700px] ${!imagesLoaded ? "opacity-0" : "opacity-100 transition-opacity duration-500"}`}
       >
         {slides.map((s, i) => (
           <div key={i} className="keen-slider__slide relative">
@@ -59,7 +55,7 @@ const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
                 }
               }}
               sizes="100vw"
-              priority={i === 0} // пріоритет для першого слайда
+              priority={i === 0}
             />
 
             {/* Gradient overlay */}
@@ -67,19 +63,19 @@ const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
               <div className={`absolute inset-0 ${s.gradient}`} />
             )}
 
-            <div className="absolute inset-0 flex flex-col justify-between p-8 md:p-12">
-              <h2 className="text-white text-headline_2 max-w-[500px]">
+            <div className="absolute inset-0 flex flex-col justify-between p-8 lg:mx-16 lg:my-10 lg:p-16">
+              <h2 className="text-white text-headline_1 max-w-[600px]">
                 {s.text}
               </h2>
 
               {/* SOCIAL ICONS */}
-              <div className="hidden lg:flex lg:absolute bottom-10 right-10 flex gap-4 z-20">
+              <div className="hidden lg:flex lg:absolute bottom-0 right-16 flex gap-4 z-20">
                 {iconNames.map((name, i) => (
                   <Button
                     key={i}
                     variant="accent-alt"
                     iconOnly
-                    className="shadow-[0_4px_6px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_8px_rgba(0,0,0,0.15)] transition-shadow"
+                    className="lg:mx-1 shadow-[0_4px_6px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_8px_rgba(0,0,0,0.15)] transition-shadow"
                   >
                     <SvgIcon
                       name={name}
@@ -89,28 +85,28 @@ const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
                   </Button>
                 ))}
               </div>
+
+              {/* DOTS */}
+              <div className="absolute bottom-0 left-20 flex items-center gap-3 z-30">
+                {slides.map((_, i) => {
+                  const active = currentSlide === i;
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => instanceRef.current?.moveToIdx(i)}
+                      className={`
+                        transition-all duration-300
+                        ${active
+                          ? "w-8 h-4 bg-white rounded-full"
+                          : "w-4 h-4 bg-white/40 rounded-full"
+                        }`}
+                    />
+                  );
+                })}
+              </div>
             </div>
           </div>
         ))}
-      </div>
-
-      {/* DOTS */}
-      <div className="absolute bottom-6 left-10 flex items-center gap-3 z-30">
-        {slides.map((_, i) => {
-          const active = currentSlide === i;
-          return (
-            <button
-              key={i}
-              onClick={() => instanceRef.current?.moveToIdx(i)}
-              className={`
-                transition-all duration-300
-                ${active
-                  ? "w-5 h-2 bg-white rounded-full"
-                  : "w-2 h-2 bg-white/40 rounded-full"
-                }`}
-            />
-          );
-        })}
       </div>
     </div>
   );
