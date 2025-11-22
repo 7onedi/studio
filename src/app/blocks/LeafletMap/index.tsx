@@ -1,10 +1,16 @@
 'use client';
 
 import Image from 'next/image';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { initialCategories, MarkerInfo } from './mapData';
+import { initialCategories, MarkerInfo, ALL_CATEGORIES_VIEW } from './mapData';
 import { useState, useEffect } from 'react';
+
+// Явно визначаємо тип для Map View, щоб уникнути помилки TS 'number[]' vs '[number, number]'
+type MapView = {
+    center: [number, number];
+    zoom: number;
+};
 
 // Функція для створення іконки категорії
 const createCategoryIcon = (iconUrl: string) =>
@@ -15,6 +21,41 @@ const createCategoryIcon = (iconUrl: string) =>
     iconAnchor: [20, 40],
     popupAnchor: [0, -35],
   });
+
+// =================================================================
+// КОМПОНЕНТ ДЛЯ КЕРУВАННЯ ВИГЛЯДОМ КАРТИ (MapUpdater)
+// =================================================================
+function MapUpdater({ activeCategory }: { activeCategory: string | null }) {
+  const map = useMap(); 
+  
+  // ЯВНЕ оголошення типу для початкового центру
+  const initialMapCenter: [number, number] = [49.23, 28.47];
+  const initialZoom = 13;
+
+  useEffect(() => {
+    // Ініціалізація з ЯВНО ВКАЗАНИМ ТИПОМ MapView
+    let targetView: MapView = { center: initialMapCenter, zoom: initialZoom };
+
+    if (activeCategory === null) {
+      // 1. Стан "Показати всі" (використовує ALL_CATEGORIES_VIEW з mapData.ts)
+      targetView = ALL_CATEGORIES_VIEW as MapView; // Перетворюємо на MapView
+    } else {
+      // 2. Стан окремої категорії
+      const category = initialCategories.find(cat => cat.id === activeCategory);
+      if (category) {
+        targetView = { center: category.center, zoom: category.zoom };
+      }
+    }
+
+    // Застосовуємо нові координати та зум з анімацією
+    map.setView(targetView.center, targetView.zoom, { animate: true, duration: 0.7 }); 
+
+  }, [activeCategory, map]); 
+
+  return null;
+}
+// =================================================================
+
 
 export default function MapComponent() {
   const [activeCategory, setActiveCategory] = useState<string | null>(
@@ -28,7 +69,7 @@ export default function MapComponent() {
     if (activeCategory === null) {
       // Показати всі категорії
       setActiveMarkers(initialCategories.flatMap((cat) => cat.markers));
-      setCurrentIcon(null); // Кожний маркер буде мати свою іконку категорії
+      setCurrentIcon(null); 
     } else {
       const category = initialCategories.find((cat) => cat.id === activeCategory);
 
@@ -37,20 +78,36 @@ export default function MapComponent() {
       if (category) setCurrentIcon(createCategoryIcon(category.icon));
     }
   }, [activeCategory]);
+  
+  // Визначаємо початковий центр та зум на основі першої категорії або дефолтних значень
+  const defaultCenter: [number, number] = [49.23, 28.47];
+  const defaultZoom: number = 13;
 
-  const mapCenter: [number, number] = [49.23, 28.47];
+  const initialMapCenter: [number, number] = initialCategories[0]?.center || defaultCenter;
+  const initialZoom: number = initialCategories[0]?.zoom || defaultZoom;
+
 
   return (
+    // Фіксуємо висоту, щоб карта відображалася в межах батьківського контейнера
     <div className="w-full h-[30vh] relative">
-      <MapContainer center={mapCenter} zoom={13} scrollWheelZoom className="leaflet-container">
+      <MapContainer 
+        // Використовуємо початкові значення
+        center={initialMapCenter} 
+        zoom={initialZoom} 
+        scrollWheelZoom 
+        className="leaflet-container"
+      >
         <TileLayer
           attribution='&copy; OpenStreetMap'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        
+        {/* Компонент, який змінює центр та зум при зміні activeCategory */}
+        <MapUpdater activeCategory={activeCategory} />
 
         {/* Маркери */}
         {activeMarkers.map((marker) => {
-          // Якщо "Показати всі" → шукаємо іконку категорії
+          // Логіка визначення іконки
           const category =
             activeCategory === null
               ? initialCategories.find((cat) =>
@@ -67,10 +124,15 @@ export default function MapComponent() {
                 <div className="flex flex-col space-y-2 p-2">
                   <h3 className="text-lg font-bold">{marker.popupContent.title}</h3>
 
+                  {/* Використовуємо <img> замість Next/Image, щоб уникнути помилок в ізольованому середовищі */}
                   <img
                     src={marker.popupContent.imageUrl}
                     alt={marker.popupContent.title}
                     className="w-full h-auto rounded-lg object-cover"
+                    onError={(e) => {
+                        e.currentTarget.onerror = null; 
+                        e.currentTarget.src = `https://placehold.co/200x100/F0F4F8/333333?text=${marker.popupContent.title}`;
+                    }}
                   />
 
                   <p className="text-sm">{marker.popupContent.description}</p>
@@ -102,9 +164,10 @@ export default function MapComponent() {
             }`}
           >
             <div className='bg-white rounded-full p-3'>
-              <Image src={cat.icon} alt={cat.name} width={40} height={40} />
+              {/* Зміна Next/Image на <img> для уникнення помилок у цьому середовищі */}
+              <img src={cat.icon} alt={cat.name} width={40} height={40} />
             </div>
-            <span>{cat.name}</span>
+            <span className='text-button'>{cat.name}</span>
           </button>
         ))}
 

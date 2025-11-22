@@ -2,6 +2,7 @@ import { categories } from "./categories.data";
 import CategoryCard from "./CategoryCard";
 import styles from './Categories.module.scss';
 import { Button } from "@components/Button";
+import Link from "next/link";
 import Image from "next/image";
 
 export const CategoriesSection = () => {
@@ -49,7 +50,7 @@ export const CategoriesSection = () => {
             height={41}
         />
         <Button variant="primary" className="mx-6 lg:w-[500px]">
-          ПРИЄДНАТИСЬ
+          <Link href="https://pangeya.org.ua/#join">ПРИЄДНАТИСЬ</Link>
         </Button>
         <Image
             src="/categories/CB_RightArrow.svg"

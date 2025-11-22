@@ -10,8 +10,8 @@ export const navButtons = [
 ] as const;
 
 export const contactButtons = [
-  {name:"Email", link:"/"},
-  {name:"Phone", link:"/"},
+  {name: "youth.studio.vin@gmail.com", link: "https://mail.google.com/mail/u/0/?view=cm&fs=1&to=youth.studio.vin@gmail.com"},
+  {name: "+380976402756", link: "tel:+380976402756"},
   {name:"pangeya.org.ua", link:"https://pangeya.org.ua/"},
 ] as const;
 
@@ -42,6 +42,7 @@ export default function Places() {
                 <Link
                   key={idx}
                   href={contactButton.link}
+                  target="_blank"
                   className={`py-2 lg:mb-8 lg:pb-6 block hover:text-main-amarant duration-200 ${
                     !contactButton.link.startsWith("/") ? "underline" : ""
                   }`}
