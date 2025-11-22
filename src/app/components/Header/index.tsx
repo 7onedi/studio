@@ -99,7 +99,9 @@ export default function Header() {
             </div>
 
             {/* Support Button */}
-            <Button variant="primary">ПІДТРИМАТИ</Button>
+            <Button variant="primary"> 
+              <Link href="https://pangeya.org.ua/#join">ПІДТРИМАТИ</Link>
+            </Button>
           </div>
         </nav>
 
@@ -153,7 +155,7 @@ export default function Header() {
 
             {/* Mobile Support Button */}
             <Button variant="primary">
-              ПІДТРИМАТИ
+              <Link href="https://pangeya.org.ua/#join">ПІДТРИМАТИ</Link>
             </Button>
           </nav>
         </div>
