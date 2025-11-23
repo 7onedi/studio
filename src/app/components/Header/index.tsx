@@ -28,7 +28,28 @@ export default function Header() {
     { label: 'Moldovenească',flag:'🇲🇩', value: 'MD' },
   ];
 
-  const iconNames = ["facebook","instagram","tiktok","youtube","pangeya"];
+const iconNames = [
+  {
+    title: "facebook",
+    link: "https://www.facebook.com/icyst"
+  },
+  {
+    title: "instagram",
+    link: "https://www.instagram.com/intercultural.youth.studio/"
+  }, 
+  {
+    title: "tiktok",
+    link: "https://www.tiktok.com/@pangeya.ultima"
+  }, 
+  {
+    title: "youtube",
+    link: "https://www.youtube.com/channel/UC7gRBZfWzpQiPE6a7fliZow"
+  },
+  {
+    title: "pangeya",
+    link: "https://pangeya.org.ua/"
+  },
+];
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -41,16 +62,18 @@ export default function Header() {
 
   return (
     <header className={`mb-6 bg-transparant text-white ${styles["header-wrapper"]}`}>
-      <div className="grid grid-cols-12 mb-5 flex items-center justify-between h-16">
+      <div className="grid grid-cols-12 lg:mb-5 flex items-center justify-between h-16">
 
         {/* Logo */}
         <div className="col-span-4 lg:col-span-1 flex items-center pb-1">
-          <Image
-            src="/mobile/icys.webp"
-            alt="Intercultural Youth Studio Logo"
-            width={105}
-            height={58}
-          />
+          <Link href={"/"}>    
+            <Image
+              src="/mobile/icys.webp"
+              alt="Intercultural Youth Studio Logo"
+              width={105}
+              height={58}
+            />
+          </Link>
         </div>
 
         <div className="col-span-5 pl-4 lg:pl-0 text-main-text">
@@ -116,7 +139,7 @@ export default function Header() {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="pb-4 rounded-b-lg lg:hidden text-button_mobile">
+        <div className="pb-4 mt-5 lg:mt-0 rounded-b-lg lg:hidden text-button_mobile">
           <nav className="flex flex-col items-center space-y-4">
             {navButtons.map((navButton, i) =>(
               <Link key={i} href={navButton.link} className={`py-3 block hover:text-main-amarant transition-colors duration-200 ${pathname === navButton.link ? 'text-main-amarant' : 'text-main-text'}`}>
@@ -147,7 +170,9 @@ export default function Header() {
                     iconOnly
                     className="shadow-[0_4px_6px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_8px_rgba(0,0,0,0.15)] transition-shadow duration-200"
                   >
-                    <SvgIcon name={iconName} size={24} color="main-blue" />
+                    <Link href={iconName.link} className='flex'>
+                      <SvgIcon name={iconName.title} size={24} color="main-blue" />
+                    </Link>
                   </Button>
                 </div>
               ))}

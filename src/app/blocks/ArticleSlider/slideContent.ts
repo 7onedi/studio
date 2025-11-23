@@ -1,18 +1,27 @@
 // slideContent.ts
 export const slides = [
   {
-    text: "Мале кіно — велика подія: Вінниця збирає кіномитців з усього світу",
+    text: "Місцеві цікавинки",
     gradient: "bg-gradient-to-r from-main-blue/100 via-main-blue/15 to-transparent",
-    img: "/articles/articlePic1.jpg"
+    gradientMob: "bg-gradient-to-t from-main-amarant/100 via-main-amarant/15 to-transparent",
+    img: "https://stina.pangeya.org.ua/static/media/interesting_places.a1f84ef6.webp",
+    link: "https://stina.pangeya.org.ua/selo-stina/category/local-attractions",
+    textStyle: "headline_1"
   },
   {
-    text: "Другий слайд: новини та події фестивалю",
+    text: "Активний відпочинок",
+    gradient: "bg-gradient-to-r from-main-blue/100 via-main-blue/15 to-transparent",
+    gradientMob: "bg-gradient-to-t from-main-amarant/100 via-main-amarant/15 to-transparent",
+    img: "https://stina.pangeya.org.ua/static/media/active_recreation.62064e6f.webp",
+    link: "https://stina.pangeya.org.ua/selo-stina/category/active-recreation",
+    textStyle: "headline_1"
+  },
+  {
+    text: "Особливі пропозиції",
     gradient: "bg-gradient-to-r from-main-amarant/100 via-main-amarant/15 to-transparent",
-    img: "/articles/articlePic2.jpg"
-  },
-  {
-    text: "Третій слайд без градієнта",
-    gradient: "",
-    img: "/articles/articlePic3.png"
+    gradientMob: "bg-gradient-to-t from-main-amarant/100 via-main-amarant/15 to-transparent",
+    img: "https://stina.pangeya.org.ua/static/media/special_offers.76f9573c.webp",
+    link: "https://stina.pangeya.org.ua/selo-stina/category/special-offers",
+    textStyle: "headline_1"
   },
 ] as const;

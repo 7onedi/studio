@@ -57,12 +57,14 @@ export default function Places() {
         {/* Логотип + партнери */}
         <div className="col-span-12 lg:col-span-4 order-2 lg:order-1">
           <div className="py-2 flex items-center pb-1">
-            <Image
-              src="/mobile/icys.webp"
-              alt="Intercultural Youth Studio Logo"
-              width={105}
-              height={58}
-            />
+            <Link href={"/"}>        
+              <Image
+                src="/mobile/icys.webp"
+                alt="Intercultural Youth Studio Logo"
+                width={105}
+                height={58}
+              />
+            </Link>
           </div>
           <div className="py-0 text-main-text ml-2">
             <span className="text-headline_4 lg:text-headline_4">Intecultural Youth Studio</span>

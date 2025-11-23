@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 
 // Заглушка для Image. У Next.js краще next/image
 const Image = (props: any) => {
@@ -26,6 +27,7 @@ interface ArticleCardProps {
   title: string;
   gradient: string;
   img: string;
+  link: string;
   tags: readonly string[]; // ✅
   onLoad?: () => void;
 }
@@ -40,12 +42,13 @@ export const TagButton: React.FC<{ tag: string; className?: string }> = ({ tag, 
       ${className}
     `}
   >
-    {tag}
+    <Link href="https://stina.pangeya.org.ua/selo-stina">{tag}</Link>
   </button>
 );
 
-export const BlogCard: React.FC<ArticleCardProps> = ({ title, gradient, img, tags, onLoad }) => (
+export const BlogCard: React.FC<ArticleCardProps> = ({ title, gradient, img, link, tags, onLoad }) => (
   <div className="relative rounded-xl overflow-hidden cursor-pointer group h-full">
+    <Link href={link}>
     <Image
       src={img}
       alt={title}
@@ -58,7 +61,7 @@ export const BlogCard: React.FC<ArticleCardProps> = ({ title, gradient, img, tag
     <div className={`absolute inset-0 bg-black/30 transition-all duration-300 group-hover:bg-black/20 ${gradient}`} />
 
     {/* Content */}
-    <div className="absolute inset-0 flex flex-col justify-end p-4 md:p-6 lg:p-8">
+    <div className="absolute inset-0 flex flex-col justify-end p-4 md:p-6 lg:p-8 z-90">
       <div className="flex flex-wrap gap-2 mb-2">
         {tags.map((tag, i) => (
           <TagButton key={i} tag={tag} />
@@ -68,5 +71,6 @@ export const BlogCard: React.FC<ArticleCardProps> = ({ title, gradient, img, tag
         {title}
       </h2>
     </div>
+    </Link>
   </div>
 );
