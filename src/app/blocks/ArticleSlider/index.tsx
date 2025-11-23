@@ -86,7 +86,7 @@ const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
             )}
 
             <div className="absolute inset-0 flex flex-col justify-between p-8 lg:mx-16 lg:my-10 lg:p-16">
-              <Link href={s.link} className="absolute bottom-8 left-16">
+              <Link href={s.link} className="absolute bottom-8 left-16 lg:relative lg:bottom-0 lg:left-0 z-20">
                 <div className={`text-white text-headline_1_mobile lg:text-${s.textStyle} max-w-[600px]`}>
                   {s.text}
                 </div>
@@ -94,20 +94,20 @@ const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
               {/* SOCIAL ICONS */}
               <div className="hidden lg:flex lg:absolute bottom-0 right-16 flex gap-4 z-20">
                 {iconNames.map((iconName, i) => (
+                 <Link href={iconName.link} className="flex item-center ">
                   <Button
                     key={i}
                     variant="accent-alt"
                     iconOnly
-                    className="lg:mx-1 shadow-[0_4px_6px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_8px_rgba(0,0,0,0.15)] transition-shadow"
+                    className="lg:mx-1 shadow-[0_4px_6px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_8px_rgba(0,0,0,0.3)] transition-shadow hover:bg-gray-200"
                   >
-                    <Link href={iconName.link} className="flex item-center">
                       <SvgIcon
                         name={iconName.title}
                         size={24}
                         color="main-blue"
                       />
-                    </Link>
                   </Button>
+                  </Link>
                 ))}
               </div>
 

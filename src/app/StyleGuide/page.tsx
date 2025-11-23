@@ -6,7 +6,7 @@ const iconNames = ["bars-solid","down","facebook","left","instagram","Link","mag
 
 export default function StyleGuide() {
   return (
-    <main className="p-8 space-y-8 bg-white text-main-text">
+    <main className="p-8 space-y-8 text-main-text">
       <h1 className="text-4xl font-bold mb-6">StyleGuide</h1>
 
       {Object.entries(fontSize).map(([name, [size, config]]) => (

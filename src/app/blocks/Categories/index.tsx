@@ -7,13 +7,13 @@ import Image from "next/image";
 
 export const CategoriesSection = () => {
   return (
-    <section className="w-full lg:h-[960px] flex flex-col items-center gap-10 lg:gap-16 lg:pt-10">
+    <section className="m-auto w-full lg:h-[960px] flex flex-col items-center gap-10 lg:gap-16 lg:pt-10">
 
       {/* Контейнер для двох колонок */}
-      <div className="w-full flex flex-col md:flex-row md:justify-center lg:gap-16">
+      <div className="w-full h-[1000px] lg:h-auto flex flex-col md:flex-row md:justify-center lg:gap-16">
 
         {/* Ліва колонка: 1 (верх), 2 (низ) */}
-        <div className="flex flex-row items-center relative">
+        <div className="flex flex-col lg:flex-row items-center relative">
 
           {/* 1 */}
           <div className="lg:-translate-x-[-13vw] lg:-translate-y-0">
@@ -21,21 +21,21 @@ export const CategoriesSection = () => {
           </div>
 
           {/* 2 */}
-          <div className="lg:translate-x-14 lg:translate-y-[10vw]">
+          <div className="translate-x-4 translate-y-[-32vw] lg:translate-x-14 lg:translate-y-[10vw]">
             <CategoryCard {...categories[1]} />
           </div>
         </div>
 
         {/* Права колонка: 3 (верх), 4 (низ) */}
-        <div className="lg:ml-10 flex flex-row items-center relative mt-10 md:mt-0 ">
+        <div className="lg:ml-10 flex flex-col lg:flex-row items-center relative mt-10 md:mt-0 ">
 
           {/* 3 */}
-          <div className="lg:translate-x-[-1.5vw] lg:-translate-y-0">
+          <div className="translate-x-[-4vw] translate-y-[-60vw] lg:translate-x-[-1.5vw] lg:-translate-y-0">
             <CategoryCard {...categories[2]} />
           </div>
 
           {/* 4 */}
-          <div className="lg:translate-x-[-11.8vw] lg:translate-y-[10vw]">
+          <div className="translate-x-[4vw] translate-y-[-90vw] lg:translate-x-[-11.8vw] lg:translate-y-[10vw] border-box">
             <CategoryCard {...categories[3]} />
           </div>
         </div>
