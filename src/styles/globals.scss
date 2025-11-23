@@ -8,9 +8,14 @@
 @import 'leaflet/dist/leaflet.css';
 
 .leaflet-container {
-  height: 60vh;
-  width: 100%;
-  border-radius: 20px;
+  margin-left: -24px;
+  height: 75vh;
+  width: calc(100% + 48px);
+    @include min-media("lg") {
+      border-radius: 20px;
+      margin-left: 0;
+      width: 100%;
+    }
 }
 
 .home-desktop-bg {

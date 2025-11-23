@@ -30,7 +30,7 @@ export const CategoriesSection = () => {
         <div className="lg:ml-10 flex flex-col lg:flex-row items-center relative mt-10 md:mt-0 ">
 
           {/* 3 */}
-          <div className="translate-x-[-4vw] translate-y-[-60vw] lg:translate-x-[-1.5vw] lg:-translate-y-0">
+          <div className="translate-x-0 translate-y-[-60vw] lg:translate-x-[-1.5vw] lg:-translate-y-0">
             <CategoryCard {...categories[2]} />
           </div>
 
@@ -44,19 +44,19 @@ export const CategoriesSection = () => {
       {/* Кнопка */}
       <div className={`${styles["button_primary"]} flex flex-cols justify-between items-center`}>
         <Image
-            src="/categories/CB_LeftArrow.svg"
-            alt="Left Arrow"
-            width={66}
-            height={41}
+          src="/categories/CB_LeftArrow.svg"
+          alt="Left Arrow"
+          width={66}
+          height={41}
         />
         <Button variant="primary" className="mx-6 lg:w-[500px]">
           <Link href="https://pangeya.org.ua/#join">ПРИЄДНАТИСЬ</Link>
         </Button>
         <Image
-            src="/categories/CB_RightArrow.svg"
-            alt="Right Arrow"
-            width={66}
-            height={41}
+          src="/categories/CB_RightArrow.svg"
+          alt="Right Arrow"
+          width={66}
+          height={41}
         />
       </div>
 

@@ -55,7 +55,7 @@ export const allArticles = [
     tags: ["#stinamfk", "#ecocenterstina"],
     link: "https://stina.pangeya.org.ua/selo-stina/category/local-attractions/articles/castle-hill"
   },
-] as const;
+]
 
 // Функція для групування по 4
 export const groupArticles = (arr: typeof allArticles, size = 4) => {
