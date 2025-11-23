@@ -6,9 +6,31 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@components/Button";
 import { SvgIcon } from "@components/SvgIcon";
 import Image from "next/image";
+import Link from "next/link";
 import { slides } from "./slideContent";
 
-const iconNames = ["facebook", "instagram", "tiktok", "youtube", "pangeya"];
+const iconNames = [
+  {
+    title: "facebook",
+    link: "https://www.facebook.com/icyst"
+  },
+  {
+    title: "instagram",
+    link: "https://www.instagram.com/intercultural.youth.studio/"
+  }, 
+  {
+    title: "tiktok",
+    link: "https://www.tiktok.com/@pangeya.ultima"
+  }, 
+  {
+    title: "youtube",
+    link: "https://www.youtube.com/channel/UC7gRBZfWzpQiPE6a7fliZow"
+  },
+  {
+    title: "pangeya",
+    link: "https://pangeya.org.ua/"
+  },
+];
 
 export default function SliderHero() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -60,34 +82,37 @@ const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
 
             {/* Gradient overlay */}
             {s.gradient && (
-              <div className={`absolute inset-0 ${s.gradient}`} />
+              <div className={`absolute inset-0 ${s.gradientMob} lg:${s.gradient}`} />
             )}
 
             <div className="absolute inset-0 flex flex-col justify-between p-8 lg:mx-16 lg:my-10 lg:p-16">
-              <h2 className="text-white text-headline_1 max-w-[600px]">
-                {s.text}
-              </h2>
-
+              <Link href={s.link} className="absolute bottom-8 left-16">
+                <div className={`text-white text-headline_1_mobile lg:text-${s.textStyle} max-w-[600px]`}>
+                  {s.text}
+                </div>
+              </Link>
               {/* SOCIAL ICONS */}
               <div className="hidden lg:flex lg:absolute bottom-0 right-16 flex gap-4 z-20">
-                {iconNames.map((name, i) => (
+                {iconNames.map((iconName, i) => (
                   <Button
                     key={i}
                     variant="accent-alt"
                     iconOnly
                     className="lg:mx-1 shadow-[0_4px_6px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_8px_rgba(0,0,0,0.15)] transition-shadow"
                   >
-                    <SvgIcon
-                      name={name}
-                      size={24}
-                      color="main-blue"
-                    />
+                    <Link href={iconName.link} className="flex item-center">
+                      <SvgIcon
+                        name={iconName.title}
+                        size={24}
+                        color="main-blue"
+                      />
+                    </Link>
                   </Button>
                 ))}
               </div>
 
               {/* DOTS */}
-              <div className="absolute bottom-0 left-20 flex items-center gap-3 z-30">
+              <div className="hidden lg:absolute bottom-0 left-20 flex items-center gap-3 z-30">
                 {slides.map((_, i) => {
                   const active = currentSlide === i;
                   return (

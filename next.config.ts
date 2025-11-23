@@ -2,6 +2,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+    images: {
+        domains: [
+        "stina.pangeya.org.ua",
+        "ngo.pangeya.org.ua",
+        ],
+    },
     webpack: (config) => {
         config.resolve.symlinks = false;
         return config;
