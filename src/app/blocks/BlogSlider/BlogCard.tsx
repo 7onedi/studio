@@ -28,7 +28,7 @@ interface ArticleCardProps {
   gradient: string;
   img: string;
   link: string;
-  tags: readonly string[]; // ✅
+  tags: readonly string[];
   onLoad?: () => void;
 }
 
@@ -47,30 +47,56 @@ export const TagButton: React.FC<{ tag: string; className?: string }> = ({ tag, 
 );
 
 export const BlogCard: React.FC<ArticleCardProps> = ({ title, gradient, img, link, tags, onLoad }) => (
-  <div className="relative rounded-xl overflow-hidden cursor-pointer group h-full">
-    <Link href={link}>
-    <Image
-      src={img}
-      alt={title}
-      fill
-      className="object-cover transition-transform duration-500 group-hover:scale-105"
-      onLoad={onLoad}
-    />
+  // 💡 Використовуємо flex-col для мобільного, щоб теги розміщувалися під карткою
+  // 💡 h-full збережено для коректного відображення в сітці
+  <div className="flex flex-col h-full">
+    {/* 1. Блок Картки з Посиланням (Залишається як основний візуальний елемент) */}
+    <div className="relative rounded-xl overflow-hidden cursor-pointer group flex-grow">
+      <Link href={link}>
+        <Image
+          src={img}
+          alt={title}
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          onLoad={onLoad}
+        />
 
-    {/* Gradient overlay */}
-    <div className={`absolute inset-0 bg-black/30 transition-all duration-300 group-hover:bg-black/20 ${gradient}`} />
+        {/* Gradient overlay */}
+        <div className={`absolute inset-0 bg-black/30 transition-all duration-300 group-hover:bg-black/20 ${gradient}`} />
 
-    {/* Content */}
-    <div className="absolute inset-0 flex flex-col justify-end p-4 md:p-6 lg:p-8 z-90">
-      <div className="flex flex-wrap gap-2 mb-2">
-        {tags.map((tag, i) => (
-          <TagButton key={i} tag={tag} />
-        ))}
-      </div>
-      <h2 className="text-white text-md sm:text-xl font-bold max-w-full line-clamp-3 leading-tight">
-        {title}
-      </h2>
+        {/* Content (Title + Desktop Tags) */}
+        <div className="absolute inset-0 flex flex-col justify-end p-4 md:p-6 lg:p-8 z-90">
+          
+          {/* 🚩 ТЕГИ ДЛЯ ДЕСКТОПУ (Visible on lg and up, Hidden on mobile) */}
+          <div className="hidden lg:flex flex-wrap gap-2 mb-2">
+            {tags.map((tag, i) => (
+              <TagButton key={i} tag={tag} />
+            ))}
+          </div>
+
+          <h2 className="text-white text-md sm:text-xl font-bold max-w-full line-clamp-3 leading-tight">
+            {title}
+          </h2>
+        </div>
+      </Link>
     </div>
-    </Link>
+
+    {/* 2. Блок Тегів для Мобільного (Visible only on mobile, Hidden on lg and up) */}
+    <div className="pt-2 lg:hidden flex flex-wrap gap-2 mt-3 mb-1">
+      {tags.map((tag, i) => (
+        // 💡 Для мобільної версії змінюємо стилі тегів, щоб вони не були прозорими
+        <button
+          key={i}
+          className={`
+            px-3 py-1 text-button_mobile font-semibold
+            bg-main-blue text-white rounded-full /* 💡 Змінено стилі для фону під карткою */
+            transition-colors duration-200 hover:bg-gray-200
+            shadow-sm
+          `}
+        >
+          <Link href="https://stina.pangeya.org.ua/selo-stina">{tag}</Link>
+        </button>
+      ))}
+    </div>
   </div>
 );
