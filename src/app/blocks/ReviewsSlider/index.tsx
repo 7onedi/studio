@@ -15,33 +15,58 @@ const reviews = [
     name: "Марія Ковальчук",
     title: "Волонтер, дизайнер",
     text: "Робота в команді над культурними проектами відкрила для мене багато нового. Я змогла застосувати свої навички дизайну для створення візуальної айдентики фестивалю, що було неймовірно цікаво і відповідально. Атмосфера тут дуже надихаюча, а люди — справжні професіонали своєї справи.",
-    profileImg: "/review/profile.jpg",
+    profileImg: "", // <-- ТУТ ПОРОЖНІЙ РЯДОК
   },
   {
     name: "Олександр Іванов",
     title: "Ментор, режисер",
     text: "Я радий, що мав змогу ділитися своїм досвідом з молодими кіномитцями. Ця організація створює унікальний місток між досвідом та новим поколінням. Енергія та свіжий погляд молоді дійсно вражають, і я впевнений, що багато з них незабаром стануть відомими митцями.",
-    profileImg: "/review/profile.jpg",
+    profileImg: "", // <-- ТУТ ПОРОЖНІЙ РЯДОК
   },
 ];
 
 // --- КОМПОНЕНТ ЗАГЛУШКИ ЗОБРАЖЕННЯ (Спрощена версія) ---
 interface ImageProps {
     src: string;
-    alt: string;
+    alt: string; // Використовуємо alt для генерації ініціалів
     className?: string;
 }
 const Image: FC<ImageProps> = (props) => {
-    // Використовуємо шлях, наданий у пропсах, щоб відобразити фото профілю.
-    // Якщо шлях `/review/profile.jpg` не завантажується, спрацює onError і відобразиться плейсхолдер.
+    // 1. Перевіряємо, чи є валідний шлях до зображення
+    const isSrcMissing = !props.src || props.src.trim() === "";
+    
+    // 2. Логіка для генерації ініціалів (до двох літер, наприклад: В.О. або М.К.)
+    const nameParts = props.alt.split(' ');
+    const initials = nameParts.length > 1 
+        ? (nameParts[0][0] + nameParts[1][0]).toUpperCase() 
+        : (nameParts[0][0] || 'P').toUpperCase();
+    
+    // 3. Створення URL для плейсхолдера
+    // Використовуємо розмір 300x400, щоб відповідати aspect-[3/4]
+    const placeholderUrl = `https://placehold.co/300x400/3B82F6/ffffff?text=${initials}`;
+
+    // Якщо шлях відсутній, одразу відображаємо плейсхолдер.
+    // Це вирішує проблему з src=""
+    if (isSrcMissing) {
+         return (
+            <img
+                src={placeholderUrl} 
+                alt={props.alt}
+                className={`${props.className} object-cover`}
+                // Встановлюємо alt, оскільки це вже фінальне зображення
+                aria-label={`Аватар: ${props.alt}`}
+            />
+        );
+    }
+
     return (
         <img
             src={props.src} 
             alt={props.alt}
             className={`${props.className} object-cover`}
             onError={(e) => {
-                // Заміна на плейсхолдер у разі помилки завантаження
-                (e.target as HTMLImageElement).src = 'https://placehold.co/100x100/3B82F6/ffffff?text=P';
+                // У разі помилки завантаження (404), замінюємо на плейсхолдер з ініціалами
+                (e.target as HTMLImageElement).src = placeholderUrl;
             }}
         />
     );
@@ -59,10 +84,10 @@ const Arrow: FC<ArrowProps> = ({ onClick, direction, className = "" }) => (
   <button
     onClick={onClick}
     className={`
-      absolute top-1/2 -translate-y-1/2
-      p-3 bg-blue-900/50 rounded-full
+      lg:absolute  lg:top-1/2 lg:-translate-y-1/2
+      p-6 lg:p-3 bg-main-blue/50 rounded-full
       transition-all duration-300
-      hover:bg-blue-900 shadow-lg
+      hover:bg-main-blue shadow-lg
       text-white
       z-30
       cursor-pointer
@@ -113,7 +138,6 @@ export default function ReviewsSlider() {
   const nextSlideIndex = (currentSlide + 1) % reviewsCount;
   const currentReview = reviews[currentSlide];
 
-  // Ця частина імітує перехід, оскільки ми не використовуємо Keen-Slider
   const [transitioning, setTransitioning] = useState(false);
 
   useEffect(() => {
@@ -126,9 +150,9 @@ export default function ReviewsSlider() {
   if (!currentReview) return null; // Запобігання помилкам, якщо немає відгуків
 
   return (
-    <div className="text-main-text py-16 px-4 sm:px-6 lg:px-8">
+    <div className="lg:text-main-text py-16 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        <h2 className="text-4xl font-bold mb-10 text-center uppercase" style={{ color: '#E30613' }}>
+        <h2 className="text-headline_2_mobile lg:text-headline_2 font-bold mb-10 text-center uppercase" style={{ color: '#E30613' }}>
             Відгуки
         </h2>
         
@@ -143,7 +167,7 @@ export default function ReviewsSlider() {
             `}
           >
             {/* 1. Блок профілю */}
-            <div className="flex flex-col items-center w-full md:w-auto md:min-w-[300px] mb-8 md:mb-0 md:mr-10">
+            <div className="flex flex-col items-center h-[250px] lg:h-auto w-full lg:w-auto lg:min-w-[300px] mb-8 md:mb-0 md:mr-10">
                 <div className="relative w-full h-auto max-w-[300px] rounded-xl overflow-hidden shadow-2xl aspect-[3/4]">
                     <Image
                         src={currentReview.profileImg}
@@ -151,19 +175,27 @@ export default function ReviewsSlider() {
                         className="w-full h-full"
                     />
                 </div>
+                <div className="lg:hidden mt-4 text-center">
+                  <h3 className="text-xl font-semibold">{currentReview.name}</h3>
+                  <p className="text-gray-400 text-sm">{currentReview.title}</p>
+                </div>
             </div>
 
             {/* 2. Блок тексту відгуку */}
             <div className="flex flex-col justify-center max-w-3xl">
-                <p className="text-body text-lg leading-relaxed italic mb-6">
+                <p className="lg:text-body leading-relaxed italic mb-6">
                     {currentReview.text}
                 </p>
                 {/* Декоративна лінія */}
-                <div className="w-20 h-1 mb-2" style={{ backgroundColor: '#E30613' }}></div>
-                <h3 className="text-xl font-bold" style={{ color: '#4D90FE' }}>{currentReview.name}</h3>
-                <p className="text-gray-400 text-sm">{currentReview.title}</p>
+                <div className="hidden lg:block">
+                  <div className="w-20 h-1 mb-2" style={{ backgroundColor: '#E30613' }}></div>
+                  <h3 className="text-xl font-bold" style={{ color: '#4D90FE' }}>{currentReview.name}</h3>
+                  <p className="text-gray-400 text-sm">{currentReview.title}</p>
+                </div>
             </div>
           </div>
+
+          
           
           {/* Міні-картки по боках (працюють з новим currentSlide) */}
           {reviewsCount > 1 && (
@@ -204,7 +236,7 @@ export default function ReviewsSlider() {
 
           {/* НАВІГАЦІЯ (Стрілки) */}
           {reviewsCount > 1 && (
-            <>
+            <div className="flex justify-center">
               <Arrow
                 onClick={prevSlide}
                 direction="left"
@@ -215,7 +247,7 @@ export default function ReviewsSlider() {
                 direction="right"
                 className="right-0 translate-x-1/2 md:translate-x-[250px]"
               />
-            </>
+            </div>
           )}
 
         </div>
