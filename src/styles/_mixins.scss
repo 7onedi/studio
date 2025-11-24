@@ -1,25 +1,16 @@
-// 🔹 Міксин для min-width (Mobile First)
-@use './variables' as *;
+// src/styles/_mixins.scss
+@use "sass:map";
+
+$breakpoints: (
+  sm: 640px,
+  md: 768px,
+  lg: 1024px,
+  xl: 1280px,
+  '2xl': 1536px
+);
 
 @mixin min-media($size) {
-  @if map-has-key($breakpoints, $size) {
-    @media (min-width: #{map-get($breakpoints, $size)}) {
-      @content;
-    }
-  } @else {
-    @warn "breakpoint #{$size} not found!";
-  }
-}
-
-// 🔠 Міксин типографіки
-@mixin typography($key) {
-  @if map-has-key($typography, $key) {
-    $style: map-get($typography, $key);
-    font-size: map-get($style, font-size);
-    line-height: map-get($style, line-height);
-    letter-spacing: map-get($style, letter-spacing);
-    font-weight: map-get($style, font-weight);
-  } @else {
-    @warn "Typography key `#{$key}` not found in $typography map.";
+  @media (min-width: map.get($breakpoints, $size)) {
+    @content;
   }
 }

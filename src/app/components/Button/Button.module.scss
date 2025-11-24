@@ -19,79 +19,84 @@
 
 // Accent
 .accent {
-  background-color: $main-blue;
+  $bg: #256BA7; // main-blue
+  background-color: $bg;
   color: white;
 
   &:hover {
-    background-color: color.scale($main-blue, $lightness: -10%);
+    background-color: color.scale($bg, $lightness: -10%);
   }
 
   &:active {
-    background-color: color.scale($main-blue, $lightness: -20%);
+    background-color: color.scale($bg, $lightness: -20%);
   }
 
   &:disabled {
-    background-color: $main-grey;
+    background-color: #999999; // grey
     cursor: not-allowed;
   }
 }
 
 .accent-alt {
+  $text: #256BA7;
   background-color: white;
-  color: $main-blue;
+  color: $text;
 
   &:hover {
-    color: darken($main-blue, 10%);
+    color: color.scale($text, $lightness: -10%);
   }
 
   &:active {
-    color: darken($main-blue, 20%);
+    color: color.scale($text, $lightness: -20%);
   }
+
   &:disabled {
     color: white;
-    background-color: $main-grey;
+    background-color: #999999;
     cursor: not-allowed;
   }
 }
 
 // Primary
 .primary {
-  background-color: $main-amarant;
+  $bg: #E91651; // main-amarant
+  background-color: $bg;
   color: white;
 
   &:hover {
-    background-color: color.scale($main-amarant, $lightness: -10%);
+    background-color: color.scale($bg, $lightness: -10%);
   }
 
   &:active {
-    background-color: color.scale($main-amarant, $lightness: -20%);
+    background-color: color.scale($bg, $lightness: -20%);
   }
 
   &:disabled {
-    background-color: $main-grey;
+    background-color: #999999;
     cursor: not-allowed;
   }
 }
 
 // Secondary
 .secondary {
-  background-color: none;
-  color: $main-blue;
-  border: 1px solid $main-blue;
+  $text: #256BA7;
+  background: none;
+  color: $text;
+  border: 1px solid $text;
 
   &:hover {
-    color: color.scale($main-blue, $lightness: -20%);
-    border-color: color.scale($main-blue, $lightness: -20%);
+    color: color.scale($text, $lightness: -20%);
+    border-color: color.scale($text, $lightness: -20%);
   }
 
   &:active {
-    color: color.scale($main-blue, $lightness: -20%);
-    border-color: color.scale($main-blue, $lightness: -20%);
+    color: color.scale($text, $lightness: -20%);
+    border-color: color.scale($text, $lightness: -20%);
   }
 
   &:disabled {
-    border-color: $main-grey;
-    color: $main-grey;
+    border-color: #999999;
+    color: #999999;
     cursor: not-allowed;
   }
 }
@@ -102,40 +107,35 @@
   border: 1px solid white;
 
   &:hover {
-    color: darken(white, 10%);
-    border-color: darken(white, 10%);
+    color: color.scale(white, $lightness: -10%);
+    border-color: color.scale(white, $lightness: -10%);
   }
 
   &:active {
-    color: darken(white, 20%);
-    border-color: darken(white, 20%);
+    color: color.scale(white, $lightness: -20%);
+    border-color: color.scale(white, $lightness: -20%);
   }
 
   &:disabled {
-    border-color: $main-grey;
-    color: $main-grey;
+    border-color: #999999;
+    color: #999999;
     cursor: not-allowed;
   }
 }
 
 // Tertiary
-
 .tertiary{
   background: none;
-  color: $main-blue;
+  color: #256BA7;
 
-  &:hover {
-  color: $main-amarant;
-  text-decoration: underline
-  }
-
+  &:hover,
   &:active {
-  color: $main-amarant;
-  text-decoration: underline
+    color: #E91651;
+    text-decoration: underline;
   }
 
   &:disabled {
-    color: $main-grey;
+    color: #999999;
     cursor: not-allowed;
   }
 }
@@ -144,18 +144,14 @@
   background: none;
   color: white;
 
-  &:hover {
-  color: darken(white, 10%);
-  text-decoration: underline
-  }
-
+  &:hover,
   &:active {
-  color: darken(white, 20%);
-  text-decoration: underline
+    color: color.scale(white, $lightness: -20%);
+    text-decoration: underline;
   }
 
   &:disabled {
-    color: $main-grey;
+    color: #999999;
     cursor: not-allowed;
     text-decoration: none;
   }

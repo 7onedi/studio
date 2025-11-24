@@ -9,26 +9,26 @@
 
 .leaflet-container {
   margin-left: -24px;
-  height: 75vh;
+  height: 550px;
   width: calc(100% + 48px);
-    @include min-media("lg") {
-      border-radius: 20px;
-        height: 60vh;
-      margin-left: 0;
-      width: 100%;
-    }
-}
 
-.mainpage_wrapper {
+  /* lg breakpoint: min-width 1024px */
+  @media (min-width: 1024px) {
+    border-radius: 20px;
+    height: 700px;
+    margin-left: 0;
+    width: 100%;
+  }
 }
-
 
 body {
   @apply bg-white;
-    @include min-media("lg") {
+
+  /* lg breakpoint: min-width 1024px */
+  @media (min-width: 1024px) {
     background-image: url('/background/mainBGtriangles.png');
     background-repeat: no-repeat;
     background-size: 100% auto;      // робить картинку по ширині
-    background-position: center 1020px; // зміщує вниз на 700px
+    background-position: center 1020px; // зміщує вниз на 1020px
   }
 }
