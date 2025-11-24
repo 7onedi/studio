@@ -1,8 +1,10 @@
-.header-wrapper{
-    height: auto;
-    border-bottom: 1px solid $main-amarant;
-    @include min-media("lg") {
-        height: 72px;
-        border-bottom: 1px solid $main-amarant;
-    }
+.header-wrapper {
+  height: auto;
+  border-bottom: 1px solid #E91651; /* $main-amarant замінено на конкретний колір */
+
+  /* lg breakpoint */
+  @media (min-width: 1024px) {
+    height: 72px;
+    border-bottom: 1px solid #E91651;
+  }
 }

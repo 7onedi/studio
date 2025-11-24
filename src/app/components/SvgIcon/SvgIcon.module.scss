@@ -1,11 +1,12 @@
+@use "sass:color";
 .main-blue {
-  color: $main-blue; /* або твій main-blue */
+  color: #256BA7; /* або твій main-blue */
   /* Якщо треба, можна явно вказати fill */
   fill: currentColor;
 }
 
 .main-amarant {
-  color: $main-amarant;
+  color: E91651;
   fill: currentColor;
 }
 
@@ -15,12 +16,12 @@
 }
 
 .main-grey {
-  color: $main-grey;
+  color: gray;
   fill: currentColor;
 }
 
 .main-text {
-  color: $main-text;
+  color: black;
   fill: currentColor;
 }
 
