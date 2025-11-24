@@ -13,31 +13,22 @@
   width: calc(100% + 48px);
     @include min-media("lg") {
       border-radius: 20px;
+        height: 60vh;
       margin-left: 0;
       width: 100%;
     }
 }
 
-.home-desktop-bg {
-  background-image: url('/background/mainBGtriangles.png');
-  background-repeat: no-repeat;
-  background-size: cover;
-
-  // Тільки десктопи
-  @media (max-width: 1023px) {
-    background-image: none;
-  }
+.mainpage_wrapper {
 }
-
-// .mainpage_wrapper {
-//   background-image: url('/background/mainBGtriangles.png');
-//   background-repeat: no-repeat;
-//   background-size: cover;
-//   background-position: absolute;
-// }
-
 
 
 body {
   @apply bg-white;
+    @include min-media("lg") {
+    background-image: url('/background/mainBGtriangles.png');
+    background-repeat: no-repeat;
+    background-size: 100% auto;      // робить картинку по ширині
+    background-position: center 1020px; // зміщує вниз на 700px
+  }
 }

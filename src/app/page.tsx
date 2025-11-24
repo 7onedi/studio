@@ -18,7 +18,7 @@ export default function Home() {
         <div className='my-6 py-4 w-full flex item-center justify-center'>
           <PartnerSlider />
         </div>
-        <div className={`mainpage_wrapper lg:px-4 lg:px-0 py-6 lg:py-16`}>
+        <div className={`lg:px-0 py-6 lg:pt-16`}>
         <Categories/>
         <BlogSlider/>
         <div className="relative h-[700px] w-full"> 

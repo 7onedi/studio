@@ -58,6 +58,8 @@ function MapUpdater({ activeCategory }: { activeCategory: string | null }) {
 
 
 export default function MapComponent() {
+  const [visibleTextFor, setVisibleTextFor] = useState<string | null>(null);
+
   const [activeCategory, setActiveCategory] = useState<string | null>(
     initialCategories[0]?.id || null
   );
@@ -152,35 +154,58 @@ export default function MapComponent() {
       </MapContainer>
 
       {/* Кнопки категорій */}
-      <div className="absolute top-5 right-5 space-y-2 z-[600] pointer-events-none">
+      <div className={`absolute top-2 left-2 lg:top-5 lg:left-12 lg:left-0 space-y-2 z-[600] pointer-events-none`}>
         {initialCategories.map((cat) => (
           <button
             key={cat.id}
-            onClick={() => setActiveCategory(activeCategory === cat.id ? null : cat.id)}
-            className={`pr-4 rounded-full shadow-md transition-all flex items-center space-x-2 pointer-events-auto  ${
+            onClick={() => {
+              const newState = activeCategory === cat.id ? null : cat.id;
+              setActiveCategory(newState);
+
+              // Мобільна логіка
+              if (window.innerWidth < 992) {
+                if (newState) {
+                  setVisibleTextFor(newState);
+                  setTimeout(() => {
+                    setVisibleTextFor(null);
+                  }, 5000);
+                } else {
+                  setVisibleTextFor(null);
+                }
+              }
+            }}
+            className={`pr-4 rounded-full shadow-md transition-all flex items-center space-x-2 pointer-events-auto ${
               activeCategory === cat.id
                 ? 'bg-white bg-opacity-90 ring-2 ring-red-600'
                 : 'bg-gray-300 bg-opacity-70 hover:bg-opacity-90'
             }`}
           >
             <div className='bg-white rounded-full p-3'>
-              {/* Зміна Next/Image на <img> для уникнення помилок у цьому середовищі */}
               <img src={cat.icon} alt={cat.name} width={40} height={40} />
             </div>
-            <span className='text-button'>{cat.name}</span>
+
+            <span className='text-button'>
+              {(typeof window !== 'undefined' &&
+                (window.innerWidth >= 992 || visibleTextFor === cat.id))
+                ? cat.name
+                : ''
+              }
+            </span>
           </button>
+
         ))}
 
         {/* Показати всі */}
         <button
           onClick={() => setActiveCategory(null)}
-          className={`p-3 rounded-xl shadow-md transition-all pointer-events-auto ${
+          className={`p-6 rounded-full lg:rounded-2xl shadow-md transition-all pointer-events-auto ${
             activeCategory === null
               ? 'bg-white bg-opacity-90 ring-2 ring-gray-600'
               : 'bg-white bg-opacity-70 hover:bg-opacity-90'
           }`}
         >
-          Показати всі
+          <span className='hidden lg:block'>Показати всі</span>
+          <span className='lg:hidden text-button_mobile'>Всі</span>
         </button>
       </div>
     </div>
