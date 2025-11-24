@@ -9,13 +9,13 @@
 
 .leaflet-container {
   margin-left: -24px;
-  height: 75vh;
+  height: 550px;
   width: calc(100% + 48px);
 
   /* lg breakpoint: min-width 1024px */
   @media (min-width: 1024px) {
     border-radius: 20px;
-    height: 60vh;
+    height: 700px;
     margin-left: 0;
     width: 100%;
   }

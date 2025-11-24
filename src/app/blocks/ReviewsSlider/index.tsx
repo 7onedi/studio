@@ -156,7 +156,7 @@ export default function ReviewsSlider() {
             Відгуки
         </h2>
         
-        <div className="relative mx-auto max-w-5xl"> 
+        <div className="relative mx-auto max-w-5xl lg:max-w-3xl 3xl:max-w-5xl"> 
           
           {/* Основний Слайд */}
           <div 
