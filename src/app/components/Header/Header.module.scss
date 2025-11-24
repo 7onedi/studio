@@ -1,0 +1,8 @@
+.header-wrapper{
+    height: auto;
+    border-bottom: 1px solid $main-amarant;
+    @include min-media("lg") {
+        height: 72px;
+        border-bottom: 1px solid $main-amarant;
+    }
+}

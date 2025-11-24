@@ -1,19 +1,34 @@
-import Image from 'next/image';
 
+import ArticleSlider from './blocks/ArticleSlider';
+import PartnerSlider from './components/PartnerSlider';
+import { CategoriesSection as Categories } from './blocks/Categories';
+import BlogSlider from './blocks/BlogSlider';
+import ReviewsSlider from './blocks/ReviewsSlider';
+import dynamic from 'next/dynamic';
+
+import MapLoader from '@components/MapLoader';
 export default function Home() {
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 p-4 text-center">
-      <div className="max-w-md">
-        <Image 
-          src="/logo.png" 
-          alt="Логотип" 
-          width={256} 
-          height={256} 
-          className="mx-auto"
-        />
-        <h1 className="mt-4 text-2xl font-semibold text-gray-800">Сайт у розробці</h1>
-        <p className="mt-2 text-gray-600">Ми працюємо над оновленням. Заходьте пізніше!</p>
-      </div>
+    <div >
+      <main >
+        <div className='lg:my-16'>
+          <ArticleSlider/>
+        </div>
+        <div className='my-6 py-4 w-full flex item-center justify-center'>
+          <PartnerSlider />
+        </div>
+        <div className={`lg:px-0 py-6 lg:pt-16`}>
+        <Categories/>
+        <BlogSlider/>
+        <div className="relative h-[700px] w-full"> 
+          <MapLoader /> 
+        </div>
+        <div className='mt-6'>
+          <ReviewsSlider/>
+        </div>
+        </div>
+      </main>
     </div>
   );
 }

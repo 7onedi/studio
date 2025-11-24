@@ -4,6 +4,31 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Додайте стилі Leaflet */
+@import 'leaflet/dist/leaflet.css';
+
+.leaflet-container {
+  margin-left: -24px;
+  height: 75vh;
+  width: calc(100% + 48px);
+    @include min-media("lg") {
+      border-radius: 20px;
+        height: 60vh;
+      margin-left: 0;
+      width: 100%;
+    }
+}
+
+.mainpage_wrapper {
+}
+
+
 body {
-  @apply bg-latte;
+  @apply bg-white;
+    @include min-media("lg") {
+    background-image: url('/background/mainBGtriangles.png');
+    background-repeat: no-repeat;
+    background-size: 100% auto;      // робить картинку по ширині
+    background-position: center 1020px; // зміщує вниз на 700px
+  }
 }

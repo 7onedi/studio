@@ -2,6 +2,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+    images: {
+        domains: [
+        "stina.pangeya.org.ua",
+        "ngo.pangeya.org.ua",
+        ],
+    },
+    webpack: (config) => {
+        config.resolve.symlinks = false;
+        return config;
+    },
     sassOptions: {
         includePaths: ['./src/styles'], // Point to your styles directory
         // You might remove prependData if you explicitly @use variables/mixins in each file
