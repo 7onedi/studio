@@ -6,22 +6,22 @@ import type { FC } from "react";
 // --- ДАНІ ДЛЯ ВІДГУКІВ ---
 const reviews = [
   {
-    name: "Василь Остапенко",
-    title: "Учасник програми, студент",
-    text: "Участь у цій громадській організації стала для мене справжнім поштовхом до розвитку. Я отримав не лише нові знання й практичні навички, а й відчув, що моя робота справді має значення. Ми реалізували кілька важливих проектів, познайомилися з однодумцями й мали можливість працювати з досвідченими менторами. Це був цінний досвід, який я точно понесу з собою далі.",
-    profileImg: "/review/profile.jpg",
+    name: "Ярослав Геращенко",
+    title: "Програмний координатор",
+    text: '"Працювати із молоддю за темою аматорського медіа - це дуже захоплююче. Адже молодь дуже креативна і має великий запас ентузіазму. Я, як молодіжний працівник, часто заряджаюсь від них в процесі творіння."',
+    profileImg: "/review/profile2.jpg",
   },
   {
-    name: "Марія Ковальчук",
-    title: "Волонтер, дизайнер",
-    text: "Робота в команді над культурними проектами відкрила для мене багато нового. Я змогла застосувати свої навички дизайну для створення візуальної айдентики фестивалю, що було неймовірно цікаво і відповідально. Атмосфера тут дуже надихаюча, а люди — справжні професіонали своєї справи.",
-    profileImg: "", // <-- ТУТ ПОРОЖНІЙ РЯДОК
+    name: "Ася Козлова",
+    title: "Менеджерка проєкту #countrysidestudio",
+    text: '"Мені подобається проєкт #countrysidestudio тому, що він об’єднує молодь, якій важливий  зміст, розвиток і бажання досліджувати. Саме тому я ціную #countrysidestudio і те, що тут створюється"',
+    profileImg: "/review/profile3.jpg", // <-- ТУТ ПОРОЖНІЙ РЯДОК
   },
   {
-    name: "Олександр Іванов",
-    title: "Ментор, режисер",
-    text: "Я радий, що мав змогу ділитися своїм досвідом з молодими кіномитцями. Ця організація створює унікальний місток між досвідом та новим поколінням. Енергія та свіжий погляд молоді дійсно вражають, і я впевнений, що багато з них незабаром стануть відомими митцями.",
-    profileImg: "", // <-- ТУТ ПОРОЖНІЙ РЯДОК
+    name: "Jules Marquet",
+    title: "Volunteer MOZAIKA author",
+    text: '"Before arriving in Ukraine I had little knowledge about the traditional art and history of this country. However, I even couldn’t imagine that Ukrainian culture is so unique and has very deep historical roots. Furthermore, I was astonished how proud Ukrainians are of their traditions. They do know and try to save them."',
+    profileImg: "/review/profile1.jpg", // <-- ТУТ ПОРОЖНІЙ РЯДОК
   },
 ];
 
@@ -168,7 +168,7 @@ export default function ReviewsSlider() {
           >
             {/* 1. Блок профілю */}
             <div className="flex flex-col items-center h-[250px] lg:h-auto w-full lg:w-auto lg:min-w-[300px] mb-8 md:mb-0 md:mr-10">
-                <div className="relative w-full h-auto max-w-[300px] rounded-xl overflow-hidden shadow-2xl aspect-[3/4]">
+                <div className="relative w-full h-auto max-w-[300px] rounded-xl overflow-hidden shadow-2xl aspect-[4/4]">
                     <Image
                         src={currentReview.profileImg}
                         alt={currentReview.name}
@@ -183,7 +183,7 @@ export default function ReviewsSlider() {
 
             {/* 2. Блок тексту відгуку */}
             <div className="flex flex-col justify-center max-w-3xl">
-                <p className="lg:text-body leading-relaxed italic mb-6">
+                <p className="lg:text-subtitle_1 leading-relaxed italic mb-6">
                     {currentReview.text}
                 </p>
                 {/* Декоративна лінія */}
