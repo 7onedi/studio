@@ -31,7 +31,7 @@ export default function Places() {
                 <Link
                   key={i}
                   href={navButton.link}
-                  className="py-2 lg:mb-8 lg:pb-6 block hover:text-main-amarant duration-200"
+                  className="py-2 lg:mb-6 lg:pb-2 block hover:text-main-amarant duration-200"
                 >
                   {navButton.name}
                 </Link>
@@ -43,7 +43,7 @@ export default function Places() {
                   key={idx}
                   href={contactButton.link}
                   target="_blank"
-                  className={`py-2 lg:mb-8 lg:pb-6 block hover:text-main-amarant duration-200 ${
+                  className={`py-2 lg:mb-6 lg:pb-2 block hover:text-main-amarant duration-200 ${
                     !contactButton.link.startsWith("/") ? "underline" : ""
                   }`}
                 >
