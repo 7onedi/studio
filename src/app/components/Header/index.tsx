@@ -75,11 +75,21 @@ const iconNames = [
             />
           </Link>
         </div>
-          {isMobileMenuOpen ? 
-            <div className="lg:block col-span-5 pl-2 lg:pl-0 text-main-text">
-              <span className="text-headline_4_mobile lg:text-headline_4">Intecultural Youth Studio</span>
-            </div>
-          : <div className='col-span-5'></div>}
+        <div
+          className={`
+            col-span-5 pl-2 lg:pl-0 text-main-text
+            ${isMobileMenuOpen ? "block" : "hidden"}
+            lg:block
+          `}
+        >
+          <span className="text-headline_4_mobile lg:text-headline_4">
+            Intercultural Youth Studio
+          </span>
+        </div>
+        {!isMobileMenuOpen && (
+  <div className="block lg:hidden col-span-5 h-4"></div>
+)}
+
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:block lg:col-span-6 col-span-6 flex items-center justify-between w-full pl-0 pr-0">
