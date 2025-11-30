@@ -23,6 +23,12 @@ const reviews = [
     text: '"Before arriving in Ukraine I had little knowledge about the traditional art and history of this country. However, I even couldn’t imagine that Ukrainian culture is so unique and has very deep historical roots. Furthermore, I was astonished how proud Ukrainians are of their traditions. They do know and try to save them."',
     profileImg: "/review/profile1.jpg", // <-- ТУТ ПОРОЖНІЙ РЯДОК
   },
+  {
+    name: "Вероніка Шевчук",
+    title: "Учасниця проекту #Countrysidestudio",
+    text: '"Проєкт #coutrysidestudio є неперевершеним досвідом для мене . Цей проект показав , як можна розвиватись та навчатись з користю. Це надало мотивацію мені доєднувати інших та розвивати нашу молодь . Саме тому я рекомендую обирати вам #coutrysidestudio !"',
+    profileImg: "/review/profile4.jpg", // <-- ТУТ ПОРОЖНІЙ РЯДОК
+  },
 ];
 
 // --- КОМПОНЕНТ ЗАГЛУШКИ ЗОБРАЖЕННЯ (Спрощена версія) ---
