@@ -156,7 +156,7 @@ export default function ReviewsSlider() {
   if (!currentReview) return null; // Запобігання помилкам, якщо немає відгуків
 
   return (
-    <div className="lg:text-main-text py-16 lg:px-8">
+    <div className="lg:text-main-text py-12 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <h2 className="text-headline_2_mobile lg:text-headline_2 font-bold mb-10 text-center uppercase" style={{ color: '#E30613' }}>
             Відгуки
