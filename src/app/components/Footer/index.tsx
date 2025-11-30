@@ -67,7 +67,7 @@ export default function Places() {
             </Link>
           </div>
           <div className="py-0 text-main-text ml-2">
-            <span className="text-headline_4 lg:text-headline_4">Intecultural Youth Studio</span>
+            <span className="text-headline_4 lg:text-headline_4">Intercultural Youth Studio</span>
           </div> 
           <div className="pt-4 flex flex-col gap-2">
             {donorsAndPartners.map((partner, inx) => (
