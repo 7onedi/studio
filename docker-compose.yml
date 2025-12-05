@@ -12,9 +12,29 @@ services:
     entrypoint: /entrypoint.sh
     ports:
       - "3000:3000"
+    depends_on:
+      - studio_pangeya_mysql   # ← додано
+
   studio_pangeya_nginx:
     image: nginx:1.19
     volumes:
       - ./docker/nginx:/etc/nginx/conf.d
     depends_on:
       - studio_pangeya_app
+
+  studio_pangeya_mysql:                # ← НОВИЙ СЕРВІС
+    image: mysql:8
+    container_name: studio-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: studio
+      MYSQL_USER: studio_user
+      MYSQL_PASSWORD: studio_pass
+      TZ: Europe/Kyiv
+    ports:
+      - "3306:3306"
+    volumes:
+      - studio-mysql-data:/var/lib/mysql   # <--- Docker volume
+volumes:
+  studio-mysql-data:
