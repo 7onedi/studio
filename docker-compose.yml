@@ -1,6 +1,6 @@
 version: "3.7"
 services:
-  studio_pangeya_app:
+  app:
     working_dir: /app
     env_file: .env
     restart: always
