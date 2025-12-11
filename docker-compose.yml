@@ -17,4 +17,4 @@ services:
     volumes:
       - ./docker/nginx:/etc/nginx/conf.d
     depends_on:
-      - studio_pangeya_app
+      - app
