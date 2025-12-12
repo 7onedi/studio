@@ -2,9 +2,17 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: [
-      "stina.pangeya.org.ua",
-      "ngo.pangeya.org.ua",
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "stina.pangeya.org.ua",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "ngo.pangeya.org.ua",
+        pathname: "/**",
+      },
     ],
   },
   webpack: (config) => {
