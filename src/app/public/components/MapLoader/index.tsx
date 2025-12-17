@@ -4,7 +4,7 @@
 import dynamic from 'next/dynamic';
 
 // 1. Динамічний імпорт тепер відбувається ТУТ, у Client Component.
-const MapComponent = dynamic(() => import('@blocks/LeafletMap'), {
+const MapComponent = dynamic(() => import('@/app/public/blocks/LeafletMap'), {
   ssr: false, // ТУТ це дозволено, оскільки це Client Component
   loading: () => <p className="text-center p-8">Завантаження карти...</p>,
 });

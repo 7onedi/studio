@@ -4,8 +4,8 @@ import React, { useState, useEffect, useRef, useMemo } from "react"; // 💡 Д�
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 import Link from "next/link";
-import { Button } from "@/app/components/Button";
-import { SvgIcon } from "@/app/components/SvgIcon";
+import { Button } from "@/app/public/components/Button";
+import { SvgIcon } from "@/app/public/components/SvgIcon";
 
 // Припускаємо, що ці імпорти тепер працюють і включають BlogCard:
 import { allArticles, groupArticles } from "./data"; 

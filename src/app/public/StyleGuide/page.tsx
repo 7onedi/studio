@@ -1,4 +1,4 @@
-import { fontSize } from '../../../typography.config';
+import { fontSize } from '../../../../typography.config';
 import { Button } from "@components/Button";
 import { SvgIcon } from "@components/SvgIcon";
 

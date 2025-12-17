@@ -22,8 +22,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@lib/*": ["src/lib/*"],
-      "@blocks/*": ["src/app/blocks/*"],
-      "@components/*": ["src/app/components/*"],
+      "@blocks/*": ["src/app/public/blocks/*"],
+      "@components/*": ["src/app/public/components/*"],
       "@styles/*": ["src/styles/*"]
     }
   },

@@ -1,6 +1,6 @@
 version: "3.7"
 services:
-  studio_pangeya_app:
+  app:
     working_dir: /app
     env_file: .env
     restart: always
@@ -20,7 +20,7 @@ services:
     volumes:
       - ./docker/nginx:/etc/nginx/conf.d
     depends_on:
-      - studio_pangeya_app
+      - app
 
   studio_pangeya_mysql:                # ← НОВИЙ СЕРВІС
     image: mysql:8
