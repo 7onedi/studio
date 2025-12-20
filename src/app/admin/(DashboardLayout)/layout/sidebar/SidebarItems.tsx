@@ -25,10 +25,9 @@ const renderMenuItems = (items: any, pathDirect: any) => {
     if (item.subheader) {
       // Display Subheader
       return (
-        <Menu
-          subHeading={item.subheader}
-          key={item.subheader}
-        />
+        <Menu subHeading={item.subheader} key={item.subheader}>
+          {null}
+        </Menu>
       );
     }
 
@@ -75,7 +74,7 @@ const SidebarItems = () => {
     < >
       <MUI_Sidebar width={"100%"} showProfile={false} themeColor={"#5D87FF"} themeSecondaryColor={'#49beff'} >
 
-        <Logo img='/images/logos/dark-logo.svg' component={Link} to="/" >Modernize</Logo>
+        <Logo img='/images/logos/dark-logo.svg' component={Link}   href="/">ICYS</Logo>
 
         {renderMenuItems(Menuitems, pathDirect)}
         <Box px={2}>
