@@ -1,0 +1,16 @@
+# node
+node_modules
+.next
+dist
+build
+
+# databases
+mysql-data
+postgres-data
+db-data
+
+# git
+.git
+
+# misc
+*.log

@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { initialCategories, MarkerInfo, ALL_CATEGORIES_VIEW } from './mapData';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 // Явно визначаємо тип для Map View, щоб уникнути помилки TS 'number[]' vs '[number, number]'
 type MapView = {
@@ -128,7 +129,7 @@ export default function MapComponent() {
 
                   {/* Використовуємо <img> замість Next/Image, щоб уникнути помилок в ізольованому середовищі */}
                   <img
-                    src={marker.popupContent.imageUrl}
+                    src={marker.popupContent.mfkLogo}
                     alt={marker.popupContent.title}
                     className="w-full h-auto rounded-lg object-cover"
                     onError={(e) => {
@@ -139,13 +140,16 @@ export default function MapComponent() {
 
                   <p className="text-sm">{marker.popupContent.description}</p>
 
-                  <a
-                    href={marker.popupContent.linkUrl}
-                    target="_blank"
-                    className="text-blue-600 hover:text-blue-800 font-medium"
-                  >
-                    Перейти за посиланням ↗
-                  </a>
+                  {marker.popupContent.linkUrl && (
+                    <Link
+                      href={marker.popupContent.linkUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      Перейти за посиланням ↗
+                    </Link>
+                  )}
                 </div>
               </Popup>
             </Marker>

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function CategoryCard({
   id,
@@ -10,6 +11,7 @@ export default function CategoryCard({
   pattern,
   gradient,
   hoverGradient,
+  link,
 }: {
   id: number;
   title: string;
@@ -17,6 +19,7 @@ export default function CategoryCard({
   pattern: string;
   gradient: string;
   hoverGradient: string;
+  link: string;
 }) {
   const [isDesktop, setIsDesktop] = useState(false);
 
@@ -71,38 +74,40 @@ export default function CategoryCard({
         `}
         style={{ clipPath: `url(#${clipId})` }}
       >
-        <div className="w-full h-full relative transition-transform duration-700 group-hover:scale-[1.05]">
-          <Image
-            src={image}
-            alt={title}
-            fill
-            className={`object-cover absolute z-10 ${isReversed ? "rotate-180 origin-center" : ""}`}
-          />
+        <Link href={link}>
+          <div className="w-full h-full relative transition-transform duration-700 group-hover:scale-[1.05]">
+            <Image
+              src={image}
+              alt={title}
+              fill
+              className={`object-cover absolute z-10 ${isReversed ? "rotate-180 origin-center" : ""}`}
+            />
 
-          <div className={`absolute inset-0 z-20 pointer-events-none bg-gradient-to-br ${gradient}`} />
+            <div className={`absolute inset-0 z-20 pointer-events-none bg-gradient-to-br ${gradient}`} />
 
-          <Image
-            src={pattern}
-            alt="pattern"
-            fill
-            className={`
-              object-cover absolute pointer-events-none
-              z-30 transition-all duration-300 
-              group-hover:z-40
-              ${isReversed ? "rotate-180 origin-center" : ""}
-            `}
-          />
+            <Image
+              src={pattern}
+              alt="pattern"
+              fill
+              className={`
+                object-cover absolute pointer-events-none
+                z-30 transition-all duration-300 
+                group-hover:z-40
+                ${isReversed ? "rotate-180 origin-center" : ""}
+              `}
+            />
 
-          <div
-            className={`
-              absolute inset-0 pointer-events-none bg-gradient-to-br 
-              z-50 transition-all duration-500
-              ${gradient} 
-              group-hover:${hoverGradient} 
-              group-hover:z-20
-            `}
-          />
-        </div>
+            <div
+              className={`
+                absolute inset-0 pointer-events-none bg-gradient-to-br 
+                z-50 transition-all duration-500
+                ${gradient} 
+                group-hover:${hoverGradient} 
+                group-hover:z-20
+              `}
+            />
+          </div>
+        </Link>
       </div>
 
       {/* ТЕКСТ */}
