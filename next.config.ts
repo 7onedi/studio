@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  devIndicators: {
+    buildActivity: false,
+  },
+
   images: {
     remotePatterns: [
       {
@@ -20,14 +24,11 @@ const nextConfig: NextConfig = {
     return config;
   },
   sassOptions: {
-    quietDeps: true, // ігнорує warnings з SCSS
-    includePaths: ['./src/styles'], // Point to your styles directory
-    // prependData: `@use "~@styles/_variables.scss" as *; @use "~@styles/_mixins.scss" as *;`,
-
-    // prependData прибираємо, якщо @use є у кожному файлі
+    quietDeps: true,
+    includePaths: ["./src/styles"],
   },
   eslint: {
-    ignoreDuringBuilds: true, // дозволяє build навіть з ESLint помилками
+    ignoreDuringBuilds: true,
   },
 };
 

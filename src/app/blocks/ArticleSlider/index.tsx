@@ -44,7 +44,7 @@ export default function SliderHero() {
           <div key={i} className="keen-slider__slide relative">
             <Image
               src={s.img}
-              alt=""
+              alt={s.text}
               fill
               className="object-cover rounded-3xl"
               sizes="100vw"
