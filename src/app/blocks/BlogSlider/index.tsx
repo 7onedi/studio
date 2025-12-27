@@ -95,7 +95,7 @@ export default function BlogSlider() {
   const isReady = loaded || slidesData.length === 0;
 
   return (
-    <div className="mx-auto w-full px-4 sm:px-6 lg:px-0 lg:my-10 py-10 lg:py-16">
+    <div className="mx-auto w-full">
       <div className="relative">
 
         {/* --- 1. Десктопний слайдер (lg:block, обмежено 12 картками) --- */}
@@ -146,9 +146,9 @@ export default function BlogSlider() {
         <Link href="https://stina.pangeya.org.ua/selo-stina" passHref>
           <Button variant="primary">
             ДИВИТИСЬ ЩЕ
-            <svg className="ml-2 w-5 h-5 transition-transform duration-300 group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
+            <div className="ml-2 flex items-center justify-center">
+              <SvgIcon name="down" size={24} color="white" />
+            </div>
           </Button>
         </Link>
       </div>

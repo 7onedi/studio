@@ -1,3 +1,5 @@
+import { link } from "fs";
+
 export const categories = [
   {
     id: 1,
@@ -6,6 +8,8 @@ export const categories = [
     pattern: "/categories/cetegory1_pattern.webp",
     gradient: "from-main-blue/60 to-main-blue/60",
     hoverGradient: "from-main-blue/40 to-main-blue/40",
+    link: "/Countrysidestudio",
+    description: ['Метою ', { strong: "#CountrysideStudio" }, ' є розвиток,тестування та розширення методології роботи з сільською молоддю через започаткування регіональних мереж ', { strong: "Молодіжних Фольклорних Клубів" },' у сільських громадах країн учасниць. МФК мають на меті розширення можливостей та залучення молоді та місцевих партнерів із сільської місцевості до процесу аматорського медіа-виробництва на тему місцевої культурної спадщини.'],
   },
   {
     id: 2,
@@ -14,6 +18,20 @@ export const categories = [
     pattern: "/categories/cetegory2_pattern.webp",
     gradient: "from-main-amarant/60 to-main-amarant/60",
     hoverGradient: "from-main-amarant/40 to-main-amarant/40",
+    link: "/Youthinsight",
+    description: [
+      "Фестиваль ",
+      { strong: "YouthInsight" },
+      " відбувається регулярно або щорічно та надає можливості аматорам із базового рівня представити свою медіатворчість, експериментувати й долучатися до медіапроєктів.\n\n",
+      "Концепція фестивалю ґрунтується на таких основних принципах:\n",
+      "1) неформальна освіта, міждисциплінарні експерименти та розширення можливостей людей для становлення активними громадянами;\n",
+      "2) публічний діалог, актуалізація сучасного культурного порядку денного та вшанування класичних форм мистецтва;\n",
+      "3) інклюзія, міжкультурність і відкритий доступ для людей, які поділяють спільні цінності.\n\n",
+      "Фестиваль щоразу проходить у новій громаді, районі або локації з метою локального залучення людей. Однією з основних цільових груп фестивалю є молодь, яку організатори залучають не лише як учасників, а й як волонтерів, що спільно створюють цю історію.\n\n",
+      "Дуже часто ",
+      { strong: "YouthInsight Festival" },
+      " організовується за участі волонтерів Європейської волонтерської служби та Європейського корпусу солідарності, які в процесі власного самостійного навчання привносять міжкультурний вимір і унікальне бачення."
+    ],
   },
   {
     id: 3,
@@ -22,6 +40,8 @@ export const categories = [
     pattern: "/categories/cetegory3_pattern.webp",
     gradient: "from-main-blue/60 to-main-blue/60",
     hoverGradient: "from-main-blue/40 to-main-blue/40",
+    link: "/Mozaika",
+    description: ['Mozaїka — журнал / проєкт Pangeya Ultima та міжкультурної молодіжної студії; частина активностей (презентації, табори, воркшопи) проходили в Еко-центрі Стіна (Томашпільська ТГ).'],
   },
   {
     id: 4,
@@ -30,5 +50,7 @@ export const categories = [
     pattern: "/categories/cetegory4_pattern.webp",
     gradient: "from-main-amarant/60 to-main-amarant/60",
     hoverGradient: "from-main-amarant/40 to-main-amarant/40",
+    link: "/MoversAndShakers",
+    description: ['Movers & Shakers — мережа/серія нетворкінг-івентів. Одна з подій — Paddington Pow-Wow (Wilde Aparthotels, 4 North Wharf Road, London). Використовуємо цю локацію як приклад для об’єкта "Movers & Shakers".'],
   },
 ];

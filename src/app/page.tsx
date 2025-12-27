@@ -20,7 +20,9 @@ export default function Home() {
         </div>
         <div className={`lg:px-0 py-6 lg:pt-16`}>
         <Categories/>
-        <BlogSlider/>
+        <div className='px-4 sm:px-6 lg:my-10 py-10 lg:py-16'>
+          <BlogSlider/>
+        </div>
         <div className="relative h-[550px] lg:h-[700px] w-full"> 
           <MapLoader /> 
         </div>
