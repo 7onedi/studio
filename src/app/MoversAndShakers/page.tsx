@@ -1,5 +1,5 @@
 import CategoryTitle from "@blocks/CategoryTitle";
-import { categories } from "@blocks/Categortegoryies/categories.data";
+import { categories } from "@blocks/Categories/categories.data";
 import MfkList from "@blocks/MfkList";
 import { initialCategories} from '@blocks/LeafletMap/mapData';
 import BlogSlider from "../blocks/BlogSlider";
