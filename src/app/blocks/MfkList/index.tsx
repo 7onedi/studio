@@ -4,12 +4,14 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { SvgIcon } from "@components/SvgIcon";
+import type { RichTextItem } from "@components/RenderRichText";
 
 interface PopupContent {
   slug?: string;
   title: string;
-  description?: string;
+  description?:  string | string[] | RichTextItem[];
   mfkLogo?: string;
+  zoom?: boolean;
 }
 
 interface MfkListProps {
@@ -57,18 +59,18 @@ export default function MfkList({ markers }: MfkListProps) {
 
   const Card = (item: PopupContent) => (
     <div className="relative group">
-      <div className="overflow-hidden rounded-t-2xl bg-black border-b-2 border-main-amarant">
+      <div className={`${!item.zoom ? "bg-transparent" : ""} bg-transparent overflow-hidden rounded-t-2xl bg-black border-b-2 border-main-amarant`}>
         <div className="relative h-[220px] w-full">
           <Image
             src={item.mfkLogo!}
             alt={item.title}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className={`${!item.zoom ? "object-contain" : "object-cover"} transition-transform duration-500 group-hover:scale-105`}
           />
         </div>
       </div>
 
-      <div className="absolute left-1/2 -translate-x-1/2 -bottom-4 px-6 py-2 bg-main-amarant text-white text-sm font-semibold rounded-full border-b-2 border-main-amarant">
+      <div className="absolute text-center left-1/2 -translate-x-1/2 -bottom-4 px-6 py-2 bg-main-amarant text-white text-sm font-semibold rounded-full border-b-2 border-main-amarant">
         {item.title
           .replace("МФК ", "MFK ")
           .split(" – ")[0]
