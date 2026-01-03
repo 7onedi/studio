@@ -80,7 +80,7 @@ export const initialCategories: Category[] = [
           gradient: "bg-gradient-to-t from-main-blue/100 via-main-blue/45 to-transparent",
           zoom: true,
           iconNames: [
-            { title: "instagram", link: "https://www.instagram.com/youthfolklore_zhmerynka?igsh=a3JkbWQ1d3RvcTVz" },
+            { title: "instagram", link: "https://www.instagram.com/folklore_zhmerynka?igsh=ZGFydGlwbnB6aTZu" },
             { title: "facebook", link: "https://www.facebook.com/profile.php?id=61585441253420" },
             { title: "tiktok", link: "https://www.tiktok.com/@folklore_zhmerynka" },
             { title: "youtube", link: "" },
