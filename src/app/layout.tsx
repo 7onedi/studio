@@ -30,12 +30,16 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+    const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    element?.scrollIntoView({ behavior: "smooth" });
+  };
   return (
     <html lang="en" className={`${firaSans.variable} ${geistSans.variable} ${geistMono.variable}`}>
       <body className="antialiased bg-indigo-50">
         <div className="container grid grid-cols-6">
           <div className="col-span-6">
-            <Header />
+            <Header/>
             {children}
             <Footer />
           </div>

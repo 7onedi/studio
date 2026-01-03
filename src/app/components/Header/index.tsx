@@ -3,22 +3,38 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { SvgIcon } from "@components/SvgIcon";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from 'next/link'
 import { Button } from "@components/Button";
 import styles from "./Header.module.scss";
 
 export const navButtons = [
-  {name:"Про мережу", link:"/AboutNetwork"},
-  {name:"Методика", link:"/Methodology"},
-  {name:"Напрямки", link:"/Directions"},
-  {name:"Місця", link:"/Places"},
+  { name: "Про мережу", link: "/AboutNetwork" },
+  { name: "Методика", link: "/Methodology" },
+  { name: "Напрямки", anchor: "directions" },
+  { name: "Місця", anchor: "places" },
 ] as const;
+
+interface HeaderProps {
+  onScrollTo: (id: string) => void;
+}
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+
+  const scrollToSection = (id: string) => {
+    if (pathname !== "/") {
+      // якщо ми не на головній — переходимо на /
+      router.push(`/#${id}`);
+    } else {
+      // якщо вже на головній — просто скролимо
+      const element = document.getElementById(id);
+      element?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   const languages = [
     { label: 'Українська', flag: '🇺🇦', value: 'UA' },
@@ -94,15 +110,25 @@ const iconNames = [
         {/* Desktop Navigation */}
         <nav className="hidden lg:block lg:col-span-6 col-span-6 flex items-center justify-between w-full pl-0 pr-0">
           <div className="flex items-center space-x-8 w-full justify-between font-sans text-main-text">
-            {navButtons.map((navButton, index) => (
-              <Link
-                key={index}
-                href={navButton.link}
-                className="flex items-center hover:text-main-blue transition-colors duration-200"
-              >
-                <span className="text-button uppercase text-center">{navButton.name}</span>
-              </Link>
-            ))}
+            {navButtons.map((navButton, index) =>
+              "link" in navButton ? (
+                <Link
+                  key={index}
+                  href={navButton.link}
+                  className="flex items-center hover:text-main-blue transition-colors duration-200"
+                  >
+                  <span className="text-button uppercase text-center">{navButton.name}</span>
+                </Link>
+              ) : (
+                <button
+                  key={index}
+                  onClick={() => scrollToSection(navButton.anchor)}
+                  className="flex items-center hover:text-main-blue transition-colors duration-200"
+                >
+                  <span className="text-button uppercase text-center">{navButton.name}</span>
+                </button>
+              )
+            )}
 
             {/* Language Switcher */}
             <div className="relative flex items-center space-x-2">
@@ -152,11 +178,21 @@ const iconNames = [
       {isMobileMenuOpen && (
         <div className="pb-4 mt-5 lg:mt-0 rounded-b-lg lg:hidden text-button_mobile">
           <nav className="flex flex-col items-center space-y-4">
-            {navButtons.map((navButton, i) =>(
-              <Link key={i} href={navButton.link} className={`py-3 block hover:text-main-amarant transition-colors duration-200 ${pathname === navButton.link ? 'text-main-amarant' : 'text-main-text'}`}>
-                {navButton.name}
-              </Link>
-            ))}
+            {navButtons.map((navButton, i) =>
+              "link" in navButton ? (
+                <Link key={i} href={navButton.link}
+                  className={`py-3 block hover:text-main-amarant transition-colors duration-200 ${pathname === navButton.link ? 'text-main-amarant' : 'text-main-text'}`}>
+                  {navButton.name}
+                </Link>
+              ) : (
+                <button
+                  key={i}
+                  onClick={() => scrollToSection(navButton.anchor)}
+                >
+                  {navButton.name}
+                </button>
+              )
+            )}
 
             {/* Mobile Language Switcher */}
             <div className="pt-4 relative flex justify-between w-full">

@@ -6,6 +6,8 @@ import L from 'leaflet';
 import { initialCategories, MarkerInfo, ALL_CATEGORIES_VIEW } from './mapData';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import type { RichTextItem } from "@components/RenderRichText";
+import { renderRichText } from "@components/RenderRichText";
 
 // Явно визначаємо тип для Map View, щоб уникнути помилки TS 'number[]' vs '[number, number]'
 type MapView = {
@@ -138,7 +140,20 @@ export default function MapComponent() {
                     }}
                   />
 
-                  <p className="text-sm">{marker.popupContent.description}</p>
+                  {Array.isArray(marker.popupContent.description) && (
+                    <p
+                      className={`
+                        mt-4
+                        text-body_mobile lg:text-body
+                        line-clamp-2
+                        lg:line-clamp-6
+                        overflow-hidden
+                      `}
+                    >
+                      {renderRichText(marker.popupContent.description as RichTextItem[])}
+                    </p>
+                  )}
+
 
                   {marker.popupContent.linkUrl && (
                     <Link
