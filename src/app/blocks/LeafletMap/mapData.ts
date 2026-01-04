@@ -224,7 +224,7 @@ export const initialCategories: Category[] = [
           gradient: "bg-gradient-to-t from-main-blue/100 via-main-blue/45 to-transparent",
           zoom: true,
           iconNames: [
-            { title: "instagram", link: "" },
+            { title: "instagram", link: "https://www.instagram.com/yfc.ghindesti?igsh=eW1lM3l4ejZ4eDNt" },
             { title: "facebook", link: "" },
             { title: "tiktok", link: "" },
             { title: "youtube", link: "" },
@@ -245,7 +245,7 @@ export const initialCategories: Category[] = [
           gradient: "bg-gradient-to-t from-main-blue/100 via-main-blue/45 to-transparent",
           zoom: true,
           iconNames: [
-            { title: "instagram", link: "" },
+            { title: "instagram", link: "https://www.instagram.com/racaria_folklore_stories2025?igsh=MWdtaGlheDQ3MXQzeA%3D%3D" },
             { title: "facebook", link: "" },
             { title: "tiktok", link: "" },
             { title: "youtube", link: "" },
@@ -266,7 +266,7 @@ export const initialCategories: Category[] = [
           gradient: "bg-gradient-to-t from-main-blue/100 via-main-blue/45 to-transparent",
           zoom: true,
           iconNames: [
-            { title: "instagram", link: "" },
+            { title: "instagram", link: "https://www.instagram.com/aripile.tinerilor?igsh=OXYxcGNwdTQ1OWoy" },
             { title: "facebook", link: "" },
             { title: "tiktok", link: "" },
             { title: "youtube", link: "" },
