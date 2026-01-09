@@ -145,7 +145,7 @@ export default function MapComponent() {
                       className={`
                         mt-4
                         text-body_mobile lg:text-body
-                        line-clamp-2
+                        line-clamp-3
                         lg:line-clamp-6
                         overflow-hidden
                       `}

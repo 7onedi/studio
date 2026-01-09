@@ -4,6 +4,7 @@ import "@styles/globals.scss";
 import { Fira_Sans } from 'next/font/google';
 import Header from "@components/Header";
 import Footer from "@components/Footer";
+import ArrowToTop from "./components/ArrowToTop";
 
 const firaSans = Fira_Sans({
   weight: ['400', '700'],
@@ -40,7 +41,10 @@ export default function RootLayout({
         <div className="container grid grid-cols-6">
           <div className="col-span-6">
             <Header/>
-            {children}
+              <div className="lg:pt-16">
+                {children}
+              </div>
+              <ArrowToTop />
             <Footer />
           </div>
         </div>

@@ -77,8 +77,14 @@ const iconNames = [
   
 
   return (
-    <header className={`mb-6 bg-transparant text-white ${styles["header-wrapper"]}`}>
-      <div className="grid grid-cols-12 lg:mb-5 flex items-center justify-between h-16">
+<header className={`mb-6 bg-transparent text-white ${styles["header-wrapper"]}`}>
+  <div className="
+    grid grid-cols-12
+    flex items-center justify-between
+    h-16 lg:container lg:grid-cols-12
+    lg:h-16 lg:border-b lg:border-main-amarant
+    lg:bg-indigo-50 lg:mb-0"
+  >
 
         {/* Logo */}
         <div className="col-span-4 lg:col-span-1 flex items-center pb-1">

@@ -122,14 +122,18 @@ export default async function MfkPage({ params }: MfkPageProps) {
         border-b-2
         border-main-amarant
       ">
-        <div className="mt-8 flex justify-center">
-          <p className="text-headline_4_mobile lg:text-headline_4">Про МФК</p>
-        </div>
 
         {Array.isArray(mfk.description) && (
+          mfk.description?.length > 0 && (
+          <div>
+            <div className="mt-8 flex justify-center">
+              <p className="text-headline_4_mobile lg:text-headline_4">Про МФК</p>
+            </div>
             <p className="whitespace-pre-line mt-4 text-body_mobile lg:text-body">
               {renderRichText(mfk.description as RichTextItem[])}
             </p>
+          </div>
+          )
         )}
       </div>
 
