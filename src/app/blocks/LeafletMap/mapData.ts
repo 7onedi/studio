@@ -196,7 +196,7 @@ export const initialCategories: Category[] = [
         popupContent: {
           slug: "YFC-Larga",
           title: 'МФК Ларга',
-          description: [''],  
+          description: '',  
           imageUrl: '/mfk/mfkBaner/mfkBaner3.webp',
           linkUrl: '/Mfk/YFC-Larga',
           mfkLogo: '/map/mfk/mfk8.jpg',
@@ -238,7 +238,7 @@ export const initialCategories: Category[] = [
         popupContent: {
           slug: "YFC-Racaria",
           title: 'МФК Рекерія',
-          description: [''],  
+          description: '',  
           imageUrl: '/mfk/mfkBaner/mfkBaner3.webp',
           linkUrl: '/Mfk/YFC-Racaria',
           mfkLogo: '/map/mfk/mfk10.jpg',
@@ -259,14 +259,14 @@ export const initialCategories: Category[] = [
         popupContent: {
           slug: "YFC-Glodeni",
           title: 'МФК Глодяни',
-          description: [''],  
+          description: '',  
           imageUrl: '/mfk/mfkBaner/mfkBaner3.webp',
           linkUrl: '/Mfk/YFC-Glodeni',
           mfkLogo: '/map/mfk/mfk11.jpg',
           gradient: "bg-gradient-to-t from-main-blue/100 via-main-blue/45 to-transparent",
           zoom: true,
           iconNames: [
-            { title: "instagram", link: "https://www.instagram.com/aripile.tinerilor?igsh=OXYxcGNwdTQ1OWoy" },
+            { title: "instagram", link: "" },
             { title: "facebook", link: "" },
             { title: "tiktok", link: "" },
             { title: "youtube", link: "" },
