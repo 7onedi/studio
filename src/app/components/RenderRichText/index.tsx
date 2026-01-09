@@ -16,7 +16,7 @@ export function renderRichText(
       return (
         <strong
           key={index}
-          className="font-semibold text-main-text"
+          className="text-main-text"
         >
           {item.strong}
         </strong>
