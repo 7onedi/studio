@@ -26,6 +26,7 @@ export default function ProjectPreviewBlock({
       
       {/* LEFT — VISUAL */}
       <div className="relative w-full h-[145px] lg:h-[335px] overflow-hidden group rounded-[20px]">
+        
         <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.05]">
 
           <Image

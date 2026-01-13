@@ -7,79 +7,95 @@ import { Button } from "@components/Button";
 import { SvgIcon } from "@components/SvgIcon";
 import type { RichTextItem } from "@components/RenderRichText";
 import { renderRichText } from "@components/RenderRichText";
+import FestivalContributors from "@blocks/FestivalContributors";
 
-interface MfkPageProps {
+interface FestivalPageProps {
   params: Promise<{
     slug?: string;
     description?: RichTextItem[];
+    reviews?: {name: string;
+        title: string;
+        text: string;
+        profileImg: string;
+        links?: {
+          facebook?: string;
+          instagram?: string;
+          tiktok?: string;
+        };
+      }[];
   }>;
 }
 
-const mfkCategory = initialCategories.find(c => c.id === "#mfk")!;
+const yiCategory = initialCategories.find(c => c.id === "youthinsight")!;
 
-export default async function MfkPage({ params }: MfkPageProps) {
+export default async function FestivalPage({ params }: FestivalPageProps) {
   const { slug } = await params;
 
   // знаходимо маркер по slug
-  let mfk;
+  let Festival;
   for (const category of initialCategories) {
     const found = category.markers.find(
       (marker) => marker.popupContent.slug === slug
     );
     if (found) {
-      mfk = found.popupContent;
+      Festival = found.popupContent;
       break;
     }
   }
 
-  if (!mfk) {
+  if (!Festival) {
     return (
       <div className="p-8 text-center text-xl font-semibold">
-        MFK не знайдено
+        Festival не знайдено
       </div>
     );
   }
 
-  const otherMfkMarkers = mfkCategory.markers.filter(
+  const otherFestivalMarkers = yiCategory.markers.filter(
     (marker) => marker.popupContent.slug !== slug
   );
 
   return (
-    <div className="mx-auto">
+    <div className="mt-6 lg:mt-20">
       <div className="relative mb-16 lg:mb-0">
-        <div className="relative w-full h-[145px] lg:h-[700px] mb-6 rounded-[20px] overflow-hidden">
-          <Image
-            src={mfk.imageUrl}
-            alt={mfk.title}
-            fill
-            className="object-cover"
-            priority
-          />
-          {mfk.gradient && (
-            <div className={`absolute inset-0 ${mfk.gradient}`} />
-          )}
-        </div>
 
         {/* Лого + заголовок */}
-        <div className="-bottom-[40px] w-full absolute lg:bottom-0 lg:left-16 lg:bottom-16 z-20 flex flex-col-reverse lg:flex-row items-start lg:items-center">
-
-          {mfk.Logo && (
-            <div className="flex justify-center w-full lg:w-[376px] h-auto rounded-[20px] overflow-hidden">
-              <img
-                src={mfk.Logo}
-                alt="MFK logo"
-                className="w-auto h-[65px] lg:w-[376px] lg:h-auto object-cover rounded-[20px]"
-              />
+        <div className=" w-full lg:left-16 lg:bottom-16 z-20 flex flex-col lg:flex-row items-start lg:items-center">
+            <div className="relative w-full h-[145px] lg:w-[516px] lg:h-[327px] shrink-0  rounded-[20px] overflow-hidden">
+                <Image
+                    src={Festival.Logo!}
+                    alt={Festival.title}
+                    fill
+                    className="object-cover"
+                />
             </div>
-          )}
 
-          <div className="mb-5 lg:mb-0 lg:mt-4 text-white text-center text-headline_2_mobile lg:text-headline_1 w-full lg:flex lg:ml-6">
-            {mfk.title}
-          </div>
+
+            <div className="my-5 lg:my-0 lg:mt-4 text-left text-headline_2_mobile lg:text-headline_2 w-full lg:flex flex-col lg:ml-6">
+                {Festival.title}
+                <div>
+                    {Array.isArray(Festival.description) && (
+                    Festival.description?.length > 0 && (
+                    <div>
+                        <p className="whitespace-pre-line mt-4 text-body_mobile lg:text-body">
+                        {renderRichText(Festival.description as RichTextItem[])}
+                        </p>
+                    </div>
+                    )
+                    )}
+                </div>
+            </div>
         </div>
 
+        {Array.isArray(Festival.reviews) && Festival.reviews.length > 0 && (
+            <div className="mt-4 lg:mt-48">
+                <FestivalContributors reviews={Festival.reviews} />
+            </div>
+        )}
+
+
         <div className="hidden lg:flex lg:absolute bottom-16 flex right-16 gap-4 z-20">
-          {mfk.iconNames?.map((iconName, i) =>
+          {Festival.iconNames?.map((iconName, i) =>
             iconName.link ? (
               <Link key={i} href={iconName.link} className="flex items-center">
                 <Button
@@ -97,7 +113,7 @@ export default async function MfkPage({ params }: MfkPageProps) {
       </div>
 
       <div className="lg:hidden flex justify-center mb-6 gap-6">
-        {mfk.iconNames?.map((iconName, i) =>
+        {Festival.iconNames?.map((iconName, i) =>
           iconName.link ? (
             <Link key={i} href={iconName.link} className="flex items-center">
               <Button
@@ -110,31 +126,7 @@ export default async function MfkPage({ params }: MfkPageProps) {
             </Link>
           ) : (null)
         )}
-      </div>
-      <div className="
-        relative
-        space-y-6
-        rounded-2xl
-        bg-indigo-50
-        p-6
-        text-main-text
-        leading-relaxed
-        border-b-2
-        border-main-amarant
-      ">
-
-        {Array.isArray(mfk.description) && (
-          mfk.description?.length > 0 && (
-          <div>
-            <div className="mt-8 flex justify-center">
-              <p className="text-headline_4_mobile lg:text-headline_4">Про МФК</p>
-            </div>
-            <p className="whitespace-pre-line mt-4 text-body_mobile lg:text-body">
-              {renderRichText(mfk.description as RichTextItem[])}
-            </p>
-          </div>
-          )
-        )}
+        
       </div>
 
       <div className="my-8">
@@ -142,7 +134,7 @@ export default async function MfkPage({ params }: MfkPageProps) {
       </div>
 
       <div className="my-12 lg:mt-16 px-4 lg:px-0">
-        <MfkList markers={otherMfkMarkers} id={mfkCategory.id} />
+        <MfkList markers={otherFestivalMarkers} id={yiCategory.id} />
       </div>
     </div>
   );

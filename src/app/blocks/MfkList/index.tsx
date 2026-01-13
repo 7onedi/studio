@@ -10,7 +10,7 @@ interface PopupContent {
   slug?: string;
   title: string;
   description?:  string | string[] | RichTextItem[];
-  mfkLogo?: string;
+  Logo?: string;
   zoom?: boolean;
 }
 
@@ -18,6 +18,7 @@ interface MfkListProps {
   markers: {
     popupContent: PopupContent;
   }[];
+  id?: string;
 }
 
 const ROW_PATTERN = [4, 3, 4, 3, 4];
@@ -35,7 +36,8 @@ function splitIntoRows<T>(items: T[]) {
   return rows;
 }
 
-export default function MfkList({ markers }: MfkListProps) {
+export default function MfkList({ markers, id }: MfkListProps) {
+  console.log(id);
   const items = markers.map(m => m.popupContent);
 
   /* ======================
@@ -59,10 +61,10 @@ export default function MfkList({ markers }: MfkListProps) {
 
   const Card = (item: PopupContent) => (
     <div className="relative group">
-      <div className={`${!item.zoom ? "bg-transparent" : ""} bg-transparent overflow-hidden rounded-t-2xl bg-black border-b-2 border-main-amarant`}>
+      <div className={`${!item.zoom ? "bg-transparent" : ""} bg-transparent overflow-hidden rounded-t-2xl bg-black border-b-2 ${id === "#mfk" ? "border-main-amarant" : "border-none"}`}>
         <div className="relative h-[220px] w-full">
           <Image
-            src={item.mfkLogo!}
+            src={item.Logo!}
             alt={item.title}
             fill
             className={`${!item.zoom ? "object-contain" : "object-cover"} transition-transform duration-500 group-hover:scale-105`}
@@ -70,7 +72,7 @@ export default function MfkList({ markers }: MfkListProps) {
         </div>
       </div>
 
-      <div className="absolute text-center left-1/2 -translate-x-1/2 -bottom-4 px-6 py-2 bg-main-amarant text-white text-sm font-semibold rounded-full border-b-2 border-main-amarant">
+      <div className={`absolute text-center left-1/2 -translate-x-1/2 -bottom-4 px-6 py-2 ${id === "#mfk" ? "bg-main-amarant border-main-amarant" : "bg-main-blue border-main-blue"}  text-white text-sm font-semibold rounded-full border-b-2`}>
         {item.title
           .replace("МФК ", "MFK ")
           .split(" – ")[0]
@@ -90,7 +92,7 @@ export default function MfkList({ markers }: MfkListProps) {
 
     <div className="flex flex-col gap-8 md:hidden">
       {mobileItems.map((item, index) => (
-        <Link key={index} href={`/Mfk/${item.slug}`}>
+        <Link key={index} href={`${(id === "#mfk") ? "/Mfk" : "/Festival"}/${item.slug}`}>
           {Card(item)}
         </Link>
       ))}
@@ -136,19 +138,21 @@ export default function MfkList({ markers }: MfkListProps) {
       ====================== */}
       <div className="hidden md:flex flex-col gap-10">
         {rows.map((row, rowIndex) => {
-          const isThreeRow = row.length === 3;
+          const expectedCols = ROW_PATTERN[rowIndex]; // ← ДОДАТИ
+
+          const isThreeRow = expectedCols === 3;
 
           return (
             <div
               key={rowIndex}
               className="grid gap-6"
               style={{
-                gridTemplateColumns: `repeat(${row.length}, minmax(0, 1fr))`,
+                gridTemplateColumns: `repeat(${expectedCols}, minmax(0, 1fr))`, // ← ЗМІНИТИ
                 paddingInline: isThreeRow ? "16.666%" : undefined,
               }}
             >
               {row.map((item, index) => (
-                <Link key={index} href={`/Mfk/${item.slug}`}>
+                <Link key={index} href={`${(id === "#mfk") ? "/Mfk" : "/Festival"}/${item.slug}`}>
                   {Card(item)}
                 </Link>
               ))}

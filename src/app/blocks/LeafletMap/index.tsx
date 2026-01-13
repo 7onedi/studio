@@ -131,7 +131,7 @@ export default function MapComponent() {
 
                   {/* Використовуємо <img> замість Next/Image, щоб уникнути помилок в ізольованому середовищі */}
                   <img
-                    src={marker.popupContent.mfkLogo}
+                    src={marker.popupContent.Logo}
                     alt={marker.popupContent.title}
                     className="w-full h-auto rounded-lg object-cover"
                     onError={(e) => {

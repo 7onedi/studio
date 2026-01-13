@@ -22,7 +22,7 @@ export default function Home() {
         />
       </div>
       <div className="my-12 lg:mt-16 px-4 lg:px-0">
-        <MfkList markers={mfkCategory.markers} />
+        <MfkList markers={mfkCategory.markers} id={mfkCategory.id} />
       </div>
       <div className="flex justify-center">
         <p className="text-headline_3">Діяльність  #Countrysidestudio</p>

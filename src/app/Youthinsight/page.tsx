@@ -3,10 +3,11 @@ import { categories } from "@blocks/Categories/categories.data";
 import MfkList from "@blocks/MfkList";
 import { initialCategories} from '@blocks/LeafletMap/mapData';
 import BlogSlider from "../blocks/BlogSlider";
+import FestivaList from "@blocks/FestivaList";
 
 const project = categories.find(c => c.id === 2)!;
 
-const mfkCategory = initialCategories.find(c => c.id === "#mfk")!;
+const festivalCategory = initialCategories.find(c => c.id === "youthinsight")!;
 
 export default function Home() {
   return (
@@ -21,9 +22,9 @@ export default function Home() {
           description={project.description}
         />
       </div>
-      {/* <div className="my-12 lg:mt-16 px-4 lg:px-0">
-        <MfkList markers={mfkCategory.markers} />
-      </div> */}
+      <div className="my-12 lg:mt-16 px-4 lg:px-0">
+        <MfkList markers={festivalCategory.markers} id={festivalCategory.id}/>
+      </div>
       <div className="my-8 flex justify-center">
         <p className="text-headline_3">Цікаві статті про проєкт</p>
       </div>
