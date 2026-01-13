@@ -2,8 +2,7 @@ import CategoryTitle from "@blocks/CategoryTitle";
 import { categories } from "@blocks/Categories/categories.data";
 import MfkList from "@blocks/MfkList";
 import { initialCategories} from '@blocks/LeafletMap/mapData';
-import BlogSlider from "../blocks/BlogSlider";
-import FestivaList from "@blocks/FestivaList";
+import BlogSlider from "@blocks/BlogSlider";
 
 const project = categories.find(c => c.id === 2)!;
 
