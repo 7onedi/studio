@@ -77,14 +77,14 @@ const iconNames = [
   
 
   return (
-<header className={`mb-6 bg-transparent text-white ${styles["header-wrapper"]}`}>
-  <div className="
-    grid grid-cols-12
-    flex items-center justify-between
-    h-16 lg:container lg:grid-cols-12
-    lg:h-16 lg:border-b lg:border-main-amarant
-    lg:bg-indigo-50 lg:mb-0"
-  >
+    <header className={`mb-6 bg-transparent text-white ${styles["header-wrapper"]}`}>
+      <div className="
+        grid grid-cols-12
+        flex items-center justify-between
+        h-16 lg:container lg:grid-cols-12
+        lg:h-20 lg:border-b lg:border-main-amarant
+        lg:bg-indigo-50 lg:mb-0"
+      >
 
         {/* Logo */}
         <div className="col-span-4 lg:col-span-1 flex items-center pb-1">
@@ -109,9 +109,8 @@ const iconNames = [
           </span>
         </div>
         {!isMobileMenuOpen && (
-  <div className="block lg:hidden col-span-5 h-4"></div>
-)}
-
+          <div className="block lg:hidden col-span-5 h-4"></div>
+        )}
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:block lg:col-span-6 col-span-6 flex items-center justify-between w-full pl-0 pr-0">
@@ -194,6 +193,7 @@ const iconNames = [
                 <button
                   key={i}
                   onClick={() => scrollToSection(navButton.anchor)}
+                  className={`py-3 block hover:text-main-amarant transition-colors duration-200 text-main-text`}
                 >
                   {navButton.name}
                 </button>
