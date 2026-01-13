@@ -1,5 +1,11 @@
 import type { RichTextItem } from "@components/RenderRichText";
 
+interface SocialLinks {
+  facebook?: string;
+  instagram?: string;
+  tiktok?: string;
+}
+
 export interface MarkerInfo {
   id: string;
   position: [number, number];
@@ -9,11 +15,18 @@ export interface MarkerInfo {
     description?: string | string[] | RichTextItem[];
     imageUrl: string;
     linkUrl?: string;
-    mfkLogo?: string;
+    Logo?: string;
     gradient?: string;
     zoom?: boolean;
     iconNames?: { title: string; link: string }[];
-  };
+    reviews?: {
+        name: string;
+        title: string;
+        text: string;
+        profileImg: string;
+        links?: SocialLinks;
+    }[];
+  }
 }
 
 export interface Category {
@@ -51,7 +64,7 @@ export const initialCategories: Category[] = [
           description: ['Молодіжний Фольклорний Клуб в Стіні повертається🥳 Тепер в оновленому складі, ми готові взяти участь в збережені та популяризації нашої культурної та традиційної спадщини. Село Стіна багате на важливу історію, цінну культуру та особливі традиції, які притаманні нашому регіону.,'],
           imageUrl: '/mfk/mfkBaner/mfkBaner1.webp',
           linkUrl: '/Mfk/YFC-Stina',
-          mfkLogo: '/mfk/mfkLogo/mfkLogo1.png',
+          Logo: '/mfk/mfkLogo/mfkLogo1.png',
           gradient: "bg-gradient-to-t from-main-blue/100 via-main-blue/45 to-transparent",
           zoom: false,
           iconNames: [
@@ -76,7 +89,7 @@ export const initialCategories: Category[] = [
           ],
           imageUrl: '/mfk/mfkBaner/mfkBaner2.webp',
           linkUrl: '/Mfk/YFC-Zhmerynka',
-          mfkLogo: '/mfk/mfkLogo/mfkLogo2.webp',
+          Logo: '/mfk/mfkLogo/mfkLogo2.webp',
           gradient: "bg-gradient-to-t from-main-blue/100 via-main-blue/45 to-transparent",
           zoom: true,
           iconNames: [
@@ -96,7 +109,7 @@ export const initialCategories: Category[] = [
           description: ['Ми – молодіжний фольклорний клуб Ямпільщини. Наш дім – це мальовничий Ямпіль🇺🇦 Це не просто місто, а справжня перлина над Дністром. Мальовничі пагорби, старовинні вулиці та легенди живуть у серцях людей❤️ Тут природа і культура переплелися так, що кожен куточок дихає історією та красою🦋 А ми тут, щоб оживляти це все для молоді й разом творити світле майбутнє🫶🏻'],
           imageUrl: '/mfk/mfkBaner/mfkBaner1.webp',
           linkUrl: '/Mfk/YFC-Yampil',
-          mfkLogo: '/map/mfk/mfk3.jpg',
+          Logo: '/map/mfk/mfk3.jpg',
           gradient: "bg-gradient-to-t from-main-blue/100 via-main-blue/45 to-transparent",
           zoom: true,
           iconNames: [
@@ -116,7 +129,7 @@ export const initialCategories: Category[] = [
           description: ['✨ Молодіжний фольклорний клуб Тульчина ✨ Тут ми зберігаємо традиції та творимо нову історію 💃🪗 Співи, танці, обряди й душевна атмосфера'],
           imageUrl: '/mfk/mfkBaner/mfkBaner4.jpg',  // тут посилання на пост, але Instagram не дає прямої картинки з API — можна використати цей пост
           linkUrl: '/Mfk/YFC-Tulchyn',
-          mfkLogo: '/map/mfk/mfk2.jpg',
+          Logo: '/map/mfk/mfk2.jpg',
           gradient: "bg-gradient-to-t from-main-blue/100 via-main-blue/45 to-transparent",
           zoom: true,
           iconNames: [
@@ -136,7 +149,7 @@ export const initialCategories: Category[] = [
           description: ['✨Молодіжний фольклорний клуб✨ 🎶 Збереження та розвиток української культури й традицій Приєднуйся — разом зробимо Бершадь ще яскравішою!✨'],
           imageUrl: '/mfk/mfkBaner/mfkBaner1.webp',  // можна глянути відео чи фото
           linkUrl: '/Mfk/YFC-Bershad',
-          mfkLogo: '/map/mfk/mfk1.png',
+          Logo: '/map/mfk/mfk1.png',
           gradient: "bg-gradient-to-t from-main-blue/100 via-main-blue/45 to-transparent",
           zoom: true,
           iconNames: [
@@ -157,7 +170,7 @@ export const initialCategories: Category[] = [
           description: ['🌿 Розпочинаємо роботу Молодіжного фольклорного клубу Вороновицької громади! 🌿 Молодіжний фольклорний клуб (МФК) – це про нашу історію, культуру, традиції та зв’язок поколінь. Тут ми не просто вивчаємо минуле – ми оживляємо його в сучасності, співаємо старовинні пісні, ділимося ремеслами та зберігаємо духовні скарби громади.'],  
           imageUrl: '/mfk/mfkBaner/mfkBaner2.webp',  // не знайшов публікацій, які точно належать МФК Вороновиця
           linkUrl: '/Mfk/YFC-Voronovytsia',
-          mfkLogo: '/map/mfk/mfk5.jpg',
+          Logo: '/map/mfk/mfk5.jpg',
           gradient: "bg-gradient-to-t from-main-blue/100 via-main-blue/45 to-transparent",
           zoom: true,
           iconNames: [
@@ -178,7 +191,7 @@ export const initialCategories: Category[] = [
           description: ['МФК Брацлав 🌻 Творимо нові ідеї, відроджуємо старі традиції 🎵🎬 Молодь, яка пишається своє культурою 💫 Стань частиною нашої команди!⚡️'],  
           imageUrl: '/mfk/mfkBaner/mfkBaner1.webp',
           linkUrl: '/Mfk/YFC-Bratslav',
-          mfkLogo: '/map/mfk/mfk7.jpg',
+          Logo: '/map/mfk/mfk7.jpg',
           gradient: "bg-gradient-to-t from-main-blue/100 via-main-blue/45 to-transparent",
           zoom: true,
           iconNames: [
@@ -199,7 +212,7 @@ export const initialCategories: Category[] = [
           description: '',  
           imageUrl: '/mfk/mfkBaner/mfkBaner3.webp',
           linkUrl: '/Mfk/YFC-Larga',
-          mfkLogo: '/map/mfk/mfk8.jpg',
+          Logo: '/map/mfk/mfk8.jpg',
           gradient: "bg-gradient-to-t from-main-blue/100 via-main-blue/45 to-transparent",
           zoom: true,
           iconNames: [
@@ -220,7 +233,7 @@ export const initialCategories: Category[] = [
           description: ['Офіційна Молодіжна асоціація Гіндесті💯 / Asociația tinerilor din Ghindesti oficiall💯'],  
           imageUrl: '/mfk/mfkBaner/mfkBaner3.webp',
           linkUrl: '/Mfk/YFC-Ghindesti',
-          mfkLogo: '/map/mfk/mfk9.jpg',
+          Logo: '/map/mfk/mfk9.jpg',
           gradient: "bg-gradient-to-t from-main-blue/100 via-main-blue/45 to-transparent",
           zoom: true,
           iconNames: [
@@ -241,7 +254,7 @@ export const initialCategories: Category[] = [
           description: '',  
           imageUrl: '/mfk/mfkBaner/mfkBaner3.webp',
           linkUrl: '/Mfk/YFC-Racaria',
-          mfkLogo: '/map/mfk/mfk10.jpg',
+          Logo: '/map/mfk/mfk10.jpg',
           gradient: "bg-gradient-to-t from-main-blue/100 via-main-blue/45 to-transparent",
           zoom: true,
           iconNames: [
@@ -262,7 +275,7 @@ export const initialCategories: Category[] = [
           description: '',  
           imageUrl: '/mfk/mfkBaner/mfkBaner3.webp',
           linkUrl: '/Mfk/YFC-Glodeni',
-          mfkLogo: '/map/mfk/mfk11.jpg',
+          Logo: '/map/mfk/mfk11.jpg',
           gradient: "bg-gradient-to-t from-main-blue/100 via-main-blue/45 to-transparent",
           zoom: true,
           iconNames: [
@@ -270,7 +283,6 @@ export const initialCategories: Category[] = [
             { title: "facebook", link: "" },
             { title: "tiktok", link: "" },
             { title: "youtube", link: "" },
-            
           ],
         }
       },
@@ -288,14 +300,101 @@ export const initialCategories: Category[] = [
         id: 'yi-1',
         position: [49.23426822, 28.46456876], // Молодіжний центр "Квадрат", вул. Театральна, 15, Вінниця
         popupContent: {
-          slug: "",
-          title: 'Youthinsight фестиваль (Vinnytsia) — Youthinsight',
+          slug: "yi-2017",
+          title: 'Youthinsight 2017',
           description: ['Фестиваль аматорського медіа Youthinsight це щорічна подія, яка збирає молодь та любителів виробництва різноманітного медіа самотужки. Ця подія – міжкультурне свято, адже організатори фестивалю – волонтери європейської волонтерської служби та корпусу солідарності.'],
           imageUrl: '/map/youthinsight/youthinsight1.jpg', // пост/івент (оголошення)
           linkUrl: 'https://www.facebook.com/events/2092904964335230/',
-          mfkLogo: '',
+          Logo: '/festivals/2017.webp',
+          zoom: true,
+          reviews: [
+            {
+              name: "Ярослав Геращенко",
+              title: "Програмний координатор",
+              text: '"Працювати із молоддю за темою аматорського медіа - це дуже захоплююче..."',
+              profileImg: "/review/profile2.jpg",
+              links: { facebook: "#", instagram: "#", tiktok: "#" },
+            },
+            {
+              name: "Ася Козлова",
+              title: "Менеджерка проєкту #countrysidestudio",
+              text: '"Мені подобається проєкт #countrysidestudio..."',
+              profileImg: "/review/profile3.jpg",
+            },
+            {
+              name: "Jules Marquet",
+              title: "Volunteer MOZAIKA author",
+              text: '"Before arriving in Ukraine I had little knowledge..."',
+              profileImg: "/review/profile1.jpg",
+            },
+            {
+              name: "Вероніка Шевчук",
+              title: "Учасниця проекту #Countrysidestudio",
+              text: '"Проєкт #countrysidestudio є неперевершеним досвідом..."',
+              profileImg: "/review/profile4.jpg",
+            },
+            {
+              name: "Ярослав Геращенко",
+              title: "Програмний координатор",
+              text: '"Працювати із молоддю за темою аматорського медіа - це дуже захоплююче..."',
+              profileImg: "/review/profile2.jpg",
+              links: { facebook: "#", instagram: "#", tiktok: "#" },
+            },
+          ],
         },
-      }
+      },
+      {
+        id: 'yi-2',
+        position: [49.23426822, 28.46456876], // Молодіжний центр "Квадрат", вул. Театральна, 15, Вінниця
+        popupContent: {
+          slug: "yi-2018",
+          title: 'Youthinsight 2018',
+          description: ['Фестиваль аматорського медіа Youthinsight це щорічна подія, яка збирає молодь та любителів виробництва різноманітного медіа самотужки. Ця подія – міжкультурне свято, адже організатори фестивалю – волонтери європейської волонтерської служби та корпусу солідарності.'],
+          imageUrl: '/map/youthinsight/youthinsight1.jpg', // пост/івент (оголошення)
+          linkUrl: 'https://www.facebook.com/events/2092904964335230/',
+          Logo: '/festivals/2018.webp',
+          zoom: true,
+        },
+      },
+      {
+        id: 'yi-3',
+        position: [49.23426822, 28.46456876], // Молодіжний центр "Квадрат", вул. Театральна, 15, Вінниця
+        popupContent: {
+          slug: "yi-2019",
+          title: 'Youthinsight 2019',
+          description: ['Фестиваль аматорського медіа Youthinsight це щорічна подія, яка збирає молодь та любителів виробництва різноманітного медіа самотужки. Ця подія – міжкультурне свято, адже організатори фестивалю – волонтери європейської волонтерської служби та корпусу солідарності.'],
+          imageUrl: '/map/youthinsight/youthinsight1.jpg', // пост/івент (оголошення)
+          linkUrl: 'https://www.facebook.com/events/2092904964335230/',
+          Logo: '/festivals/2019.webp',
+          zoom: true,
+        },
+      },
+      {
+        id: 'yi-4',
+        position: [49.23426822, 28.46456876], // Молодіжний центр "Квадрат", вул. Театральна, 15, Вінниця
+        popupContent: {
+          slug: "yi-2020",
+          title: 'Youthinsight 2020',
+          description: ['Фестиваль аматорського медіа Youthinsight це щорічна подія, яка збирає молодь та любителів виробництва різноманітного медіа самотужки. Ця подія – міжкультурне свято, адже організатори фестивалю – волонтери європейської волонтерської служби та корпусу солідарності.'],
+          imageUrl: '/map/youthinsight/youthinsight1.jpg', // пост/івент (оголошення)
+          linkUrl: 'https://www.facebook.com/events/2092904964335230/',
+          Logo: '/festivals/2020.webp',
+          zoom: true,
+        },
+      },
+      {
+        id: 'yi-5',
+        position: [49.23426822, 28.46456876], // Молодіжний центр "Квадрат", вул. Театральна, 15, Вінниця
+        popupContent: {
+          slug: "yi-2021",
+          title: 'Youthinsight 2021',
+          description: ['Фестиваль аматорського медіа Youthinsight це щорічна подія, яка збирає молодь та любителів виробництва різноманітного медіа самотужки. Ця подія – міжкультурне свято, адже організатори фестивалю – волонтери європейської волонтерської служби та корпусу солідарності.'],
+          imageUrl: '/map/youthinsight/youthinsight1.jpg', // пост/івент (оголошення)
+          linkUrl: 'https://www.facebook.com/events/2092904964335230/',
+          Logo: '/festivals/2021.webp',
+          zoom: true,
+        },
+      },
     ],
   },
   {
@@ -315,7 +414,7 @@ export const initialCategories: Category[] = [
           description: ['Mozaїka — журнал / проєкт Pangeya Ultima та міжкультурної молодіжної студії; частина активностей (презентації, табори, воркшопи) проходили в Еко-центрі Стіна (Томашпільська ТГ).'],
           imageUrl: 'https://www.facebook.com/pangeyaultima/posts/', // посилання на пости/випуски Mozaїka на сторінці Pangeya (пост про Mozaїka #8 та активності в Стині)
           linkUrl: 'https://ngo.pangeya.org.ua/' ,
-          mfkLogo: '',
+          Logo: '',
         },
       }
     ],
@@ -337,7 +436,7 @@ export const initialCategories: Category[] = [
           description: ['Movers & Shakers — мережа/серія нетворкінг-івентів. Одна з подій — Paddington Pow-Wow (Wilde Aparthotels, 4 North Wharf Road, London). Використовуємо цю локацію як приклад для об’єкта "Movers & Shakers".'],
           imageUrl: 'https://moversandshakers.events/', // сторінка подій/афіша
           linkUrl: 'https://moversandshakers.events/',
-          mfkLogo: '',
+          Logo: '',
         },
       }
     ],
