@@ -5,19 +5,29 @@ services:
       dockerfile: ./docker/Dockerfile
     working_dir: /app
     env_file: .env
+    environment:
+      - NODE_ENV=production
+      - NODE_OPTIONS=--require=/app/trace-exec.cjs
     restart: always
     ports:
       - "3000:3000"
 
-    # захист і лог-ротація
+    # 1) /tmp як tmpfs + noexec: зламає запуск /tmp/x.sh, /tmp/lrt і т.д.
     tmpfs:
       - /tmp:rw,noexec,nosuid,size=64m
+
+    # 2) Ротація логів, щоб не роздувало диск
     logging:
       driver: json-file
       options:
         max-size: "10m"
         max-file: "3"
 
+    # 3) Ліміти ресурсів (працюють у docker compose)
+    mem_limit: 2g
+    cpus: "1.0"
+
+    # 4) Монтуємо проєкт (включно з trace-exec.cjs)
     volumes:
       - .:/app
 
@@ -25,7 +35,10 @@ services:
 
   studio_pangeya_nginx:
     image: nginx:1.19
-    volumes:
-      - ./docker/nginx:/etc/nginx/conf.d
+    restart: always
     depends_on:
       - app
+    volumes:
+      - ./docker/nginx:/etc/nginx/conf.d
+    ports:
+      - "80:80"
