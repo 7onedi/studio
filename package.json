@@ -9,8 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@react-leaflet/core": "^3.0.0",
-    "@types/leaflet": "^1.9.21",
     "clsx": "^2.1.1",
     "keen-slider": "^6.8.6",
     "leaflet": "^1.9.4",
@@ -23,6 +21,7 @@
     "@eslint/eslintrc": "^3",
     "@svgr/core": "^8.1.0",
     "@tailwindcss/postcss": "^4",
+    "@types/leaflet": "^1.9.21",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
