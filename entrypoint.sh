@@ -1,12 +1,10 @@
-#!/bin/sh
-set -e
-
 echo "NODE_ENV=$NODE_ENV"
 
+pnpm install
+
 if [ "$NODE_ENV" = "production" ]; then
-  pnpm install --frozen-lockfile
   pnpm run build
-  pnpm run start
+  exec pnpm run start
 else
-  pnpm run dev
+  exec pnpm run dev
 fi
