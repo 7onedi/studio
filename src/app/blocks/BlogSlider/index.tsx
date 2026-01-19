@@ -8,7 +8,8 @@ import { Button } from "@/app/components/Button";
 import { SvgIcon } from "@/app/components/SvgIcon";
 
 // Припускаємо, що ці імпорти тепер працюють і включають BlogCard:
-import { allArticles, groupArticles } from "./data"; 
+import { groupArticles } from "./data"; 
+import { slides } from "../ArticleSlider/slideContent";
 import { BlogCard } from "./BlogCard";
 
 // --- Навігаційна стрілка (Червона) ---
@@ -17,6 +18,10 @@ interface ArrowProps {
   disabled: boolean;
   direction: "left" | "right";
 }
+
+const allArticles = slides.filter(
+  (a) => a.meta.placement?.includes("list")
+);
 
 const Arrow: React.FC<ArrowProps> = ({ onClick, disabled, direction }) => (
 <button

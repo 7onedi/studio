@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "@styles/globals.scss";
-import { Fira_Sans } from 'next/font/google';
+import { Geist, Geist_Mono } from "next/font/google";
+import { Fira_Sans } from "next/font/google";
+
 import Header from "@components/Header";
 import Footer from "@components/Footer";
 import ArrowToTop from "./components/ArrowToTop";
 
+import { BackgroundProvider } from "./providers/BackgroundProvider";
+import BackgroundShell from "@components/BackgroundShell";
+
 const firaSans = Fira_Sans({
-  weight: ['400', '700'],
-  subsets: ['latin'],
-  variable: '--font-fira',
+  weight: ["400", "700"],
+  subsets: ["latin"],
+  variable: "--font-fira",
 });
 
 const geistSans = Geist({
@@ -24,30 +28,25 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Міжкультурна Молодіжна Студія",
-  description: "Це молодіжний медіа-проект із напрацювань аматорського медіа-контенту та культурно-мистецьких заходів децентралізованою групою виробників - молоді, яка пов’язана із основними партнерськими громадськими організаціями, що отримують фінансування на заходи від головного донора - програми Ерасмус +.",
+  description: "...",
 };
 
-
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
-    const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    element?.scrollIntoView({ behavior: "smooth" });
-  };
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${firaSans.variable} ${geistSans.variable} ${geistMono.variable}`}>
-      <body className="antialiased bg-indigo-50">
-        <div className="container grid grid-cols-6">
-          <div className="col-span-6">
-            <Header/>
-              <div className="lg:pt-16">
-                {children}
+    <html lang="en" suppressHydrationWarning className={`${firaSans.variable} ${geistSans.variable} ${geistMono.variable}`}>
+      <body className="antialiased border-box">
+        <BackgroundProvider>
+          <BackgroundShell>
+            <div className="container grid grid-cols-6">
+              <div className="col-span-6">
+                <Header />
+                <div className="lg:pt-16">{children}</div>
+                <ArrowToTop />
+                <Footer />
               </div>
-              <ArrowToTop />
-            <Footer />
-          </div>
-        </div>
+            </div>
+          </BackgroundShell>
+        </BackgroundProvider>
       </body>
     </html>
   );
