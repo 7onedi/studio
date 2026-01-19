@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "i.ytimg.com", // ✅ ДОДАНО (критично)
+        pathname: "/vi/**",
+      },
+      {
+        protocol: "https",
         hostname: "stina.pangeya.org.ua",
         pathname: "/**",
       },
