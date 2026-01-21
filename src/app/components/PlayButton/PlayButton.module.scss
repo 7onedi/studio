@@ -1,0 +1,104 @@
+
+.videoPlayButton {
+    position: absolute;
+    z-index: 10;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    box-sizing: content-box;
+    display: block;
+    width: 32px;
+    height: 44px;
+    border-radius: 50%;
+    padding: 18px 20px 18px 28px;
+    transition: background 0.2s ease; /* Плавний перехід для фону */
+    
+    /* Групуємо hover для всіх елементів */
+    &:hover {
+      background: none; /* Змінюємо фон */
+      
+      /* Змінюємо колір тільки для внутрішнього кола */
+      &:after {
+        background: none; /* Змінюємо колір внутрішнього кола */
+      }
+  
+      /* Змінюємо колір для span */
+      span {
+        border-left: 19px solid #fff;
+      }
+    }
+  }
+  
+  .videoPlayButton:before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    display: block;
+    width: 55px;
+    height: 55px;
+    background: #fff;
+    border-radius: 50%;
+    animation: pulse-border 1100ms ease-out infinite;
+    transition: background 0.2s ease;
+  }
+  
+  .videoPlayButton:after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    display: block;
+    width: 60px;
+    height: 60px;
+    background: #fff;
+    border-radius: 50%;
+    transition: background 0.2s ease; /* Плавний перехід для фону */
+  }
+  
+  .videoPlayButton span {
+    display: block;
+    position: relative;
+    z-index: 3;
+    width: 0;
+    height: 0;
+    border-left: 19px solid black;
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid transparent;
+    top: 10px;
+    left: 5px;
+    animation: rotateAnimation 5s ease-in-out infinite;
+    
+    &:hover {
+      animation: none; /* Зупинка анімації при наведенні */
+      border-left: 19px solid #fff;
+    }
+  }
+  
+  @keyframes rotateAnimation {
+    0% {
+      transform: rotate(0deg);
+    }
+    20% {
+      transform: rotate(360deg); /* Один оберт за 1 секунду */
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  @keyframes pulse-border {
+    0% {
+      transform: translateX(-50%) translateY(-50%) translateZ(0) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(-50%) translateY(-50%) translateZ(0) scale(1.5);
+      opacity: 0;
+    }
+  }
+  

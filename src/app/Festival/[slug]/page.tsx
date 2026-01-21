@@ -8,6 +8,7 @@ import { SvgIcon } from "@components/SvgIcon";
 import type { RichTextItem } from "@components/RenderRichText";
 import { renderRichText } from "@components/RenderRichText";
 import FestivalContributors from "@blocks/FestivalContributors";
+import { slides } from "../../blocks/ArticleSlider/slideContent";
 
 interface FestivalPageProps {
   params: Promise<{
@@ -55,8 +56,12 @@ export default async function FestivalPage({ params }: FestivalPageProps) {
     (marker) => marker.popupContent.slug !== slug
   );
 
+  const yiSlides = slug
+  ? slides.filter(s => s.meta.SubCategory === slug)
+  : [];
+
   return (
-    <div className="mt-6 lg:mt-20">
+    <div className="mt-6 lg:mt-0">
       <div className="relative mb-16 lg:mb-0">
 
         {/* Лого + заголовок */}
@@ -130,7 +135,7 @@ export default async function FestivalPage({ params }: FestivalPageProps) {
       </div>
 
       <div className="my-8">
-        <BlogSlider />
+        <BlogSlider slides={yiSlides}/>
       </div>
 
       <div className="my-12 lg:mt-16 px-4 lg:px-0">

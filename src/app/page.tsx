@@ -15,7 +15,7 @@ export default function Home() {
       <ClientBg bg="default" />
       <div >
         <main className='overflow-hidden'>
-          <div className='lg:my-16'>
+          <div className=''>
             <ArticleSlider/>
           </div>
           <div className='my-6 py-4 w-full flex item-center justify-center'>

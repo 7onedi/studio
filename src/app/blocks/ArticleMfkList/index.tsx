@@ -26,13 +26,11 @@ export default function ArticleMfkList({
   currentSlug,
   initialVisibleCount = 4,
 }: ArticleMfkListProps) {
-  /** 1️⃣ прибираємо поточну статтю */
   const filteredArticles = useMemo(
     () => articles.filter(a => a.meta.slug !== currentSlug),
     [articles, currentSlug]
   );
 
-  /** 2️⃣ керуємо видимістю */
   const [visibleCount, setVisibleCount] = useState(initialVisibleCount);
 
   const visibleItems = useMemo(
@@ -69,7 +67,6 @@ export default function ArticleMfkList({
         </Link>
       ))}
 
-      {/* 3️⃣ кнопка показу тільки якщо є сенс */}
       {canToggle && (
         <button
           type="button"

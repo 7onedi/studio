@@ -11,6 +11,8 @@ export type ArticleMeta = {
   tags: readonly string[];
   status: ArticleStatus;
   placement?: readonly Placement[];
+  category: string;
+  SubCategory?: string;
 };
 
 export type ArticleHero = {
@@ -96,7 +98,7 @@ export type Article = {
 };
 
 // slideContent.ts
-export const slides = [
+export const slides : readonly Article[] = [
 
                                 // #1
 
@@ -109,6 +111,8 @@ export const slides = [
       tags: ["#mfkstina", "#mfkstina", "#mfkstina", "#mfkstina"],
       status: "published",
       placement: placement(["hero"]),
+      category: "#CountrysideStudio",
+      SubCategory: "YFC-Stina",
     },
 
     hero: {
@@ -172,6 +176,8 @@ export const slides = [
       tags: ["#mfkstina", "#mfkstina"],
       status: "published",
       placement: placement(["hero"]),
+category: "#CountrysideStudio",
+      SubCategory: "YFC-Stina",
     },
     hero: {
       gradient:
@@ -221,6 +227,8 @@ export const slides = [
       tags: ["#mfkstina", "#mfkstina"],
       status: "published",
       placement: placement(["hero"]),
+      category: "#CountrysideStudio",
+      SubCategory: "YFC-Stina",
     },
     hero: {
       gradient:
@@ -258,7 +266,9 @@ export const slides = [
       date: "15 січня 2026",
       tags: ["#mfkstina", "#mfkstina"],
       status: "published",
-      placement: placement(["list"])
+      placement: placement(["list"]),
+      category: "#CountrysideStudio",
+      SubCategory: "YFC-Zhmerynka",
     },
 
     hero: {
@@ -396,7 +406,9 @@ export const slides = [
       date: "15 січня 2026",
       tags: ["#mfkstina", "#mfkstina"],
       status: "published",
-      placement: placement(["list"])
+      placement: placement(["list"]),
+      category: "youthinsight",
+      SubCategory: "yi-2017",
     },
     hero: {
       gradient: "bg-gradient-to-t from-main-amarant/80 via-main-amarant/10 to-transparent",
@@ -456,7 +468,9 @@ export const slides = [
       date: "15 січня 2026",
       tags: ["#mfkstina", "#mfkstina"],
       status: "published",
-      placement: placement(["list"])
+      placement: placement(["list"]),
+      category: "#CountrysideStudio",
+      SubCategory: "YFC-Zhmerynka",
     },
     hero: {
       gradient: "bg-gradient-to-t from-main-amarant/80 via-main-amarant/10 to-transparent",
@@ -516,7 +530,9 @@ export const slides = [
       date: "22 лист. 2019 р.",
       tags: ["#mfkstina", "#mfkstina"],
       status: "published",
-      placement: placement(["list"])
+      placement: placement(["list"]),
+      category: "#CountrysideStudio",
+      SubCategory: "YFC-Yampil",
     },
 
     hero: {
@@ -578,7 +594,9 @@ export const slides = [
       date: "15 січня 2026",
       tags: ["#mfkstina", "#mfkstina"],
       status: "published",
-      placement: placement(["list"])
+      placement: placement(["list"]),
+      category: "#CountrysideStudio",
+      SubCategory: "YFC-Stina",
     },
     hero: {
       gradient: "bg-gradient-to-t from-main-blue/80 via-main-blue/10 to-transparent",
@@ -639,7 +657,9 @@ export const slides = [
       date: "15 січня 2026",
       tags: ["#mfkstina", "#mfkstina"],
       status: "published",
-      placement: placement(["list"])
+      placement: placement(["list"]),
+      category: "#CountrysideStudio",
+      SubCategory: "YFC-Zhmerynka",
     },
     hero: {
       gradient: "bg-gradient-to-t from-main-amarant/80 via-main-amarant/10 to-transparent",
@@ -700,7 +720,9 @@ export const slides = [
       date: "15 січня 2026",
       tags: ["#mfkstina", "#mfkstina"],
       status: "published",
-      placement: placement(["list"])
+      placement: placement(["list"]),
+      category: "#CountrysideStudio",
+      SubCategory: "YFC-Stina",
     },
     hero: {
       gradient: "bg-gradient-to-t from-main-amarant/80 via-main-amarant/10 to-transparent",
@@ -761,7 +783,9 @@ export const slides = [
       date: "15 січня 2026",
       tags: ["#mfkstina", "#mfkstina"],
       status: "published",
-      placement: placement(["list"])
+      placement: placement(["list"]),
+      category: "#CountrysideStudio",
+      SubCategory: "YFC-Stina",
     },
     hero: {
       gradient: "bg-gradient-to-t from-main-blue/80 via-main-blue/10 to-transparent",
