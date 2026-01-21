@@ -31,12 +31,14 @@ export default function ArticlePage({ params }: any) {
         <ArticleHero
           title={article.meta.title}
           image={article.hero.img}
-          date={article.meta.date}
           tags={article.meta.tags}
+          category={article.meta.category}
+          subCategory={article.meta.SubCategory}
+          tegsBgColor={article.hero.tegsBgColor}
+          date={article.meta.date}
           gradient={article.hero.gradient}
           gradientMob={article.hero.gradientMob}
           creator={article.author}
-          tegsBgColor={article.hero.tegsBgColor}
         />
 
         {/* CONTENT */}

@@ -37,10 +37,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="antialiased border-box">
         <BackgroundProvider>
           <BackgroundShell>
+            {/* fixed header shell */}
+            <div className="fixed top-0 left-0 right-0 z-[500]">
+              <div className="container px-6 lg:px-0">
+                <Header />
+              </div>
+            </div>
             <div className="container grid grid-cols-6">
               <div className="col-span-6">
-                <Header />
-                <div className="lg:pt-16">{children}</div>
+                <div className="lg:pt-16">
+                  <main className="pt-16 lg:pt-20">
+                    {children}
+                  </main>
+                </div>
                 <ArrowToTop />
                 <Footer />
               </div>

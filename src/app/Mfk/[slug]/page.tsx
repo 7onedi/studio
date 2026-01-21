@@ -7,6 +7,7 @@ import { Button } from "@components/Button";
 import { SvgIcon } from "@components/SvgIcon";
 import type { RichTextItem } from "@components/RenderRichText";
 import { renderRichText } from "@components/RenderRichText";
+import { slides } from "../../blocks/ArticleSlider/slideContent";
 
 interface MfkPageProps {
   params: Promise<{
@@ -44,8 +45,12 @@ export default async function MfkPage({ params }: MfkPageProps) {
     (marker) => marker.popupContent.slug !== slug
   );
 
+const yfcSlides = slug
+  ? slides.filter(s => s.meta.SubCategory === slug)
+  : [];
+
   return (
-    <div className="mx-auto">
+    <div className="mx-auto mt-4 lg:mt-0">
       <div className="relative mb-16 lg:mb-0">
         <div className="relative w-full h-[145px] lg:h-[700px] mb-6 rounded-[20px] overflow-hidden">
           <Image
@@ -122,7 +127,6 @@ export default async function MfkPage({ params }: MfkPageProps) {
         border-b-2
         border-main-amarant
       ">
-
         {Array.isArray(mfk.description) && (
           mfk.description?.length > 0 && (
           <div>
@@ -138,7 +142,7 @@ export default async function MfkPage({ params }: MfkPageProps) {
       </div>
 
       <div className="my-8">
-        <BlogSlider />
+        <BlogSlider slides={yfcSlides}/>
       </div>
 
       <div className="my-12 lg:mt-16 px-4 lg:px-0">

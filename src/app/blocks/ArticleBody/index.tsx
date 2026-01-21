@@ -95,10 +95,10 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
               count === 1
                 ? "grid-cols-1"
                 : count === 2
-                  ? "grid-cols-2"
+                  ? "lg:grid-cols-2"
                   : count === 3
-                    ? "grid-cols-3"
-                    : "grid-cols-4";
+                    ? "lg:grid-cols-3"
+                    : "lg:grid-cols-4";
 
             return (
               <figure key={i} className="mb-4">

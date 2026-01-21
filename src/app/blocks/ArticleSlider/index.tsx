@@ -30,6 +30,7 @@ export default function SliderHero() {
     slideChanged(s) {
       setCurrentSlide(s.track.details.rel);
     },
+    drag: true,
   });
 
   useEffect(() => {
@@ -39,6 +40,11 @@ export default function SliderHero() {
     }, 100);
     return () => clearTimeout(timer);
   }, [instanceRef]);
+
+  useEffect(() => {
+  const t = setInterval(() => instanceRef.current?.next(), 8000);
+  return () => clearInterval(t);
+}, [instanceRef]);
 
   return (
     <div
@@ -61,13 +67,17 @@ export default function SliderHero() {
             <div className={`absolute inset-0 ${s.hero.gradientMob} ${s.hero.gradient}`} />
 
             <div className="absolute inset-0 flex flex-col justify-between p-8 lg:p-0 lg:px-16 lg:pt-16 lg:mx-16 lg:my-10">
+              <div className={`text-white text-headline_1_mobile ${s.hero.textStyle} max-w-[600px]`}>
+                {s.meta.title}
+              </div>
               <Link
                 href={`/Article/${s.meta.slug}`}
                 className="absolute bottom-8 left-16 lg:relative lg:bottom-0 lg:left-0 z-20"
               >
-                <div className={`text-white text-headline_1_mobile ${s.hero.textStyle} max-w-[600px]`}>
-                  {s.meta.title}
-                </div>
+                <Button variant="secondary-alt">
+                  <span className="mr-3"> ПЕРЕГЛЯНУТИ </span>
+                  <SvgIcon name="right" size={24} color="white" />
+                </Button>
               </Link>
 
               <div className="hidden lg:flex lg:absolute bottom-0 right-16 gap-4 z-20">

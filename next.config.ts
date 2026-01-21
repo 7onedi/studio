@@ -7,16 +7,8 @@ const nextConfig: NextConfig = {
 
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "img.youtube.com",
-        pathname: "/vi/**",
-      },
-      {
-        protocol: "https",
-        hostname: "i.ytimg.com", // ✅ ДОДАНО (критично)
-        pathname: "/vi/**",
-      },
+      { protocol: "https", hostname: "img.youtube.com" },
+      { protocol: "https", hostname: "i.ytimg.com" },
       {
         protocol: "https",
         hostname: "stina.pangeya.org.ua",
