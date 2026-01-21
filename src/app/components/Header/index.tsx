@@ -1,7 +1,7 @@
 "use client";
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 import { SvgIcon } from "@components/SvgIcon";
 import { usePathname, useRouter } from "next/navigation";
 import Link from 'next/link'
@@ -20,6 +20,8 @@ interface HeaderProps {
 }
 
 export default function Header() {
+  const [isHeaderHidden, setIsHeaderHidden] = useState(false);
+  const lastYRef = useRef(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
   const pathname = usePathname();
@@ -71,19 +73,61 @@ const iconNames = [
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
+
   const toggleLanguageDropdown = () => {
     setIsLanguageDropdownOpen(!isLanguageDropdownOpen);
   };
+
+  useEffect(() => {
+  lastYRef.current = window.scrollY;
+
+  const onScroll = () => {
+    // якщо відкрите мобільне меню — не ховаємо хедер
+    if (isMobileMenuOpen) {
+      setIsHeaderHidden(false);
+      lastYRef.current = window.scrollY;
+      return;
+    }
+
+    const y = window.scrollY;
+    const lastY = lastYRef.current;
+
+    // невеликий поріг, щоб не смикалось від мікроскролу
+    const delta = y - lastY;
+    const THRESHOLD = 8;
+
+    if (Math.abs(delta) < THRESHOLD) return;
+
+    // вниз — ховаємо (але не на самому верху сторінки)
+    if (y > lastY && y > 80) setIsHeaderHidden(true);
+
+    // вгору — показуємо
+    if (y < lastY) setIsHeaderHidden(false);
+
+    lastYRef.current = y;
+  };
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  return () => window.removeEventListener("scroll", onScroll);
+}, [isMobileMenuOpen]);
+
   
 
   return (
-    <header className={`mb-6 bg-transparent text-white ${styles["header-wrapper"]}`}>
+    <header
+      className={`
+        bg-transparent text-white
+        ${styles["header-wrapper"]}
+        ${isHeaderHidden ? styles["header-hidden"] : styles["header-visible"]}
+      `}
+    >
       <div className="
         grid grid-cols-12
         flex items-center justify-between
         h-16 lg:container lg:grid-cols-12
         lg:h-20 lg:border-b lg:border-main-amarant
-        lg:bg-indigo-50 lg:mb-0"
+        bg-indigo-50 lg:mb-0"
       >
 
         {/* Logo */}
@@ -181,18 +225,21 @@ const iconNames = [
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="pb-4 mt-5 lg:mt-0 rounded-b-lg lg:hidden text-button_mobile">
+        <div className="bg-indigo-50 pb-4 pt-5 lg:mt-0 rounded-b-lg lg:hidden text-button_mobile">
           <nav className="flex flex-col items-center space-y-4">
             {navButtons.map((navButton, i) =>
               "link" in navButton ? (
-                <Link key={i} href={navButton.link}
+                <Link key={i} href={navButton.link} onClick={closeMobileMenu}
                   className={`py-3 block hover:text-main-amarant transition-colors duration-200 ${pathname === navButton.link ? 'text-main-amarant' : 'text-main-text'}`}>
                   {navButton.name}
                 </Link>
               ) : (
                 <button
                   key={i}
-                  onClick={() => scrollToSection(navButton.anchor)}
+                  onClick={() => {
+                    closeMobileMenu();
+                    scrollToSection(navButton.anchor);
+                  }}
                   className={`py-3 block hover:text-main-amarant transition-colors duration-200 text-main-text`}
                 >
                   {navButton.name}

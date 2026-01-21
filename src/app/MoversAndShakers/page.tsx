@@ -3,6 +3,9 @@ import { categories } from "@blocks/Categories/categories.data";
 import MfkList from "@blocks/MfkList";
 import { initialCategories} from '@blocks/LeafletMap/mapData';
 import BlogSlider from "../blocks/BlogSlider";
+import { slides } from "../blocks/ArticleSlider/slideContent";
+
+const msSlides = slides.filter(c => c.meta.category === "m&s")!;
 
 const project = categories.find(c => c.id === 4)!;
 
@@ -11,7 +14,7 @@ const mfkCategory = initialCategories.find(c => c.id === "#mfk")!;
 export default function Home() {
   return (
     <div>
-      <div className="mt-12 lg:mt-16 px-4 lg:px-0">
+      <div className="mt-4 lg:mt-0 px-4 lg:px-0">
         <CategoryTitle
           image={project.image}
           pattern={project.pattern}
@@ -28,7 +31,7 @@ export default function Home() {
         <p className="text-headline_3">Цікаві статті про Movers&Shakers</p>
       </div>
       <div className="">
-        <BlogSlider />
+        <BlogSlider slides={msSlides}/>
       </div>
     </div>
   );
