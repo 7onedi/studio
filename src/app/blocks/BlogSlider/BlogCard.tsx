@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import type { Article } from "../ArticleSlider/slideContent";
+import { useRouter } from "next/navigation";
 
 type BlogCardProps = Article & {
   onLoad?: () => void;
@@ -12,19 +13,30 @@ type BlogCardProps = Article & {
 export const TagButton: React.FC<{ tag: string; ClassName?: string }> = ({
   tag,
   ClassName = "",
-}) => (
-  <button
-    className={`
-      px-3 py-1 font-semibold
-      backdrop-blur-sm text-white rounded-full
-      transition-colors duration-200
-      shadow-sm
-      ${ClassName}
-    `}
-  >
-    {tag}
-  </button>
-);
+}) => {
+  const router = useRouter();
+  const SEARCH_ROUTE = "/Search"; // або "/blog/search"
+
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        router.push(`/Search?q=${encodeURIComponent(tag)}`);
+      }}
+      className={`
+        px-3 py-1 font-semibold
+        backdrop-blur-sm text-white rounded-full
+        transition-colors duration-200
+        shadow-sm
+        ${ClassName}
+      `}
+    >
+      {tag}
+    </button>
+  );
+};
 
 export const BlogCard: React.FC<BlogCardProps> = ({ meta, hero, onLoad }) => {
   // збираємо теги для відображення (category + subcategory + tags)
@@ -69,12 +81,11 @@ export const BlogCard: React.FC<BlogCardProps> = ({ meta, hero, onLoad }) => {
 
       <div className="pt-2 lg:hidden flex flex-wrap gap-2 mt-3 mb-1">
         {displayTags.map((tag, i) => (
-          <span
+          <TagButton
             key={`${tag}-${i}`}
-            className="px-3 py-1 text-button_mobile font-semibold bg-main-blue text-white rounded-full shadow-sm"
-          >
-            {tag}
-          </span>
+            tag={tag}
+            ClassName="py-1 !text-button_mobile !bg-main-blue !text-white !shadow-sm !hover:bg-white/30"
+          />
         ))}
       </div>
     </div>
