@@ -168,7 +168,7 @@ export default function ArticleVideoBlock({ data }: { data: VideoBlockData }) {
         <div className="relative aspect-video w-full">
           {previewUrl ? (
             <Image
-              src={previewUrl}
+              src="https://i.ytimg.com/vi/-qeoYLRAxao/maxresdefault.jpg"
               alt={title || "Video preview"}
               fill
               className="object-cover"
