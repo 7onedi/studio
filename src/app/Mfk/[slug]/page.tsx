@@ -130,12 +130,18 @@ const yfcSlides = slug
         {Array.isArray(mfk.description) && (
           mfk.description?.length > 0 && (
           <div>
-            <div className="mt-8 flex justify-center">
-              <p className="text-headline_4_mobile lg:text-headline_4">Про МФК</p>
+            <div className="mt-6 flex justify-center">
+              <p className="lg:mb-4 text-headline_4_mobile lg:text-headline_4">Про МФК</p>
             </div>
-            <p className="whitespace-pre-line mt-4 text-body_mobile lg:text-body">
-              {renderRichText(mfk.description as RichTextItem[])}
-            </p>
+          {(mfk.description as string[]).map((t, idx) => (
+            <div className="[&_a]:text-blue-600 [&_a]:underline [&_a]:underline-offset-2">
+            <p
+              key={idx}
+              className="mb-4"
+              dangerouslySetInnerHTML={{ __html: t }}
+            />
+            </div>
+          ))}
           </div>
           )
         )}
