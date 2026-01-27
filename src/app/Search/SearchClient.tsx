@@ -318,13 +318,14 @@ const clearFilters = () => {
             Знайдено: <span className="font-semibold text-[green]">{filtered.length}</span>
             </div>
 
-            <Button
-            variant="secondary"
-            onClick={clearFilters}
-            className="rounded-full border border-white/25 px-4 py-2 text-[13px] font-semibold text-white/90 transition hover:bg-white/10"
-            >
-            Очистити фільтри
-            </Button>
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="rounded-full border border-main-amarant p-4 text-button font-semibold text-main-amarant transition hover:bg-main-amarant/90 hover:text-white/90"
+              >
+                Очистити фільтри
+              </button>
+            
         </div>
         )}
         </div>
