@@ -1,9 +1,18 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
+
+cd "$(dirname "$0")"
 
 git pull origin main
 
-docker compose stop
+# 1) Спочатку білдимо (без даунтайму)
 docker compose build --no-cache
-docker compose up -d
+
+# 2) Потім піднімаємо/оновлюємо (compose сам перезапустить що треба)
+docker compose up -d --remove-orphans
+
+# 3) Показати статус (щоб одразу бачити, чи все ок)
+docker compose ps
+
+# 4) Чистка сміття (обережніше)
 docker image prune -f

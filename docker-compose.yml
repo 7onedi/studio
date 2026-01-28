@@ -18,7 +18,10 @@ services:
     volumes:
       - .:/app
     entrypoint: /entrypoint.sh
-
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    security_opt:
+      - no-new-privileges:true
   studio_pangeya_nginx:
     image: nginx:1.19
     volumes:
