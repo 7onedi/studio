@@ -142,6 +142,7 @@ export default function MapComponent() {
 
                   {Array.isArray(marker.popupContent.description) && (
                     <p
+                      dangerouslySetInnerHTML={{ __html: marker.popupContent.description }}
                       className={`
                         mt-4
                         text-body_mobile lg:text-body
@@ -149,9 +150,7 @@ export default function MapComponent() {
                         lg:line-clamp-6
                         overflow-hidden
                       `}
-                    >
-                      {renderRichText(marker.popupContent.description as RichTextItem[])}
-                    </p>
+                    />
                   )}
 
 
