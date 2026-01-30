@@ -287,7 +287,7 @@ export const initialCategories: Category[] = [
           title: 'МФК Глодяни 1',
           description: '',  
           imageUrl: '/mfk/mfkBaner/mfkBaner3.webp',
-          linkUrl: '/Mfk/YFC-Glodeni',
+          linkUrl: '/Mfk/YFC-Glodeni-1',
           Logo: '/map/mfk/mfk11.jpg',
           gradient: "bg-gradient-to-t from-main-blue/100 via-main-blue/45 to-transparent",
           zoom: true,
