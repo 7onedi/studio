@@ -229,9 +229,9 @@ export const initialCategories: Category[] = [
           gradient: "bg-gradient-to-t from-main-blue/100 via-main-blue/45 to-transparent",
           zoom: true,
           iconNames: [
-            { title: "instagram", link: "" },
+            { title: "instagram", link: "https://www.instagram.com/youthfolkclub_larga/" },
             { title: "facebook", link: "" },
-            { title: "tiktok", link: "" },
+            { title: "tiktok", link: "https://www.tiktok.com/@youth.folkclub_la" },
             { title: "youtube", link: "" },
             
           ],
@@ -252,7 +252,7 @@ export const initialCategories: Category[] = [
           iconNames: [
             { title: "instagram", link: "https://www.instagram.com/yfc.ghindesti?igsh=eW1lM3l4ejZ4eDNt" },
             { title: "facebook", link: "" },
-            { title: "tiktok", link: "" },
+            { title: "tiktok", link: "https://www.tiktok.com/@youth.club.ghinde" },
             { title: "youtube", link: "" },
             
           ],
@@ -272,7 +272,7 @@ export const initialCategories: Category[] = [
           zoom: true,
           iconNames: [
             { title: "instagram", link: "https://www.instagram.com/racaria_folklore_stories2025?igsh=MWdtaGlheDQ3MXQzeA%3D%3D" },
-            { title: "facebook", link: "" },
+            { title: "facebook", link: "https://www.facebook.com/profile.php?id=61577867880160 " },
             { title: "tiktok", link: "" },
             { title: "youtube", link: "" },
             
@@ -283,8 +283,8 @@ export const initialCategories: Category[] = [
         id: 'mfk-11',
         position: [ 47.775326715304004, 27.517800882803332],
         popupContent: {
-          slug: "YFC-Glodeni",
-          title: 'МФК Глодяни',
+          slug: "YFC-Glodeni-1",
+          title: 'МФК Глодяни 1',
           description: '',  
           imageUrl: '/mfk/mfkBaner/mfkBaner3.webp',
           linkUrl: '/Mfk/YFC-Glodeni',
@@ -292,7 +292,7 @@ export const initialCategories: Category[] = [
           gradient: "bg-gradient-to-t from-main-blue/100 via-main-blue/45 to-transparent",
           zoom: true,
           iconNames: [
-            { title: "instagram", link: "" },
+            { title: "instagram", link: "https://www.instagram.com/centru_de_tineret_glodeni" },
             { title: "facebook", link: "" },
             { title: "tiktok", link: "" },
             { title: "youtube", link: "" },
