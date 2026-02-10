@@ -24,7 +24,7 @@ services:
         max-file: "3"
 
     # 3) Ліміти ресурсів (працюють у docker compose)
-    mem_limit: 2g
+    mem_limit: 2.5g
     cpus: "1.0"
 
     # 4) Монтуємо проєкт (включно з trace-exec.cjs)

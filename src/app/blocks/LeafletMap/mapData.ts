@@ -271,7 +271,7 @@ export const initialCategories: Category[] = [
           gradient: "bg-gradient-to-t from-main-blue/100 via-main-blue/45 to-transparent",
           zoom: true,
           iconNames: [
-            { title: "instagram", link: "https://www.instagram.com/racaria_folklore_stories2025?igsh=MWdtaGlheDQ3MXQzeA%3D%3D" },
+            { title: "instagram", link: "https://www.instagram.com/racaria_fs/" },
             { title: "facebook", link: "https://www.facebook.com/profile.php?id=61577867880160 " },
             { title: "tiktok", link: "" },
             { title: "youtube", link: "" },
