@@ -14,7 +14,7 @@ services:
       resources:
         limits:
           cpus: '1.0'
-          memory: 2.5G
+          memory: 3G
     volumes:
       - .:/app
     entrypoint: /entrypoint.sh
