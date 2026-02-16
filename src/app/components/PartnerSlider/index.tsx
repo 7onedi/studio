@@ -28,17 +28,17 @@ export default function AutoPartnerSlider() {
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
     loop: true,
     slides: { perView: 1, spacing: 16 },
-    drag: false, // прибираємо ручне перетягування
+    drag: true, // прибираємо ручне перетягування
   });
 
   // Автопрокрутка кожні 5 секунд
-  React.useEffect(() => {
-    const timer = setInterval(() => {
-      instanceRef.current?.next();
-    }, 5000);
+  // React.useEffect(() => {
+  //   const timer = setInterval(() => {
+  //     instanceRef.current?.next();
+  //   }, 10000);
 
-    return () => clearInterval(timer);
-  }, [instanceRef]);
+  //   return () => clearInterval(timer);
+  // }, [instanceRef]);
 
   return (
     <div className="w-[342px] lg:w-[516px] overflow-hidden">

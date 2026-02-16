@@ -1,10 +1,10 @@
 #!/bin/sh
+set -e
 
-pnpm install
+echo "NODE_ENV=$NODE_ENV"
 
 if [ "$NODE_ENV" = "production" ]; then
-  pnpm run build
-  pnpm run start
+  exec pnpm run start
 else
-  pnpm run dev
+  exec pnpm run dev
 fi

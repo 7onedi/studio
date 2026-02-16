@@ -5,6 +5,9 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { initialCategories, MarkerInfo, ALL_CATEGORIES_VIEW } from './mapData';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import type { RichTextItem } from "@components/RenderRichText";
+import { renderRichText } from "@components/RenderRichText";
 
 // Явно визначаємо тип для Map View, щоб уникнути помилки TS 'number[]' vs '[number, number]'
 type MapView = {
@@ -128,7 +131,7 @@ export default function MapComponent() {
 
                   {/* Використовуємо <img> замість Next/Image, щоб уникнути помилок в ізольованому середовищі */}
                   <img
-                    src={marker.popupContent.imageUrl}
+                    src={marker.popupContent.Logo}
                     alt={marker.popupContent.title}
                     className="w-full h-auto rounded-lg object-cover"
                     onError={(e) => {
@@ -137,15 +140,30 @@ export default function MapComponent() {
                     }}
                   />
 
-                  <p className="text-sm">{marker.popupContent.description}</p>
+                  {Array.isArray(marker.popupContent.description) && (
+                    <p
+                      dangerouslySetInnerHTML={{ __html: marker.popupContent.description }}
+                      className={`
+                        mt-4
+                        text-body_mobile lg:text-body
+                        line-clamp-3
+                        lg:line-clamp-6
+                        overflow-hidden
+                      `}
+                    />
+                  )}
 
-                  <a
-                    href={marker.popupContent.linkUrl}
-                    target="_blank"
-                    className="text-blue-600 hover:text-blue-800 font-medium"
-                  >
-                    Перейти за посиланням ↗
-                  </a>
+
+                  {marker.popupContent.linkUrl && (
+                    <Link
+                      href={marker.popupContent.linkUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      Перейти за посиланням ↗
+                    </Link>
+                  )}
                 </div>
               </Popup>
             </Marker>
