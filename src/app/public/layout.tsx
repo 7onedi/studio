@@ -26,11 +26,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Міжкультурна Молодіжна Студія",
-  description: "...",
-};
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className={`${firaSans.variable} ${geistSans.variable} ${geistMono.variable}`}>

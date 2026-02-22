@@ -8,7 +8,7 @@ export const categories = [
     pattern: "/categories/cetegory1_pattern.webp",
     gradient: "from-main-blue/60 to-main-blue/60",
     hoverGradient: "from-main-blue/40 to-main-blue/40",
-    link: "/Countrysidestudio",
+    link: "/public/Countrysidestudio",
     description: ['Метою ', { strong: "#CountrysideStudio" }, ' є розвиток,тестування та розширення методології роботи з сільською молоддю через започаткування регіональних мереж ', { strong: "Молодіжних Фольклорних Клубів" },' у сільських громадах країн учасниць. МФК мають на меті розширення можливостей та залучення молоді та місцевих партнерів із сільської місцевості до процесу аматорського медіа-виробництва на тему місцевої культурної спадщини. \n\n',
       'Молоді учасники Молодіжних Фольклорних Клубів фактично займаються дослідженням та популяризацією місцевої культурної спадщини, передаючи її через сучасні формати контенту у соц.мережах, зберігаючи її для он-лайн аудиторій. У громадах вони самоорганізовують культурно-мистецькі події і розвиваються у лідерів спільнот.\n\n',
     ],
@@ -20,7 +20,7 @@ export const categories = [
     pattern: "/categories/cetegory2_pattern.webp",
     gradient: "from-main-amarant/60 to-main-amarant/60",
     hoverGradient: "from-main-amarant/40 to-main-amarant/40",
-    link: "/Youthinsight",
+    link: "/public/Youthinsight",
     description: [
       "Фестиваль ",
       { strong: "YouthInsight" },
@@ -42,7 +42,7 @@ export const categories = [
     pattern: "/categories/cetegory3_pattern.webp",
     gradient: "from-main-blue/60 to-main-blue/60",
     hoverGradient: "from-main-blue/40 to-main-blue/40",
-    link: "/Mozaika",
+    link: "/public/Mozaika",
     description: [{ strong: "MOZAЇKA" }, ' - перший міжкультурний журнал Вінниці. Дописувачі це іноземці, гості нашого міста та люди, що перебувають у вирі міжкультурних тусовок Вінниці. Вони бачать місто зі свого незаангажованого та специфічного кута, підіймають сучасні, а також теми з історії Вінниці. Через журнал ми просуваємо міжетнічну та міжнаціональну дружбу, зближуємо людей та розповіаємо історію одного міста.'],
   },
   {
@@ -52,7 +52,7 @@ export const categories = [
     pattern: "/categories/cetegory4_pattern.webp",
     gradient: "from-main-amarant/60 to-main-amarant/60",
     hoverGradient: "from-main-amarant/40 to-main-amarant/40",
-    link: "/MoversAndShakers",
+    link: "/public/MoversAndShakers",
     description: [{ strong: "MOVERS&SHAKERS" }, ' - це англомовний аматорський театр, котрий працює на міжнародному рівні, підіймаючи важливі соціальні теми. Учасники це часто люди без досвіду, котрі шукають нагоди спробувати себе акторами, розкрити свій потенціал та потренувати власні м’які навички як public speaking, співпраця в командах і т.д. Також ', { strong: "MOVERS&SHAKERS" }, ' це спільнота осіб, котрі готові до креативу та шаленого драйву у своїх перфомансах, що захоплюють!'],
   },
 ];

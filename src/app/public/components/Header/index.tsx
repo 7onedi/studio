@@ -9,8 +9,8 @@ import { Button } from "@/app/public/components/Button";
 import styles from "./Header.module.scss";
 
 export const navButtons = [
-  { name: "Про мережу", link: "/AboutNetwork" },
-  { name: "Методика", link: "/Methodology" },
+  { name: "Про мережу", link: "/public/AboutNetwork" },
+  { name: "Методика", link: "/public/Methodology" },
   { name: "Напрямки", anchor: "directions" },
   { name: "Місця", anchor: "places" },
 ] as const;

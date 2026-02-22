@@ -46,7 +46,7 @@ export default function ArticleMfkList({
       {visibleItems.map(item => (
         <Link
           key={item.meta.slug}
-          href={`/Article/${item.meta.slug}`}
+          href={`/public/Article/${item.meta.slug}`}
           className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 no-underline transition hover:bg-white/10"
         >
           {/* IMAGE */}

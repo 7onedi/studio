@@ -92,7 +92,7 @@ export default function MfkList({ markers, id }: MfkListProps) {
 
     <div className="flex flex-col gap-8 md:hidden">
       {mobileItems.map((item, index) => (
-        <Link key={index} href={`${(id === "#mfk") ? "/Mfk" : "/Festival"}/${item.slug}`}>
+        <Link key={index} href={`${(id === "#mfk") ? "/public/Mfk" : "/public/Festival"}/${item.slug}`}>
           {Card(item)}
         </Link>
       ))}
@@ -152,7 +152,7 @@ export default function MfkList({ markers, id }: MfkListProps) {
               }}
             >
               {row.map((item, index) => (
-                <Link key={index} href={`${(id === "#mfk") ? "/Mfk" : "/Festival"}/${item.slug}`}>
+                <Link key={index} href={`${(id === "#mfk") ? "/public/Mfk" : "/public/Festival"}/${item.slug}`}>
                   {Card(item)}
                 </Link>
               ))}

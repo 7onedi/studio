@@ -3,10 +3,10 @@ import styles from "./Footer.module.scss";
 import Link from 'next/link';
 
 export const navButtons = [
-  {name:"Про мережу", link:"/AboutNetwork"},
-  {name:"Методика", link:"/Methodology"},
-  {name:"Напрямки", link:"/Directions"},
-  {name:"Місця", link:"/Places"},
+  {name:"Про мережу", link:"/public/AboutNetwork"},
+  {name:"Методика", link:"/public/Methodology"},
+  {name:"Напрямки", link:"/public/Directions"},
+  {name:"Місця", link:"/public/Places"},
 ] as const;
 
 export const contactButtons = [

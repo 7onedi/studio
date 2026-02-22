@@ -47,7 +47,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ meta, hero, onLoad }) => {
   return (
     <div className="flex h-full flex-col">
       <div className="relative flex-grow overflow-hidden rounded-xl group">
-        <Link href={`/Article/${meta.slug}`} className="block h-full w-full">
+        <Link href={`/public/Article/${meta.slug}`} className="block h-full w-full">
           <Image
             src={hero.img}
             alt={meta.title}

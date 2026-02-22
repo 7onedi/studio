@@ -71,7 +71,7 @@ export default function SliderHero() {
                 {s.meta.title}
               </div>
               <Link
-                href={`/Article/${s.meta.slug}`}
+                href={`/public/Article/${s.meta.slug}`}
                 className="absolute bottom-8 left-16 lg:relative lg:bottom-0 lg:left-0 z-20"
               >
                 <Button variant="secondary-alt">
