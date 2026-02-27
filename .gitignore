@@ -48,5 +48,3 @@ mysql-data/
 app/generated/prisma
 
 /generated/prisma
-
-/generated/prisma
