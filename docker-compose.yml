@@ -6,8 +6,8 @@ services:
     working_dir: /app
     env_file: .env
 
-    environment:
-      NODE_ENV: production
+    volumes:
+      - ./prisma:/app/prisma
 
     restart: always
 
@@ -16,6 +16,7 @@ services:
 
     tmpfs:
       - /tmp:rw,noexec,nosuid,size=64m
+    stop_grace_period: 60s
 
     logging:
       driver: json-file
@@ -29,7 +30,8 @@ services:
     entrypoint: /entrypoint.sh
 
     depends_on:
-      - studio_pangeya_mysql
+      studio_pangeya_mysql:
+        condition: service_healthy
 
 
   studio_pangeya_nginx:
@@ -50,16 +52,18 @@ services:
     image: mysql:8
     container_name: studio-mysql
     restart: always
-
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: studio
-      MYSQL_USER: studio_user
-      MYSQL_PASSWORD: studio_pass
-      TZ: Europe/Kyiv
+    env_file:
+      - .env
 
     ports:
       - "3306:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+    stop_grace_period: 60s
 
     volumes:
       - studio-mysql-data:/var/lib/mysql
