@@ -33,9 +33,6 @@ RUN apt-get update && apt-get install -y \
 COPY --from=builder /app ./
 COPY --from=builder /app/node_modules ./node_modules
 
-# Установлюємо продакшн-режим
-ENV NODE_ENV=production
-
 # Виставляємо порт
 EXPOSE 3000
 
