@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Avatar,
   Box,
@@ -13,14 +14,79 @@ import {
 
 import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
 
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+}
+
 const Profile = () => {
   const [anchorEl2, setAnchorEl2] = useState(null);
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
+
   const handleClick2 = (event: any) => {
     setAnchorEl2(event.currentTarget);
   };
   const handleClose2 = () => {
     setAnchorEl2(null);
   };
+
+
+  // ✅ load current user
+  useEffect(() => {
+
+    const loadUser = async () => {
+
+      try {
+
+        const res =
+          await fetch(
+            "/api/auth/me",
+            {
+              credentials:
+                "include",
+            }
+          );
+
+        if (!res.ok)
+          return;
+
+        const data =
+          await res.json();
+
+        setUser(data);
+
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    loadUser();
+
+  }, []);
+  {/* ------------------------------------------- */}
+  {/* Logout */}
+  {/* ------------------------------------------- */}
+  const handleLogout = async () => {
+    try {
+
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      router.push(
+        "/admin/authentication/login"
+      );
+      router.refresh();
+
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+  
 
   return (
     <Box>
@@ -44,7 +110,9 @@ const Profile = () => {
             width: 35,
             height: 35,
           }}
-        />
+        >
+          {user?.name?.[0]}
+        </Avatar>
       </IconButton>
       {/* ------------------------------------------- */}
       {/* Message Dropdown */}
@@ -67,7 +135,7 @@ const Profile = () => {
           <ListItemIcon>
             <IconUser width={20} />
           </ListItemIcon>
-          <ListItemText>My Profile</ListItemText>
+          <ListItemText>{user?.name}</ListItemText>
         </MenuItem>
         <MenuItem>
           <ListItemIcon>
@@ -79,15 +147,14 @@ const Profile = () => {
           <ListItemIcon>
             <IconListCheck width={20} />
           </ListItemIcon>
-          <ListItemText>My Tasks</ListItemText>
+          <ListItemText>{user?.email}</ListItemText>
         </MenuItem>
         <Box mt={1} py={1} px={2}>
           <Button
-            href="/admin/authentication/login"
             variant="outlined"
             color="primary"
-            component={Link}
             fullWidth
+            onClick={handleLogout}
           >
             Logout
           </Button>
