@@ -6,7 +6,7 @@ export const loginUser = (username: string, password: string) => {
   const users = JSON.parse(getCookie("users") as string || "[]");
   const user = users.find((u: any) => u.username === username && u.password === password);
   if (user) {
-    setCookie("admin_token", user.username, { maxAge: 60 * 60 * 24 }); // 1 день
+    setCookie("token", user.username, { maxAge: 60 * 60 * 24 }); // 1 день
     return true;
   }
   return false;
@@ -21,7 +21,7 @@ export const registerUser = (username: string, password: string) => {
 };
 
 export const logoutUser = () => {
-  deleteCookie("admin_token");
+  deleteCookie("token");
 };
 
-export const isLoggedIn = () => !!getCookie("admin_token");
+export const isLoggedIn = () => !!getCookie("token");

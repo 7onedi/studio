@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -7,6 +9,7 @@ import {
   Button,
   Stack,
   Checkbox,
+  Alert,
 } from "@mui/material";
 import Link from "next/link";
 import CustomTextField from "../../(DashboardLayout)/components/forms/theme-elements/CustomTextField";
@@ -15,7 +18,7 @@ interface LoginProps {
   title?: string;
   subtitle?: React.ReactNode;
   subtext?: React.ReactNode;
-  onSubmit?: () => void;
+  onSubmit?: (data: { email: string; password: string }) => Promise<void>;
 }
 
 const AuthLogin: React.FC<LoginProps> = ({
@@ -24,13 +27,37 @@ const AuthLogin: React.FC<LoginProps> = ({
   subtext,
   onSubmit,
 }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  // ✅ помилки для полів
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
+  // глобальна помилка
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    setErrors({});
+    setFormError(null);
+
+    try {
+      if (onSubmit) {
+        await onSubmit({ email, password });
+      }
+    } catch (err: any) {
+      // якщо бекенд повернув JSON з errors
+      if (err?.errors) {
+        setErrors(err.errors);
+      } else if (err?.message) {
+        setFormError(err.message);
+      } else {
+        setFormError("Login failed");
+      }
+    }
+  };
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit?.();
-      }}
-    >
+    <form onSubmit={handleSubmit}>
       {title && (
         <Typography fontWeight="700" variant="h2" mb={1}>
           {title}
@@ -38,6 +65,9 @@ const AuthLogin: React.FC<LoginProps> = ({
       )}
 
       {subtext}
+
+      {/* глобальна помилка */}
+      {formError && <Alert severity="error">{formError}</Alert>}
 
       <Stack>
         <Box>
@@ -48,12 +78,14 @@ const AuthLogin: React.FC<LoginProps> = ({
             htmlFor="username"
             mb="5px"
           >
-            Username
+            Email
           </Typography>
           <CustomTextField
-            id="username"
-            variant="outlined"
             fullWidth
+            value={email}
+            onChange={(e: any) => setEmail(e.target.value)}
+            error={!!errors.email}
+            helperText={errors.email?.[0]}
           />
         </Box>
 
@@ -68,10 +100,12 @@ const AuthLogin: React.FC<LoginProps> = ({
             Password
           </Typography>
           <CustomTextField
-            id="password"
             type="password"
-            variant="outlined"
             fullWidth
+            value={password}
+            onChange={(e: any) => setPassword(e.target.value)}
+            error={!!errors.password}
+            helperText={errors.password?.[0]}
           />
         </Box>
 

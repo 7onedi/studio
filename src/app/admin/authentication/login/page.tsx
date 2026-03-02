@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { setCookie } from "cookies-next";
 import Link from "next/link";
 import { Grid, Box, Card, Stack, Typography } from "@mui/material";
 
@@ -12,14 +11,33 @@ import AuthLogin from "../auth/AuthLogin";
 const Login2 = () => {
   const router = useRouter();
 
-  const handleLogin = () => {
-    // тут поки fake login
-    setCookie("admin_token", "logged_in", {
-      maxAge: 60 * 60 * 24, // 1 день
+const handleLogin = async (data: { email: string; password: string }) => {
+  try {
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
     });
 
+    const result = await res.json();
+
+    if (!res.ok) {
+      // якщо повертає Zod помилки
+      if (result.errors) throw { errors: result.errors };
+      // якщо просто повідомлення
+      if (result.message) throw { message: result.message };
+      throw new Error("Login failed");
+    }
+
+    // Токен можна зберігати
+    localStorage.setItem("token", result.token);
+
     router.push("/admin");
-  };
+  } catch (err: any) {
+    // кинемо помилку далі в AuthLogin, щоб показати Alert
+    throw err;
+  }
+};
 
   return (
     <PageContainer title="Login" description="Admin login page">

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Alert, Typography, Button } from "@mui/material";
 import { Stack } from "@mui/system";
 import { useRouter } from "next/navigation";
 import { setCookie } from "cookies-next";
@@ -21,24 +21,51 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleRegister = () => {
-    if (!name || !email || !password) {
-      alert("Please fill all fields");
-      return;
-    }
+  // ✅ errors state
+  const [errors, setErrors] =
+    useState<
+      Record<string, string[]>
+    >({});
 
-    // зберігаємо користувача (тимчасово)
-    const user = { name, email, password };
-    localStorage.setItem("user", JSON.stringify(user));
+  const [formError, setFormError] =
+    useState<string | null>(
+      null
+    );
 
-    // ставимо cookie
-    setCookie("admin_token", "registered", {
-      maxAge: 60 * 60 * 24,
+  const handleRegister = async () => {
+    setErrors({});
+    setFormError(null);
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+      }),
     });
 
-    // редірект
-    router.push("/admin");
-  };
+    const result = await res.json();
+    if (!res.ok) {
+
+        // ✅ Zod errors
+        if (result.errors) {
+          setErrors(
+            result.errors
+          );
+        }
+
+        // ✅ generic error
+        if (result.message) {
+          setFormError(
+            result.message
+          );
+        }
+
+        return;
+      }
+
+      router.push("/admin");
+    };
 
   return (
     <>
@@ -50,6 +77,13 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
 
       {subtext}
 
+      {/* global error */}
+      {formError && (
+        <Alert severity="error">
+          {formError}
+        </Alert>
+      )}
+
       <Box>
         <Stack mb={3}>
           <Typography fontWeight={600} component="label" mb="5px">
@@ -59,6 +93,13 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
             fullWidth
             value={name}
             onChange={(e: any) => setName(e.target.value)}
+            error={
+              !!errors.name
+            }
+
+            helperText={
+              errors.name?.[0]
+            }
           />
 
           <Typography fontWeight={600} component="label" mb="5px" mt="25px">
@@ -68,6 +109,12 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
             fullWidth
             value={email}
             onChange={(e: any) => setEmail(e.target.value)}
+            error={
+              !!errors.email
+            }
+            helperText={
+              errors.email?.[0]
+            }
           />
 
           <Typography fontWeight={600} component="label" mb="5px" mt="25px">
@@ -78,6 +125,12 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
             fullWidth
             value={password}
             onChange={(e: any) => setPassword(e.target.value)}
+            error={
+              !!errors.password
+            }
+            helperText={
+              errors.password?.[0]
+            }
           />
         </Stack>
 
