@@ -22,7 +22,7 @@ export async function GET() {
 
     const user =
       await userRepository.findById(
-        payload.userId
+        payload.id
       );
 
     if (!user)

@@ -1,0 +1,295 @@
+import path from "path";
+import fs from "fs";
+
+// === Налаштування ===
+const BASE_URL = "http://localhost:3000";
+const LOGIN_EMAIL = "test@gmail.com";
+const LOGIN_PASSWORD = "qwerty123";
+
+async function getToken() {
+  const res = await fetch(`${BASE_URL}/api/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: LOGIN_EMAIL, password: LOGIN_PASSWORD }),
+  });
+
+  const data = await res.json();
+
+  if (res.headers.get("set-cookie")) {
+    const cookie = res.headers.get("set-cookie")!;
+    return cookie.split(";")[0].split("=")[1];
+  }
+
+  if (data.token) return data.token;
+
+  throw new Error("Не вдалося отримати токен");
+}
+
+async function run() {
+  const token = await getToken();
+  console.log("Token:", token);
+
+  const headers = {
+    "Content-Type": "application/json",
+    Cookie: `token=${token}`,
+  };
+
+  // =========================
+  // CREATE CATEGORY
+  // =========================
+  const categoryRes = await fetch(`${BASE_URL}/api/categories`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      name: "Test Category " + Date.now(),
+    }),
+  });
+
+  const category = await categoryRes.json();
+  console.log("CATEGORY:", category);
+
+  const categoryId = category.id;
+
+  // =========================
+  // CREATE SUBCATEGORY
+  // =========================
+  const subcategoryRes = await fetch(`${BASE_URL}/api/subcategories`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      name: "Test Subcategory " + Date.now(),
+      categoryId, // підключаємо до категорії
+    }),
+  });
+
+  const subcategory = await subcategoryRes.json();
+  console.log("SUBCATEGORY:", subcategory);
+
+  const subcategoryId = subcategory.id;
+
+  // =========================
+  // CREATE ARTICLE
+  // =========================
+  const createRes = await fetch(`${BASE_URL}/api/articles`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      title: "Тестова стаття " + Date.now(),
+      lang: "EN",
+      body: { blocks: [] },
+      authorName: "Admin",
+      categoryId,
+      subcategoryIds: [subcategoryId], // підключаємо до статті
+      tags: [{ name: "test-tag" + Date.now() }],
+    }),
+  });
+
+  const article = await createRes.json();
+  console.log("CREATE ARTICLE:", article);
+
+  const articleId = article.id;
+
+  // =========================
+  // PATCH ARTICLE
+  // =========================
+  const patchRes = await fetch(`${BASE_URL}/api/articles/${articleId}`, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify({
+      title: "Bobr " + Date.now(),
+    }),
+  });
+
+  const updated = await patchRes.json();
+  console.log("PATCH:", updated.title);
+
+  // =========================
+  // PUBLISH ARTICLE
+  // =========================
+  // const publishRes = await fetch(`${BASE_URL}/api/articles/publish`, {
+  //   method: "POST",
+  //   headers,
+  //   body: JSON.stringify({ id: articleId }),
+  // });
+
+  // const published = await publishRes.json();
+  // console.log("PUBLISH:", published.message || published);
+
+// =========================
+// SEARCH ARTICLES (filter by title)
+// =========================
+const searchRes = await fetch(
+  `${BASE_URL}/api/articles/search?page=1&limit=15&sortBy=createdAt&order=desc&published=true`,
+);
+const searchData = (await parseJSONSafe(searchRes)) || {};
+const searchResults = Array.isArray(searchData.data) ? searchData.data : [];
+
+console.log("SEARCH:", searchResults.length, "articles found");
+console.log("TOTAL found:", searchData.total ?? 0);
+console.log("Current page:", searchData.page ?? 1, "/", searchData.pages ?? 1);
+
+// Додатково лог id та title
+console.log(
+  "Found IDs:",
+  searchResults.map((a: any) => a.id)
+);
+console.log(
+  "Found Titles:",
+  searchResults.map((a: any) => a.title)
+);
+
+// =========================
+// SEARCH CATEGORIES
+// =========================
+const catSearchRes = await fetch(
+  `${BASE_URL}/api/categories/search?name=Test&page=1&limit=7`
+);
+
+const catSearchData = (await parseJSONSafe(catSearchRes)) || {};
+const catResults = Array.isArray(catSearchData.data) ? catSearchData.data : [];
+
+console.log("CATEGORY SEARCH:", catResults.length);
+console.log("TOTAL categories:", catSearchData.total ?? 0);
+console.log("Current page:", catSearchData.page ?? 1, "/", catSearchData.pages ?? 1);
+
+console.log(
+  "Category IDs:",
+  catResults.map((c: any) => c.id)
+);
+
+console.log(
+  "Category names:",
+  catResults.map((c: any) => c.name)
+);
+
+// =========================
+// SEARCH SUBCATEGORIES
+// =========================
+const subSearchRes = await fetch(
+  `${BASE_URL}/api/subcategories/search?name=Test&page=2&limit=6`
+);
+
+const subSearchData = (await parseJSONSafe(subSearchRes)) || {};
+const subResults = Array.isArray(subSearchData.data) ? subSearchData.data : [];
+
+console.log("SUBCATEGORY SEARCH:", subResults.length);
+console.log("TOTAL subcategories:", subSearchData.total ?? 0);
+console.log("Current page:", subSearchData.page ?? 1, "/", subSearchData.pages ?? 1);
+console.log(
+  "Subcategory IDs:",
+  subResults.map((s: any) => s.id)
+);
+
+console.log(
+  "Subcategory names:",
+  subResults.map((s: any) => s.name)
+);
+
+// =========================
+// SEARCH SUBCATEGORIES BY CATEGORY
+// =========================
+const subCatSearchRes = await fetch(
+  `${BASE_URL}/api/subcategories/search?categoryId=${categoryId}&page=1&limit=10`
+);
+
+const subCatSearchData = (await parseJSONSafe(subCatSearchRes)) || {};
+const subCatResults = Array.isArray(subCatSearchData.data)
+  ? subCatSearchData.data
+  : [];
+
+console.log("SUBCATEGORY BY CATEGORY:", subCatResults.length);
+console.log("Current page:", subCatSearchData.page ?? 1, "/", subCatSearchData.pages ?? 1);
+console.log(
+  "Subcategory IDs:",
+  subCatResults.map((s: any) => s.id)
+);
+
+// =========================
+// SEARCH TAGS
+// =========================
+const tagSearchRes = await fetch(
+  `${BASE_URL}/api/tags/search?name=test&page=2&limit=5`
+);
+
+const tagSearchData = (await parseJSONSafe(tagSearchRes)) || {};
+const tagResults = Array.isArray(tagSearchData.data) ? tagSearchData.data : [];
+
+console.log("TAG SEARCH:", tagResults.length);
+console.log("TOTAL tags:", tagSearchData.total ?? 0);
+console.log("Current page:", tagSearchData.page ?? 1, "/", tagSearchData.pages ?? 1);
+console.log(
+  "Tag IDs:",
+  tagResults.map((t: any) => t.id)
+);
+
+console.log(
+  "Tag names:",
+  tagResults.map((t: any) => t.name)
+);
+
+
+
+// =========================
+// MEDIA UPLOAD
+// =========================
+const imagePath = path.join(process.cwd(), "test-images.jpeg"); // поклади файл поруч з тестом
+const imageBuffer = fs.readFileSync(imagePath);
+
+const formData = new FormData();
+formData.append(
+  "file",
+  new Blob([imageBuffer], { type: "image/jpeg" }),
+  "test-image.jpg"
+);
+
+const uploadRes = await fetch(`${BASE_URL}/api/media`, {
+  method: "POST",
+  headers: {
+    Cookie: `token=${token}`,
+  },
+  body: formData,
+});
+
+const uploadedMedia = await uploadRes.json();
+
+console.log("MEDIA UPLOAD:", uploadedMedia);
+
+const mediaId = uploadedMedia.id;
+
+// =========================
+// MEDIA LIST
+// =========================
+const mediaListRes = await fetch(`${BASE_URL}/api/media`);
+const mediaList = await mediaListRes.json();
+
+console.log("MEDIA COUNT:", mediaList.length);
+
+console.log(
+  "MEDIA IDS:",
+  mediaList.map((m: any) => m.id)
+);
+
+// =========================
+// MEDIA DELETE
+// =========================
+// const deleteMediaRes = await fetch(`${BASE_URL}/api/media/${mediaId}`, {
+//   method: "DELETE",
+//   headers,
+// });
+
+// const deletedMedia = await deleteMediaRes.json();
+
+// console.log("MEDIA DELETE:", deletedMedia);
+
+  console.log("✅ Тести завершені");
+}
+
+run().catch(console.error);
+
+async function parseJSONSafe(res: Response) {
+  try {
+    return await res.json();
+  } catch {
+    return [];
+  }
+}

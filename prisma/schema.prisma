@@ -13,14 +13,100 @@ enum UserRole {
   ADMIN
 }
 
-model User {
+enum ArticleLang {
+  UK
+  EN
+  PL
+  LT
+  RO
+}
 
-  id           Int       @id @default(autoincrement())
-  email        String    @unique
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
   name         String?
   passwordHash String
-  role         UserRole  @default(USER)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  role         UserRole @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
+  media    Media[]
+  articles Article[]
+}
+
+model Article {
+  id Int @id @default(autoincrement())
+
+  slug  String      @unique
+  title String
+  lang  ArticleLang
+
+  body Json
+
+  authorName String
+
+  authorId Int
+  author   User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  imageId Int?
+  image   Media? @relation(fields: [imageId], references: [id])
+
+  subcategories Subcategory[] @relation("ArticleSubcategories")
+
+  tags Tag[]
+
+  published   Boolean   @default(false)
+  publishedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([categoryId, published])
+}
+
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  slug String @unique
+
+  articles      Article[]
+  subcategories Subcategory[]
+}
+
+model Subcategory {
+  id   Int    @id @default(autoincrement())
+  name String
+  slug String
+
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  articles Article[] @relation("ArticleSubcategories")
+
+  @@unique([slug, categoryId])
+}
+
+model Tag {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  slug String @unique
+
+  articles Article[]
+}
+
+model Media {
+  id       Int    @id @default(autoincrement())
+  url      String
+  filename String
+  mimeType String
+  size     Int
+
+  uploaderId Int
+  uploader   User @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime  @default(now())
+  articles  Article[]
 }

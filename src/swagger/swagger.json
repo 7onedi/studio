@@ -1,0 +1,715 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Auth API for Studio",
+    "version": "1.0.0",
+    "description": "Ендпоінти для роботи з авторизацією та управлінням контенту в системі Studio"
+  },
+  "paths": {
+    "/api/auth/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Реєстрація нового користувача",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "John Doe" },
+                  "email": { "type": "string", "example": "john@example.com" },
+                  "password": { "type": "string", "example": "qwerty123" }
+                },
+                "required": ["name", "email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Користувач успішно створений",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Помилка валідації",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Логін користувача",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "example": "john@example.com" },
+                  "password": { "type": "string", "example": "qwerty123" }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Логін успішний, повертає токен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": { "type": "string", "example": "eyJhbGciOi..." }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Невірний email або пароль",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Вихід користувача",
+        "responses": {
+          "200": {
+            "description": "Успішний вихід",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Logged out successfully" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Отримати поточного користувача",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "string", "example": "Bearer <token>" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Поточний користувач",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "401": {
+            "description": "Невалідний або відсутній токен",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/articles": {
+      "post": {
+        "tags": ["Articles"],
+        "summary": "Створити нову статтю",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateArticleInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Стаття створена",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Article" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/api/articles/search": {
+      "get": {
+        "tags": ["Articles"],
+        "summary": "Пошук статей з фільтрацією, пагінацією та сортуванням",
+        "parameters": [
+          { "name": "title", "in": "query", "schema": { "type": "string" }, "required": false },
+          { "name": "lang", "in": "query", "schema": { "type": "string", "enum": ["UK","EN","PL","LT","RO"] }, "required": false },
+          { "name": "categoryId", "in": "query", "schema": { "type": "integer" }, "required": false },
+          { "name": "subcategoryId", "in": "query", "schema": { "type": "integer" }, "required": false },
+          { "name": "published", "in": "query", "schema": { "type": "boolean" }, "required": false },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 }, "required": false },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 }, "required": false },
+          { "name": "sortBy", "in": "query", "schema": { "type": "string", "default": "createdAt" }, "required": false },
+          { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc","desc"], "default": "desc" }, "required": false }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список статей із фільтрацією",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ArticleListResponse" } } }
+          }
+        }
+      }
+    },
+    "/api/articles/{id}": {
+      "get": {
+        "tags": ["Articles"],
+        "summary": "Отримати статтю за ID",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Стаття", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Article" } } } },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "patch": {
+        "tags": ["Articles"],
+        "summary": "Оновити статтю",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateArticleInput" } } } },
+        "responses": {
+          "200": { "description": "Оновлена стаття", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Article" } } } },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "delete": {
+        "tags": ["Articles"],
+        "summary": "Видалити статтю",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": {
+          "200": { "description": "Стаття видалена" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/api/articles/publish": {
+      "post": {
+        "tags": ["Articles"],
+        "summary": "Опублікувати статтю",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PublishArticleInput" } } } },
+        "responses": {
+          "200": { "description": "Стаття опублікована", "content": { "application/json": { "schema": { "type": "object", "properties": { "message": { "type": "string", "example": "Article published" } } } } } },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/api/categories": {
+      "post": {
+        "tags": ["Categories"],
+        "summary": "Створити нову категорію",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateCategoryInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Категорія створена",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Category" }
+              }
+            }
+          },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/api/categories/search": {
+      "get": {
+        "tags": ["Categories"],
+        "summary": "Пошук категорій з фільтрацією, пагінацією та сортуванням",
+        "parameters": [
+          { "name": "name", "in": "query", "schema": { "type": "string" }, "description": "Фільтр за назвою категорії", "required": false },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 }, "description": "Номер сторінки", "required": false },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 }, "description": "Кількість категорій на сторінці", "required": false },
+          { "name": "sortBy", "in": "query", "schema": { "type": "string", "default": "name" }, "description": "Поле для сортування", "required": false },
+          { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc","desc"], "default": "asc" }, "description": "Напрямок сортування", "required": false }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список категорій із фільтрацією",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CategoryListResponse" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/api/categories/{id}": {
+      "get": {
+        "tags": ["Categories"],
+        "summary": "Отримати категорію за id",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Категорія", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Category" } } } },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "patch": {
+        "tags": ["Categories"],
+        "summary": "Оновити категорію",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateCategoryInput" } } }
+        },
+        "responses": {
+          "200": { "description": "Категорія оновлена", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Category" } } } },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      },
+      "delete": {
+        "tags": ["Categories"],
+        "summary": "Видалити категорію",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "204": { "description": "Категорія видалена" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/api/subcategories": {
+      "post": {
+        "tags": ["Subcategories"],
+        "summary": "Створити підкатегорію",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateSubcategoryInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Підкатегорія створена",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Subcategory" }
+              }
+            }
+          },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/api/subcategories/search": {
+      "get": {
+        "tags": ["Subcategories"],
+        "summary": "Пошук підкатегорій з фільтрацією, пагінацією та сортуванням",
+        "parameters": [
+          { "name": "name", "in": "query", "schema": { "type": "string" }, "description": "Фільтр за назвою підкатегорії", "required": false },
+          { "name": "categoryId", "in": "query", "schema": { "type": "integer" }, "description": "Фільтр по категорії", "required": false },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 }, "description": "Номер сторінки", "required": false },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 }, "description": "Кількість підкатегорій на сторінці", "required": false },
+          { "name": "sortBy", "in": "query", "schema": { "type": "string", "default": "name" }, "description": "Поле для сортування", "required": false },
+          { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc","desc"], "default": "asc" }, "description": "Напрямок сортування", "required": false }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список підкатегорій із фільтрацією",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SubcategoryListResponse" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/api/subcategories/{id}": {
+      "get": {
+        "tags": ["Subcategories"],
+        "summary": "Отримати підкатегорію за id",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "200": { "description": "Підкатегорія", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Subcategory" } } } } }
+      },
+      "patch": {
+        "tags": ["Subcategories"],
+        "summary": "Оновити підкатегорію",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateSubcategoryInput" } } } },
+        "responses": { "200": { "description": "Підкатегорія оновлена", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Subcategory" } } } } }
+      },
+      "delete": {
+        "tags": ["Subcategories"],
+        "summary": "Видалити підкатегорію",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "204": { "description": "Підкатегорія видалена" }, "403": { "$ref": "#/components/responses/Forbidden" } }
+      }
+    },
+    "/api/tags": {
+      "post": {
+        "tags": ["Tags"],
+        "summary": "Створити тег",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateTagInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Тег створено",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Tag" }
+              }
+            }
+          },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/api/tags/search": {
+      "get": {
+        "tags": ["Tags"],
+        "summary": "Пошук тегів з фільтрацією, пагінацією та сортуванням",
+        "parameters": [
+          { "name": "name", "in": "query", "schema": { "type": "string" }, "description": "Фільтр за назвою тегу", "required": false },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 }, "description": "Номер сторінки", "required": false },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 }, "description": "Кількість тегів на сторінці", "required": false },
+          { "name": "sortBy", "in": "query", "schema": { "type": "string", "default": "name" }, "description": "Поле для сортування", "required": false },
+          { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc","desc"], "default": "asc" }, "description": "Напрямок сортування", "required": false }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список тегів із фільтрацією",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TagListResponse" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/api/tags/{id}": {
+      "get": {
+        "tags": ["Tags"],
+        "summary": "Отримати тег за id",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "200": { "description": "Тег", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Tag" } } } } }
+      },
+      "patch": {
+        "tags": ["Tags"],
+        "summary": "Оновити тег",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateTagInput" } } } },
+        "responses": { "200": { "description": "Тег оновлено", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Tag" } } } } }
+      },
+      "delete": {
+        "tags": ["Tags"],
+        "summary": "Видалити тег",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "204": { "description": "Тег видалено" }, "403": { "$ref": "#/components/responses/Forbidden" } }
+      }
+    },
+    "/api/media": {
+      "get": {
+        "tags": ["Media"],
+        "summary": "Отримати список всіх медіа",
+        "responses": {
+          "200": {
+            "description": "Список медіа",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MediaListResponse" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Media"],
+        "summary": "Завантажити файл",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": { "type": "string", "format": "binary" }
+                },
+                "required": ["file"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Файл завантажено",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Media" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "400": { "$ref": "#/components/responses/BadRequest" }
+        }
+      }
+    },
+    "/api/media/{id}": {
+      "delete": {
+        "tags": ["Media"],
+        "summary": "Видалити медіа за id",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "204": { "description": "Медіа видалено" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "name": { "type": "string", "example": "John Doe" },
+          "email": { "type": "string", "example": "john@example.com" },
+          "role": { "type": "string", "enum": ["USER", "EDITOR", "ADMIN"], "example": "USER" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id", "email", "role", "createdAt", "updatedAt"]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "Error message" },
+          "statusCode": { "type": "integer", "example": 400 }
+        }
+      },
+      "Article": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "slug": { "type": "string" },
+          "title": { "type": "string" },
+          "lang": { "type": "string", "enum": ["UK","EN","PL","LT","RO"] },
+          "body": { "type": "object" },
+          "authorName": { "type": "string" },
+          "author": { "type": "object", "properties": { "id": { "type": "integer" }, "name": { "type": "string" }, "email": { "type": "string" } } },
+          "category": { "type": "object", "properties": { "id": { "type": "integer" }, "name": { "type": "string" } } },
+          "subcategories": { "type": "array", "items": { "type": "object", "properties": { "id": { "type": "integer" }, "name": { "type": "string" } } } },
+          "tags": { "type": "array", "items": { "type": "object", "properties": { "id": { "type": "integer" }, "name": { "type": "string" } } } },
+          "image": { "type": "object", "nullable": true, "properties": { "id": { "type": "integer" }, "url": { "type": "string" } } },
+          "published": { "type": "boolean" },
+          "publishedAt": { "type": "string", "format": "date-time", "nullable": true },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CreateArticleInput": { "$ref": "#/components/schemas/UpdateArticleInput" },
+      "UpdateArticleInput": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "lang": { "type": "string", "enum": ["UK","EN","PL","LT","RO"] },
+          "body": { "type": "object" },
+          "authorName": { "type": "string" },
+          "categoryId": { "type": "integer" },
+          "subcategoryIds": { "type": "array", "items": { "type": "integer" } },
+          "tags": { "type": "array", "items": { "type": "object", "properties": { "name": { "type": "string" } } } }
+        }
+      },
+      "PublishArticleInput": { "type": "object", "properties": { "id": { "type": "integer" } } },
+      "ArticleListResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Article" } },
+          "total": { "type": "integer" },
+          "page": { "type": "integer" },
+          "limit": { "type": "integer" },
+          "pages": { "type": "integer" }
+        }
+      },
+      "Unauthorized": { "type": "object", "properties": { "message": { "type": "string" }, "statusCode": { "type": "integer", "example": 401 } } },
+      "Forbidden": { "type": "object", "properties": { "message": { "type": "string" }, "statusCode": { "type": "integer", "example": 403 } } },
+      "NotFound": { "type": "object", "properties": { "message": { "type": "string" }, "statusCode": { "type": "integer", "example": 404 } } },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "slug": { "type": "string" },
+          "articles": { "type": "array", "items": { "$ref": "#/components/schemas/Article" } },
+          "subcategories": { "type": "array", "items": { "$ref": "#/components/schemas/Subcategory" } }
+        }
+      },
+      "CreateCategoryInput": { "type": "object", "properties": { "name": { "type": "string" } } },
+      "UpdateCategoryInput": { "type": "object", "properties": { "name": { "type": "string" } } },
+      "CategoryListResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Category" } },
+          "total": { "type": "integer" },
+          "page": { "type": "integer" },
+          "limit": { "type": "integer" },
+          "pages": { "type": "integer" }
+        }
+      },
+      "Subcategory": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "slug": { "type": "string" },
+          "categoryId": { "type": "integer" },
+          "category": { "$ref": "#/components/schemas/Category" },
+          "articles": { "type": "array", "items": { "$ref": "#/components/schemas/Article" } }
+        }
+      },
+      "CreateSubcategoryInput": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "categoryId": { "type": "integer" }
+        },
+        "required": ["name", "categoryId"]
+      },
+      "UpdateSubcategoryInput": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "categoryId": { "type": "integer" }
+        }
+      },
+      "SubcategoryListResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Subcategory" } },
+          "total": { "type": "integer" },
+          "page": { "type": "integer" },
+          "limit": { "type": "integer" },
+          "pages": { "type": "integer" }
+        }
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "slug": { "type": "string" },
+          "articles": { "type": "array", "items": { "$ref": "#/components/schemas/Article" } }
+        }
+      },
+      "CreateTagInput": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" }
+        },
+        "required": ["name"]
+      },
+      "UpdateTagInput": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" }
+        }
+      },
+      "TagListResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Tag" } },
+          "total": { "type": "integer" },
+          "page": { "type": "integer" },
+          "limit": { "type": "integer" },
+          "pages": { "type": "integer" }
+        }
+      },
+      "Media": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "url": { "type": "string" },
+          "filename": { "type": "string" },
+          "mimeType": { "type": "string" },
+          "size": { "type": "integer" },
+          "uploaderId": { "type": "integer" },
+          "uploader": { "$ref": "#/components/schemas/User" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "MediaListResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Media" } },
+          "total": { "type": "integer" },
+          "page": { "type": "integer" },
+          "limit": { "type": "integer" },
+          "pages": { "type": "integer" }
+        }
+      }
+    }
+  }
+  
+}
