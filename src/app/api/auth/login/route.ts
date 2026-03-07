@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     const { user: userData } = await authController.login(body);
 
     const token = signToken({
-      userId: userData.id,
+      id: userData.id,
       role: userData.role,
     });
 

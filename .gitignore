@@ -48,3 +48,6 @@ mysql-data/
 app/generated/prisma
 
 /generated/prisma
+
+# media uploads
+public/uploads

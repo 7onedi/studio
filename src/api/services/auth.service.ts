@@ -56,7 +56,7 @@ export const authService = {
         );
 
     const token = signToken({
-      userId: user.id,
+      id: user.id,
       role: user.role,
     });
     // console.log("Login successful, token generated", token);
@@ -76,7 +76,7 @@ export const authService = {
 
     const user =
       await userRepository.findById(
-        payload.userId
+        payload.id
       );
 
     if (!user)
