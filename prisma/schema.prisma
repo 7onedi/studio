@@ -74,6 +74,9 @@ model Category {
 
   articles      Article[]
   subcategories Subcategory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
 }
 
 model Subcategory {
@@ -87,6 +90,9 @@ model Subcategory {
   articles Article[] @relation("ArticleSubcategories")
 
   @@unique([slug, categoryId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
 }
 
 model Tag {
@@ -95,6 +101,9 @@ model Tag {
   slug String @unique
 
   articles Article[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
 }
 
 model Media {
