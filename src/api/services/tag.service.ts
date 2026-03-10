@@ -1,61 +1,50 @@
+// tag.service.ts
 import { tagRepository } from "@/api/repositories/tag.repository";
 import { createTagSchema, updateTagSchema } from "@/api/schemas/tag.schema";
-import { ApiError } from "@/api/utils/api-error";
-import { generateUniqueSlug } from "../utils/generate-unique-slug";
+import { canCreateTag, canDeleteTag, canUpdateTag } from "@/api/policies/tag.policy";
+import { generateUniqueSlug } from "@/api/utils/generate-unique-slug";
+import { BaseService } from "./base.service";
 
-export const tagService = {
-    async create(user: any, body: unknown) {
-        if (!user) throw new ApiError(401, "Unauthorized");
-        if (user.role !== "ADMIN" && user.role !== "EDITOR")
-        throw new ApiError(403, "Only ADMIN and EDITOR can create tags");
+export class TagService extends BaseService {
+  constructor() {
+    super(tagRepository);
+  }
 
-        const data = createTagSchema.parse(body);
-        const slug = await generateUniqueSlug(
-        (slug) => tagRepository.existsBySlug(slug),
-            data.name
-        );
-        return tagRepository.create({ ...data, slug });
-    },
+  async create(user: any, body: unknown) {
+    this.assertPolicy(user, canCreateTag);
+    const data = createTagSchema.parse(body);
 
-    async update(user: any, id: number, body: unknown) {
-        if (!user) throw new ApiError(401, "Unauthorized");
-        if (user.role !== "ADMIN" && user.role !== "EDITOR")
-        throw new ApiError(403, "Only ADMIN and EDITOR can update tags");
+    const slug = await generateUniqueSlug(
+      (slug) => this.repository.existsBySlug(slug),
+      data.name
+    );
 
-        const data = updateTagSchema.parse(body);
+    return this.repository.create({ ...data, slug });
+  }
 
-        return tagRepository.update(id, data);
-    },
+  async update(user: any, id: number, body: unknown) {
+    this.assertPolicy(user, canUpdateTag);
+    const data = updateTagSchema.parse(body);
 
-    async delete(user: any, id: number) {
-        if (!user) throw new ApiError(401, "Unauthorized");
-        if (user.role !== "ADMIN" && user.role !== "EDITOR")
-        throw new ApiError(403, "Only ADMIN and EDITOR can delete tags");
+    return this.repository.update(id, data);
+  }
 
-        return tagRepository.delete(id);
-    },
+  async delete(user: any, id: number) {
+    this.assertPolicy(user, canDeleteTag);
+    return this.repository.delete(id);
+  }
 
-    list() {
-        return tagRepository.findMany();
-    },
+  list() {
+    return this.repository.findMany();
+  }
 
-    findById(id: number) {
-        return tagRepository.findById(id);
-    },
+  findById(id: number) {
+    return this.repository.findById(id);
+  }
 
-    findBySlug(slug: string) {
-        return tagRepository.findBySlug(slug);
-    },
-    search(
-        filters: Record<string, any>,
-        options?: { page?: number; limit?: number; sortBy?: string; order?: "asc" | "desc" }
-    ) {
+  findBySlug(slug: string) {
+    return this.repository.findBySlug(slug);
+  }
+}
 
-        const page = options?.page ?? 1;
-        const limit = options?.limit ?? 10;
-        const sortBy = options?.sortBy ?? "name";
-        const order = options?.order ?? "asc";
-
-        return tagRepository.findByFilters(filters, { page, limit, sortBy, order });
-    }
-};
+export const tagService = new TagService();

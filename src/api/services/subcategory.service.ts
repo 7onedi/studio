@@ -1,65 +1,56 @@
 import { subcategoryRepository } from "@/api/repositories/subcategory.repository";
-import { createSubcategorySchema, updateSubcategorySchema, } from "@/api/schemas/subcategory.schema";
-import { ApiError } from "@/api/utils/api-error";
+import { createSubcategorySchema, updateSubcategorySchema } from "@/api/schemas/subcategory.schema";
+import { canCreateSubcategory, canUpdateSubcategory, canDeleteSubcategory } from "@/api/policies/subcategory.policy";
 import { generateUniqueSlug } from "@/api/utils/generate-unique-slug";
+import { BaseService } from "./base.service";
 
-export const subcategoryService = {
-    async create(user: any, body: unknown) {
-        if (!user) throw new ApiError(401, "Unauthorized");
-        if (user.role !== "ADMIN" && user.role !== "EDITOR")
-        throw new ApiError(403, "Only ADMIN or EDITOR can create subcategories");
+class SubcategoryService extends BaseService {
+  constructor() {
+    super(subcategoryRepository);
+  }
 
-        const data = createSubcategorySchema.parse(body);
-        const slug = await generateUniqueSlug(
-        (slug) => subcategoryRepository.existsBySlug(slug),
-            data.name
-        );
-        return subcategoryRepository.create({
-        name: data.name,
-        slug: slug,
-        category: { connect: { id: data.categoryId } },
-        });
-    },
+  async create(user: any, body: unknown) {
+    this.assertPolicy(user, canCreateSubcategory);
 
-    async update(user: any, id: number, body: unknown) {
-        if (!user) throw new ApiError(401, "Unauthorized");
-        if (user.role !== "ADMIN" && user.role !== "EDITOR")
-        throw new ApiError(403, "Only ADMIN or EDITOR can update subcategories");
+    const data = createSubcategorySchema.parse(body);
 
-        const data = updateSubcategorySchema.parse(body);
+    const slug = await generateUniqueSlug(
+      (slug) => subcategoryRepository.existsBySlug(slug),
+      data.name
+    );
+    const { categoryId, ...rest } = data;
+    return this.repository.create({
+      ...rest,
+      slug,
+      category: { connect: { id: categoryId } },
+    });
+  }
 
-        return subcategoryRepository.update(id, data);
-    },
+  async update(user: any, id: number, body: unknown) {
+    this.assertPolicy(user, canUpdateSubcategory);
 
-    async delete(user: any, id: number) {
-        if (!user) throw new ApiError(401, "Unauthorized");
-        if (user.role !== "ADMIN" && user.role !== "EDITOR")
-        throw new ApiError(403, "Only ADMIN or EDITOR can delete subcategories");
+    const data = updateSubcategorySchema.partial().parse(body);
 
-        return subcategoryRepository.delete(id);
-    },
+    return this.repository.update(id, data);
+  }
 
-    list() {
-        return subcategoryRepository.findMany();
-    },
+  async delete(user: any, id: number) {
+    this.assertPolicy(user, canDeleteSubcategory);
 
-    findById(id: number) {
-        return subcategoryRepository.findById(id);
-    },
+    return this.repository.delete(id);
+  }
 
-    findBySlug(slug: string) {
-        return subcategoryRepository.findBySlug(slug);
-    },
-    search(
-        filters: Record<string, any>,
-        options?: { page?: number; limit?: number; sortBy?: string; order?: "asc" | "desc" }
-    ) {
+  findById(id: number) {
+    return this.repository.findById(id);
+  }
 
-        const page = options?.page ?? 1;
-        const limit = options?.limit ?? 10;
-        const sortBy = options?.sortBy ?? "name";
-        const order = options?.order ?? "asc";
+  findBySlug(slug: string) {
+    return this.repository.findBySlug(slug);
+  }
 
-        return subcategoryRepository.findByFilters(filters, { page, limit, sortBy, order });
-    }
-};
+  list() {
+    return this.repository.findMany();
+  }
+}
+
+export const subcategoryService = new SubcategoryService();
