@@ -1,15 +1,16 @@
 import { prisma } from "@/lib/prisma";
-import { hash } from "bcryptjs";
-import { verifyToken } from "../utils/jwt";
-import { da } from "zod/v4/locales";
+import { UserRole } from "generated/prisma/enums";
+import { SearchConcern } from "@/api/concerns/search.concern";
+import { UserQueryBuilder } from "@/api/builders/user.query.builder";
 
 export const userRepository = {
+  ...SearchConcern(prisma.user, UserQueryBuilder),
+
   async create(data: {
     name: string;
     email: string;
     password: string;
   }) {
- 
     return prisma.user.create({
       data: {
         name: data.name,
@@ -36,4 +37,18 @@ export const userRepository = {
       },
     });
   },
+
+  update(id: number, data: any) {
+    return prisma.user.update({
+      where: { id },
+      data,
+    });
+  },
+
+  async updateRole(userId: number, role: UserRole) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: { role },
+    });
+  }
 };
