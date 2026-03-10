@@ -145,6 +145,109 @@
         }
       }
     },
+    "/api/users/search": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Пошук користувачів з фільтрацією, пагінацією та сортуванням",
+        "parameters": [
+          { "name": "name", "in": "query", "schema": { "type": "string" }, "required": false },
+          { "name": "email", "in": "query", "schema": { "type": "string" }, "required": false },
+          { "name": "role", "in": "query", "schema": { "type": "string", "enum": ["USER","EDITOR","ADMIN"] }, "required": false },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 }, "required": false },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 }, "required": false },
+          { "name": "sortBy", "in": "query", "schema": { "type": "string", "default": "createdAt" }, "required": false },
+          { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc","desc"], "default": "desc" }, "required": false }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список користувачів",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserListResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Отримати користувача за ID",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Користувач",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Оновити користувача",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateUserInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Оновлений користувач",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/api/users/{id}/role": {
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Змінити роль користувача",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ChangeUserRoleInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Роль користувача оновлена",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
     "/api/articles": {
       "post": {
         "tags": ["Articles"],
@@ -547,6 +650,36 @@
         "properties": {
           "message": { "type": "string", "example": "Error message" },
           "statusCode": { "type": "integer", "example": 400 }
+        }
+      },
+      "UpdateUserInput": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "John Updated" }
+        }
+      },
+      "ChangeUserRoleInput": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": ["USER","EDITOR","ADMIN"],
+            "example": "EDITOR"
+          }
+        },
+        "required": ["role"]
+      },
+      "UserListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/User" }
+          },
+          "total": { "type": "integer", "example": 50 },
+          "page": { "type": "integer", "example": 1 },
+          "limit": { "type": "integer", "example": 10 },
+          "pages": { "type": "integer", "example": 5 }
         }
       },
       "Article": {

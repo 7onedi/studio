@@ -34,6 +34,64 @@ async function run() {
     Cookie: `token=${token}`,
   };
 
+
+    const userId = 2; // тестовий користувач
+
+  // =========================
+  // SEARCH USERS
+  // =========================
+  const userSearchRes = await fetch(
+    `${BASE_URL}/api/users/search?page=1&limit=10&email=walid`
+  );
+
+  const userSearchData = (await parseJSONSafe(userSearchRes)) || {};
+  const userResults = Array.isArray(userSearchData.data)
+    ? userSearchData.data
+    : [];
+
+  console.log("USER SEARCH:", userResults.length);
+  console.log("TOTAL users:", userSearchData.total ?? 0);
+  console.log(
+    "User IDs:",
+    userResults.map((u: any) => u.id)
+  );
+
+  console.log(
+    "User names:",
+    userResults.map((u: any) => u.name)
+  );
+
+  // =========================
+  // UPDATE USER NAME
+  // =========================
+  const updateUserRes = await fetch(`${BASE_URL}/api/users/${userId}`, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify({
+      name: "Updated User " + Date.now(),
+    }),
+  });
+
+  const updatedUser = await parseJSONSafe(updateUserRes);
+
+  console.log("USER UPDATE:", updatedUser);
+
+  // =========================
+  // CHANGE USER ROLE
+  // =========================
+  const roleRes = await fetch(`${BASE_URL}/api/users/${userId}/role`, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify({
+      role: "EDITOR",
+    }),
+  });
+
+  const updatedRole = await parseJSONSafe(roleRes);
+
+  console.log("ROLE UPDATE:", updatedRole);
+
+
   // =========================
   // CREATE CATEGORY
   // =========================
