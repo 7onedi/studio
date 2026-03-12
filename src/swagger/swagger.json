@@ -248,6 +248,216 @@
         }
       }
     },
+    "/api/studioprojects": {
+      "post": {
+        "tags": ["StudioProjects"],
+        "summary": "Створити новий студійний проєкт",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateStudioProjectInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Студійний проєкт створено",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudioProject"
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/api/studioprojects/search": {
+      "get": {
+        "tags": ["StudioProjects"],
+        "summary": "Пошук студійних проєктів з фільтрацією, пагінацією та сортуванням",
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 } },
+          { "name": "sortBy", "in": "query", "schema": { "type": "string", "default": "createdAt" } },
+          { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc","desc"], "default": "desc" } },
+          { "name": "published", "in": "query", "schema": { "type": "boolean" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список знайдених студійних проєктів",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/StudioProject" }
+                    },
+                    "total": { "type": "integer" },
+                    "page": { "type": "integer" },
+                    "limit": { "type": "integer" },
+                    "pages": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/studioprojects/{id}": {
+      "get": {
+        "tags": ["StudioProjects"],
+        "summary": "Отримати студійний проєкт за id",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Проєкт знайдено", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/StudioProject" } } } },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "patch": {
+        "tags": ["StudioProjects"],
+        "summary": "Оновити студійний проєкт за id",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateStudioProjectInput" } } }
+        },
+        "responses": {
+          "200": { "description": "Проєкт оновлено", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/StudioProject" } } } },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "delete": {
+        "tags": ["StudioProjects"],
+        "summary": "Видалити студійний проєкт за id",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Проєкт видалено", "content": { "application/json": { "schema": { "type": "object", "properties": { "message": { "type": "string" } } } } } },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/api/locations": {
+      "post": {
+        "tags": ["Locations"],
+        "summary": "Створити нову локацію",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateLocationInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Локація створена",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Location" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/api/locations/search": {
+      "get": {
+        "tags": ["Locations"],
+        "summary": "Пошук локацій з фільтрацією, пагінацією та сортуванням",
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 } },
+          { "name": "sortBy", "in": "query", "schema": { "type": "string", "default": "createdAt" } },
+          { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc","desc"], "default": "desc" } },
+          { "name": "studioProject[published]", "in": "query", "schema": { "type": "boolean" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список знайдених локацій",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Location" }
+                    },
+                    "total": { "type": "integer" },
+                    "page": { "type": "integer" },
+                    "limit": { "type": "integer" },
+                    "pages": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/locations/{id}": {
+      "get": {
+        "tags": ["Locations"],
+        "summary": "Отримати локацію за id",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Локацію знайдено", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Location" } } } },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "patch": {
+        "tags": ["Locations"],
+        "summary": "Оновити локацію за id",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateLocationInput" } } }
+        },
+        "responses": {
+          "200": { "description": "Локацію оновлено", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Location" } } } },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "delete": {
+        "tags": ["Locations"],
+        "summary": "Видалити локацію за id",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Локацію видалено", "content": { "application/json": { "schema": { "type": "object", "properties": { "message": { "type": "string" } } } } } },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
     "/api/articles": {
       "post": {
         "tags": ["Articles"],
@@ -840,6 +1050,108 @@
           "page": { "type": "integer" },
           "limit": { "type": "integer" },
           "pages": { "type": "integer" }
+        }
+      },
+      "StudioProject": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "parentId": { "type": ["integer", "null"] },
+          "title": { "type": "string" },
+          "body": { "type": "object" },
+          "description": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" },
+          "author": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "name": { "type": "string" }
+            }
+          },
+          "category": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "name": { "type": "string" },
+              "slug": { "type": "string" }
+            }
+          },
+          "subcategory": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "name": { "type": "string" },
+              "slug": { "type": "string" }
+            }
+          },
+          "location": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Location" }
+          },
+          "image": { "type": "object", "properties": { "id": { "type": "integer" }, "url": { "type": "string" } } }
+        }
+      },
+      "CreateStudioProjectInput": {
+        "type": "object",
+        "required": ["title", "categoryId", "subcategoryId"],
+        "properties": {
+          "title": { "type": "string" },
+          "body": { "type": "object" },
+          "description": { "type": "string" },
+          "categoryId": { "type": "integer" },
+          "subcategoryId": { "type": "integer" },
+          "parentId": { "type": "integer" },
+          "imageId": { "type": "integer" }
+        }
+      },
+      "UpdateStudioProjectInput": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "body": { "type": "object" },
+          "description": { "type": "string" },
+          "categoryId": { "type": "integer" },
+          "subcategoryId": { "type": "integer" },
+          "parentId": { "type": "integer" },
+          "imageId": { "type": "integer" }
+        }
+      },
+      "Location": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "url": { "type": "string" },
+          "coordinates": { "type": "object" },
+          "description": { "type": "string" },
+          "publishedAt": { "type": "string", "format": "date-time" },
+          "project": { "$ref": "#/components/schemas/StudioProject" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CreateLocationInput": {
+        "type": "object",
+        "required": ["name", "url"],
+        "properties": {
+          "name": { "type": "string" },
+          "url": { "type": "string" },
+          "coordinates": { "type": "object" },
+          "description": { "type": "string" },
+          "publishedAt": { "type": "string", "format": "date-time" },
+          "projectId": { "type": "integer" }
+        }
+      },
+      "UpdateLocationInput": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "url": { "type": "string" },
+          "coordinates": { "type": "object" },
+          "description": { "type": "string" },
+          "publishedAt": { "type": "string", "format": "date-time" },
+          "projectId": { "type": "integer" }
         }
       }
     }
