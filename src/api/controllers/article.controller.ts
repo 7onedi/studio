@@ -1,4 +1,6 @@
 import { articleService } from "@/api/services/article.service";
+import { ArticleInclude } from "@/api/api-builder/article.api-builder";
+import { fi } from "zod/v4/locales";
 
 export const articleController = {
     create: (body: any, user: any) => articleService.create(user, body),
@@ -6,7 +8,8 @@ export const articleController = {
     delete: (id: number, user: any) => articleService.delete(user, id),
     publish: (body: any, user: any) => articleService.publish(user, body),
     findById: (id: number) => articleService.findById(id),
+    findBySlug: (slug: string) => articleService.findBySlug(slug),
     search: (filters: Record<string, any>, options?: any) => {
-        return articleService.search(filters, options);
+        return articleService.search(filters, options, ArticleInclude);
     },
 };
