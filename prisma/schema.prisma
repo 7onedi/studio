@@ -30,6 +30,7 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  studioProjects StudioProject[]
   media    Media[]
   articles Article[]
 }
@@ -67,13 +68,64 @@ model Article {
   @@index([categoryId, published])
 }
 
+model StudioProject {
+  id Int @id @default(autoincrement())
+
+  parentId Int?
+  parent StudioProject? @relation("ProjectHierarchy", fields: [parentId], references: [id])
+  children StudioProject[] @relation("ProjectHierarchy")
+
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  subcategoryId Int? @unique
+  subcategory   Subcategory? @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
+
+  title       String
+  body        Json?
+  description String?
+  imageId     Int?
+  image       Media? @relation(fields: [imageId], references: [id])
+
+  authorId Int?
+  author   User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  locationId Int? @unique
+  location   Location? @relation(name: "StudioProjectLocation", fields: [locationId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  published   Boolean   @default(false)
+  publishedAt DateTime?
+}
+
+model Location {
+  id Int @id @default(autoincrement())
+  name String
+  url  String @unique
+  coordinates Json?
+  description String?
+
+  publishedAt DateTime?
+
+  project StudioProject? @relation(name: "StudioProjectLocation")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Category {
   id   Int    @id @default(autoincrement())
   name String @unique
   slug String @unique
 
+  studioProjects StudioProject[] 
   articles      Article[]
   subcategories Subcategory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
 }
 
 model Subcategory {
@@ -85,8 +137,12 @@ model Subcategory {
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   articles Article[] @relation("ArticleSubcategories")
+  project StudioProject? 
 
   @@unique([slug, categoryId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
 }
 
 model Tag {
@@ -95,6 +151,9 @@ model Tag {
   slug String @unique
 
   articles Article[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
 }
 
 model Media {
@@ -109,4 +168,5 @@ model Media {
 
   createdAt DateTime  @default(now())
   articles  Article[]
+  project StudioProject[]
 }
