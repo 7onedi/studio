@@ -539,6 +539,93 @@
         }
       }
     },
+    "/api/articles/by-slug/{slug}": {
+      "get": {
+        "tags": ["Articles"],
+        "summary": "Отримати статтю за slug",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Унікальний slug статті"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Стаття з усіма зв'язками",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer" },
+                    "slug": { "type": "string" },
+                    "title": { "type": "string" },
+                    "lang": { "type": "string", "enum": ["UK","EN","PL","LT","RO"] },
+                    "body": { "type": "object" },
+                    "authorName": { "type": "string" },
+                    "author": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "name": { "type": "string" },
+                        "email": { "type": "string" }
+                      }
+                    },
+                    "category": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "name": { "type": "string" },
+                        "slug": { "type": "string" }
+                      }
+                    },
+                    "subcategories": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "integer" },
+                          "name": { "type": "string" },
+                          "slug": { "type": "string" }
+                        }
+                      }
+                    },
+                    "tags": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "integer" },
+                          "name": { "type": "string" },
+                          "slug": { "type": "string" }
+                        }
+                      }
+                    },
+                    "image": {
+                      "type": "object",
+                      "nullable": true,
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "url": { "type": "string" },
+                        "filename": { "type": "string" }
+                      }
+                    },
+                    "published": { "type": "boolean" },
+                    "publishedAt": { "type": "string", "format": "date-time", "nullable": true },
+                    "createdAt": { "type": "string", "format": "date-time" },
+                    "updatedAt": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
     "/api/articles/publish": {
       "post": {
         "tags": ["Articles"],
@@ -896,18 +983,47 @@
         "type": "object",
         "properties": {
           "id": { "type": "integer" },
-          "slug": { "type": "string" },
           "title": { "type": "string" },
-          "lang": { "type": "string", "enum": ["UK","EN","PL","LT","RO"] },
-          "body": { "type": "object" },
-          "authorName": { "type": "string" },
-          "author": { "type": "object", "properties": { "id": { "type": "integer" }, "name": { "type": "string" }, "email": { "type": "string" } } },
-          "category": { "type": "object", "properties": { "id": { "type": "integer" }, "name": { "type": "string" } } },
-          "subcategories": { "type": "array", "items": { "type": "object", "properties": { "id": { "type": "integer" }, "name": { "type": "string" } } } },
-          "tags": { "type": "array", "items": { "type": "object", "properties": { "id": { "type": "integer" }, "name": { "type": "string" } } } },
-          "image": { "type": "object", "nullable": true, "properties": { "id": { "type": "integer" }, "url": { "type": "string" } } },
+          "slug": { "type": "string" },
+          "lang": { "type": "string", "enum": ["UK", "EN", "PL", "LT", "RO"] },
           "published": { "type": "boolean" },
-          "publishedAt": { "type": "string", "format": "date-time", "nullable": true },
+          "category": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "name": { "type": "string" },
+              "slug": { "type": "string" }
+            }
+          },
+          "subcategories": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "integer" },
+                "name": { "type": "string" },
+                "slug": { "type": "string" }
+              }
+            }
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "integer" },
+                "name": { "type": "string" },
+                "slug": { "type": "string" }
+              }
+            }
+          },
+          "author": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "name": { "type": "string" }
+            }
+          },
           "createdAt": { "type": "string", "format": "date-time" },
           "updatedAt": { "type": "string", "format": "date-time" }
         }

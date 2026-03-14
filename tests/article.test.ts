@@ -147,6 +147,23 @@ async function run() {
 
   const articleId = article.id;
 
+
+  // =========================
+// GET ARTICLE BY SLUG
+// =========================
+const articleSlug = article.slug;
+
+const getBySlugRes = await fetch(
+  `${BASE_URL}/api/articles/by-slug/${articleSlug}`
+);
+
+const articleBySlug = await parseJSONSafe(getBySlugRes);
+
+console.log("FULL RESPONSE JSON:", JSON.stringify(articleBySlug, null, 2));
+console.log("GET ARTICLE BY SLUG:", articleBySlug?.slug);
+console.log("TITLE:", articleBySlug?.title);
+console.log("ID:", articleBySlug?.id);
+
   // =========================
   // PATCH ARTICLE
   // =========================
@@ -182,6 +199,7 @@ const searchRes = await fetch(
 const searchData = (await parseJSONSafe(searchRes)) || {};
 const searchResults = Array.isArray(searchData.data) ? searchData.data : [];
 
+console.log("FULL RESPONSE JSON:", JSON.stringify(searchData, null, 2));
 console.log("SEARCH:", searchResults.length, "articles found");
 console.log("TOTAL found:", searchData.total ?? 0);
 console.log("Current page:", searchData.page ?? 1, "/", searchData.pages ?? 1);

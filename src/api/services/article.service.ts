@@ -69,6 +69,10 @@ class ArticleService extends BaseService {
 		this.assertPolicy(user, canDeleteArticle);
 		return this.repository.delete(id);
 	}
+
+	async findBySlug(slug: string) {
+		return this.repository.findBySlug(slug);
+	}
 }
 
 export const articleService = new ArticleService();
