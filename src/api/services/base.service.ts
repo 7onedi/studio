@@ -34,7 +34,7 @@ export class BaseService {
     return this.repository.delete(id);
   }
 
-  search(filters: Record<string, any>, options?: SearchOptions) {
+  search(filters: Record<string, any>, options?: SearchOptions, include?: any ) {
     const page = options?.page ?? 1;
     const limit = options?.limit ?? 10;
     const sortBy = options?.sortBy ?? "createdAt";
@@ -45,6 +45,6 @@ export class BaseService {
       limit,
       sortBy,
       order,
-    });
+    }, include);
   }
 }
