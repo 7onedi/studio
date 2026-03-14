@@ -74,7 +74,7 @@ const SidebarItems = () => {
     < >
       <MUI_Sidebar width={"100%"} showProfile={false} themeColor={"#5D87FF"} themeSecondaryColor={'#49beff'} >
 
-        <Logo img='/images/logos/dark-logo.svg' component={Link}   href="/">ICYS</Logo>
+        <Logo img='/mobile/icys.webp' component={Link}   href="/">ICYS</Logo>
 
         {renderMenuItems(Menuitems, pathDirect)}
         <Box px={2}>

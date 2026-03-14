@@ -4,7 +4,7 @@ import fs from "fs";
 // === Налаштування ===
 const BASE_URL = "http://localhost:3000";
 const LOGIN_EMAIL = "test@gmail.com";
-const LOGIN_PASSWORD = "qwerty123";
+const LOGIN_PASSWORD = "111111";
 
 async function getToken() {
   const res = await fetch(`${BASE_URL}/api/auth/login`, {
@@ -50,9 +50,9 @@ async function run() {
 
   const categoryId = category.id;
 
-  // =========================
-  // CREATE SUBCATEGORY
-  // =========================
+  // // =========================
+  // // CREATE SUBCATEGORY
+  // // =========================
   const subcategoryRes = await fetch(`${BASE_URL}/api/subcategories`, {
     method: "POST",
     headers,
@@ -67,9 +67,9 @@ async function run() {
 
   const subcategoryId = subcategory.id;
 
-  // =========================
-  // CREATE ARTICLE
-  // =========================
+  // // =========================
+  // // CREATE ARTICLE
+  // // =========================
   const createRes = await fetch(`${BASE_URL}/api/articles`, {
     method: "POST",
     headers,
@@ -92,16 +92,16 @@ async function run() {
   // =========================
   // PATCH ARTICLE
   // =========================
-  const patchRes = await fetch(`${BASE_URL}/api/articles/${articleId}`, {
-    method: "PATCH",
-    headers,
-    body: JSON.stringify({
-      title: "Bobr " + Date.now(),
-    }),
-  });
+  // const patchRes = await fetch(`${BASE_URL}/api/articles/${articleId}`, {
+  //   method: "PATCH",
+  //   headers,
+  //   body: JSON.stringify({
+  //     title: "Bobr " + Date.now(),
+  //   }),
+  // });
 
-  const updated = await patchRes.json();
-  console.log("PATCH:", updated.title);
+  // const updated = await patchRes.json();
+  // console.log("PATCH:", updated.title);
 
   // =========================
   // PUBLISH ARTICLE
@@ -141,133 +141,133 @@ console.log(
 // =========================
 // SEARCH CATEGORIES
 // =========================
-const catSearchRes = await fetch(
-  `${BASE_URL}/api/categories/search?name=Test&page=1&limit=7`
-);
+// const catSearchRes = await fetch(
+//   `${BASE_URL}/api/categories/search?name=Test&page=1&limit=7`
+// );
 
-const catSearchData = (await parseJSONSafe(catSearchRes)) || {};
-const catResults = Array.isArray(catSearchData.data) ? catSearchData.data : [];
+// const catSearchData = (await parseJSONSafe(catSearchRes)) || {};
+// const catResults = Array.isArray(catSearchData.data) ? catSearchData.data : [];
 
-console.log("CATEGORY SEARCH:", catResults.length);
-console.log("TOTAL categories:", catSearchData.total ?? 0);
-console.log("Current page:", catSearchData.page ?? 1, "/", catSearchData.pages ?? 1);
+// console.log("CATEGORY SEARCH:", catResults.length);
+// console.log("TOTAL categories:", catSearchData.total ?? 0);
+// console.log("Current page:", catSearchData.page ?? 1, "/", catSearchData.pages ?? 1);
 
-console.log(
-  "Category IDs:",
-  catResults.map((c: any) => c.id)
-);
+// console.log(
+//   "Category IDs:",
+//   catResults.map((c: any) => c.id)
+// );
 
-console.log(
-  "Category names:",
-  catResults.map((c: any) => c.name)
-);
+// console.log(
+//   "Category names:",
+//   catResults.map((c: any) => c.name)
+// );
 
 // =========================
 // SEARCH SUBCATEGORIES
 // =========================
-const subSearchRes = await fetch(
-  `${BASE_URL}/api/subcategories/search?name=Test&page=2&limit=6`
-);
+// const subSearchRes = await fetch(
+//   `${BASE_URL}/api/subcategories/search?name=Test&page=2&limit=6`
+// );
 
-const subSearchData = (await parseJSONSafe(subSearchRes)) || {};
-const subResults = Array.isArray(subSearchData.data) ? subSearchData.data : [];
+// const subSearchData = (await parseJSONSafe(subSearchRes)) || {};
+// const subResults = Array.isArray(subSearchData.data) ? subSearchData.data : [];
 
-console.log("SUBCATEGORY SEARCH:", subResults.length);
-console.log("TOTAL subcategories:", subSearchData.total ?? 0);
-console.log("Current page:", subSearchData.page ?? 1, "/", subSearchData.pages ?? 1);
-console.log(
-  "Subcategory IDs:",
-  subResults.map((s: any) => s.id)
-);
+// console.log("SUBCATEGORY SEARCH:", subResults.length);
+// console.log("TOTAL subcategories:", subSearchData.total ?? 0);
+// console.log("Current page:", subSearchData.page ?? 1, "/", subSearchData.pages ?? 1);
+// console.log(
+//   "Subcategory IDs:",
+//   subResults.map((s: any) => s.id)
+// );
 
-console.log(
-  "Subcategory names:",
-  subResults.map((s: any) => s.name)
-);
+// console.log(
+//   "Subcategory names:",
+//   subResults.map((s: any) => s.name)
+// );
 
-// =========================
-// SEARCH SUBCATEGORIES BY CATEGORY
-// =========================
-const subCatSearchRes = await fetch(
-  `${BASE_URL}/api/subcategories/search?categoryId=${categoryId}&page=1&limit=10`
-);
+// // =========================
+// // SEARCH SUBCATEGORIES BY CATEGORY
+// // =========================
+// const subCatSearchRes = await fetch(
+//   `${BASE_URL}/api/subcategories/search?categoryId=${categoryId}&page=1&limit=10`
+// );
 
-const subCatSearchData = (await parseJSONSafe(subCatSearchRes)) || {};
-const subCatResults = Array.isArray(subCatSearchData.data)
-  ? subCatSearchData.data
-  : [];
+// const subCatSearchData = (await parseJSONSafe(subCatSearchRes)) || {};
+// const subCatResults = Array.isArray(subCatSearchData.data)
+//   ? subCatSearchData.data
+//   : [];
 
-console.log("SUBCATEGORY BY CATEGORY:", subCatResults.length);
-console.log("Current page:", subCatSearchData.page ?? 1, "/", subCatSearchData.pages ?? 1);
-console.log(
-  "Subcategory IDs:",
-  subCatResults.map((s: any) => s.id)
-);
+// console.log("SUBCATEGORY BY CATEGORY:", subCatResults.length);
+// console.log("Current page:", subCatSearchData.page ?? 1, "/", subCatSearchData.pages ?? 1);
+// console.log(
+//   "Subcategory IDs:",
+//   subCatResults.map((s: any) => s.id)
+// );
 
-// =========================
-// SEARCH TAGS
-// =========================
-const tagSearchRes = await fetch(
-  `${BASE_URL}/api/tags/search?name=test&page=2&limit=5`
-);
+// // =========================
+// // SEARCH TAGS
+// // =========================
+// const tagSearchRes = await fetch(
+//   `${BASE_URL}/api/tags/search?name=test&page=2&limit=5`
+// );
 
-const tagSearchData = (await parseJSONSafe(tagSearchRes)) || {};
-const tagResults = Array.isArray(tagSearchData.data) ? tagSearchData.data : [];
+// const tagSearchData = (await parseJSONSafe(tagSearchRes)) || {};
+// const tagResults = Array.isArray(tagSearchData.data) ? tagSearchData.data : [];
 
-console.log("TAG SEARCH:", tagResults.length);
-console.log("TOTAL tags:", tagSearchData.total ?? 0);
-console.log("Current page:", tagSearchData.page ?? 1, "/", tagSearchData.pages ?? 1);
-console.log(
-  "Tag IDs:",
-  tagResults.map((t: any) => t.id)
-);
+// console.log("TAG SEARCH:", tagResults.length);
+// console.log("TOTAL tags:", tagSearchData.total ?? 0);
+// console.log("Current page:", tagSearchData.page ?? 1, "/", tagSearchData.pages ?? 1);
+// console.log(
+//   "Tag IDs:",
+//   tagResults.map((t: any) => t.id)
+// );
 
-console.log(
-  "Tag names:",
-  tagResults.map((t: any) => t.name)
-);
+// console.log(
+//   "Tag names:",
+//   tagResults.map((t: any) => t.name)
+// );
 
 
 
-// =========================
-// MEDIA UPLOAD
-// =========================
-const imagePath = path.join(process.cwd(), "test-images.jpeg"); // поклади файл поруч з тестом
-const imageBuffer = fs.readFileSync(imagePath);
+// // =========================
+// // MEDIA UPLOAD
+// // =========================
+// const imagePath = path.join(process.cwd(), "test-images.jpeg"); // поклади файл поруч з тестом
+// const imageBuffer = fs.readFileSync(imagePath);
 
-const formData = new FormData();
-formData.append(
-  "file",
-  new Blob([imageBuffer], { type: "image/jpeg" }),
-  "test-image.jpg"
-);
+// const formData = new FormData();
+// formData.append(
+//   "file",
+//   new Blob([imageBuffer], { type: "image/jpeg" }),
+//   "test-image.jpg"
+// );
 
-const uploadRes = await fetch(`${BASE_URL}/api/media`, {
-  method: "POST",
-  headers: {
-    Cookie: `token=${token}`,
-  },
-  body: formData,
-});
+// const uploadRes = await fetch(`${BASE_URL}/api/media`, {
+//   method: "POST",
+//   headers: {
+//     Cookie: `token=${token}`,
+//   },
+//   body: formData,
+// });
 
-const uploadedMedia = await uploadRes.json();
+// const uploadedMedia = await uploadRes.json();
 
-console.log("MEDIA UPLOAD:", uploadedMedia);
+// console.log("MEDIA UPLOAD:", uploadedMedia);
 
-const mediaId = uploadedMedia.id;
+// const mediaId = uploadedMedia.id;
 
-// =========================
-// MEDIA LIST
-// =========================
-const mediaListRes = await fetch(`${BASE_URL}/api/media`);
-const mediaList = await mediaListRes.json();
+// // =========================
+// // MEDIA LIST
+// // =========================
+// const mediaListRes = await fetch(`${BASE_URL}/api/media`);
+// const mediaList = await mediaListRes.json();
 
-console.log("MEDIA COUNT:", mediaList.length);
+// console.log("MEDIA COUNT:", mediaList.length);
 
-console.log(
-  "MEDIA IDS:",
-  mediaList.map((m: any) => m.id)
-);
+// console.log(
+//   "MEDIA IDS:",
+//   mediaList.map((m: any) => m.id)
+// );
 
 // =========================
 // MEDIA DELETE

@@ -1,0 +1,341 @@
+'use client';
+
+import React, { useState } from 'react';
+import {
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  flexRender,
+  ColumnDef,
+  SortingState,
+  RowSelectionState,
+} from '@tanstack/react-table';
+import {
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination,
+  Checkbox,
+  Chip,
+  IconButton,
+  TextField,
+  Tooltip,
+  Typography,
+  Paper,
+  Avatar,
+  Stack,
+  Button,
+} from '@mui/material';
+import {
+  IconArrowUp,
+  IconArrowDown,
+  IconArrowsSort,
+  IconEdit,
+  IconTrash,
+  IconTrashX,
+  IconSearch,
+} from '@tabler/icons-react';
+import { format } from 'date-fns';
+import Link from 'next/link';
+
+export interface Article {
+  id: number;
+  slug: string;
+  title: string;
+  lang: string;
+  authorName: string;
+  authorId: number;
+  categoryId: number;
+  imageId: number | null;
+  published: boolean;
+  createdAt: string;
+  updatedAt: string;
+  category: { id: number; name: string; slug: string } | null;
+  subcategories: { id: number; name: string; slug: string }[];
+  author: { id: number; name: string } | null;
+}
+
+interface ArticleTableProps {
+  data: Article[];
+  total: number;
+}
+
+export default function ArticleTable({ data, total }: ArticleTableProps) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [globalFilter, setGlobalFilter] = useState('');
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+
+  const selectedCount = Object.keys(rowSelection).length;
+
+  const columns: ColumnDef<Article>[] = [
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <Checkbox
+          size="small"
+          checked={table.getIsAllPageRowsSelected()}
+          indeterminate={table.getIsSomePageRowsSelected()}
+          onChange={table.getToggleAllPageRowsSelectedHandler()}
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          size="small"
+          checked={row.getIsSelected()}
+          onChange={row.getToggleSelectedHandler()}
+        />
+      ),
+      enableSorting: false,
+      size: 48,
+    },
+    {
+      id: 'image',
+      header: 'Заставка',
+      cell: ({ row }) => (
+        <Avatar
+          src={row.original.imageId ? `/api/images/${row.original.imageId}` : undefined}
+          variant="rounded"
+          sx={{ width: 48, height: 36, bgcolor: 'grey.200', fontSize: 12 }}
+        >
+          {!row.original.imageId && '—'}
+        </Avatar>
+      ),
+      enableSorting: false,
+      size: 64,
+    },
+    {
+      accessorKey: 'title',
+      header: 'Назва',
+      cell: ({ getValue }) => (
+        <Typography variant="body2" fontWeight={500} noWrap sx={{ maxWidth: 220 }}>
+          {getValue() as string}
+        </Typography>
+      ),
+      size: 240,
+    },
+    {
+      id: 'author',
+      header: 'Автор',
+      accessorFn: (row) => row.author?.name ?? row.authorName,
+      cell: ({ getValue }) => (
+        <Typography variant="body2" color="text.secondary">
+          {getValue() as string}
+        </Typography>
+      ),
+      size: 120,
+    },
+    {
+      accessorKey: 'updatedAt',
+      header: 'Оновлено',
+      cell: ({ getValue }) => (
+        <Typography variant="body2" color="text.secondary" noWrap>
+          {format(new Date(getValue() as string), 'dd.MM.yyyy HH:mm')}
+        </Typography>
+      ),
+      size: 140,
+    },
+    {
+      accessorKey: 'published',
+      header: 'Статус',
+      cell: ({ getValue }) => {
+        const published = getValue() as boolean;
+        return (
+          <Chip
+            label={published ? 'Опубліковано' : 'Чернетка'}
+            size="small"
+            color={published ? 'success' : 'default'}
+            variant="outlined"
+          />
+        );
+      },
+      size: 130,
+    },
+    {
+      accessorKey: 'lang',
+      header: 'Мова',
+      cell: ({ getValue }) => (
+        <Chip label={getValue() as string} size="small" variant="filled" sx={{ fontWeight: 600, fontSize: 11 }} />
+      ),
+      size: 80,
+    },
+    {
+      id: 'category',
+      header: 'Категорія',
+      accessorFn: (row) => row.category?.name ?? '—',
+      cell: ({ getValue }) => (
+        <Typography variant="body2" color="text.secondary" noWrap>
+          {getValue() as string}
+        </Typography>
+      ),
+      size: 150,
+    },
+    {
+      id: 'subcategory',
+      header: 'Підкатегорія',
+      accessorFn: (row) => row.subcategories?.map((s) => s.name).join(', ') || '—',
+      cell: ({ getValue }) => (
+        <Typography variant="body2" color="text.secondary" noWrap sx={{ maxWidth: 160 }}>
+          {getValue() as string}
+        </Typography>
+      ),
+      size: 160,
+    },
+    {
+      id: 'actions',
+      header: '',
+      cell: ({ row }) => (
+        <Stack direction="row" spacing={0.5}>
+          <Tooltip title="Редагувати">
+            <IconButton size="small" href={`/admin/articles/${row.original.id}/edit`}>
+                <IconEdit size={16} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Видалити">
+            <IconButton
+              size="small"
+              color="error"
+              onClick={() => console.log('delete', row.original.id)}
+            >
+                <IconTrash size={16} />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+      ),
+      enableSorting: false,
+      size: 80,
+    },
+  ];
+
+  const table = useReactTable({
+    data,
+    columns,
+    state: { sorting, globalFilter, rowSelection },
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
+    onRowSelectionChange: setRowSelection,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: { pagination: { pageSize: 15 } },
+  });
+
+  return (
+    <Box>
+      {/* Toolbar */}
+      <Stack direction="row" spacing={2} alignItems="center" mb={2} flexWrap="wrap">
+        <TextField
+          size="small"
+          placeholder="Пошук..."
+          value={globalFilter}
+          onChange={(e) => setGlobalFilter(e.target.value)}
+          InputProps={{ startAdornment: <IconSearch size={16} style={{ marginRight: 4, color: 'var(--mui-palette-text-secondary)' }} /> }}
+          sx={{ width: 260 }}
+        />
+
+        {selectedCount > 0 && (
+          <Button
+            variant="outlined"
+            color="error"
+            size="small"
+            startIcon={<IconTrashX size={16} />}
+            onClick={() => {
+              const ids = table.getSelectedRowModel().rows.map((r) => r.original.id);
+              console.log('bulk delete ids:', ids);
+              setRowSelection({});
+            }}
+          >
+            Видалити вибрані ({selectedCount})
+          </Button>
+        )}
+
+        <Typography variant="body2" color="text.secondary" sx={{ ml: 'auto' }}>
+          Всього: {total}
+        </Typography>
+      </Stack>
+
+      {/* Table */}
+      <TableContainer component={Paper} variant="outlined">
+        <Table size="small" sx={{ tableLayout: 'fixed', minWidth: 900 }}>
+          <TableHead>
+            {table.getHeaderGroups().map((hg) => (
+              <TableRow key={hg.id} sx={{ bgcolor: 'grey.50' }}>
+                {hg.headers.map((header) => (
+                  <TableCell
+                    key={header.id}
+                    sx={{
+                      width: header.getSize(),
+                      fontWeight: 600,
+                      fontSize: 12,
+                      cursor: header.column.getCanSort() ? 'pointer' : 'default',
+                      userSelect: 'none',
+                      whiteSpace: 'nowrap',
+                    }}
+                    onClick={header.column.getToggleSortingHandler()}
+                  >
+                    <Stack direction="row" alignItems="center" spacing={0.5}>
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {header.column.getCanSort() && (
+                        <>
+                        {header.column.getIsSorted() === 'asc' && <IconArrowUp size={14} />}
+                        {header.column.getIsSorted() === 'desc' && <IconArrowDown size={14} />}
+                        {!header.column.getIsSorted() && <IconArrowsSort size={14} color="var(--mui-palette-text-disabled)" />}
+                        </>
+                      )}
+                    </Stack>
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableHead>
+
+          <TableBody>
+            {table.getRowModel().rows.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} align="center" sx={{ py: 6, color: 'text.secondary' }}>
+                  Статей не знайдено
+                </TableCell>
+              </TableRow>
+            ) : (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  hover
+                  selected={row.getIsSelected()}
+                  sx={{ '&.Mui-selected': { bgcolor: 'primary.50' } }}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id} sx={{ py: 1 }}>
+                            <Link href={`/admin/production/articles/`} passHref>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </Link>
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      {/* Pagination */}
+      <TablePagination
+        component="div"
+        count={table.getFilteredRowModel().rows.length}
+        page={table.getState().pagination.pageIndex}
+        rowsPerPage={table.getState().pagination.pageSize}
+        rowsPerPageOptions={[10, 15, 25, 50]}
+        onPageChange={(_, page) => table.setPageIndex(page)}
+        onRowsPerPageChange={(e) => table.setPageSize(Number(e.target.value))}
+        labelRowsPerPage="Рядків:"
+        labelDisplayedRows={({ from, to, count }) => `${from}–${to} з ${count}`}
+      />
+    </Box>
+  );
+}
