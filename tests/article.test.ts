@@ -149,6 +149,69 @@ async function run() {
 
 
   // =========================
+  // CREATE NEW CATEGORY FOR UPDATE TEST
+  // =========================
+  const newCategoryRes = await fetch(`${BASE_URL}/api/categories`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      name: "Update Category " + Date.now(),
+    }),
+  });
+
+  const newCategory = await newCategoryRes.json();
+  const newCategoryId = newCategory.id;
+
+  console.log("NEW CATEGORY:", newCategory);
+
+  // =========================
+  // CREATE NEW SUBCATEGORY FOR UPDATE TEST
+  // =========================
+  const newSubcategoryRes = await fetch(`${BASE_URL}/api/subcategories`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      name: "Update Subcategory " + Date.now(),
+      categoryId: newCategoryId,
+    }),
+  });
+
+  const newSubcategory = await newSubcategoryRes.json();
+  const newSubcategoryId = newSubcategory.id;
+
+  console.log("NEW SUBCATEGORY:", newSubcategory);
+
+  // =========================
+  // UPDATE ARTICLE (CATEGORY + SUBCATEGORY + TAGS)
+  // =========================
+  const updateArticleRes = await fetch(`${BASE_URL}/api/articles/${articleId}`, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify({
+      title: "Updated Article " + Date.now(),
+      categoryId: newCategoryId,
+      subcategoryIds: [newSubcategoryId],
+      tags: [
+        { name: "updated-tag-" + Date.now() },
+        { name: "second-tag-" + Date.now() },
+      ],
+    }),
+  });
+
+  const updatedArticle = await parseJSONSafe(updateArticleRes);
+
+  console.log("ARTICLE UPDATE FULL:", updatedArticle);
+  console.log("UPDATED CATEGORY:", updatedArticle?.category?.id);
+  console.log(
+    "UPDATED SUBCATEGORIES:",
+    updatedArticle?.subcategories?.map((s: any) => s.id)
+  );
+  console.log(
+    "UPDATED TAGS:",
+    updatedArticle?.tags?.map((t: any) => t.name)
+  );
+
+  // =========================
 // GET ARTICLE BY SLUG
 // =========================
 const articleSlug = article.slug;
