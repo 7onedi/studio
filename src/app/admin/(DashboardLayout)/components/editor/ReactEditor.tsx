@@ -4,9 +4,10 @@ import { TextColorTool, BgColorTool } from "./ColorTool";
 
 interface ReactEditorProps {
   onChange: (data: any) => void;
+  initialData?: any;
 }
 
-export default function ReactEditor({ onChange }: ReactEditorProps) {
+export default function ReactEditor({ onChange, initialData }: ReactEditorProps) {
   const editorRef = useRef<any>(null);
   const onChangeRef = useRef(onChange);
 
@@ -49,6 +50,7 @@ export default function ReactEditor({ onChange }: ReactEditorProps) {
       const editor = new EditorJS({
         holder: "editorjs",
         inlineToolbar: true,
+        data: initialData ?? { blocks: [] }, // ← додай це
         tools: {
           paragraph: {
             inlineToolbar: true,

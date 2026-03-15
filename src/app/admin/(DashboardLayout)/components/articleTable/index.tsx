@@ -1,45 +1,24 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   useReactTable,
   getCoreRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
   flexRender,
   ColumnDef,
   SortingState,
   RowSelectionState,
 } from '@tanstack/react-table';
 import {
-  Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TablePagination,
-  Checkbox,
-  Chip,
-  IconButton,
-  TextField,
-  Tooltip,
-  Typography,
-  Paper,
-  Avatar,
-  Stack,
-  Button,
+  Box, Table, TableBody, TableCell, TableContainer,
+  TableHead, TableRow, TablePagination, Checkbox, Chip,
+  IconButton, TextField, Tooltip, Typography, Paper,
+  Avatar, Stack, Button, CircularProgress,
 } from '@mui/material';
 import {
-  IconArrowUp,
-  IconArrowDown,
-  IconArrowsSort,
-  IconEdit,
-  IconTrash,
-  IconTrashX,
-  IconSearch,
+  IconArrowUp, IconArrowDown, IconArrowsSort,
+  IconEdit, IconTrash, IconTrashX, IconSearch,
 } from '@tabler/icons-react';
 import { format } from 'date-fns';
 import Link from 'next/link';
@@ -64,14 +43,72 @@ export interface Article {
 interface ArticleTableProps {
   data: Article[];
   total: number;
+  loading?: boolean;
+  // Серверні параметри
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  sortBy?: string;
+  order?: 'asc' | 'desc';
+  onSearchChange?: (val: string) => void;
+  onSortChange?: (col: string, dir: 'asc' | 'desc') => void;
+  onPageChange?: (page: number) => void;
+  onPageSizeChange?: (size: number) => void;
 }
 
-export default function ArticleTable({ data, total }: ArticleTableProps) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [globalFilter, setGlobalFilter] = useState('');
+export default function ArticleTable({
+  data,
+  total,
+  loading = false,
+  page = 0,
+  pageSize = 15,
+  search = '',
+  sortBy = 'createdAt',
+  order = 'desc',
+  onSearchChange,
+  onSortChange,
+  onPageChange,
+  onPageSizeChange,
+}: ArticleTableProps) {
+  const router = useRouter();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [searchInput, setSearchInput] = useState(search);
 
   const selectedCount = Object.keys(rowSelection).length;
+
+  const handleSortClick = (colId: string) => {
+    if (!onSortChange) return;
+    if (sortBy === colId) {
+      onSortChange(colId, order === 'asc' ? 'desc' : 'asc');
+    } else {
+      onSortChange(colId, 'desc');
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Видалити статтю?')) return;
+    try {
+      const res = await fetch(`/api/articles/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error(`Помилка ${res.status}`);
+      router.refresh();
+    } catch (err: any) {
+      console.error('Помилка видалення:', err.message);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    const ids = table.getSelectedRowModel().rows.map((r) => r.original.id);
+    if (!confirm(`Видалити ${ids.length} статей?`)) return;
+    try {
+      await Promise.all(ids.map((id) => fetch(`/api/articles/${id}`, { method: 'DELETE' })));
+      setRowSelection({});
+      router.refresh();
+    } catch (err: any) {
+      console.error('Помилка bulk delete:', err.message);
+    }
+  };
+
+  const sortableColumns = ['title', 'updatedAt', 'published', 'lang'];
 
   const columns: ColumnDef<Article>[] = [
     {
@@ -85,13 +122,8 @@ export default function ArticleTable({ data, total }: ArticleTableProps) {
         />
       ),
       cell: ({ row }) => (
-        <Checkbox
-          size="small"
-          checked={row.getIsSelected()}
-          onChange={row.getToggleSelectedHandler()}
-        />
+        <Checkbox size="small" checked={row.getIsSelected()} onChange={row.getToggleSelectedHandler()} />
       ),
-      enableSorting: false,
       size: 48,
     },
     {
@@ -106,7 +138,6 @@ export default function ArticleTable({ data, total }: ArticleTableProps) {
           {!row.original.imageId && '—'}
         </Avatar>
       ),
-      enableSorting: false,
       size: 64,
     },
     {
@@ -117,16 +148,14 @@ export default function ArticleTable({ data, total }: ArticleTableProps) {
           {getValue() as string}
         </Typography>
       ),
-      size: 240,
+      size: 200,
     },
     {
       id: 'author',
       header: 'Автор',
       accessorFn: (row) => row.author?.name ?? row.authorName,
       cell: ({ getValue }) => (
-        <Typography variant="body2" color="text.secondary">
-          {getValue() as string}
-        </Typography>
+        <Typography variant="body2" color="text.secondary">{getValue() as string}</Typography>
       ),
       size: 120,
     },
@@ -138,22 +167,19 @@ export default function ArticleTable({ data, total }: ArticleTableProps) {
           {format(new Date(getValue() as string), 'dd.MM.yyyy HH:mm')}
         </Typography>
       ),
-      size: 140,
+      size: 130,
     },
     {
       accessorKey: 'published',
       header: 'Статус',
-      cell: ({ getValue }) => {
-        const published = getValue() as boolean;
-        return (
-          <Chip
-            label={published ? 'Опубліковано' : 'Чернетка'}
-            size="small"
-            color={published ? 'success' : 'default'}
-            variant="outlined"
-          />
-        );
-      },
+      cell: ({ getValue }) => (
+        <Chip
+          label={(getValue() as boolean) ? 'Опубліковано' : 'Чернетка'}
+          size="small"
+          color={(getValue() as boolean) ? 'success' : 'default'}
+          variant="outlined"
+        />
+      ),
       size: 130,
     },
     {
@@ -162,16 +188,14 @@ export default function ArticleTable({ data, total }: ArticleTableProps) {
       cell: ({ getValue }) => (
         <Chip label={getValue() as string} size="small" variant="filled" sx={{ fontWeight: 600, fontSize: 11 }} />
       ),
-      size: 80,
+      size: 72,
     },
     {
       id: 'category',
       header: 'Категорія',
       accessorFn: (row) => row.category?.name ?? '—',
       cell: ({ getValue }) => (
-        <Typography variant="body2" color="text.secondary" noWrap>
-          {getValue() as string}
-        </Typography>
+        <Typography variant="body2" color="text.secondary" noWrap>{getValue() as string}</Typography>
       ),
       size: 150,
     },
@@ -184,7 +208,7 @@ export default function ArticleTable({ data, total }: ArticleTableProps) {
           {getValue() as string}
         </Typography>
       ),
-      size: 160,
+      size: 150,
     },
     {
       id: 'actions',
@@ -192,22 +216,17 @@ export default function ArticleTable({ data, total }: ArticleTableProps) {
       cell: ({ row }) => (
         <Stack direction="row" spacing={0.5}>
           <Tooltip title="Редагувати">
-            <IconButton size="small" href={`/admin/articles/${row.original.id}/edit`}>
-                <IconEdit size={16} />
+            <IconButton size="small" href={`/admin/production/articles/${row.original.slug}/edit`}>
+              <IconEdit size={16} />
             </IconButton>
           </Tooltip>
           <Tooltip title="Видалити">
-            <IconButton
-              size="small"
-              color="error"
-              onClick={() => console.log('delete', row.original.id)}
-            >
-                <IconTrash size={16} />
+            <IconButton size="small" color="error" onClick={() => handleDelete(row.original.id)}>
+              <IconTrash size={16} />
             </IconButton>
           </Tooltip>
         </Stack>
       ),
-      enableSorting: false,
       size: 80,
     },
   ];
@@ -215,88 +234,86 @@ export default function ArticleTable({ data, total }: ArticleTableProps) {
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, globalFilter, rowSelection },
-    onSortingChange: setSorting,
-    onGlobalFilterChange: setGlobalFilter,
+    state: { rowSelection },
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    initialState: { pagination: { pageSize: 15 } },
+    manualPagination: true,
+    manualSorting: true,
+    manualFiltering: true,
+    pageCount: Math.ceil(total / pageSize),
   });
 
   return (
-    <Box>
+      <Box maxWidth={1200} mx="auto">
       {/* Toolbar */}
       <Stack direction="row" spacing={2} alignItems="center" mb={2} flexWrap="wrap">
         <TextField
           size="small"
           placeholder="Пошук..."
-          value={globalFilter}
-          onChange={(e) => setGlobalFilter(e.target.value)}
-          InputProps={{ startAdornment: <IconSearch size={16} style={{ marginRight: 4, color: 'var(--mui-palette-text-secondary)' }} /> }}
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && onSearchChange?.(searchInput)}
+          InputProps={{
+            startAdornment: (
+              <IconSearch
+                size={16}
+                style={{ marginRight: 4, color: 'var(--mui-palette-text-secondary)', cursor: 'pointer' }}
+                onClick={() => onSearchChange?.(searchInput)}
+              />
+            ),
+          }}
           sx={{ width: 260 }}
         />
 
         {selectedCount > 0 && (
-          <Button
-            variant="outlined"
-            color="error"
-            size="small"
-            startIcon={<IconTrashX size={16} />}
-            onClick={() => {
-              const ids = table.getSelectedRowModel().rows.map((r) => r.original.id);
-              console.log('bulk delete ids:', ids);
-              setRowSelection({});
-            }}
-          >
+          <Button variant="outlined" color="error" size="small" startIcon={<IconTrashX size={16} />} onClick={handleBulkDelete}>
             Видалити вибрані ({selectedCount})
           </Button>
         )}
 
         <Typography variant="body2" color="text.secondary" sx={{ ml: 'auto' }}>
-          Всього: {total}
+          {loading ? 'Завантаження...' : `Всього: ${total}`}
         </Typography>
       </Stack>
 
       {/* Table */}
-      <TableContainer component={Paper} variant="outlined">
+      <TableContainer component={Paper} variant="outlined" sx={{ position: 'relative' }}>
+        {loading && (
+          <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'rgba(255,255,255,0.6)', zIndex: 1 }}>
+            <CircularProgress size={32} />
+          </Box>
+        )}
         <Table size="small" sx={{ tableLayout: 'fixed', minWidth: 900 }}>
           <TableHead>
             {table.getHeaderGroups().map((hg) => (
               <TableRow key={hg.id} sx={{ bgcolor: 'grey.50' }}>
-                {hg.headers.map((header) => (
-                  <TableCell
-                    key={header.id}
-                    sx={{
-                      width: header.getSize(),
-                      fontWeight: 600,
-                      fontSize: 12,
-                      cursor: header.column.getCanSort() ? 'pointer' : 'default',
-                      userSelect: 'none',
-                      whiteSpace: 'nowrap',
-                    }}
-                    onClick={header.column.getToggleSortingHandler()}
-                  >
-                    <Stack direction="row" alignItems="center" spacing={0.5}>
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      {header.column.getCanSort() && (
-                        <>
-                        {header.column.getIsSorted() === 'asc' && <IconArrowUp size={14} />}
-                        {header.column.getIsSorted() === 'desc' && <IconArrowDown size={14} />}
-                        {!header.column.getIsSorted() && <IconArrowsSort size={14} color="var(--mui-palette-text-disabled)" />}
-                        </>
-                      )}
-                    </Stack>
-                  </TableCell>
-                ))}
+                {hg.headers.map((header) => {
+                  const colId = header.column.id;
+                  const isSortable = sortableColumns.includes(colId);
+                  const isActive = sortBy === colId;
+                  return (
+                    <TableCell
+                      key={header.id}
+                      sx={{ width: header.getSize(), fontWeight: 600, fontSize: 12, cursor: isSortable ? 'pointer' : 'default', userSelect: 'none', whiteSpace: 'nowrap' }}
+                      onClick={() => isSortable && handleSortClick(colId)}
+                    >
+                      <Stack direction="row" alignItems="center" spacing={0.5}>
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {isSortable && (
+                          isActive
+                            ? order === 'asc' ? <IconArrowUp size={14} /> : <IconArrowDown size={14} />
+                            : <IconArrowsSort size={14} color="var(--mui-palette-text-disabled)" />
+                        )}
+                      </Stack>
+                    </TableCell>
+                  );
+                })}
               </TableRow>
             ))}
           </TableHead>
 
           <TableBody>
-            {table.getRowModel().rows.length === 0 ? (
+            {table.getRowModel().rows.length === 0 && !loading ? (
               <TableRow>
                 <TableCell colSpan={columns.length} align="center" sx={{ py: 6, color: 'text.secondary' }}>
                   Статей не знайдено
@@ -304,17 +321,16 @@ export default function ArticleTable({ data, total }: ArticleTableProps) {
               </TableRow>
             ) : (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  hover
-                  selected={row.getIsSelected()}
-                  sx={{ '&.Mui-selected': { bgcolor: 'primary.50' } }}
-                >
+                <TableRow key={row.id} hover selected={row.getIsSelected()} sx={{ '&.Mui-selected': { bgcolor: 'primary.50' } }}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} sx={{ py: 1 }}>
-                            <Link href={`/admin/production/articles/`} passHref>
+                      {cell.column.id === 'title' ? (
+                        <Link href={`/admin/production/articles/${row.original.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </Link>
+                      ) : (
+                        flexRender(cell.column.columnDef.cell, cell.getContext())
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -327,12 +343,12 @@ export default function ArticleTable({ data, total }: ArticleTableProps) {
       {/* Pagination */}
       <TablePagination
         component="div"
-        count={table.getFilteredRowModel().rows.length}
-        page={table.getState().pagination.pageIndex}
-        rowsPerPage={table.getState().pagination.pageSize}
+        count={total}
+        page={page}
+        rowsPerPage={pageSize}
         rowsPerPageOptions={[10, 15, 25, 50]}
-        onPageChange={(_, page) => table.setPageIndex(page)}
-        onRowsPerPageChange={(e) => table.setPageSize(Number(e.target.value))}
+        onPageChange={(_, p) => onPageChange?.(p)}
+        onRowsPerPageChange={(e) => onPageSizeChange?.(Number(e.target.value))}
         labelRowsPerPage="Рядків:"
         labelDisplayedRows={({ from, to, count }) => `${from}–${to} з ${count}`}
       />

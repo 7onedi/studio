@@ -151,32 +151,32 @@ async function run() {
   // =========================
 // GET ARTICLE BY SLUG
 // =========================
-const articleSlug = article.slug;
+// const articleSlug = article.slug;
 
-const getBySlugRes = await fetch(
-  `${BASE_URL}/api/articles/by-slug/${articleSlug}`
-);
+// const getBySlugRes = await fetch(
+//   `${BASE_URL}/api/articles/by-slug/${articleSlug}`
+// );
 
-const articleBySlug = await parseJSONSafe(getBySlugRes);
+// const articleBySlug = await parseJSONSafe(getBySlugRes);
 
-console.log("FULL RESPONSE JSON:", JSON.stringify(articleBySlug, null, 2));
-console.log("GET ARTICLE BY SLUG:", articleBySlug?.slug);
-console.log("TITLE:", articleBySlug?.title);
-console.log("ID:", articleBySlug?.id);
+// console.log("FULL RESPONSE JSON:", JSON.stringify(articleBySlug, null, 2));
+// console.log("GET ARTICLE BY SLUG:", articleBySlug?.slug);
+// console.log("TITLE:", articleBySlug?.title);
+// console.log("ID:", articleBySlug?.id);
 
   // =========================
   // PATCH ARTICLE
   // =========================
-  // const patchRes = await fetch(`${BASE_URL}/api/articles/${articleId}`, {
-  //   method: "PATCH",
-  //   headers,
-  //   body: JSON.stringify({
-  //     title: "Bobr " + Date.now(),
-  //   }),
-  // });
+  const patchRes = await fetch(`${BASE_URL}/api/articles/${articleId}`, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify({
+      title: "Bobr " + Date.now(),
+    }),
+  });
 
-  // const updated = await patchRes.json();
-  // console.log("PATCH:", updated.title);
+  const updated = await patchRes.json();
+  console.log("PATCH:", updated.title);
 
   // =========================
   // PUBLISH ARTICLE

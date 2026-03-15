@@ -1,42 +1,48 @@
+'use client';
+
+import { useEffect, useState, Suspense } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Box, Typography, Button } from '@mui/material';
-import {
-  IconPlus,
-} from '@tabler/icons-react';
+import { IconPlus } from '@tabler/icons-react';
 import PageContainer from '../../components/container/PageContainer';
-import ArticleTable from '../../components/articleTable';
+import ArticleTable, { Article } from '../../components/articleTable';
 
-const BASE_URL = "http://localhost:3000";
+function ArticlesContent() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-async function parseJSONSafe(res: Response) {
-  try {
-    return await res.json();
-  } catch {
-    return null;
-  }
-}
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-export default async function ArticlesPage() {
-const searchRes = await fetch(
-  `${BASE_URL}/api/articles/search?page=1&limit=15&sortBy=createdAt&order=desc`,
-);
-const searchData = (await parseJSONSafe(searchRes)) || {};
-const searchResults = Array.isArray(searchData.data) ? searchData.data : [];
+  const page = searchParams.get('page') ?? '1';
+  const search = searchParams.get('search') ?? '';
+  const sortBy = searchParams.get('sortBy') ?? 'createdAt';
+  const order = searchParams.get('order') ?? 'desc';
+  const limit = searchParams.get('limit') ?? '15';
 
-console.log("SEARCH:", searchResults.length, "articles found");
-console.log("TOTAL found:", searchData.total ?? 0);
-console.log("Current page:", searchData.page ?? 1, "/", searchData.pages ?? 1);
+  useEffect(() => {
+    setLoading(true);
+    const params = new URLSearchParams({ page, limit, sortBy, order });
+    if (search) params.set('title', search);
 
-// Додатково лог id та title
-console.log(
-  "Found IDs:",
-  searchResults.map((a: any) => a.id)
-);
-console.log(
-  "Found Titles:",
-  searchResults.map((a: any) => a.title)
-);
+    fetch(`/api/articles/search?${params}`)
+      .then((r) => r.json())
+      .then((d) => {
+        setArticles(Array.isArray(d.data) ? d.data : []);
+        setTotal(d.total ?? 0);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, [page, limit, search, sortBy, order]);
 
-  const total: number = searchData.total ?? 0;
+  const updateParam = (key: string, value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set(key, value);
+    if (key !== 'page') params.set('page', '1');
+    router.push(`${pathname}?${params}`);
+  };
 
   return (
     <PageContainer title="Статті" description="Список статей">
@@ -54,8 +60,32 @@ console.log(
           </Button>
         </Box>
 
-        <ArticleTable data={searchResults} total={total} />
+        <ArticleTable
+          data={articles}
+          total={total}
+          loading={loading}
+          page={Number(page) - 1}
+          pageSize={Number(limit)}
+          search={search}
+          sortBy={sortBy}
+          order={order as 'asc' | 'desc'}
+          onSearchChange={(val) => updateParam('search', val)}
+          onSortChange={(col, dir) => {
+            updateParam('sortBy', col);
+            updateParam('order', dir);
+          }}
+          onPageChange={(p) => updateParam('page', String(p + 1))}
+          onPageSizeChange={(size) => updateParam('limit', String(size))}
+        />
       </Box>
     </PageContainer>
+  );
+}
+
+export default function ArticlesPage() {
+  return (
+    <Suspense>
+      <ArticlesContent />
+    </Suspense>
   );
 }
