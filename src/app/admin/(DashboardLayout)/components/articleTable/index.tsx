@@ -131,7 +131,7 @@ export default function ArticleTable({
       header: 'Заставка',
       cell: ({ row }) => (
         <Avatar
-          src={row.original.imageId ? `/api/images/${row.original.imageId}` : undefined}
+          src={(row.original as any).image?.url ?? undefined}
           variant="rounded"
           sx={{ width: 48, height: 36, bgcolor: 'grey.200', fontSize: 12 }}
         >

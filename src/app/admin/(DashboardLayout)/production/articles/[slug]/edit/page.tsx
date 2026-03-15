@@ -42,45 +42,66 @@ export default function EditArticle({ params }: EditPageProps) {
     .finally(() => setFetching(false));
 }, [slug]);
 
-  const handleSave = async (data: ArticleFormData) => {
-    if (!data.title || !data.authorName || !data.categoryId) {
-      setError("Заповніть обов'язкові поля: заголовок, автор, категорія");
-      return;
-    }
-    if (!articleId) {
-      setError("ID статті не знайдено");
-      return;
-    }
+const handleSave = async (data: ArticleFormData) => {
+  if (!data.title || !data.authorName || !data.categoryId) {
+    setError("Заповніть обов'язкові поля: заголовок, автор, категорія");
+    return;
+  }
+  if (!articleId) {
+    setError("ID статті не знайдено");
+    return;
+  }
 
-    setLoading(true);
-    setError(null);
-    setSuccess(false);
+  setLoading(true);
+  setError(null);
+  setSuccess(false);
 
-    try {
-      const res = await fetch(`/api/articles/${articleId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...data,
-          categoryId: Number(data.categoryId),
-          tags: data.tags.map((name) => ({ name })),
-        }),
+  try {
+    // 1. Завантажуємо банер якщо є
+    let imageId: number | null = null;
+
+    if (data.coverBase64) {
+      const fetchRes = await fetch(data.coverBase64);
+      const blob = await fetchRes.blob();
+      const formData = new FormData();
+      formData.append('file', blob, 'cover.jpg');
+
+      const uploadRes = await fetch('/api/media', {
+        method: 'POST',
+        body: formData,
       });
 
-      console.log("data:", data);
-      if (!res.ok) {
-        const json = await res.json().catch(() => ({}));
-        throw new Error(json?.message || `Помилка ${res.status}`);
-      }
-
-      setSuccess(true);
-      setTimeout(() => router.push("/admin/production/articles"), 1500);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      if (!uploadRes.ok) throw new Error('Помилка завантаження банера');
+      const uploadData = await uploadRes.json();
+      imageId = uploadData.id;
     }
-  };
+
+    // 2. Зберігаємо статтю
+    const res = await fetch(`/api/articles/${articleId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...data,
+        coverBase64: undefined, // не відправляємо base64 в тіло
+        categoryId: Number(data.categoryId),
+        tags: data.tags.map((name) => ({ name })),
+        ...(imageId && { imageId }),
+      }),
+    });
+
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}));
+      throw new Error(json?.message || `Помилка ${res.status}`);
+    }
+
+    setSuccess(true);
+    setTimeout(() => router.push("/admin/production/articles"), 1500);
+  } catch (err: any) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   if (fetching) {
     return (

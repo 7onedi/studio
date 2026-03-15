@@ -20,7 +20,7 @@ export const articleRepository = {
   findBySlug(slug: string) {
     return prisma.article.findUnique({
       where: { slug },
-      include: { category: true, subcategories: true, tags: true, author: true },
+      include: { category: true, subcategories: true, tags: true, author: true, image: true },
     });
   },
 
