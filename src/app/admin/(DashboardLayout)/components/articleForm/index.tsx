@@ -22,6 +22,7 @@ export interface ArticleFormData {
   categoryId: number | "";
   subcategoryIds: number[];
   tags: string[];
+  coverBase64?: string | null; // ← додай
 }
 
 interface ArticleFormProps {
@@ -57,6 +58,7 @@ export default function ArticleForm({
   const [tags, setTags] = useState<string[]>(initialData?.tags ?? []);
   const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
   const [subcategories, setSubcategories] = useState<{ id: number; name: string }[]>([]);
+  const [coverBase64, setCoverBase64] = useState<string | null>(null);
 
   useEffect(() => {
   if (!initialData) return;
@@ -67,6 +69,7 @@ export default function ArticleForm({
   setCategoryId(initialData.categoryId ?? "");
   setSubcategoryIds(initialData.subcategoryIds ?? []);
   setTags(initialData.tags ?? []);
+  setCoverBase64(initialData.coverBase64 ?? null);
 }, [initialData])
 
   useEffect(() => {
@@ -100,6 +103,7 @@ export default function ArticleForm({
       categoryId,
       subcategoryIds,
       tags,
+      coverBase64,
     });
   };
 
@@ -168,6 +172,68 @@ export default function ArticleForm({
           </Select>
         </FormControl>
       )}
+
+            <Box sx={{ mb: 3 }}>
+        <Typography variant="body2" color="text.secondary" mb={1}>
+          Банер статті
+        </Typography>
+
+        <Box
+          sx={{
+            border: '2px dashed',
+            borderColor: coverBase64 ? 'primary.main' : 'grey.300',
+            borderRadius: 2,
+            p: 2,
+            textAlign: 'center',
+            cursor: 'pointer',
+            position: 'relative',
+            minHeight: 160,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+          }}
+          onClick={() => document.getElementById('cover-upload')?.click()}
+        >
+          {coverBase64 ? (
+            <>
+              <Box
+                component="img"
+                src={coverBase64}
+                sx={{ maxWidth: '100%', maxHeight: 240, borderRadius: 1, display: 'block' }}
+              />
+              <Button
+                size="small"
+                color="error"
+                variant="contained"
+                sx={{ position: 'absolute', top: 8, right: 8 }}
+                onClick={(e) => { e.stopPropagation(); setCoverBase64(null); }}
+              >
+                Видалити
+              </Button>
+            </>
+          ) : (
+            <Typography color="text.secondary" fontSize={14}>
+              Натисніть щоб завантажити банер
+            </Typography>
+          )}
+        </Box>
+
+        <input
+          id="cover-upload"
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => setCoverBase64(reader.result as string);
+            reader.readAsDataURL(file);
+            e.target.value = '';
+          }}
+        />
+      </Box>
 
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: "flex", gap: 1, mb: 1 }}>

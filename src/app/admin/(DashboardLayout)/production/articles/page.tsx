@@ -30,12 +30,14 @@ function ArticlesContent() {
     fetch(`/api/articles/search?${params}`)
       .then((r) => r.json())
       .then((d) => {
+        console.log('first article:', d.data?.[0]); // ← додай
         setArticles(Array.isArray(d.data) ? d.data : []);
         setTotal(d.total ?? 0);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [page, limit, search, sortBy, order]);
+  console.log('articles:', articles);
 
   const updateParam = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());

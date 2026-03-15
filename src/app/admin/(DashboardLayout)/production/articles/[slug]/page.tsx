@@ -42,6 +42,20 @@ export default async function ArticleSlugPage({ params }: PageProps) {
             color={article.published ? 'success' : 'default'}
             variant="outlined"
           />
+          {article.image?.url && (
+            <Box
+              component="img"
+              src={article.image.url}
+              alt={article.title}
+              sx={{
+                width: '100%',
+                maxHeight: 400,
+                objectFit: 'cover',
+                borderRadius: 2,
+                mb: 3,
+              }}
+            />
+          )}
           {article.category && (
             <Chip label={article.category.name} size="small" variant="outlined" />
           )}

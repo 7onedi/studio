@@ -10,44 +10,53 @@ class ArticleService extends BaseService {
     super(articleRepository);
   }
 
-  async create(user: any, body: unknown) {
+	async create(user: any, body: unknown) {
+		this.assertPolicy(user, canCreateArticle);
 
-    this.assertPolicy(user, canCreateArticle);
+		const data = createArticleSchema.parse(body);
 
-    const data = createArticleSchema.parse(body);
+		const slug = await generateUniqueSlug(
+			(slug) => this.repository.existsBySlug(slug),
+			data.title
+		);
 
-    const slug = await generateUniqueSlug(
-      (slug) => this.repository.existsBySlug(slug),
-      data.title
-    );
-		const { categoryId, subcategoryIds, tags, ...rest } = data;
+		const { categoryId, subcategoryIds, tags, imageId, ...rest } = data;
+
 		return this.repository.create({
 			slug,
 			...rest,
-			author: { connect: { id: user.id } },
-			category: { connect: { id: categoryId } },
-			subcategories: subcategoryIds
-				? { connect: subcategoryIds.map((id) => ({ id })) }
-				: undefined,
-			tags: tags
-				? {
-						connectOrCreate: await Promise.all(
-							tags.map(async (tag) => {
-								const tagSlug = await generateUniqueSlug(
-									(slug) => tagRepository.existsBySlug(slug),
-									tag.name
-								);
 
-								return {
-									where: { slug: tagSlug },
-									create: { name: tag.name, slug: tagSlug },
-								};
-							})
-						),
-					}
-				: undefined,
+			author: { connect: { id: user.id } },
+
+			category: { connect: { id: categoryId } },
+
+			image: imageId
+			? { connect: { id: imageId } }
+			: undefined,
+
+			subcategories: subcategoryIds
+			? { connect: subcategoryIds.map((id) => ({ id })) }
+			: undefined,
+
+			tags: tags
+			? {
+				connectOrCreate: await Promise.all(
+					tags.map(async (tag) => {
+					const tagSlug = await generateUniqueSlug(
+						(slug) => tagRepository.existsBySlug(slug),
+						tag.name
+					);
+
+					return {
+						where: { slug: tagSlug },
+						create: { name: tag.name, slug: tagSlug },
+					};
+					})
+				),
+				}
+			: undefined,
 		});
-  }
+	}
 
 	async update(user: any, id: number, body: any) {
 		this.assertPolicy(user, canUpdateArticle);

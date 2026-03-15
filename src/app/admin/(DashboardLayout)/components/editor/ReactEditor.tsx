@@ -70,24 +70,18 @@ export default function ReactEditor({ onChange, initialData }: ReactEditorProps)
             config: {
               uploader: {
                 async uploadByFile(file: File) {
-                  const formData = new FormData();
-                  formData.append("file", file);
-
-                  const res = await fetch("/api/media", {
-                    method: "POST",
-                    body: formData,
+                  return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                      resolve({
+                        success: 1,
+                        file: {
+                          url: reader.result as string, // base64
+                        },
+                      });
+                    };
+                    reader.readAsDataURL(file);
                   });
-
-                  if (!res.ok) return { success: 0 };
-
-                  const data = await res.json();
-
-                  return {
-                    success: 1,
-                    file: {
-                      url: data.url,
-                    },
-                  };
                 },
 
                 async uploadByUrl(url: string) {

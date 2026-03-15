@@ -9,6 +9,7 @@ export const createArticleSchema = z.object({
   authorName: z.string().min(2),
   categoryId: z.number(),
   subcategoryIds: z.array(z.number()).optional(),
+  imageId: z.number().optional(),
   tags: z.array(
     z.object({
       name: z.string(),
@@ -23,6 +24,7 @@ export const updateArticleSchema = z.object({
   authorName: z.string().min(2).optional(),
   categoryId: z.number().optional(),
   subcategoryIds: z.array(z.number()).optional(),
+  imageId: z.number().optional(),
   tags: z.array(
     z.object({
       name: z.string(),
