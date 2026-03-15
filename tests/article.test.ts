@@ -4,7 +4,7 @@ import fs from "fs";
 // === Налаштування ===
 const BASE_URL = "http://localhost:3000";
 const LOGIN_EMAIL = "test@gmail.com";
-const LOGIN_PASSWORD = "qwerty123";
+const LOGIN_PASSWORD = "111111";
 
 async function getToken() {
   const res = await fetch(`${BASE_URL}/api/auth/login`, {
@@ -108,9 +108,9 @@ async function run() {
 
   const categoryId = category.id;
 
-  // =========================
-  // CREATE SUBCATEGORY
-  // =========================
+  // // =========================
+  // // CREATE SUBCATEGORY
+  // // =========================
   const subcategoryRes = await fetch(`${BASE_URL}/api/subcategories`, {
     method: "POST",
     headers,
@@ -125,9 +125,9 @@ async function run() {
 
   const subcategoryId = subcategory.id;
 
-  // =========================
-  // CREATE ARTICLE
-  // =========================
+  // // =========================
+  // // CREATE ARTICLE
+  // // =========================
   const createRes = await fetch(`${BASE_URL}/api/articles`, {
     method: "POST",
     headers,
@@ -280,132 +280,292 @@ console.log(
 // =========================
 // SEARCH CATEGORIES
 // =========================
-const catSearchRes = await fetch(
-  `${BASE_URL}/api/categories/search?name=Test&page=1&limit=7`
-);
+// const catSearchRes = await fetch(
+//   `${BASE_URL}/api/categories/search?name=Test&page=1&limit=7`
+// );
 
-const catSearchData = (await parseJSONSafe(catSearchRes)) || {};
-const catResults = Array.isArray(catSearchData.data) ? catSearchData.data : [];
+// const catSearchData = (await parseJSONSafe(catSearchRes)) || {};
+// const catResults = Array.isArray(catSearchData.data) ? catSearchData.data : [];
 
-console.log("CATEGORY SEARCH:", catResults.length);
-console.log("TOTAL categories:", catSearchData.total ?? 0);
-console.log("Current page:", catSearchData.page ?? 1, "/", catSearchData.pages ?? 1);
+// console.log("CATEGORY SEARCH:", catResults.length);
+// console.log("TOTAL categories:", catSearchData.total ?? 0);
+// console.log("Current page:", catSearchData.page ?? 1, "/", catSearchData.pages ?? 1);
 
-console.log(
-  "Category IDs:",
-  catResults.map((c: any) => c.id)
-);
+// console.log(
+//   "Category IDs:",
+//   catResults.map((c: any) => c.id)
+// );
 
-console.log(
-  "Category names:",
-  catResults.map((c: any) => c.name)
-);
+// console.log(
+//   "Category names:",
+//   catResults.map((c: any) => c.name)
+// );
 
 // =========================
 // SEARCH SUBCATEGORIES
 // =========================
-const subSearchRes = await fetch(
-  `${BASE_URL}/api/subcategories/search?name=Test&page=2&limit=6`
-);
+// const subSearchRes = await fetch(
+//   `${BASE_URL}/api/subcategories/search?name=Test&page=2&limit=6`
+// );
 
-const subSearchData = (await parseJSONSafe(subSearchRes)) || {};
-const subResults = Array.isArray(subSearchData.data) ? subSearchData.data : [];
+// const subSearchData = (await parseJSONSafe(subSearchRes)) || {};
+// const subResults = Array.isArray(subSearchData.data) ? subSearchData.data : [];
 
-console.log("SUBCATEGORY SEARCH:", subResults.length);
-console.log("TOTAL subcategories:", subSearchData.total ?? 0);
-console.log("Current page:", subSearchData.page ?? 1, "/", subSearchData.pages ?? 1);
-console.log(
-  "Subcategory IDs:",
-  subResults.map((s: any) => s.id)
-);
+// console.log("SUBCATEGORY SEARCH:", subResults.length);
+// console.log("TOTAL subcategories:", subSearchData.total ?? 0);
+// console.log("Current page:", subSearchData.page ?? 1, "/", subSearchData.pages ?? 1);
+// console.log(
+//   "Subcategory IDs:",
+//   subResults.map((s: any) => s.id)
+// );
 
-console.log(
-  "Subcategory names:",
-  subResults.map((s: any) => s.name)
-);
+// console.log(
+//   "Subcategory names:",
+//   subResults.map((s: any) => s.name)
+// );
+
+// // =========================
+// // SEARCH SUBCATEGORIES BY CATEGORY
+// // =========================
+// const subCatSearchRes = await fetch(
+//   `${BASE_URL}/api/subcategories/search?categoryId=${categoryId}&page=1&limit=10`
+// );
+
+// const subCatSearchData = (await parseJSONSafe(subCatSearchRes)) || {};
+// const subCatResults = Array.isArray(subCatSearchData.data)
+//   ? subCatSearchData.data
+//   : [];
+
+// console.log("SUBCATEGORY BY CATEGORY:", subCatResults.length);
+// console.log("Current page:", subCatSearchData.page ?? 1, "/", subCatSearchData.pages ?? 1);
+// console.log(
+//   "Subcategory IDs:",
+//   subCatResults.map((s: any) => s.id)
+// );
+
+// // =========================
+// // SEARCH TAGS
+// // =========================
+// const tagSearchRes = await fetch(
+//   `${BASE_URL}/api/tags/search?name=test&page=2&limit=5`
+// );
+
+// const tagSearchData = (await parseJSONSafe(tagSearchRes)) || {};
+// const tagResults = Array.isArray(tagSearchData.data) ? tagSearchData.data : [];
+
+// console.log("TAG SEARCH:", tagResults.length);
+// console.log("TOTAL tags:", tagSearchData.total ?? 0);
+// console.log("Current page:", tagSearchData.page ?? 1, "/", tagSearchData.pages ?? 1);
+// console.log(
+//   "Tag IDs:",
+//   tagResults.map((t: any) => t.id)
+// );
+
+// console.log(
+//   "Tag names:",
+//   tagResults.map((t: any) => t.name)
+// );
+
+
+
+// // =========================
+// // MEDIA UPLOAD
+// // =========================
+// const imagePath = path.join(process.cwd(), "test-images.jpeg"); // поклади файл поруч з тестом
+// const imageBuffer = fs.readFileSync(imagePath);
+
+// const formData = new FormData();
+// formData.append(
+//   "file",
+//   new Blob([imageBuffer], { type: "image/jpeg" }),
+//   "test-image.jpg"
+// );
+
+// const uploadRes = await fetch(`${BASE_URL}/api/media`, {
+//   method: "POST",
+//   headers: {
+//     Cookie: `token=${token}`,
+//   },
+//   body: formData,
+// });
+
+// const uploadedMedia = await uploadRes.json();
+
+// console.log("MEDIA UPLOAD:", uploadedMedia);
+
+// const mediaId = uploadedMedia.id;
+
+// // =========================
+// // MEDIA LIST
+// // =========================
+// const mediaListRes = await fetch(`${BASE_URL}/api/media`);
+// const mediaList = await mediaListRes.json();
+
+// console.log("MEDIA COUNT:", mediaList.length);
+
+// console.log(
+//   "MEDIA IDS:",
+//   mediaList.map((m: any) => m.id)
+// );
+
 
 // =========================
-// SEARCH SUBCATEGORIES BY CATEGORY
+// CREATE STUDIO PROJECT (без parentId)
 // =========================
-const subCatSearchRes = await fetch(
-  `${BASE_URL}/api/subcategories/search?categoryId=${categoryId}&page=1&limit=10`
-);
-
-const subCatSearchData = (await parseJSONSafe(subCatSearchRes)) || {};
-const subCatResults = Array.isArray(subCatSearchData.data)
-  ? subCatSearchData.data
-  : [];
-
-console.log("SUBCATEGORY BY CATEGORY:", subCatResults.length);
-console.log("Current page:", subCatSearchData.page ?? 1, "/", subCatSearchData.pages ?? 1);
-console.log(
-  "Subcategory IDs:",
-  subCatResults.map((s: any) => s.id)
-);
-
-// =========================
-// SEARCH TAGS
-// =========================
-const tagSearchRes = await fetch(
-  `${BASE_URL}/api/tags/search?name=test&page=2&limit=5`
-);
-
-const tagSearchData = (await parseJSONSafe(tagSearchRes)) || {};
-const tagResults = Array.isArray(tagSearchData.data) ? tagSearchData.data : [];
-
-console.log("TAG SEARCH:", tagResults.length);
-console.log("TOTAL tags:", tagSearchData.total ?? 0);
-console.log("Current page:", tagSearchData.page ?? 1, "/", tagSearchData.pages ?? 1);
-console.log(
-  "Tag IDs:",
-  tagResults.map((t: any) => t.id)
-);
-
-console.log(
-  "Tag names:",
-  tagResults.map((t: any) => t.name)
-);
-
-
-
-// =========================
-// MEDIA UPLOAD
-// =========================
-const imagePath = path.join(process.cwd(), "test-images.jpeg"); // поклади файл поруч з тестом
-const imageBuffer = fs.readFileSync(imagePath);
-
-const formData = new FormData();
-formData.append(
-  "file",
-  new Blob([imageBuffer], { type: "image/jpeg" }),
-  "test-image.jpg"
-);
-
-const uploadRes = await fetch(`${BASE_URL}/api/media`, {
+const createProjectRes = await fetch(`${BASE_URL}/api/studioprojects`, {
   method: "POST",
-  headers: {
-    Cookie: `token=${token}`,
-  },
-  body: formData,
+  headers,
+  body: JSON.stringify({
+    title: "Тестовий проект " + Date.now(),
+    body: { blocks: [] },
+    description: "Опис проекту",
+    categoryId,
+    subcategoryId,
+    imageId: mediaId,
+  }),
 });
 
-const uploadedMedia = await uploadRes.json();
+const project = await createProjectRes.json();
+console.log("CREATE STUDIO PROJECT:", project);
 
-console.log("MEDIA UPLOAD:", uploadedMedia);
-
-const mediaId = uploadedMedia.id;
+const projectId = project.id;
 
 // =========================
-// MEDIA LIST
+// CREATE CHILD STUDIO PROJECT (з parentId)
 // =========================
-const mediaListRes = await fetch(`${BASE_URL}/api/media`);
-const mediaList = await mediaListRes.json();
+const createChildRes = await fetch(`${BASE_URL}/api/studioprojects`, {
+  method: "POST",
+  headers,
+  body: JSON.stringify({
+    title: "Дочірній проект " + Date.now(),
+    body: { blocks: [] },
+    description: "Опис дочірнього проекту",
+    categoryId,
+    subcategoryId,
+    parentId: projectId, // підключаємо до батька
+    imageId: mediaId,
+  }),
+});
 
-console.log("MEDIA COUNT:", mediaList.length);
+const childProject = await createChildRes.json();
+console.log("CREATE CHILD STUDIO PROJECT:", childProject);
+const childProjectId = childProject.id;
 
-console.log(
-  "MEDIA IDS:",
-  mediaList.map((m: any) => m.id)
+// =========================
+// UPDATE STUDIO PROJECT
+// =========================
+const updateProjectRes = await fetch(`${BASE_URL}/api/studioprojects/${projectId}`, {
+  method: "PATCH",
+  headers,
+  body: JSON.stringify({
+    title: "Updated Studio Project " + Date.now(),
+    description: "Оновлений опис",
+  }),
+});
+
+const updatedProject = await parseJSONSafe(updateProjectRes);
+console.log("UPDATED STUDIO PROJECT:", updatedProject.title);
+
+// =========================
+// PUBLISH PROJECT
+// =========================
+const publishRes = await fetch(`${BASE_URL}/api/studioprojects/publish`, {
+  method: "POST",
+  headers,
+  body: JSON.stringify({ id: projectId }),
+});
+
+const publishedProject = await publishRes.json();
+console.log("PUBLISH STUDIO PROJECT:", publishedProject.message || "Published");
+
+// =========================
+// PUBLISH CHILD PROJECT
+// =========================
+const publishChildRes = await fetch(`${BASE_URL}/api/studioprojects/publish`, {
+  method: "POST",
+  headers,
+  body: JSON.stringify({ id: childProjectId }),
+});
+
+const publishedChild = await publishChildRes.json();
+console.log("PUBLISH CHILD PROJECT:", publishedChild.message || "Published");
+
+// =========================
+// 1️⃣ CREATE LOCATION без проекту
+// =========================
+const createLocationRes1 = await fetch(`${BASE_URL}/api/locations`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Cookie: `token=${token}`,
+  },
+  body: JSON.stringify({
+    name: "Локація без проекту " + Date.now(),
+    url: "https://example.com/location1-" + Date.now(),
+    coordinates: { lat: 50.4501, lng: 30.5234 },
+    description: "Просто тестова локація",
+  }),
+});
+
+const location1 = await parseJSONSafe(createLocationRes1);
+console.log("CREATE LOCATION без проекту:", location1);
+
+// =========================
+// 2️⃣ CREATE LOCATION і підключення до існуючого проекту
+// =========================
+const createLocationRes2 = await fetch(`${BASE_URL}/api/locations`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Cookie: `token=${token}`,
+  },
+  body: JSON.stringify({
+    name: "Локація з існуючим проектом " + Date.now(),
+    url: "https://example.com/location2-" + Date.now(),
+    coordinates: { lat: 51.0, lng: 31.0 },
+    description: "Локація прив’язана до існуючого проекту",
+    projectId: projectId, // connect до створеного проекту
+  }),
+});
+
+const location2 = await parseJSONSafe(createLocationRes2);
+console.log("CREATE LOCATION + connect до проекту:", location2);
+
+// =========================
+// 3️⃣ CREATE LOCATION і новий проект в одному запиті
+// =========================
+const createLocationRes3 = await fetch(`${BASE_URL}/api/locations`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Cookie: `token=${token}`,
+  },
+  body: JSON.stringify({
+    name: "Локація з новим проектом " + Date.now(),
+    url: "https://example.com/location3-" + Date.now(),
+    coordinates: { lat: 49.0, lng: 30.5 },
+    description: "Локація + новий проект в одному запиті",
+    project: {
+      create: {
+        title: "Новый проект для локації " + Date.now(),
+        body: { blocks: [] },
+        description: "Проект створений разом з локацією",
+        categoryId,
+        subcategoryId,
+        imageId: mediaId,
+      },
+    },
+  }),
+});
+
+const location3 = await parseJSONSafe(createLocationRes3);
+console.log("CREATE LOCATION + новий проект:", location3);
+
+// =========================
+// SEARCH STUDIO PROJECTS
+// =========================
+const searchProjectRes = await fetch(
+  `${BASE_URL}/api/studioprojects/search?page=1&limit=2&sortBy=createdAt&order=desc&published=true`
 );
 
 

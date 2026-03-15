@@ -1,11 +1,21 @@
 import {
-  IconAperture,
+  // IconAperture,
   IconCopy,
   IconLayoutDashboard,
   IconLogin,
-  IconMoodHappy,
+  // IconMoodHappy,
   IconTypography,
   IconUserPlus,
+  IconUser,
+  IconMapPin,
+  IconTicket,
+  IconMap2,
+  IconUsersGroup,
+  IconPhone,
+  IconBook,
+  IconVaccine,
+  IconWorld,
+  IconTableDown
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
@@ -13,31 +23,108 @@ import { uniqueId } from "lodash";
 const Menuitems = [
   {
     navlabel: true,
-    subheader: "HOME",
+    subheader: "GENERAL",
   },
 
+  {    
+    id: uniqueId(),
+    title: "Profile",
+    icon: IconUser,
+    href: "/admin/profile",
+  },
   {
     id: uniqueId(),
     title: "Dashboard",
     icon: IconLayoutDashboard,
-    href: "/admin/",
+    href: "/admin/dashboard",
   },
   {
     navlabel: true,
-    subheader: "UTILITIES",
+    subheader: "PRODUCTION",
   },
+
   {
     id: uniqueId(),
-    title: "Typography",
+    title: "Articles",
     icon: IconTypography,
-    href: "/admin/utilities/typography",
+    href: "/admin/production/articles",
+  },
+    {
+    id: uniqueId(),
+    title: "YFC",
+    icon: IconMapPin,
+    href: "/admin/production/yfc",
+  },
+    {
+    id: uniqueId(),
+    title: "Festivals",
+    icon: IconTicket,
+    href: "/admin/production/festivals",
   },
   {
     id: uniqueId(),
-    title: "Shadow",
-    icon: IconCopy,
-    href: "/admin/utilities/shadow",
+    title: "Places",
+    icon: IconMap2,
+    href: "/admin/production/places",
   },
+  {
+    id: uniqueId(),
+    title: "Team",
+    icon: IconUsersGroup,
+    href: "/admin/production/team",
+  },
+  {
+    id: uniqueId(),
+    title: "Contacts",
+    icon: IconPhone,
+    href: "/admin/production/contacts",
+  },
+  {
+    id: uniqueId(),
+    title: "Methodology",
+    icon: IconBook,
+    href: "/admin/production/methodology",
+  },
+
+  {
+    navlabel: true,
+    subheader: "ABOUT NETWORK",
+  },
+  {
+    id: uniqueId(),
+    title: "Donors",
+    icon: IconVaccine,
+    href: "/admin/production/donors",
+  },
+  {
+    id: uniqueId(),
+    title: "Partners",
+    icon: IconWorld,
+    href: "/admin/production/partners",
+  },
+  {
+    id: uniqueId(),
+    title: "Submissions",
+    icon: IconTableDown,
+    href: "/admin/production/submissions",
+  },
+
+  // {
+  //   navlabel: true,
+  //   subheader: "UTILITIES",
+  // },
+  // {
+  //   id: uniqueId(),
+  //   title: "Typography",
+  //   icon: IconTypography,
+  //   href: "/admin/utilities/typography",
+  // },
+  // {
+  //   id: uniqueId(),
+  //   title: "Shadow",
+  //   icon: IconCopy,
+  //   href: "/admin/utilities/shadow",
+  // },
   {
     navlabel: true,
     subheader: "AUTH",
@@ -54,22 +141,22 @@ const Menuitems = [
     icon: IconUserPlus,
     href: "/admin/authentication/register",
   },
-  {
-    navlabel: true,
-    subheader: " EXTRA",
-  },
-  {
-    id: uniqueId(),
-    title: "Icons",
-    icon: IconMoodHappy,
-    href: "/admin/icons",
-  },
-  {
-    id: uniqueId(),
-    title: "Sample Page",
-    icon: IconAperture,
-    href: "/admin/sample-page",
-  },
+  // {
+  //   navlabel: true,
+  //   subheader: " EXTRA",
+  // },
+  // {
+  //   id: uniqueId(),
+  //   title: "Icons",
+  //   icon: IconMoodHappy,
+  //   href: "/admin/icons",
+  // },
+  // {
+  //   id: uniqueId(),
+  //   title: "Sample Page",
+  //   icon: IconAperture,
+  //   href: "/admin/sample-page",
+  // },
 
 ];
 

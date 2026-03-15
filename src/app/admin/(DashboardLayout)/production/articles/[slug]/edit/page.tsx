@@ -1,0 +1,115 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Container, Typography } from "@mui/material";
+import ArticleForm, { ArticleFormData } from "../../../../components/articleForm";
+
+interface EditPageProps {
+  params: { slug: string };
+}
+
+export default function EditArticle({ params }: EditPageProps) {
+  const router = useRouter();
+  const { slug } = params;
+
+  const [articleId, setArticleId] = useState<number | null>(null);
+  const [initialData, setInitialData] = useState<Partial<ArticleFormData> | null>(null);
+  const [fetching, setFetching] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+  fetch(`/api/articles/by-slug/${slug}`)
+    .then((r) => r.json())
+    .then((article) => {
+  console.log('article.tags:', article.tags);
+  console.log('article.body:', article.body);      
+      setArticleId(article.id);
+      setInitialData({
+        title: article.title ?? "",
+        lang: article.lang ?? "UK",
+        body: article.body ?? { blocks: [] },
+        authorName: article.author?.name ?? article.authorName ?? "",
+        categoryId: article.categoryId ?? "",
+        subcategoryIds: article.subcategories?.map((s: any) => s.id) ?? [],
+        tags: article.tags?.map((t: any) => t.name) ?? [],
+      });
+    })
+
+    .catch(() => setError("Не вдалося завантажити статтю"))
+    .finally(() => setFetching(false));
+}, [slug]);
+
+  const handleSave = async (data: ArticleFormData) => {
+    if (!data.title || !data.authorName || !data.categoryId) {
+      setError("Заповніть обов'язкові поля: заголовок, автор, категорія");
+      return;
+    }
+    if (!articleId) {
+      setError("ID статті не знайдено");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    try {
+      const res = await fetch(`/api/articles/${articleId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...data,
+          categoryId: Number(data.categoryId),
+          tags: data.tags.map((name) => ({ name })),
+        }),
+      });
+
+      console.log("data:", data);
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        throw new Error(json?.message || `Помилка ${res.status}`);
+      }
+
+      setSuccess(true);
+      setTimeout(() => router.push("/admin/production/articles"), 1500);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (fetching) {
+    return (
+      <Container maxWidth="md">
+        <Typography sx={{ mt: 4 }}>Завантаження...</Typography>
+      </Container>
+    );
+  }
+
+  if (!initialData) {
+    return (
+      <Container maxWidth="md">
+        <Typography sx={{ mt: 4 }} color="error">Статтю не знайдено</Typography>
+      </Container>
+    );
+  }
+
+  return (
+    <ArticleForm
+      title="Редагувати статтю"
+      submitLabel="Зберегти зміни"
+      successMessage="Статтю успішно оновлено! Перенаправлення..."
+      key={articleId ?? 'loading'}
+      initialData={initialData}
+      onSave={handleSave}
+      loading={loading}
+      error={error}
+      success={success}
+      onCancel={() => router.back()}
+    />
+  );
+}
