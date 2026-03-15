@@ -14,11 +14,11 @@ async function parseJSONSafe(res: Response) {
 }
 
 interface PageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export default async function ArticleSlugPage({ params }: PageProps) {
-  const { slug } = params;
+  const { slug } = await params;
 
   const getBySlugRes = await fetch(
     `${BASE_URL}/api/articles/by-slug/${slug}`,
@@ -33,6 +33,20 @@ export default async function ArticleSlugPage({ params }: PageProps) {
   return (
     <PageContainer title={article.title} description={article.title}>
       <Box maxWidth={1200} mx="auto">
+        {article.image?.url && (
+          <Box
+            component="img"
+            src={article.image.url}
+            alt={article.title}
+            sx={{
+              width: '100%',
+              maxHeight: 600,
+              objectFit: 'cover',
+              borderRadius: 2,
+              mb: 3,
+            }}
+          />
+        )}
 
         <Stack direction="row" spacing={1} mb={2} flexWrap="wrap" className='flex justify-between'>
           <Chip label={article.lang} size="small" variant="filled" sx={{ fontWeight: 600 }} />
@@ -42,20 +56,6 @@ export default async function ArticleSlugPage({ params }: PageProps) {
             color={article.published ? 'success' : 'default'}
             variant="outlined"
           />
-          {article.image?.url && (
-            <Box
-              component="img"
-              src={article.image.url}
-              alt={article.title}
-              sx={{
-                width: '100%',
-                maxHeight: 400,
-                objectFit: 'cover',
-                borderRadius: 2,
-                mb: 3,
-              }}
-            />
-          )}
           {article.category && (
             <Chip label={article.category.name} size="small" variant="outlined" />
           )}

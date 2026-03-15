@@ -1,17 +1,18 @@
 "use client";
 
+import React from "react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Container, Typography } from "@mui/material";
 import ArticleForm, { ArticleFormData } from "../../../../components/articleForm";
 
 interface EditPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export default function EditArticle({ params }: EditPageProps) {
+  const { slug } = React.use(params);
   const router = useRouter();
-  const { slug } = params;
 
   const [articleId, setArticleId] = useState<number | null>(null);
   const [initialData, setInitialData] = useState<Partial<ArticleFormData> | null>(null);
