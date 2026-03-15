@@ -50,11 +50,45 @@ class ArticleService extends BaseService {
   }
 
 	async update(user: any, id: number, body: any) {
-    this.assertPolicy(user, canUpdateArticle); 
-    const data = updateArticleSchema.partial().parse(body);
+		this.assertPolicy(user, canUpdateArticle);
 
-    return this.repository.update(id, data);
-  }
+		const data = updateArticleSchema.partial().parse(body);
+
+		const { categoryId, subcategoryIds, tags, ...rest } = data;
+
+		return this.repository.update(id, {
+			...rest,
+
+			category: categoryId
+				? { connect: { id: categoryId } }
+				: undefined,
+
+			subcategories: subcategoryIds
+				? { set: subcategoryIds.map((id: number) => ({ id })) }
+				: undefined,
+
+			tags: tags
+				? {
+						connectOrCreate: await Promise.all(
+							tags.map(async (tag: any) => {
+								const tagSlug = await generateUniqueSlug(
+									(slug) => tagRepository.existsBySlug(slug),
+									tag.name
+								);
+
+								return {
+									where: { slug: tagSlug },
+									create: {
+										name: tag.name,
+										slug: tagSlug,
+									},
+								};
+							})
+						),
+					}
+				: undefined,
+		});
+	}
 
   async publish(user: any, body: unknown) {
 

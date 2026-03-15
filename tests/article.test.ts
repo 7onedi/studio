@@ -149,20 +149,83 @@ async function run() {
 
 
   // =========================
+  // CREATE NEW CATEGORY FOR UPDATE TEST
+  // =========================
+  const newCategoryRes = await fetch(`${BASE_URL}/api/categories`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      name: "Update Category " + Date.now(),
+    }),
+  });
+
+  const newCategory = await newCategoryRes.json();
+  const newCategoryId = newCategory.id;
+
+  console.log("NEW CATEGORY:", newCategory);
+
+  // =========================
+  // CREATE NEW SUBCATEGORY FOR UPDATE TEST
+  // =========================
+  const newSubcategoryRes = await fetch(`${BASE_URL}/api/subcategories`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      name: "Update Subcategory " + Date.now(),
+      categoryId: newCategoryId,
+    }),
+  });
+
+  const newSubcategory = await newSubcategoryRes.json();
+  const newSubcategoryId = newSubcategory.id;
+
+  console.log("NEW SUBCATEGORY:", newSubcategory);
+
+  // =========================
+  // UPDATE ARTICLE (CATEGORY + SUBCATEGORY + TAGS)
+  // =========================
+  const updateArticleRes = await fetch(`${BASE_URL}/api/articles/${articleId}`, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify({
+      title: "Updated Article " + Date.now(),
+      categoryId: newCategoryId,
+      subcategoryIds: [newSubcategoryId],
+      tags: [
+        { name: "updated-tag-" + Date.now() },
+        { name: "second-tag-" + Date.now() },
+      ],
+    }),
+  });
+
+  const updatedArticle = await parseJSONSafe(updateArticleRes);
+
+  console.log("ARTICLE UPDATE FULL:", updatedArticle);
+  console.log("UPDATED CATEGORY:", updatedArticle?.category?.id);
+  console.log(
+    "UPDATED SUBCATEGORIES:",
+    updatedArticle?.subcategories?.map((s: any) => s.id)
+  );
+  console.log(
+    "UPDATED TAGS:",
+    updatedArticle?.tags?.map((t: any) => t.name)
+  );
+
+  // =========================
 // GET ARTICLE BY SLUG
 // =========================
-// const articleSlug = article.slug;
+const articleSlug = article.slug;
 
-// const getBySlugRes = await fetch(
-//   `${BASE_URL}/api/articles/by-slug/${articleSlug}`
-// );
+const getBySlugRes = await fetch(
+  `${BASE_URL}/api/articles/by-slug/${articleSlug}`
+);
 
-// const articleBySlug = await parseJSONSafe(getBySlugRes);
+const articleBySlug = await parseJSONSafe(getBySlugRes);
 
-// console.log("FULL RESPONSE JSON:", JSON.stringify(articleBySlug, null, 2));
-// console.log("GET ARTICLE BY SLUG:", articleBySlug?.slug);
-// console.log("TITLE:", articleBySlug?.title);
-// console.log("ID:", articleBySlug?.id);
+console.log("FULL RESPONSE JSON:", JSON.stringify(articleBySlug, null, 2));
+console.log("GET ARTICLE BY SLUG:", articleBySlug?.slug);
+console.log("TITLE:", articleBySlug?.title);
+console.log("ID:", articleBySlug?.id);
 
   // =========================
   // PATCH ARTICLE
@@ -344,6 +407,166 @@ console.log(
 //   "MEDIA IDS:",
 //   mediaList.map((m: any) => m.id)
 // );
+
+
+// =========================
+// CREATE STUDIO PROJECT (без parentId)
+// =========================
+const createProjectRes = await fetch(`${BASE_URL}/api/studioprojects`, {
+  method: "POST",
+  headers,
+  body: JSON.stringify({
+    title: "Тестовий проект " + Date.now(),
+    body: { blocks: [] },
+    description: "Опис проекту",
+    categoryId,
+    subcategoryId,
+    imageId: mediaId,
+  }),
+});
+
+const project = await createProjectRes.json();
+console.log("CREATE STUDIO PROJECT:", project);
+
+const projectId = project.id;
+
+// =========================
+// CREATE CHILD STUDIO PROJECT (з parentId)
+// =========================
+const createChildRes = await fetch(`${BASE_URL}/api/studioprojects`, {
+  method: "POST",
+  headers,
+  body: JSON.stringify({
+    title: "Дочірній проект " + Date.now(),
+    body: { blocks: [] },
+    description: "Опис дочірнього проекту",
+    categoryId,
+    subcategoryId,
+    parentId: projectId, // підключаємо до батька
+    imageId: mediaId,
+  }),
+});
+
+const childProject = await createChildRes.json();
+console.log("CREATE CHILD STUDIO PROJECT:", childProject);
+const childProjectId = childProject.id;
+
+// =========================
+// UPDATE STUDIO PROJECT
+// =========================
+const updateProjectRes = await fetch(`${BASE_URL}/api/studioprojects/${projectId}`, {
+  method: "PATCH",
+  headers,
+  body: JSON.stringify({
+    title: "Updated Studio Project " + Date.now(),
+    description: "Оновлений опис",
+  }),
+});
+
+const updatedProject = await parseJSONSafe(updateProjectRes);
+console.log("UPDATED STUDIO PROJECT:", updatedProject.title);
+
+// =========================
+// PUBLISH PROJECT
+// =========================
+const publishRes = await fetch(`${BASE_URL}/api/studioprojects/publish`, {
+  method: "POST",
+  headers,
+  body: JSON.stringify({ id: projectId }),
+});
+
+const publishedProject = await publishRes.json();
+console.log("PUBLISH STUDIO PROJECT:", publishedProject.message || "Published");
+
+// =========================
+// PUBLISH CHILD PROJECT
+// =========================
+const publishChildRes = await fetch(`${BASE_URL}/api/studioprojects/publish`, {
+  method: "POST",
+  headers,
+  body: JSON.stringify({ id: childProjectId }),
+});
+
+const publishedChild = await publishChildRes.json();
+console.log("PUBLISH CHILD PROJECT:", publishedChild.message || "Published");
+
+// =========================
+// 1️⃣ CREATE LOCATION без проекту
+// =========================
+const createLocationRes1 = await fetch(`${BASE_URL}/api/locations`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Cookie: `token=${token}`,
+  },
+  body: JSON.stringify({
+    name: "Локація без проекту " + Date.now(),
+    url: "https://example.com/location1-" + Date.now(),
+    coordinates: { lat: 50.4501, lng: 30.5234 },
+    description: "Просто тестова локація",
+  }),
+});
+
+const location1 = await parseJSONSafe(createLocationRes1);
+console.log("CREATE LOCATION без проекту:", location1);
+
+// =========================
+// 2️⃣ CREATE LOCATION і підключення до існуючого проекту
+// =========================
+const createLocationRes2 = await fetch(`${BASE_URL}/api/locations`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Cookie: `token=${token}`,
+  },
+  body: JSON.stringify({
+    name: "Локація з існуючим проектом " + Date.now(),
+    url: "https://example.com/location2-" + Date.now(),
+    coordinates: { lat: 51.0, lng: 31.0 },
+    description: "Локація прив’язана до існуючого проекту",
+    projectId: projectId, // connect до створеного проекту
+  }),
+});
+
+const location2 = await parseJSONSafe(createLocationRes2);
+console.log("CREATE LOCATION + connect до проекту:", location2);
+
+// =========================
+// 3️⃣ CREATE LOCATION і новий проект в одному запиті
+// =========================
+const createLocationRes3 = await fetch(`${BASE_URL}/api/locations`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Cookie: `token=${token}`,
+  },
+  body: JSON.stringify({
+    name: "Локація з новим проектом " + Date.now(),
+    url: "https://example.com/location3-" + Date.now(),
+    coordinates: { lat: 49.0, lng: 30.5 },
+    description: "Локація + новий проект в одному запиті",
+    project: {
+      create: {
+        title: "Новый проект для локації " + Date.now(),
+        body: { blocks: [] },
+        description: "Проект створений разом з локацією",
+        categoryId,
+        subcategoryId,
+        imageId: mediaId,
+      },
+    },
+  }),
+});
+
+const location3 = await parseJSONSafe(createLocationRes3);
+console.log("CREATE LOCATION + новий проект:", location3);
+
+// =========================
+// SEARCH STUDIO PROJECTS
+// =========================
+const searchProjectRes = await fetch(
+  `${BASE_URL}/api/studioprojects/search?page=1&limit=2&sortBy=createdAt&order=desc&published=true`
+);
 
 
 // =========================

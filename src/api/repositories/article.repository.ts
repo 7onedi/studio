@@ -31,4 +31,17 @@ export const articleRepository = {
     });
     return !!article;
   },
+
+  async  update(id: number, data: any) {
+      return prisma.article.update({
+        where: { id },
+        data,
+        include: {
+          category: true,
+          subcategories: true,
+          tags: true,
+          author: true,
+        },
+      });
+    }
 };
