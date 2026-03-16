@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
 
  const filters: Record<string, any> = {};
  if (query.name) filters.name = query.name;
-        if (query.categoryId) filters.categoryId = Number(query.categoryId);
+    if (query.categoryId) filters.categoryId = Number(query.categoryId);
     const options = {
         page: Number(query.page ?? 1),
         limit: Number(query.limit ?? 20),
