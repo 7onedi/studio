@@ -81,9 +81,11 @@ export default function ArticleForm({
 
   useEffect(() => {
     if (!categoryId) { setSubcategories([]); return; }
-    fetch(`/api/subcategories?categoryId=${categoryId}`)
+    fetch(`/api/subcategories/search?categoryId=${categoryId}`)
       .then((r) => r.json())
-      .then((data) => setSubcategories(Array.isArray(data) ? data : data.items ?? []))
+      .then((data) => {
+        setSubcategories(Array.isArray(data) ? data : data.data ?? data.items ?? []);
+      })
       .catch(console.error);
   }, [categoryId]);
 
