@@ -5,43 +5,69 @@ services:
       dockerfile: ./docker/Dockerfile
     working_dir: /app
     env_file: .env
-    environment:
-      - NODE_ENV=production
-      - NODE_OPTIONS=--require=/app/trace-exec.cjs
+
+    volumes:
+      - ./prisma:/app/prisma
+
     restart: always
+
     ports:
       - "3000:3000"
 
-    # 1) /tmp як tmpfs + noexec: зламає запуск /tmp/x.sh, /tmp/lrt і т.д.
     tmpfs:
       - /tmp:rw,noexec,nosuid,size=64m
+    stop_grace_period: 60s
 
-    # 2) Ротація логів, щоб не роздувало диск
     logging:
       driver: json-file
       options:
         max-size: "10m"
         max-file: "3"
 
-    # 3) Ліміти ресурсів (працюють у docker compose)
-    mem_limit: 2.5g
+    mem_limit: 3g
     cpus: "1.0"
 
-    # 4) Монтуємо проєкт (включно з trace-exec.cjs)
-    volumes:
-      - .:/app
-
     entrypoint: /entrypoint.sh
-    tmpfs:
-      - /tmp:rw,noexec,nosuid,size=64m
-    security_opt:
-      - no-new-privileges:true
+
+    depends_on:
+      studio_pangeya_mysql:
+        condition: service_healthy
+
+
   studio_pangeya_nginx:
     image: nginx:1.19
     restart: always
+
     depends_on:
       - app
+
     volumes:
       - ./docker/nginx:/etc/nginx/conf.d
+
     ports:
       - "80:80"
+
+
+  studio_pangeya_mysql:
+    image: mysql:8
+    container_name: studio-mysql
+    restart: always
+    env_file:
+      - .env
+
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+    stop_grace_period: 60s
+
+    volumes:
+      - studio-mysql-data:/var/lib/mysql
+
+
+volumes:
+  studio-mysql-data:

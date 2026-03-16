@@ -14,18 +14,15 @@
     "jsx": "preserve",
     "incremental": true,
     "noUnusedLocals": false,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    "plugins": [{ "name": "next" }],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       "@lib/*": ["src/lib/*"],
-      "@blocks/*": ["src/app/blocks/*"],
-      "@components/*": ["src/app/components/*"],
+      "@blocks/*": ["src/app/public/blocks/*"],
+      "@components/*": ["src/app/public/components/*"],
       "@styles/*": ["src/styles/*"]
+      // ❌ removed all @editorjs/* overrides
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "next.config.mjs"],

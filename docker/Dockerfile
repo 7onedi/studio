@@ -11,8 +11,11 @@ COPY package.json pnpm-lock.yaml ./
 # Встановлюємо всі залежності (dev + prod)
 RUN pnpm install --frozen-lockfile
 
-# Копіюємо весь код
+# Копіюємо весь код (включно з prisma/schema.prisma)
 COPY . .
+
+# Generate Prisma client before building the project
+RUN npx prisma generate
 
 # Білдимо проєкт
 RUN pnpm build
@@ -33,14 +36,10 @@ RUN apt-get update && apt-get install -y \
 COPY --from=builder /app ./
 COPY --from=builder /app/node_modules ./node_modules
 
-# Установлюємо продакшн-режим
-ENV NODE_ENV=production
-
 # Виставляємо порт
 EXPOSE 3000
 
 # Копіюємо і активуємо entrypoint
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
-
 ENTRYPOINT ["/entrypoint.sh"]
