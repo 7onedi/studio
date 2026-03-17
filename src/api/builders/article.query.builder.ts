@@ -10,6 +10,9 @@ export class ArticleQueryBuilder extends QueryBuilder {
     if (filters.lang) where.lang = filters.lang;
     if (filters.categoryId) where.categoryId = Number(filters.categoryId);
     if (filters.subcategoryId) where.subcategories = { some: { id: Number(filters.subcategoryId) } };
+    if (filters.authorId) where.authorId = Number(filters.authorId);
+    if (filters.tagId) where.tags = { some: { id: Number(filters.tagId) } };
+    if (filters.slider) where.slider = filters.slider;
     if (typeof filters.published === "boolean") where.published = filters.published;
 
     return where;
