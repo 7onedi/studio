@@ -88,8 +88,15 @@ export default function ArticleTable({
   const handleDelete = async (id: number) => {
     if (!confirm('Видалити статтю?')) return;
     try {
+      const article = data.find((a) => a.id === id);
+
       const res = await fetch(`/api/articles/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error(`Помилка ${res.status}`);
+
+      if (article?.imageId) {
+        await fetch(`/api/media/${article.imageId}`, { method: 'DELETE' });
+      }
+
       router.refresh();
     } catch (err: any) {
       console.error('Помилка видалення:', err.message);
@@ -97,10 +104,18 @@ export default function ArticleTable({
   };
 
   const handleBulkDelete = async () => {
-    const ids = table.getSelectedRowModel().rows.map((r) => r.original.id);
+    const rows = table.getSelectedRowModel().rows;
+    const ids = rows.map((r) => r.original.id);
     if (!confirm(`Видалити ${ids.length} статей?`)) return;
     try {
-      await Promise.all(ids.map((id) => fetch(`/api/articles/${id}`, { method: 'DELETE' })));
+      await Promise.all(
+        rows.map(async (r) => {
+          await fetch(`/api/articles/${r.original.id}`, { method: 'DELETE' });
+          if (r.original.imageId) {
+            await fetch(`/api/media/${r.original.imageId}`, { method: 'DELETE' });
+          }
+        })
+      );
       setRowSelection({});
       router.refresh();
     } catch (err: any) {
@@ -244,7 +259,7 @@ export default function ArticleTable({
   });
 
   return (
-      <Box maxWidth={1200} mx="auto">
+      <Box maxWidth={1920} mx="auto">
       {/* Toolbar */}
       <Stack direction="row" spacing={2} alignItems="center" mb={2} flexWrap="wrap">
         <TextField

@@ -32,7 +32,7 @@ export default async function ArticleSlugPage({ params }: PageProps) {
 
   return (
     <PageContainer title={article.title} description={article.title}>
-      <Box maxWidth={1200} mx="auto">
+      <Box maxWidth={1920} mx="auto">
         {article.image?.url && (
           <Box
             component="img"

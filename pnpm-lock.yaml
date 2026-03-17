@@ -98,9 +98,6 @@ importers:
       dotenv:
         specifier: ^17.2.3
         version: 17.3.1
-      editorjs-color:
-        specifier: ^1.0.0
-        version: 1.0.0(@editorjs/editorjs@2.31.4)
       editorjs-html:
         specifier: ^4.0.5
         version: 4.0.5
@@ -189,6 +186,9 @@ importers:
       autoprefixer:
         specifier: ^10.4.21
         version: 10.4.27(postcss@8.5.8)
+      editorjs-text-color-plugin:
+        specifier: ^2.0.4
+        version: 2.0.4
       eslint:
         specifier: ^9
         version: 9.39.4(jiti@1.21.7)
@@ -1735,9 +1735,6 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@vinsurs/selection-utils@0.1.1':
-    resolution: {integrity: sha512-M0yuK2K3KOdZvQpiljPj4OMnSpQyh/IqM8OpoI1jXwH3aEPfMuuOQieiFoTvtH8q9yeqBYleG7gminm+a+8H+A==}
-
   '@volar/language-core@2.4.28':
     resolution: {integrity: sha512-w4qhIJ8ZSitgLAkVay6AbcnC7gP3glYM3fYwKV3srj8m494E3xtrCv6E+bWviiK/8hs6e6t1ij1s2Endql7vzQ==}
 
@@ -2247,16 +2244,14 @@ packages:
   ecdsa-sig-formatter@1.0.11:
     resolution: {integrity: sha512-nagl3RYrbNv6kQkeJIpt6NJZy8twLB/2vtz6yN9Z4vRKHN4/QZJIEbqohALSgwKdnksuY3k5Addp5lg8sVoVcQ==}
 
-  editorjs-color@1.0.0:
-    resolution: {integrity: sha512-vqeZuLFDi7ugoik0358S83+l1VG18zjVHSTtHoiSFpAxFqJ9OYsPRTjzXd4W5kqwM5S3cslelP6Dpah8n4/ugg==}
-    peerDependencies:
-      '@editorjs/editorjs': ^2.29.0
-
   editorjs-html@4.0.5:
     resolution: {integrity: sha512-ImQYxB3fNCJcd+nJ+Vbne/6PxidO1cYByNpu9nBDStVabfjVrMW65BuR+IEZfOii8VKYH+CW/lYDb2GDlzZtDg==}
 
   editorjs-inline-font-size-tool@1.0.1:
     resolution: {integrity: sha512-ZuwRGaLrPBwPqW9KawMGjWuvyvPGO/tPUReWYBdyqAmFuOB5H5nw8TK1gAVIMFp7Q+vT0pQdscgHwnktj8pd5w==}
+
+  editorjs-text-color-plugin@2.0.4:
+    resolution: {integrity: sha512-QpibTkOxs3ndlKNOLT8ZlC4ktc3/eKIajiLO0Jm/hh9AJug/CrM1/rAvHy+ldfUKavbWeI+YZvgjad0YTyoyGw==}
 
   effect@3.18.4:
     resolution: {integrity: sha512-b1LXQJLe9D11wfnOKAk3PKxuqYshQ0Heez+y5pnkd3jLj1yx9QhM72zZ9uUrOQyNvrs2GZZd/3maL0ZV18YuDA==}
@@ -5931,8 +5926,6 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
 
-  '@vinsurs/selection-utils@0.1.1': {}
-
   '@volar/language-core@2.4.28':
     dependencies:
       '@volar/source-map': 2.4.28
@@ -6460,15 +6453,11 @@ snapshots:
     dependencies:
       safe-buffer: 5.2.1
 
-  editorjs-color@1.0.0(@editorjs/editorjs@2.31.4):
-    dependencies:
-      '@codexteam/icons': 0.3.3
-      '@editorjs/editorjs': 2.31.4
-      '@vinsurs/selection-utils': 0.1.1
-
   editorjs-html@4.0.5: {}
 
   editorjs-inline-font-size-tool@1.0.1: {}
+
+  editorjs-text-color-plugin@2.0.4: {}
 
   effect@3.18.4:
     dependencies:
