@@ -62,40 +62,33 @@ class ArticleService extends BaseService {
 		this.assertPolicy(user, canUpdateArticle);
 
 		const data = updateArticleSchema.partial().parse(body);
+		const { categoryId, subcategoryIds, tags, imageId, ...rest } = data;
 
-		const { categoryId, subcategoryIds, tags, ...rest } = data;
+		let tagOperations;
+		if (tags && tags.length) {
+			tagOperations = await Promise.all(tags.map(async (tag: any) => {
+				const existingTag = await tagRepository.findByName(tag.name);
+
+				if (existingTag) {
+					return { connect: { id: existingTag.id } };
+				} else {
+					const tagSlug = await generateUniqueSlug(
+						(slug) => tagRepository.existsBySlug(slug),
+						tag.name
+					);
+					return { create: { name: tag.name, slug: tagSlug } };
+				}
+			}));
+		}
 
 		return this.repository.update(id, {
 			...rest,
-
-			category: categoryId
-				? { connect: { id: categoryId } }
-				: undefined,
-
+			category: categoryId ? { connect: { id: categoryId } } : undefined,
+			image: imageId ? { connect: { id: imageId } } : undefined,
 			subcategories: subcategoryIds
 				? { set: subcategoryIds.map((id: number) => ({ id })) }
 				: undefined,
-
-			tags: tags
-				? {
-						connectOrCreate: await Promise.all(
-							tags.map(async (tag: any) => {
-								const tagSlug = await generateUniqueSlug(
-									(slug) => tagRepository.existsBySlug(slug),
-									tag.name
-								);
-
-								return {
-									where: { slug: tagSlug },
-									create: {
-										name: tag.name,
-										slug: tagSlug,
-									},
-								};
-							})
-						),
-					}
-				: undefined,
+			tags: tagOperations && tagOperations.length ? tagOperations : undefined,
 		});
 	}
 

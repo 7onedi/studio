@@ -89,7 +89,6 @@ export default function ArticleForm({
     fetch(`/api/subcategories/search?categoryId=${categoryId}`)
       .then((r) => r.json())
       .then((data) => {
-        console.log('Fetched subcategories:', data);
         setSubcategories(Array.isArray(data) ? data : data.data ?? data.items ?? []);
       })
       .catch(console.error);

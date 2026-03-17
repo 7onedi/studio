@@ -487,6 +487,7 @@
         "parameters": [
           { "name": "title", "in": "query", "schema": { "type": "string" }, "required": false },
           { "name": "lang", "in": "query", "schema": { "type": "string", "enum": ["UK","EN","PL","LT","RO"] }, "required": false },
+          { "name": "slider", "in": "query", "schema": { "type": "string", "enum": ["NONE", "SLIDER_1", "SLIDER_2", "SLIDER_3"] }, "required": false },
           { "name": "categoryId", "in": "query", "schema": { "type": "integer" }, "required": false },
           { "name": "subcategoryId", "in": "query", "schema": { "type": "integer" }, "required": false },
           { "name": "published", "in": "query", "schema": { "type": "boolean" }, "required": false },
@@ -986,6 +987,7 @@
           "title": { "type": "string" },
           "slug": { "type": "string" },
           "lang": { "type": "string", "enum": ["UK", "EN", "PL", "LT", "RO"] },
+          "slider": { "type": "string", "enum": ["NONE", "SLIDER_1", "SLIDER_2", "SLIDER_3"], "nullable": true },
           "published": { "type": "boolean" },
           "category": {
             "type": "object",
