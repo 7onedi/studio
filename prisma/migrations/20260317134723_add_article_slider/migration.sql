@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Article` ADD COLUMN `slider` ENUM('NONE', 'SLIDER_1', 'SLIDER_2') NOT NULL DEFAULT 'NONE';
