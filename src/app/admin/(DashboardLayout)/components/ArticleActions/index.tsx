@@ -15,8 +15,19 @@ export default function ArticleActions({ id, slug }: Props) {
   const handleDelete = async () => {
     if (!confirm('Видалити статтю?')) return;
     try {
+      // Спочатку отримуємо статтю щоб знати imageId
+      const articleRes = await fetch(`/api/articles/${id}`);
+      const article = await articleRes.json();
+
+      // Видаляємо статтю
       const res = await fetch(`/api/articles/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error(`Помилка ${res.status}`);
+
+      // Видаляємо картинку якщо є
+      if (article.imageId) {
+        await fetch(`/api/media/${article.imageId}`, { method: 'DELETE' });
+      }
+
       router.push('/admin/production/articles');
     } catch (err: any) {
       console.error('Помилка видалення:', err.message);

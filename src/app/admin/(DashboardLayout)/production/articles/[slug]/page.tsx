@@ -32,7 +32,7 @@ export default async function ArticleSlugPage({ params }: PageProps) {
 
   return (
     <PageContainer title={article.title} description={article.title}>
-      <Box maxWidth={1200} mx="auto">
+      <Box maxWidth={1920} mx="auto">
         {article.image?.url && (
           <Box
             component="img"
@@ -49,6 +49,18 @@ export default async function ArticleSlugPage({ params }: PageProps) {
         )}
 
         <Stack direction="row" spacing={1} mb={2} flexWrap="wrap" className='flex justify-between'>
+        <Stack direction="row" spacing={1.5} alignItems="center" mb={3}>
+          <Avatar sx={{ width: 28, height: 28, fontSize: 13 }}>
+            {(article.author?.name ?? article.authorName)?.[0]}
+          </Avatar>
+          <Typography variant="body2" color="text.secondary">
+            {article.author?.name ?? article.authorName}
+          </Typography>
+          <Typography variant="body2" color="text.disabled">·</Typography>
+          <Typography variant="body2" color="text.secondary">
+            {new Date(article.updatedAt).toLocaleString('uk-UA')}
+          </Typography>
+        </Stack>
           <Chip label={article.lang} size="small" variant="filled" sx={{ fontWeight: 600 }} />
           <Chip
             label={article.published ? 'Опубліковано' : 'Чернетка'}
@@ -70,18 +82,9 @@ export default async function ArticleSlugPage({ params }: PageProps) {
           {article.title}
         </Typography>
 
-        <Stack direction="row" spacing={1.5} alignItems="center" mb={3}>
-          <Avatar sx={{ width: 28, height: 28, fontSize: 13 }}>
-            {(article.author?.name ?? article.authorName)?.[0]}
-          </Avatar>
-          <Typography variant="body2" color="text.secondary">
-            {article.author?.name ?? article.authorName}
-          </Typography>
-          <Typography variant="body2" color="text.disabled">·</Typography>
-          <Typography variant="body2" color="text.secondary">
-            {new Date(article.updatedAt).toLocaleString('uk-UA')}
-          </Typography>
-        </Stack>
+        <Typography variant="body1" color="text.secondary" mb={3}>
+          {article.tags?.map((t: any) => t.name).join(', ')}
+        </Typography>
 
         <Divider sx={{ mb: 3 }} />
 

@@ -24,9 +24,7 @@ export default function EditArticle({ params }: EditPageProps) {
   useEffect(() => {
   fetch(`/api/articles/by-slug/${slug}`)
     .then((r) => r.json())
-    .then((article) => {
-  console.log('article.tags:', article.tags);
-  console.log('article.body:', article.body);      
+    .then((article) => {  
       setArticleId(article.id);
       setInitialData({
         title: article.title ?? "",
@@ -36,6 +34,8 @@ export default function EditArticle({ params }: EditPageProps) {
         categoryId: article.categoryId ?? "",
         subcategoryIds: article.subcategories?.map((s: any) => s.id) ?? [],
         tags: article.tags?.map((t: any) => t.name) ?? [],
+        currentImageId: article.imageId ?? null,
+        coverBase64: article.image?.url ?? null,
       });
     })
 
@@ -61,21 +61,31 @@ const handleSave = async (data: ArticleFormData) => {
     // 1. Завантажуємо банер якщо є
     let imageId: number | null = null;
 
-    if (data.coverBase64) {
-      const fetchRes = await fetch(data.coverBase64);
-      const blob = await fetchRes.blob();
-      const formData = new FormData();
-      formData.append('file', blob, 'cover.jpg');
+if (data.coverBase64 && data.coverBase64.startsWith('data:')) {
+  // Нова картинка — видаляємо стару і завантажуємо нову
+  if (data.currentImageId) {
+    await fetch(`/api/media/${data.currentImageId}`, { method: 'DELETE' });
+  }
 
-      const uploadRes = await fetch('/api/media', {
-        method: 'POST',
-        body: formData,
-      });
+  const fetchRes = await fetch(data.coverBase64);
+  const blob = await fetchRes.blob();
+  const formData = new FormData();
+  formData.append('file', blob, 'cover.jpg');
 
-      if (!uploadRes.ok) throw new Error('Помилка завантаження банера');
-      const uploadData = await uploadRes.json();
-      imageId = uploadData.id;
-    }
+  const uploadRes = await fetch('/api/media', {
+    method: 'POST',
+    body: formData,
+    credentials: 'include',
+  });
+
+  if (!uploadRes.ok) throw new Error('Помилка завантаження банера');
+  const uploadData = await uploadRes.json();
+  imageId = uploadData.id;
+} else if (data.currentImageId) {
+  // Картинка не змінилась — залишаємо старий imageId
+  imageId = data.currentImageId;
+}
+    
 
     // 2. Зберігаємо статтю
     const res = await fetch(`/api/articles/${articleId}`, {

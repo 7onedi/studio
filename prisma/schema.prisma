@@ -21,6 +21,12 @@ enum ArticleLang {
   RO
 }
 
+enum ArticleSlider {
+  NONE
+  SLIDER_1
+  SLIDER_2
+}
+
 model User {
   id           Int      @id @default(autoincrement())
   email        String   @unique
@@ -55,6 +61,7 @@ model Article {
   imageId Int?
   image   Media? @relation(fields: [imageId], references: [id])
 
+  slider ArticleSlider @default(NONE)
   subcategories Subcategory[] @relation("ArticleSubcategories")
 
   tags Tag[]

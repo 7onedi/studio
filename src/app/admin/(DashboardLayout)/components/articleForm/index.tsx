@@ -23,6 +23,7 @@ export interface ArticleFormData {
   subcategoryIds: number[];
   tags: string[];
   coverBase64?: string | null; // ← додай
+  currentImageId?: number | null;
 }
 
 interface ArticleFormProps {
@@ -59,6 +60,11 @@ export default function ArticleForm({
   const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
   const [subcategories, setSubcategories] = useState<{ id: number; name: string }[]>([]);
   const [coverBase64, setCoverBase64] = useState<string | null>(null);
+  const [uploadedMediaIds, setUploadedMediaIds] = useState<number[]>([]);
+  const [uploadedMedia, setUploadedMedia] = useState<{ id: number; url: string }[]>([]);
+  const [previousImageId, setPreviousImageId] = useState<number | null>(
+    initialData?.currentImageId ?? null
+  );
 
   useEffect(() => {
   if (!initialData) return;
@@ -70,6 +76,7 @@ export default function ArticleForm({
   setSubcategoryIds(initialData.subcategoryIds ?? []);
   setTags(initialData.tags ?? []);
   setCoverBase64(initialData.coverBase64 ?? null);
+  setPreviousImageId(initialData.currentImageId ?? null);
 }, [initialData])
 
   useEffect(() => {
@@ -95,26 +102,215 @@ export default function ArticleForm({
     setTagInput("");
   };
 
-  const handleSubmit = () => {
-    console.log('tags before save:', tags);
-    onSave({
-      title: formTitle,
-      lang,
-      body: content ?? { blocks: [] },
-      authorName,
-      categoryId,
-      subcategoryIds,
-      tags,
-      coverBase64,
+const handleSubmit = () => {
+  const bodyContent = content as any;
+  const usedUrls: string[] = bodyContent?.blocks
+    ?.filter((b: any) => b.type === 'image')
+    ?.map((b: any) => b.data?.file?.url)
+    ?.filter(Boolean) ?? [];
+
+  // Видаляємо невикористані картинки
+  uploadedMedia
+    .filter(({ url }) => !usedUrls.includes(url))
+    .forEach(({ id }) => {
+      fetch(`/api/media/${id}`, { method: 'DELETE', credentials: 'include' });
     });
-  };
+
+  onSave({
+    title: formTitle,
+    lang,
+    body: content ?? { blocks: [] },
+    authorName,
+    categoryId,
+    subcategoryIds,
+    tags,
+    coverBase64,
+    currentImageId: previousImageId,
+  });
+};
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="xl">
+
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 4 }}>
         <Typography variant="h4">{title}</Typography>
         {onCancel && <Button variant="text" onClick={onCancel}>← Назад</Button>}
       </Box>
+
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 4 }}>
+
+            {/* основний контент */}
+        <Box sx={{ gridColumn: { xs: 'span 12', md: 'span 10' } }}>
+          <TextField fullWidth label="Заголовок *" value={formTitle}
+            onChange={(e) => setFormTitle(e.target.value)} sx={{ mb: 3 }} />
+
+
+          <Box sx={{ mb: 3 }}>
+            <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
+              <TextField
+                label="Додати тег"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
+                size="small"
+                sx={{ flex: 1 }}
+              />
+              <Button variant="outlined" onClick={handleAddTag}>Додати</Button>
+            </Box>
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+              {tags.map((tag) => (
+                <Chip key={tag} label={tag} onDelete={() => setTags((p) => p.filter((t) => t !== tag))} />
+              ))}
+            </Box>
+          </Box>
+
+          <Box sx={{ border: "1px solid #ddd", borderRadius: 2, p: 2, mb: 3, minHeight: 300 }}>
+            {content !== null ? (
+            <ReactEditor 
+              onChange={setContent}
+              initialData={content}
+              onImageUpload={(id, url) => setUploadedMedia(prev => [...prev, { id, url }])}
+            />
+            ) : (
+              <ReactEditor onChange={setContent} />
+            )}
+          </Box>
+
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Button variant="contained" onClick={handleSubmit} disabled={loading} size="large">
+              {loading ? "Збереження..." : submitLabel}
+            </Button>
+            {onCancel && (
+              <Button variant="outlined" onClick={onCancel} size="large">Скасувати</Button>
+            )}
+          </Box>
+        </Box>
+
+        {/* бічна колонка */}
+        <Box sx={{ gridColumn: { xs: 'span 12', md: 'span 2' } }}>
+          <TextField fullWidth label="Автор *" value={authorName}
+            onChange={(e) => setAuthorName(e.target.value)} sx={{ mb: 3 }} />
+
+          <FormControl fullWidth sx={{ mb: 3 }}>
+            <InputLabel>Мова</InputLabel>
+            <Select value={lang} label="Мова" onChange={(e) => setLang(e.target.value)}>
+              {LANGUAGES.map((l) => <MenuItem key={l} value={l}>{l}</MenuItem>)}
+            </Select>
+          </FormControl>
+
+          <FormControl fullWidth sx={{ mb: 3 }}>
+            <InputLabel>Категорія *</InputLabel>
+            <Select
+              value={categoryId}
+              label="Категорія *"
+              onChange={(e) => { setCategoryId(e.target.value as number); setSubcategoryIds([]); }}
+            >
+              {categories.map((c) => <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>)}
+            </Select>
+          </FormControl>
+
+          {subcategories.length > 0 && (
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <InputLabel>Підкатегорії</InputLabel>
+              <Select
+                multiple
+                value={subcategoryIds}
+                onChange={(e) => {
+                const val = e.target.value;
+                setSubcategoryIds((typeof val === 'string' ? val.split(',').map(Number) : val as number[]));
+                }}
+                input={<OutlinedInput label="Підкатегорії" />}
+                renderValue={(selected) => (
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                    {(selected as number[]).map((id) => (
+                      <Chip key={id} label={subcategories.find((s) => s.id === id)?.name ?? id} size="small" />
+                    ))}
+                  </Box>
+                )}
+              >
+                {subcategories.map((s) => <MenuItem key={s.id} value={s.id}>{s.name}</MenuItem>)}
+              </Select>
+            </FormControl>
+          )}
+
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Банер статті
+            </Typography>
+
+            <Box
+              sx={{
+                border: '2px dashed',
+                borderColor: coverBase64 ? 'primary.main' : 'grey.300',
+                borderRadius: 2,
+                p: 2,
+                textAlign: 'center',
+                cursor: 'pointer',
+                position: 'relative',
+                minHeight: 160,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
+              }}
+              onClick={() => document.getElementById('cover-upload')?.click()}
+            >
+              {coverBase64 ? (
+                <>
+                  <Box
+                    component="img"
+                    src={coverBase64}
+                    sx={{ maxWidth: '100%', maxHeight: 240, borderRadius: 1, display: 'block' }}
+                  />
+                  <Button
+                    size="small"
+                    color="error"
+                    variant="contained"
+                    sx={{ position: 'absolute', top: 8, right: 8 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log('previousImageId:', previousImageId);
+                      if (previousImageId) {
+                        fetch(`/api/media/${previousImageId}`, { 
+                          method: 'DELETE',
+                          credentials: 'include',
+                        })
+                        .then(r => r.json())
+                        .then(d => console.log('delete result:', d))
+                        .catch(err => console.error('delete error:', err));
+                        setPreviousImageId(null);
+                      }
+                      setCoverBase64(null);
+                    }}
+                  >
+                    Видалити
+                  </Button>
+                </>
+              ) : (
+                <Typography color="text.secondary" fontSize={14}>
+                  Натисніть щоб завантажити банер
+                </Typography>
+              )}
+            </Box>
+
+            <input
+              id="cover-upload"
+              type="file"
+              accept="image/*"
+              style={{ display: 'none' }}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = () => setCoverBase64(reader.result as string);
+                reader.readAsDataURL(file);
+                e.target.value = '';
+              }}
+            />
+          </Box>
+        </Box>
+      </Box>
+      
 
       {error && (
         <Box sx={{ mb: 2, p: 2, background: "#fff0f0", borderRadius: 2, color: "red" }}>
@@ -127,151 +323,7 @@ export default function ArticleForm({
         </Box>
       )}
 
-      <TextField fullWidth label="Заголовок *" value={formTitle}
-        onChange={(e) => setFormTitle(e.target.value)} sx={{ mb: 3 }} />
-
-      <TextField fullWidth label="Автор *" value={authorName}
-        onChange={(e) => setAuthorName(e.target.value)} sx={{ mb: 3 }} />
-
-      <FormControl fullWidth sx={{ mb: 3 }}>
-        <InputLabel>Мова</InputLabel>
-        <Select value={lang} label="Мова" onChange={(e) => setLang(e.target.value)}>
-          {LANGUAGES.map((l) => <MenuItem key={l} value={l}>{l}</MenuItem>)}
-        </Select>
-      </FormControl>
-
-      <FormControl fullWidth sx={{ mb: 3 }}>
-        <InputLabel>Категорія *</InputLabel>
-        <Select
-          value={categoryId}
-          label="Категорія *"
-          onChange={(e) => { setCategoryId(e.target.value as number); setSubcategoryIds([]); }}
-        >
-          {categories.map((c) => <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>)}
-        </Select>
-      </FormControl>
-
-      {subcategories.length > 0 && (
-        <FormControl fullWidth sx={{ mb: 3 }}>
-          <InputLabel>Підкатегорії</InputLabel>
-          <Select
-            multiple
-            value={subcategoryIds}
-            onChange={(e) => {
-            const val = e.target.value;
-            setSubcategoryIds((typeof val === 'string' ? val.split(',').map(Number) : val as number[]));
-            }}
-            input={<OutlinedInput label="Підкатегорії" />}
-            renderValue={(selected) => (
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                {(selected as number[]).map((id) => (
-                  <Chip key={id} label={subcategories.find((s) => s.id === id)?.name ?? id} size="small" />
-                ))}
-              </Box>
-            )}
-          >
-            {subcategories.map((s) => <MenuItem key={s.id} value={s.id}>{s.name}</MenuItem>)}
-          </Select>
-        </FormControl>
-      )}
-
-            <Box sx={{ mb: 3 }}>
-        <Typography variant="body2" color="text.secondary" mb={1}>
-          Банер статті
-        </Typography>
-
-        <Box
-          sx={{
-            border: '2px dashed',
-            borderColor: coverBase64 ? 'primary.main' : 'grey.300',
-            borderRadius: 2,
-            p: 2,
-            textAlign: 'center',
-            cursor: 'pointer',
-            position: 'relative',
-            minHeight: 160,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden',
-          }}
-          onClick={() => document.getElementById('cover-upload')?.click()}
-        >
-          {coverBase64 ? (
-            <>
-              <Box
-                component="img"
-                src={coverBase64}
-                sx={{ maxWidth: '100%', maxHeight: 240, borderRadius: 1, display: 'block' }}
-              />
-              <Button
-                size="small"
-                color="error"
-                variant="contained"
-                sx={{ position: 'absolute', top: 8, right: 8 }}
-                onClick={(e) => { e.stopPropagation(); setCoverBase64(null); }}
-              >
-                Видалити
-              </Button>
-            </>
-          ) : (
-            <Typography color="text.secondary" fontSize={14}>
-              Натисніть щоб завантажити банер
-            </Typography>
-          )}
-        </Box>
-
-        <input
-          id="cover-upload"
-          type="file"
-          accept="image/*"
-          style={{ display: 'none' }}
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = () => setCoverBase64(reader.result as string);
-            reader.readAsDataURL(file);
-            e.target.value = '';
-          }}
-        />
-      </Box>
-
-      <Box sx={{ mb: 3 }}>
-        <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
-          <TextField
-            label="Додати тег"
-            value={tagInput}
-            onChange={(e) => setTagInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
-            size="small"
-            sx={{ flex: 1 }}
-          />
-          <Button variant="outlined" onClick={handleAddTag}>Додати</Button>
-        </Box>
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-          {tags.map((tag) => (
-            <Chip key={tag} label={tag} onDelete={() => setTags((p) => p.filter((t) => t !== tag))} />
-          ))}
-        </Box>
-      </Box>
-
-      <Box sx={{ border: "1px solid #ddd", borderRadius: 2, p: 2, mb: 3, minHeight: 300 }}>
-        {content !== null ? (
-        <ReactEditor onChange={setContent} initialData={content} />
-        ) : (
-          <ReactEditor onChange={setContent} />
-        )}
-      </Box>
-
-      <Box sx={{ display: "flex", gap: 2 }}>
-        <Button variant="contained" onClick={handleSubmit} disabled={loading} size="large">
-          {loading ? "Збереження..." : submitLabel}
-        </Button>
-        {onCancel && (
-          <Button variant="outlined" onClick={onCancel} size="large">Скасувати</Button>
-        )}
-      </Box>
+      
     </Container>
   );
 }

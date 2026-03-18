@@ -1,7 +1,10 @@
+import fs from 'fs';
+import path from 'path';
 import { articleRepository } from "@/api/repositories/article.repository";
 import { createArticleSchema, updateArticleSchema, publishArticleSchema } from "@/api/schemas/article.schema";
 import { canCreateArticle, canPublishArticle, canUpdateArticle, canDeleteArticle } from "@/api/policies/article.policy";
 import { tagRepository } from "@/api/repositories/tag.repository";
+import { mediaRepository } from "@/api/repositories/media.repository";
 import { generateUniqueSlug } from "@/api/utils/generate-unique-slug";
 import { BaseService } from "./base.service";
 
@@ -48,7 +51,7 @@ class ArticleService extends BaseService {
 					);
 
 					return {
-						where: { slug: tagSlug },
+						where: { name: tag.name },
 						create: { name: tag.name, slug: tagSlug },
 					};
 					})
@@ -62,54 +65,80 @@ class ArticleService extends BaseService {
 		this.assertPolicy(user, canUpdateArticle);
 
 		const data = updateArticleSchema.partial().parse(body);
-
-		const { categoryId, subcategoryIds, tags, ...rest } = data;
+		const { categoryId, subcategoryIds, tags, imageId, ...rest } = data;
 
 		return this.repository.update(id, {
 			...rest,
+
+			image: imageId
+			? { connect: { id: imageId } }
+			: undefined,
 
 			category: categoryId
 				? { connect: { id: categoryId } }
 				: undefined,
 
 			subcategories: subcategoryIds
-				? { set: subcategoryIds.map((id: number) => ({ id })) }
-				: undefined,
+			? { set: subcategoryIds.map((id: number) => ({ id })) }
+			: undefined,
 
 			tags: tags
 				? {
-						connectOrCreate: await Promise.all(
-							tags.map(async (tag: any) => {
-								const tagSlug = await generateUniqueSlug(
-									(slug) => tagRepository.existsBySlug(slug),
-									tag.name
-								);
-
-								return {
-									where: { slug: tagSlug },
-									create: {
-										name: tag.name,
-										slug: tagSlug,
-									},
-								};
-							})
-						),
-					}
-				: undefined,
+					set: [],
+					connectOrCreate: await Promise.all(
+						tags.map(async (tag: any) => {
+						const tagSlug = await generateUniqueSlug(
+							(slug) => tagRepository.existsBySlug(slug),
+							tag.name
+						);
+						return {
+							where: { name: tag.name },
+							create: { name: tag.name, slug: tagSlug },
+						};
+						})
+					),
+				}
+			: undefined,
 		});
 	}
 
   async publish(user: any, body: unknown) {
-
     this.assertPolicy(user, canPublishArticle);
-
     const data = publishArticleSchema.parse(body);
-
     return this.repository.publish(data.id);
   }
 
 	async delete(user: any, id: number) {
 		this.assertPolicy(user, canDeleteArticle);
+
+		const article = await this.repository.findById(id);
+
+		if (article) {
+			// Видаляємо картинки з body Editor.js
+			const body = article.body as any;
+			const imageBlocks = body?.blocks?.filter((b: any) => b.type === 'image') ?? [];
+
+			for (const block of imageBlocks) {
+				const url = block.data?.file?.url;
+				if (url) {
+					const filePath = path.join(process.cwd(), 'public', url);
+					try { fs.unlinkSync(filePath); } catch {}
+					const media = await mediaRepository.findByUrl(url);
+					if (media) await mediaRepository.delete(media.id);
+				}
+			}
+
+			// Видаляємо банер
+			if (article.imageId) {
+				const media = await mediaRepository.findById(article.imageId);
+				if (media) {
+					const filePath = path.join(process.cwd(), 'public', media.url);
+					try { fs.unlinkSync(filePath); } catch {}
+					await mediaRepository.delete(media.id);
+				}
+			}
+		}
+
 		return this.repository.delete(id);
 	}
 

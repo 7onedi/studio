@@ -20,6 +20,12 @@ export const tagRepository = {
     });
   },
 
+  findByName(name: string) {
+    return prisma.tag.findUnique({
+      where: { name },
+    });
+  },
+
   async existsBySlug(slug: string) {
     const tag = await prisma.tag.findUnique({
       where: { slug },
