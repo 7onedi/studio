@@ -284,8 +284,12 @@
           { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
           { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 } },
           { "name": "sortBy", "in": "query", "schema": { "type": "string", "default": "createdAt" } },
-          { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc","desc"], "default": "desc" } },
-          { "name": "published", "in": "query", "schema": { "type": "boolean" } }
+          { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" } },
+          { "name": "published", "in": "query", "schema": { "type": "boolean" } },
+          { "name": "categoryId", "in": "query", "schema": { "type": "integer" } },
+          { "name": "subcategoryId", "in": "query", "schema": { "type": "integer" } },
+          { "name": "parentId", "in": "query", "schema": { "type": "integer" } },
+          { "name": "title", "in": "query", "schema": { "type": "string" } }
         ],
         "responses": {
           "200": {
@@ -295,10 +299,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": { "$ref": "#/components/schemas/StudioProject" }
-                    },
+                    "data": { "type": "array", "items": { "$ref": "#/components/schemas/StudioProject" } },
                     "total": { "type": "integer" },
                     "page": { "type": "integer" },
                     "limit": { "type": "integer" },
@@ -1177,14 +1178,17 @@
           "parentId": { "type": ["integer", "null"] },
           "title": { "type": "string" },
           "body": { "type": "object" },
-          "description": { "type": "string" },
+          "description": { "type": ["string", "null"] },
+          "published": { "type": "boolean" },
+          "publishedAt": { "type": ["string", "null"], "format": "date-time" },
           "createdAt": { "type": "string", "format": "date-time" },
           "updatedAt": { "type": "string", "format": "date-time" },
           "author": {
-            "type": "object",
+            "type": ["object", "null"],
             "properties": {
               "id": { "type": "integer" },
-              "name": { "type": "string" }
+              "name": { "type": ["string", "null"] },
+              "email": { "type": "string" }
             }
           },
           "category": {
@@ -1196,43 +1200,131 @@
             }
           },
           "subcategory": {
-            "type": "object",
+            "type": ["object", "null"],
             "properties": {
               "id": { "type": "integer" },
               "name": { "type": "string" },
               "slug": { "type": "string" }
             }
           },
-          "location": {
-            "type": "array",
-            "items": { "$ref": "#/components/schemas/Location" }
+          "parent": {
+            "type": ["object", "null"],
+            "properties": {
+              "id": { "type": "integer" },
+              "title": { "type": "string" }
+            }
           },
-          "image": { "type": "object", "properties": { "id": { "type": "integer" }, "url": { "type": "string" } } }
+          "location": {
+            "type": ["object", "null"],
+            "$ref": "#/components/schemas/Location"
+          },
+          "image": {
+            "type": ["object", "null"],
+            "properties": {
+              "id": { "type": "integer" },
+              "url": { "type": "string" }
+            }
+          },
+          "socialLinks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": { "type": "string" },
+                "social": {
+                  "type": "object",
+                  "properties": {
+                    "platform": {
+                      "type": "string",
+                      "enum": ["YOUTUBE", "INSTAGRAM", "FACEBOOK", "TWITTER", "TIKTOK"]
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       },
       "CreateStudioProjectInput": {
         "type": "object",
-        "required": ["title", "categoryId", "subcategoryId"],
+        "required": ["title", "categoryId"],
         "properties": {
-          "title": { "type": "string" },
+          "title": { "type": "string", "minLength": 3 },
           "body": { "type": "object" },
           "description": { "type": "string" },
           "categoryId": { "type": "integer" },
           "subcategoryId": { "type": "integer" },
           "parentId": { "type": "integer" },
-          "imageId": { "type": "integer" }
+          "imageId": { "type": "integer" },
+          "locationId": {
+            "type": "integer",
+            "description": "Підключити існуючу location за id"
+          },
+          "locationData": {
+            "description": "Створити нову location inline",
+            "$ref": "#/components/schemas/LocationInput"
+          },
+          "socialLinks": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/SocialLinkInput" }
+          }
         }
       },
       "UpdateStudioProjectInput": {
         "type": "object",
         "properties": {
-          "title": { "type": "string" },
+          "title": { "type": "string", "minLength": 3 },
           "body": { "type": "object" },
           "description": { "type": "string" },
           "categoryId": { "type": "integer" },
           "subcategoryId": { "type": "integer" },
           "parentId": { "type": "integer" },
-          "imageId": { "type": "integer" }
+          "imageId": { "type": "integer" },
+          "locationId": {
+            "type": "integer",
+            "description": "Підключити існуючу location за id"
+          },
+          "locationData": {
+            "description": "Оновити існуючу або створити нову location inline",
+            "$ref": "#/components/schemas/LocationInput"
+          },
+          "deleteLocation": {
+            "type": "boolean",
+            "description": "Якщо true — від'єднати та видалити поточну location"
+          },
+          "socialLinks": {
+            "type": "array",
+            "description": "Повністю замінює існуючі socialLinks. Передай порожній масив щоб видалити всі.",
+            "items": { "$ref": "#/components/schemas/SocialLinkInput" }
+          }
+        }
+      },
+      "SocialLinkInput": {
+        "type": "object",
+        "required": ["platform", "url"],
+        "properties": {
+          "platform": {
+            "type": "string",
+            "enum": ["YOUTUBE", "INSTAGRAM", "FACEBOOK", "TWITTER", "TIKTOK"]
+          },
+          "url": { "type": "string", "format": "uri" }
+        }
+      },
+      "LocationInput": {
+        "type": "object",
+        "required": ["name", "url"],
+        "properties": {
+          "name": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "coordinates": {
+            "type": "object",
+            "properties": {
+              "lat": { "type": "number" },
+              "lng": { "type": "number" }
+            }
+          },
+          "description": { "type": "string" },
+          "publishedAt": { "type": "string", "format": "date-time" }
         }
       },
       "Location": {

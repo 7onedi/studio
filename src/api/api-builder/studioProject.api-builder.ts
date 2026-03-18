@@ -4,4 +4,8 @@ export const StudioProjectInclude = {
   subcategory: true,
   location: true,
   image: true,
+  parent: true,
+  socialLinks: {
+    include: { social: true },
+  },
 };

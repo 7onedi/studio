@@ -1,3 +1,4 @@
+// studioProject.service.ts
 import { studioProjectRepository } from "@/api/repositories/studioProject.repository";
 import { BaseService } from "./base.service";
 import {
@@ -11,9 +12,8 @@ import {
   canPublishStudioProject,
   canDeleteStudioProject,
 } from "@/api/policies/studioProject.policy";
-import { generateUniqueSlug } from "@/api/utils/generate-unique-slug";
 
-class StudioProjectService extends BaseService {
+  class StudioProjectService extends BaseService {
   constructor() {
     super(studioProjectRepository);
   }
@@ -23,24 +23,72 @@ class StudioProjectService extends BaseService {
 
     const data = createStudioProjectSchema.parse(body);
 
-    return this.repository.create({
+    const locationInput = data.locationData
+      ? { create: data.locationData }
+      : data.locationId
+        ? { connect: { id: data.locationId } }
+        : undefined;
+
+    const project = await this.repository.create({
       title: data.title,
       body: data.body,
       description: data.description,
       category: { connect: { id: data.categoryId } },
-      subcategory: data.subcategoryId ? { connect: { id: data.subcategoryId } } : undefined,
+      subcategory: data.subcategoryId
+        ? { connect: { id: data.subcategoryId } }
+        : undefined,
       image: data.imageId ? { connect: { id: data.imageId } } : undefined,
-      location: data.locationId ? { connect: { id: data.locationId } } : undefined,
+      location: locationInput,
       parent: data.parentId ? { connect: { id: data.parentId } } : undefined,
       author: user.id ? { connect: { id: user.id } } : undefined,
     });
+
+    if (data.socialLinks?.length) {
+      await studioProjectRepository.syncSocialLinks(project.id, data.socialLinks);
+    }
+
+    return studioProjectRepository.findById(project.id);
   }
 
   async update(user: any, id: number, body: unknown) {
     this.assertPolicy(user, canUpdateStudioProject);
 
     const data = updateStudioProjectSchema.partial().parse(body);
-    return this.repository.update(id, data);
+
+    let locationInput: any = undefined;
+
+    if (data.deleteLocation) {
+      await studioProjectRepository.detachAndDeleteLocation(id);
+    } else if (data.locationData) {
+      const existing = await this.repository.findById(id);
+
+      locationInput = existing?.locationId
+        ? { update: { where: { id: existing.locationId }, data: data.locationData } }
+        : { create: data.locationData };
+    } else if (data.locationId) {
+      locationInput = { connect: { id: data.locationId } };
+    }
+
+    const { socialLinks, locationData, deleteLocation, locationId, ...rest } = data;
+
+    await this.repository.update(id, {
+      ...rest,
+      category: rest.categoryId ? { connect: { id: rest.categoryId } } : undefined,
+      subcategory: rest.subcategoryId ? { connect: { id: rest.subcategoryId } } : undefined,
+      image: rest.imageId ? { connect: { id: rest.imageId } } : undefined,
+      parent: rest.parentId ? { connect: { id: rest.parentId } } : undefined,
+      location: locationInput,
+      categoryId: undefined,
+      subcategoryId: undefined,
+      imageId: undefined,
+      parentId: undefined,
+    });
+
+    if (socialLinks !== undefined) {
+      await studioProjectRepository.syncSocialLinks(id, socialLinks);
+    }
+
+    return studioProjectRepository.findById(id);
   }
 
   async publish(user: any, body: unknown) {
