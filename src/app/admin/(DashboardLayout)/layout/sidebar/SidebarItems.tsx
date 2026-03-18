@@ -78,7 +78,7 @@ const SidebarItems = () => {
 
         {renderMenuItems(Menuitems, pathDirect)}
         <Box px={2}>
-          <Upgrade />
+          {/* <Upgrade /> */}
         </Box>
       </MUI_Sidebar>
 

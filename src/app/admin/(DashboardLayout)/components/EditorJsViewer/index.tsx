@@ -76,6 +76,40 @@ function renderBlock(block: Block, index: number) {
         </Box>
       );
 
+      case 'gallery':
+        return (
+          <Box
+            key={index}
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: `repeat(${data.files?.length ?? 1}, 1fr)`,
+              gap: 1,
+              my: 2,
+            }}
+          >
+            {data.files?.map((file: any, i: number) => (
+              <Box
+                key={i}
+                component="img"
+                src={file.url}
+                alt={data.caption ?? ''}
+                sx={{ width: '100%', borderRadius: 1, objectFit: 'cover' }}
+              />
+            ))}
+            {data.caption && (
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                display="block"
+                mt={0.5}
+                sx={{ gridColumn: '1 / -1' }}
+              >
+                {data.caption}
+              </Typography>
+            )}
+          </Box>
+        );
+
     case 'quote':
       return (
         <Box

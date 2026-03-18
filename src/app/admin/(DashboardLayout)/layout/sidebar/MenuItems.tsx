@@ -125,22 +125,22 @@ const Menuitems = [
   //   icon: IconCopy,
   //   href: "/admin/utilities/shadow",
   // },
-  {
-    navlabel: true,
-    subheader: "AUTH",
-  },
-  {
-    id: uniqueId(),
-    title: "Login",
-    icon: IconLogin,
-    href: "/admin/authentication/login",
-  },
-  {
-    id: uniqueId(),
-    title: "Register",
-    icon: IconUserPlus,
-    href: "/admin/authentication/register",
-  },
+  // {
+  //   navlabel: true,
+  //   subheader: "AUTH",
+  // },
+  // {
+  //   id: uniqueId(),
+  //   title: "Login",
+  //   icon: IconLogin,
+  //   href: "/admin/authentication/login",
+  // },
+  // {
+  //   id: uniqueId(),
+  //   title: "Register",
+  //   icon: IconUserPlus,
+  //   href: "/admin/authentication/register",
+  // },
   // {
   //   navlabel: true,
   //   subheader: " EXTRA",

@@ -5,15 +5,22 @@ import { TextColorTool, BgColorTool } from "./ColorTool";
 interface ReactEditorProps {
   onChange: (data: any) => void;
   initialData?: any;
+  onImageUpload?: (mediaId: number, url: string) => void;
 }
 
-export default function ReactEditor({ onChange, initialData }: ReactEditorProps) {
+
+export default function ReactEditor({ onChange, initialData, onImageUpload }: ReactEditorProps) {
   const editorRef = useRef<any>(null);
   const onChangeRef = useRef(onChange);
+  const onImageUploadRef = useRef(onImageUpload);
 
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
+
+    useEffect(() => {
+    onImageUploadRef.current = onImageUpload;
+  }, [onImageUpload]);
 
   useEffect(() => {
     let isMounted = true;
@@ -26,6 +33,7 @@ export default function ReactEditor({ onChange, initialData }: ReactEditorProps)
         { default: Embed },
         { default: LinkTool },
         { default: ImageTool },
+        { default: Gallery },
         { default: Marker },
         { default: SimpleImage },
       ] = await Promise.all([
@@ -35,6 +43,7 @@ export default function ReactEditor({ onChange, initialData }: ReactEditorProps)
         import("@editorjs/embed"),
         import("@editorjs/link"),
         import("@editorjs/image"),
+        import("editorjs-gallery"),
         import("@editorjs/marker"),
         import("@editorjs/simple-image"),
       ]);
@@ -70,24 +79,58 @@ export default function ReactEditor({ onChange, initialData }: ReactEditorProps)
             config: {
               uploader: {
                 async uploadByFile(file: File) {
-                  return new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                      resolve({
-                        success: 1,
-                        file: {
-                          url: reader.result as string, // base64
-                        },
-                      });
-                    };
-                    reader.readAsDataURL(file);
+                  const formData = new FormData();
+                  formData.append("file", file);
+
+                  const res = await fetch("/api/media", {
+                    method: "POST",
+                    body: formData,
+                    credentials: "include",
                   });
+
+                  if (!res.ok) return { success: 0 };
+
+                  const data = await res.json();
+                  
+                  onImageUploadRef.current?.(data.id, data.url);
+
+                  return {
+                    success: 1,
+                    file: { url: data.url },
+                  };
                 },
 
                 async uploadByUrl(url: string) {
                   return {
                     success: 1,
                     file: { url },
+                  };
+                },
+              },
+            },
+          },
+          gallery: {
+            class: Gallery,
+            config: {
+              uploader: {
+                async uploadByFile(file: File) {
+                  const formData = new FormData();
+                  formData.append("file", file);
+
+                  const res = await fetch("/api/media", {
+                    method: "POST",
+                    body: formData,
+                    credentials: "include",
+                  });
+
+                  if (!res.ok) return { success: 0 };
+
+                  const data = await res.json();
+                  onImageUploadRef.current?.(data.id, data.url);
+
+                  return {
+                    success: 1,
+                    file: { url: data.url },
                   };
                 },
               },

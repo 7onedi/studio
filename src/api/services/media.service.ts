@@ -49,10 +49,20 @@ export const mediaService = {
     },
 
     async delete(user: any, id: number) {
-        if (!user) throw new ApiError(401, "Unauthorized");
-        if (user.role !== "ADMIN")
+    if (!user) throw new ApiError(401, "Unauthorized");
+    if (user.role !== "ADMIN")
         throw new ApiError(403, "Only ADMIN can delete media");
 
-        return mediaRepository.delete(id);
+    const media = await mediaRepository.findById(id);
+    if (!media) throw new ApiError(404, "Media not found");
+
+    const filePath = path.join(process.cwd(), "public", media.url);
+
+    try {
+        fs.unlinkSync(filePath);
+    } catch {
+    }
+
+    return mediaRepository.delete(id);
     },
 };
