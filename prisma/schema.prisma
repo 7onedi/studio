@@ -27,6 +27,14 @@ enum ArticleSlider {
   SLIDER_2
 }
 
+enum SocialPlatform {
+  YOUTUBE
+  INSTAGRAM
+  FACEBOOK
+  TWITTER
+  TIKTOK
+}
+
 model User {
   id           Int      @id @default(autoincrement())
   email        String   @unique
@@ -75,6 +83,26 @@ model Article {
   @@index([categoryId, published])
 }
 
+model SocialLink {
+  id       Int            @id @default(autoincrement())
+  platform SocialPlatform @unique
+
+  projects ProjectSocialLink[]
+
+  createdAt DateTime @default(now())
+}
+
+model ProjectSocialLink {
+  projectId Int
+  socialId  Int
+  url       String
+
+  project StudioProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  social  SocialLink    @relation(fields: [socialId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, socialId])
+}
+
 model StudioProject {
   id Int @id @default(autoincrement())
 
@@ -93,6 +121,8 @@ model StudioProject {
   description String?
   imageId     Int?
   image       Media? @relation(fields: [imageId], references: [id])
+
+  socialLinks ProjectSocialLink[]
 
   authorId Int?
   author   User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
