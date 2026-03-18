@@ -17,6 +17,10 @@ export const articleRepository = {
     });
   },
 
+  findById(id: number) {
+    return prisma.article.findUnique({ where: { id } });
+  },
+
   findBySlug(slug: string) {
     return prisma.article.findUnique({
       where: { slug },

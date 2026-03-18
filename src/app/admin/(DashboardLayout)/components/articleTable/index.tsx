@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -73,6 +74,11 @@ export default function ArticleTable({
   const router = useRouter();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [searchInput, setSearchInput] = useState(search);
+  const [tableData, setTableData] = useState<Article[]>(data);
+
+  useEffect(() => {
+    setTableData(data);
+  }, [data]);
 
   const selectedCount = Object.keys(rowSelection).length;
 
@@ -85,43 +91,45 @@ export default function ArticleTable({
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Видалити статтю?')) return;
-    try {
-      const article = data.find((a) => a.id === id);
+const handleDelete = async (id: number) => {
+  if (!confirm('Видалити статтю?')) return;
+  try {
+    const article = tableData.find((a) => a.id === id);
 
-      const res = await fetch(`/api/articles/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error(`Помилка ${res.status}`);
+    const res = await fetch(`/api/articles/${id}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error(`Помилка ${res.status}`);
 
-      if (article?.imageId) {
-        await fetch(`/api/media/${article.imageId}`, { method: 'DELETE' });
-      }
-
-      router.refresh();
-    } catch (err: any) {
-      console.error('Помилка видалення:', err.message);
+    if (article?.imageId) {
+      await fetch(`/api/media/${article.imageId}`, { method: 'DELETE', credentials: 'include' });
     }
-  };
 
-  const handleBulkDelete = async () => {
-    const rows = table.getSelectedRowModel().rows;
-    const ids = rows.map((r) => r.original.id);
-    if (!confirm(`Видалити ${ids.length} статей?`)) return;
-    try {
-      await Promise.all(
-        rows.map(async (r) => {
-          await fetch(`/api/articles/${r.original.id}`, { method: 'DELETE' });
-          if (r.original.imageId) {
-            await fetch(`/api/media/${r.original.imageId}`, { method: 'DELETE' });
-          }
-        })
-      );
-      setRowSelection({});
-      router.refresh();
-    } catch (err: any) {
-      console.error('Помилка bulk delete:', err.message);
-    }
-  };
+    setTableData((prev) => prev.filter((a) => a.id !== id)); // ← видаляємо з UI
+    router.refresh();
+  } catch (err: any) {
+    console.error('Помилка видалення:', err.message);
+  }
+};
+
+const handleBulkDelete = async () => {
+  const rows = table.getSelectedRowModel().rows;
+  const ids = rows.map((r) => r.original.id);
+  if (!confirm(`Видалити ${ids.length} статей?`)) return;
+  try {
+    await Promise.all(
+      rows.map(async (r) => {
+        await fetch(`/api/articles/${r.original.id}`, { method: 'DELETE' });
+        if (r.original.imageId) {
+          await fetch(`/api/media/${r.original.imageId}`, { method: 'DELETE', credentials: 'include' });
+        }
+      })
+    );
+    setTableData((prev) => prev.filter((a) => !ids.includes(a.id))); // ← видаляємо з UI
+    setRowSelection({});
+    router.refresh();
+  } catch (err: any) {
+    console.error('Помилка bulk delete:', err.message);
+  }
+};
 
   const sortableColumns = ['title', 'updatedAt', 'published', 'lang'];
 
@@ -168,7 +176,7 @@ export default function ArticleTable({
     {
       id: 'author',
       header: 'Автор',
-      accessorFn: (row) => row.author?.name ?? row.authorName,
+      accessorFn: (row) =>row.authorName ?? row.author?.name ,
       cell: ({ getValue }) => (
         <Typography variant="body2" color="text.secondary">{getValue() as string}</Typography>
       ),
@@ -247,7 +255,7 @@ export default function ArticleTable({
   ];
 
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
     state: { rowSelection },
     onRowSelectionChange: setRowSelection,

@@ -60,9 +60,11 @@ export default function ArticleForm({
   const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
   const [subcategories, setSubcategories] = useState<{ id: number; name: string }[]>([]);
   const [coverBase64, setCoverBase64] = useState<string | null>(null);
+  const [uploadedMediaIds, setUploadedMediaIds] = useState<number[]>([]);
+  const [uploadedMedia, setUploadedMedia] = useState<{ id: number; url: string }[]>([]);
   const [previousImageId, setPreviousImageId] = useState<number | null>(
-  initialData?.currentImageId ?? null
-);
+    initialData?.currentImageId ?? null
+  );
 
   useEffect(() => {
   if (!initialData) return;
@@ -100,20 +102,32 @@ export default function ArticleForm({
     setTagInput("");
   };
 
-  const handleSubmit = () => {
-    console.log('tags before save:', tags);
-    onSave({
-      title: formTitle,
-      lang,
-      body: content ?? { blocks: [] },
-      authorName,
-      categoryId,
-      subcategoryIds,
-      tags,
-      coverBase64,
-      currentImageId: previousImageId,
+const handleSubmit = () => {
+  const bodyContent = content as any;
+  const usedUrls: string[] = bodyContent?.blocks
+    ?.filter((b: any) => b.type === 'image')
+    ?.map((b: any) => b.data?.file?.url)
+    ?.filter(Boolean) ?? [];
+
+  // Видаляємо невикористані картинки
+  uploadedMedia
+    .filter(({ url }) => !usedUrls.includes(url))
+    .forEach(({ id }) => {
+      fetch(`/api/media/${id}`, { method: 'DELETE', credentials: 'include' });
     });
-  };
+
+  onSave({
+    title: formTitle,
+    lang,
+    body: content ?? { blocks: [] },
+    authorName,
+    categoryId,
+    subcategoryIds,
+    tags,
+    coverBase64,
+    currentImageId: previousImageId,
+  });
+};
 
   return (
     <Container maxWidth="xl">
@@ -152,7 +166,11 @@ export default function ArticleForm({
 
           <Box sx={{ border: "1px solid #ddd", borderRadius: 2, p: 2, mb: 3, minHeight: 300 }}>
             {content !== null ? (
-            <ReactEditor onChange={setContent} initialData={content} />
+            <ReactEditor 
+              onChange={setContent}
+              initialData={content}
+              onImageUpload={(id, url) => setUploadedMedia(prev => [...prev, { id, url }])}
+            />
             ) : (
               <ReactEditor onChange={setContent} />
             )}
@@ -251,8 +269,15 @@ export default function ArticleForm({
                     sx={{ position: 'absolute', top: 8, right: 8 }}
                     onClick={(e) => {
                       e.stopPropagation();
+                      console.log('previousImageId:', previousImageId);
                       if (previousImageId) {
-                        fetch(`/api/media/${previousImageId}`, { method: 'DELETE' });
+                        fetch(`/api/media/${previousImageId}`, { 
+                          method: 'DELETE',
+                          credentials: 'include',
+                        })
+                        .then(r => r.json())
+                        .then(d => console.log('delete result:', d))
+                        .catch(err => console.error('delete error:', err));
                         setPreviousImageId(null);
                       }
                       setCoverBase64(null);
