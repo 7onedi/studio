@@ -53,4 +53,5 @@ app/generated/prisma
 public/uploads
 
 # test log files
+*.log
 tests/article/*.log
