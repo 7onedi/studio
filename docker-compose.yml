@@ -25,8 +25,8 @@ services:
         max-size: "10m"
         max-file: "3"
 
-    mem_limit: 512m
-    memswap_limit: 512m
+    mem_limit: 768m
+    memswap_limit: 768m
     cpus: "0.5"
 
     entrypoint: /entrypoint.sh
@@ -65,10 +65,6 @@ services:
       retries: 6
       start_period: 10s
     stop_grace_period: 60s
-
-    mem_limit: 256m
-    memswap_limit: 256m
-    cpus: "0.3"
 
     volumes:
       - studio-mysql-data:/var/lib/mysql
