@@ -1,22 +1,59 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 import { Button } from "@/app/public/components/Button";
 import { SvgIcon } from "@/app/public/components/SvgIcon";
-
 import { groupArticles } from "./data";
-import { slides as defaultSlides } from "../ArticleSlider/slideContent";
 import { BlogCard } from "./BlogCard";
 
-// якщо в тебе є тип Article — імпортуй його звідки треба
-// import type { Article } from "../ArticleSlider/slideContent";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "";
+
+// ─── helpers ─────────────────────────────────────────────────────────────────
+
+async function fetchSliderArticles(): Promise<any[]> {
+  const res = await fetch(
+    `${BASE_URL}/api/articles/search?limit=100&sortBy=publishedAt&order=desc&published=true`
+  );
+  if (!res.ok) return [];
+  const data = await res.json().catch(() => null);
+  const all = Array.isArray(data?.data) ? data.data : [];
+  return all.filter((a: any) => a.slider === "SLIDER_2");
+}
+
+function toCardProps(article: any) {
+  if (article?.meta) return article;
+
+  const categoryName = article.category?.name ?? "";
+  const subCategoryName = article.subcategories?.[0]?.name ?? "";
+  const tags = (article.tags ?? [])
+    .map((t: any) => (typeof t === "string" ? t : t?.name ?? ""))
+    .filter(Boolean);
+  const img = article.image?.url
+    ? `${BASE_URL}${article.image.url}`
+    : null;
+
+  return {
+    meta: {
+      slug: article.slug ?? "",
+      title: article.title ?? "",
+      category: categoryName,
+      SubCategory: subCategoryName,
+      tags,
+      placement: ["list"],
+    },
+    hero: {
+      img,
+      gradient: "",
+    },
+  };
+}
+
+// ─── Arrow ────────────────────────────────────────────────────────────────────
 
 interface ArrowProps {
-  onClick: (
-    e: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>
-  ) => void;
+  onClick: () => void;
   disabled: boolean;
   direction: "left" | "right";
 }
@@ -41,141 +78,118 @@ const Arrow: React.FC<ArrowProps> = ({ onClick, disabled, direction }) => (
   </button>
 );
 
-type BlogSliderProps = {
-  slides?: readonly any[]; // ← заміни any на Article якщо тип є
-};
+// ─── BlogSlider ───────────────────────────────────────────────────────────────
 
-export default function BlogSlider({ slides }: BlogSliderProps) {
-  const maxDesktopArticles = 12;
+export default function BlogSlider() {
   const maxMobileArticles = 4;
 
-  const sourceSlides = useMemo(
-    () => (slides === undefined ? defaultSlides : slides),
-    [slides]
-  );
-
-  const allArticles = useMemo(
-    () => sourceSlides.filter((a: any) => a.meta.placement?.includes("list")),
-    [sourceSlides]
-  );
-
-  const desktopArticles = useMemo(
-    () => allArticles.slice(0, maxDesktopArticles),
-    [allArticles]
-  );
-
-  // ✅ мобайл тепер бере весь список, а кількість показу керується visibleCount
-  const mobileArticles = useMemo(() => allArticles, [allArticles]);
-
-  const slidesData = useMemo(
-    () => groupArticles(desktopArticles, 4),
-    [desktopArticles]
-  );
-
-  const totalArticlesToLoad = desktopArticles.length;
-
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [loaded, setLoaded] = useState(false);
+  const [articles, setArticles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [sliderReady, setSliderReady] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  const loadedCount = useRef(0);
+  const [visibleCount, setVisibleCount] = useState(maxMobileArticles);
+
+  useEffect(() => setIsClient(true), []);
+
+  useEffect(() => {
+    fetchSliderArticles()
+      .then(setArticles)
+      .finally(() => setLoading(false));
+  }, []);
+
+  // Групуємо по 4 — кожна група = 1 слайд
+  const slidesData = useMemo(() => groupArticles(articles, 4), [articles]);
 
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
     loop: true,
     mode: "snap",
     slides: { perView: 1, spacing: 0 },
-    slideChanged(s) {
-      setCurrentSlide(s.track.details.rel);
-    },
     created() {
-      setLoaded(true);
+      setSliderReady(true);
     },
   });
 
-  useEffect(() => setIsClient(true), []);
-
-  // ✅ якщо змінився список статей — скидаємо лічильник і loaded
+  // Оновлюємо слайдер після зміни даних
   useEffect(() => {
-    loadedCount.current = 0;
-    setLoaded(false);
     instanceRef.current?.update();
-  }, [allArticles, instanceRef]);
+  }, [slidesData, instanceRef]);
 
-  const handleImageLoad = () => {
-    loadedCount.current += 1;
-    if (loadedCount.current >= totalArticlesToLoad) setLoaded(true);
-  };
+  const handleImageLoad = useCallback(() => {}, []);
 
-  // ✅ "спадаючий список" для мобайлу (по прикладу)
-  const [visibleCount, setVisibleCount] = useState(maxMobileArticles);
-
-  useEffect(() => {
-    // якщо прийшов інший список — повертаємось до стартового ліміту
-    setVisibleCount(maxMobileArticles);
-  }, [allArticles, maxMobileArticles]);
-
-  const visibleItems = useMemo(
-    () => mobileArticles.slice(0, visibleCount),
-    [mobileArticles, visibleCount]
+  const visibleMobileItems = useMemo(
+    () => articles.slice(0, visibleCount),
+    [articles, visibleCount]
   );
 
-  const canToggle = mobileArticles.length >= maxMobileArticles * 2;
-  const isAllVisible = visibleCount >= mobileArticles.length;
+  const canToggle = articles.length > maxMobileArticles;
+  const isAllVisible = visibleCount >= articles.length;
 
   if (!isClient) return null;
+  if (!loading && articles.length === 0) return null;
 
-  const isReady = loaded || slidesData.length === 0;
-
-  return allArticles.length ? (
+  return (
     <div className="mx-auto w-full">
       <div className="relative">
-        {/* DESKTOP */}
+        {/* ── DESKTOP ── */}
         <div className="relative hidden lg:block">
+          {loading && (
+            <div className="absolute inset-0 z-40 flex items-center justify-center bg-white/60 rounded-xl">
+              <span className="text-gray-400 text-sm animate-pulse">
+                Завантаження...
+              </span>
+            </div>
+          )}
+
           <div
             ref={sliderRef}
-            className={`
-              keen-slider w-full h-[600px] sm:h-[800px] lg:h-[800px]
-              ${!isReady ? "opacity-0" : "opacity-100 transition-opacity duration-500"}
-            `}
+            className="keen-slider w-full h-[600px] sm:h-[800px] lg:h-[800px]"
           >
-            {slidesData.map((articleGroup: any[], i: number) => (
+            {slidesData.map((group: any[], i: number) => (
               <div
                 key={i}
                 className="keen-slider__slide grid h-full w-full grid-cols-2 grid-rows-2 gap-4 sm:gap-6 lg:gap-8"
               >
-                {articleGroup.map((s: any, j: number) => (
-                  <BlogCard key={j} {...s} onLoad={handleImageLoad} />
+                {group.map((article: any, j: number) => (
+                  <BlogCard
+                    key={j}
+                    {...toCardProps(article)}
+                    onLoad={handleImageLoad}
+                  />
                 ))}
               </div>
             ))}
           </div>
 
-          {isReady && instanceRef.current && slidesData.length > 1 && (
+          {sliderReady && slidesData.length > 1 && (
             <>
               <Arrow
-                onClick={() => instanceRef.current?.prev()}
-                disabled={false}
                 direction="left"
+                disabled={false}
+                onClick={() => instanceRef.current?.prev()}
               />
               <Arrow
-                onClick={() => instanceRef.current?.next()}
-                disabled={false}
                 direction="right"
+                disabled={false}
+                onClick={() => instanceRef.current?.next()}
               />
             </>
           )}
         </div>
 
-        {/* MOBILE */}
+        {/* ── MOBILE ── */}
         <div id="blogList" className="grid grid-cols-1 gap-4 lg:hidden">
-          {visibleItems.map((article: any, index: number) => (
+          {visibleMobileItems.map((article: any, index: number) => (
             <div key={index} className="h-[250px] sm:h-[300px]">
-              <BlogCard {...article} onLoad={handleImageLoad} />
+              <BlogCard
+                {...toCardProps(article)}
+                onLoad={handleImageLoad}
+              />
             </div>
           ))}
         </div>
       </div>
 
-      {/* ✅ Замінили Link на "спадаючий список" */}
+      {/* Мобайл: показати ще / згорнути */}
       {canToggle && (
         <div className="mt-6 flex justify-center lg:hidden">
           <Button
@@ -188,18 +202,22 @@ export default function BlogSlider({ slides }: BlogSliderProps) {
                   ?.scrollIntoView({ behavior: "smooth" });
               } else {
                 setVisibleCount((prev) =>
-                  Math.min(prev + maxMobileArticles, mobileArticles.length)
+                  Math.min(prev + maxMobileArticles, articles.length)
                 );
               }
             }}
           >
             {isAllVisible ? "Згорнути" : "ДИВИТИСЬ ЩЕ"}
             <div className="ml-2 flex items-center justify-center">
-              <SvgIcon name={isAllVisible ? "up" : "down"} size={24} color="white" />
+              <SvgIcon
+                name={isAllVisible ? "up" : "down"}
+                size={24}
+                color="white"
+              />
             </div>
           </Button>
         </div>
       )}
     </div>
-  ) : null;
+  );
 }

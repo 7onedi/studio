@@ -27,6 +27,44 @@ enum ArticleSlider {
   SLIDER_2
 }
 
+enum SocialPlatform {
+  YOUTUBE
+  INSTAGRAM
+  FACEBOOK
+  TWITTER
+  TIKTOK
+}
+
+enum PartnerRole {
+  PARTNER
+  MEMBER
+  DONOR
+}
+
+enum PartnerStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Partner {
+  id          Int           @id @default(autoincrement())
+  name        String
+  email       String        @unique
+  role        PartnerRole
+  status      PartnerStatus @default(PENDING)
+  description String?
+
+  imageId Int?
+  image   Media? @relation(fields: [imageId], references: [id], onDelete: SetNull)
+
+  published   Boolean   @default(false)
+  publishedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model User {
   id           Int      @id @default(autoincrement())
   email        String   @unique
@@ -75,6 +113,26 @@ model Article {
   @@index([categoryId, published])
 }
 
+model SocialLink {
+  id       Int            @id @default(autoincrement())
+  platform SocialPlatform @unique
+
+  projects ProjectSocialLink[]
+
+  createdAt DateTime @default(now())
+}
+
+model ProjectSocialLink {
+  projectId Int
+  socialId  Int
+  url       String
+
+  project StudioProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  social  SocialLink    @relation(fields: [socialId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, socialId])
+}
+
 model StudioProject {
   id Int @id @default(autoincrement())
 
@@ -93,6 +151,8 @@ model StudioProject {
   description String?
   imageId     Int?
   image       Media? @relation(fields: [imageId], references: [id])
+
+  socialLinks ProjectSocialLink[]
 
   authorId Int?
   author   User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
@@ -176,4 +236,5 @@ model Media {
   createdAt DateTime  @default(now())
   articles  Article[]
   project StudioProject[]
+  partners Partner[]
 }

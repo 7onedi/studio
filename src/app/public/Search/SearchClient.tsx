@@ -34,7 +34,7 @@ export default function SearchPage() {
   }, [allArticles]);
 
   const didInitFromUrl = useRef(false);
-const SEARCH_ROUTE = "/Search"; // важливо: той самий регістр, що і твій роут
+const SEARCH_ROUTE = "/public/Search"; // важливо: той самий регістр, що і твій роут
 
 
   const [query, setQuery] = useState("");

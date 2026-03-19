@@ -284,8 +284,12 @@
           { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
           { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 } },
           { "name": "sortBy", "in": "query", "schema": { "type": "string", "default": "createdAt" } },
-          { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc","desc"], "default": "desc" } },
-          { "name": "published", "in": "query", "schema": { "type": "boolean" } }
+          { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" } },
+          { "name": "published", "in": "query", "schema": { "type": "boolean" } },
+          { "name": "categoryId", "in": "query", "schema": { "type": "integer" } },
+          { "name": "subcategoryId", "in": "query", "schema": { "type": "integer" } },
+          { "name": "parentId", "in": "query", "schema": { "type": "integer" } },
+          { "name": "title", "in": "query", "schema": { "type": "string" } }
         ],
         "responses": {
           "200": {
@@ -295,10 +299,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": { "$ref": "#/components/schemas/StudioProject" }
-                    },
+                    "data": { "type": "array", "items": { "$ref": "#/components/schemas/StudioProject" } },
                     "total": { "type": "integer" },
                     "page": { "type": "integer" },
                     "limit": { "type": "integer" },
@@ -927,6 +928,206 @@
           "403": { "$ref": "#/components/responses/Forbidden" }
         }
       }
+    },
+    "/api/partners": {
+      "post": {
+        "tags": ["Partners"],
+        "summary": "Подати заявку на партнерство (публічний)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreatePartnerInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Заявку створено",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Partner" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" }
+        }
+      }
+    },
+    "/api/partners/search": {
+      "get": {
+        "tags": ["Partners"],
+        "summary": "Пошук партнерів з фільтрацією, пагінацією та сортуванням",
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 } },
+          { "name": "sortBy", "in": "query", "schema": { "type": "string", "default": "createdAt" } },
+          { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" } },
+          { "name": "name", "in": "query", "schema": { "type": "string" } },
+          { "name": "email", "in": "query", "schema": { "type": "string" } },
+          {
+            "name": "role",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["PARTNER", "MEMBER", "DONOR"] }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["PENDING", "APPROVED", "REJECTED"] }
+          },
+          { "name": "published", "in": "query", "schema": { "type": "boolean" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список партнерів",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Partner" }
+                    },
+                    "total": { "type": "integer" },
+                    "page": { "type": "integer" },
+                    "limit": { "type": "integer" },
+                    "pages": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/partners/status": {
+      "patch": {
+        "tags": ["Partners"],
+        "summary": "Змінити статус заявки партнера (тільки ADMIN)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdatePartnerStatusInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Статус оновлено",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Partner" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/api/partners/publish": {
+      "post": {
+        "tags": ["Partners"],
+        "summary": "Опублікувати партнера (тільки ADMIN)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["id"],
+                "properties": {
+                  "id": { "type": "integer" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Партнера опубліковано",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Partner" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/api/partners/{id}": {
+      "get": {
+        "tags": ["Partners"],
+        "summary": "Отримати партнера за id",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Партнера знайдено",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Partner" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "patch": {
+        "tags": ["Partners"],
+        "summary": "Оновити дані партнера (тільки ADMIN)",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdatePartnerInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Партнера оновлено",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Partner" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "delete": {
+        "tags": ["Partners"],
+        "summary": "Видалити партнера та його зображення (тільки ADMIN)",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Партнера видалено",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Partner" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
     }
   },
   "components": {
@@ -1177,14 +1378,17 @@
           "parentId": { "type": ["integer", "null"] },
           "title": { "type": "string" },
           "body": { "type": "object" },
-          "description": { "type": "string" },
+          "description": { "type": ["string", "null"] },
+          "published": { "type": "boolean" },
+          "publishedAt": { "type": ["string", "null"], "format": "date-time" },
           "createdAt": { "type": "string", "format": "date-time" },
           "updatedAt": { "type": "string", "format": "date-time" },
           "author": {
-            "type": "object",
+            "type": ["object", "null"],
             "properties": {
               "id": { "type": "integer" },
-              "name": { "type": "string" }
+              "name": { "type": ["string", "null"] },
+              "email": { "type": "string" }
             }
           },
           "category": {
@@ -1196,43 +1400,131 @@
             }
           },
           "subcategory": {
-            "type": "object",
+            "type": ["object", "null"],
             "properties": {
               "id": { "type": "integer" },
               "name": { "type": "string" },
               "slug": { "type": "string" }
             }
           },
-          "location": {
-            "type": "array",
-            "items": { "$ref": "#/components/schemas/Location" }
+          "parent": {
+            "type": ["object", "null"],
+            "properties": {
+              "id": { "type": "integer" },
+              "title": { "type": "string" }
+            }
           },
-          "image": { "type": "object", "properties": { "id": { "type": "integer" }, "url": { "type": "string" } } }
+          "location": {
+            "type": ["object", "null"],
+            "$ref": "#/components/schemas/Location"
+          },
+          "image": {
+            "type": ["object", "null"],
+            "properties": {
+              "id": { "type": "integer" },
+              "url": { "type": "string" }
+            }
+          },
+          "socialLinks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": { "type": "string" },
+                "social": {
+                  "type": "object",
+                  "properties": {
+                    "platform": {
+                      "type": "string",
+                      "enum": ["YOUTUBE", "INSTAGRAM", "FACEBOOK", "TWITTER", "TIKTOK"]
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       },
       "CreateStudioProjectInput": {
         "type": "object",
-        "required": ["title", "categoryId", "subcategoryId"],
+        "required": ["title", "categoryId"],
         "properties": {
-          "title": { "type": "string" },
+          "title": { "type": "string", "minLength": 3 },
           "body": { "type": "object" },
           "description": { "type": "string" },
           "categoryId": { "type": "integer" },
           "subcategoryId": { "type": "integer" },
           "parentId": { "type": "integer" },
-          "imageId": { "type": "integer" }
+          "imageId": { "type": "integer" },
+          "locationId": {
+            "type": "integer",
+            "description": "Підключити існуючу location за id"
+          },
+          "locationData": {
+            "description": "Створити нову location inline",
+            "$ref": "#/components/schemas/LocationInput"
+          },
+          "socialLinks": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/SocialLinkInput" }
+          }
         }
       },
       "UpdateStudioProjectInput": {
         "type": "object",
         "properties": {
-          "title": { "type": "string" },
+          "title": { "type": "string", "minLength": 3 },
           "body": { "type": "object" },
           "description": { "type": "string" },
           "categoryId": { "type": "integer" },
           "subcategoryId": { "type": "integer" },
           "parentId": { "type": "integer" },
-          "imageId": { "type": "integer" }
+          "imageId": { "type": "integer" },
+          "locationId": {
+            "type": "integer",
+            "description": "Підключити існуючу location за id"
+          },
+          "locationData": {
+            "description": "Оновити існуючу або створити нову location inline",
+            "$ref": "#/components/schemas/LocationInput"
+          },
+          "deleteLocation": {
+            "type": "boolean",
+            "description": "Якщо true — від'єднати та видалити поточну location"
+          },
+          "socialLinks": {
+            "type": "array",
+            "description": "Повністю замінює існуючі socialLinks. Передай порожній масив щоб видалити всі.",
+            "items": { "$ref": "#/components/schemas/SocialLinkInput" }
+          }
+        }
+      },
+      "SocialLinkInput": {
+        "type": "object",
+        "required": ["platform", "url"],
+        "properties": {
+          "platform": {
+            "type": "string",
+            "enum": ["YOUTUBE", "INSTAGRAM", "FACEBOOK", "TWITTER", "TIKTOK"]
+          },
+          "url": { "type": "string", "format": "uri" }
+        }
+      },
+      "LocationInput": {
+        "type": "object",
+        "required": ["name", "url"],
+        "properties": {
+          "name": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "coordinates": {
+            "type": "object",
+            "properties": {
+              "lat": { "type": "number" },
+              "lng": { "type": "number" }
+            }
+          },
+          "description": { "type": "string" },
+          "publishedAt": { "type": "string", "format": "date-time" }
         }
       },
       "Location": {
@@ -1270,6 +1562,60 @@
           "description": { "type": "string" },
           "publishedAt": { "type": "string", "format": "date-time" },
           "projectId": { "type": "integer" }
+        }
+      },
+      "Partner": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "role": { "type": "string", "enum": ["PARTNER", "MEMBER", "DONOR"] },
+          "status": { "type": "string", "enum": ["PENDING", "APPROVED", "REJECTED"] },
+          "description": { "type": ["string", "null"] },
+          "published": { "type": "boolean" },
+          "publishedAt": { "type": ["string", "null"], "format": "date-time" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" },
+          "image": {
+            "type": ["object", "null"],
+            "properties": {
+              "id": { "type": "integer" },
+              "url": { "type": "string" },
+              "filename": { "type": "string" },
+              "mimeType": { "type": "string" },
+              "size": { "type": "integer" }
+            }
+          }
+        }
+      },
+      "CreatePartnerInput": {
+        "type": "object",
+        "required": ["name", "email", "role"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "email": { "type": "string", "format": "email" },
+          "role": { "type": "string", "enum": ["PARTNER", "MEMBER", "DONOR"] },
+          "description": { "type": "string" },
+          "imageId": { "type": "integer" }
+        }
+      },
+      "UpdatePartnerInput": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "email": { "type": "string", "format": "email" },
+          "role": { "type": "string", "enum": ["PARTNER", "MEMBER", "DONOR"] },
+          "description": { "type": "string" },
+          "imageId": { "type": "integer" }
+        }
+      },
+      "UpdatePartnerStatusInput": {
+        "type": "object",
+        "required": ["id", "status"],
+        "properties": {
+          "id": { "type": "integer" },
+          "status": { "type": "string", "enum": ["PENDING", "APPROVED", "REJECTED"] }
         }
       }
     }

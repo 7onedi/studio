@@ -7,11 +7,8 @@ import { Button } from "@/app/public/components/Button";
 import { SvgIcon } from "@/app/public/components/SvgIcon";
 import Image from "next/image";
 import Link from "next/link";
-import { slides } from "./slideContent";
 
-const filterListSlides = slides.filter(
-  (a) => a.meta.placement?.includes("hero")
-);
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "";
 
 const iconNames = [
   { title: "facebook", link: "https://www.facebook.com/icyst" },
@@ -21,7 +18,29 @@ const iconNames = [
   { title: "pangeya", link: "https://pangeya.org.ua/" },
 ];
 
+async function fetchSlider1Articles(): Promise<any[]> {
+  const res = await fetch(
+    `${BASE_URL}/api/articles/search?limit=100&sortBy=publishedAt&order=desc&published=true`
+  );
+  if (!res.ok) return [];
+  const data = await res.json().catch(() => null);
+  const all = Array.isArray(data?.data) ? data.data : [];
+  return all.filter((a: any) => a.slider === "SLIDER_1");
+}
+
+function toSlide(article: any) {
+  return {
+    slug: article.slug ?? "",
+    title: article.title ?? "",
+    img: article.image?.url ? `${BASE_URL}${article.image.url}` : null,
+    gradient: "",
+    gradientMob: "",
+    textStyle: "",
+  };
+}
+
 export default function SliderHero() {
+  const [slides, setSlides] = useState<ReturnType<typeof toSlide>[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [mounted, setMounted] = useState(false);
 
@@ -34,6 +53,12 @@ export default function SliderHero() {
   });
 
   useEffect(() => {
+    fetchSlider1Articles().then((articles) => {
+      setSlides(articles.map(toSlide));
+    });
+  }, []);
+
+  useEffect(() => {
     setMounted(true);
     const timer = setTimeout(() => {
       instanceRef.current?.update();
@@ -41,10 +66,17 @@ export default function SliderHero() {
     return () => clearTimeout(timer);
   }, [instanceRef]);
 
+  // Оновлюємо слайдер після завантаження даних
   useEffect(() => {
-  const t = setInterval(() => instanceRef.current?.next(), 8000);
-  return () => clearInterval(t);
-}, [instanceRef]);
+    instanceRef.current?.update();
+  }, [slides, instanceRef]);
+
+  useEffect(() => {
+    const t = setInterval(() => instanceRef.current?.next(), 8000);
+    return () => clearInterval(t);
+  }, [instanceRef]);
+
+  if (slides.length === 0) return null;
 
   return (
     <div
@@ -53,25 +85,27 @@ export default function SliderHero() {
       }`}
     >
       <div ref={sliderRef} className="keen-slider w-full h-[700px]">
-        {filterListSlides.map((s, i) => (
-          <div key={s.meta.slug} className="keen-slider__slide relative">
-            <Image
-              src={s.hero.img}
-              alt={s.meta.title}
-              fill
-              className="object-cover rounded-3xl"
-              sizes="100vw"
-              priority={i === 0}
-            />
+        {slides.map((s, i) => (
+          <div key={s.slug} className="keen-slider__slide relative">
+            {s.img && (
+              <Image
+                src={s.img}
+                alt={s.title}
+                fill
+                className="object-cover rounded-3xl"
+                sizes="100vw"
+                priority={i === 0}
+              />
+            )}
 
-            <div className={`absolute inset-0 ${s.hero.gradientMob} ${s.hero.gradient}`} />
+            <div className={`absolute inset-0 ${s.gradientMob} ${s.gradient}`} />
 
             <div className="absolute inset-0 flex flex-col justify-between p-8 lg:p-0 lg:px-16 lg:pt-16 lg:mx-16 lg:my-10">
-              <div className={`text-white text-headline_1_mobile ${s.hero.textStyle} max-w-[600px]`}>
-                {s.meta.title}
+              <div className={`text-white text-headline_1_mobile ${s.textStyle} max-w-[600px]`}>
+                {s.title}
               </div>
               <Link
-                href={`/public/Article/${s.meta.slug}`}
+                href={`/public/Article/${s.slug}`}
                 className="absolute bottom-8 left-16 lg:relative lg:bottom-0 lg:left-0 z-20"
               >
                 <Button variant="secondary-alt">
@@ -95,7 +129,7 @@ export default function SliderHero() {
               </div>
 
               <div className="hidden lg:flex bottom-0 left-20 items-center gap-3 z-30">
-                {filterListSlides.map((_, idx) => {
+                {slides.map((_, idx) => {
                   const active = currentSlide === idx;
                   return (
                     <button

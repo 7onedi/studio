@@ -15,7 +15,7 @@ export const TagButton: React.FC<{ tag: string; ClassName?: string }> = ({
   ClassName = "",
 }) => {
   const router = useRouter();
-  const SEARCH_ROUTE = "/Search"; // або "/blog/search"
+  const SEARCH_ROUTE = "/public/Search";
 
   return (
     <button
@@ -23,7 +23,7 @@ export const TagButton: React.FC<{ tag: string; ClassName?: string }> = ({
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        router.push(`/Search?q=${encodeURIComponent(tag)}`);
+        router.push(`/public/Search?q=${encodeURIComponent(tag)}`);
       }}
       className={`
         px-3 py-1 font-semibold
@@ -40,6 +40,7 @@ export const TagButton: React.FC<{ tag: string; ClassName?: string }> = ({
 
 export const BlogCard: React.FC<BlogCardProps> = ({ meta, hero, onLoad }) => {
   // збираємо теги для відображення (category + subcategory + tags)
+  console.log("BlogCard meta:", meta);
   const displayTags = Array.from(
     new Set([meta.category, meta.SubCategory, ...(meta.tags ?? [])].filter(Boolean))
   ) as string[];
@@ -48,15 +49,18 @@ export const BlogCard: React.FC<BlogCardProps> = ({ meta, hero, onLoad }) => {
     <div className="flex h-full flex-col">
       <div className="relative flex-grow overflow-hidden rounded-xl group">
         <Link href={`/public/Article/${meta.slug}`} className="block h-full w-full">
-          <Image
-            src={hero.img}
-            alt={meta.title}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            sizes="(min-width: 1024px) 50vw, 100vw"
-            onLoad={onLoad}
-          />
-
+          {hero.img ? (
+            <Image
+              src={hero.img}
+              alt={meta.title}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              onLoad={onLoad}
+            />
+          ) : (
+              <div className="absolute inset-0 bg-gray-200" /> // плейсхолдер
+          )}
           <div
             className={`absolute inset-0 bg-black/30 transition-all duration-300 group-hover:bg-black/20 ${hero.gradient}`}
           />
