@@ -20,9 +20,9 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
       {
-        protocol: "http",
-        hostname: "localhost",
-        port: "3000",
+        protocol: (process.env.UPLOADS_PROTOCOL ?? "https") as "https" | "http",
+        hostname: process.env.UPLOADS_HOSTNAME ?? "localhost",
+        port: process.env.UPLOADS_PORT ?? "",
         pathname: "/uploads/**",
       },
     ],
