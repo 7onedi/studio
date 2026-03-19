@@ -20,8 +20,8 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
       {
-        protocol: "http",
-        hostname: "localhost",
+        protocol: "https",
+        hostname: "studio.pangeya.org.ua",
         port: "3000",
         pathname: "/uploads/**",
       },
