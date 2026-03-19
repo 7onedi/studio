@@ -44,6 +44,7 @@ services:
     ports:
       - "81:80"
 
+
   studio_pangeya_mysql:
     image: mysql:8
     container_name: studio-mysql

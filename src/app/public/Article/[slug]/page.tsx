@@ -17,14 +17,17 @@ const iconNames = [
 ];
 
 async function fetchArticleBySlug(slug: string) {
-  const res = await fetch(
-    `${BASE_URL}/api/articles/search?slug=${slug}&published=true`,
-    { cache: "no-store" }
-  );
+  const res = await fetch(`${BASE_URL}/api/articles/by-slug/${slug}`, { cache: "no-store" });
   if (!res.ok) return null;
   const data = await res.json().catch(() => null);
-  const items = Array.isArray(data?.data) ? data.data : [];
-  return items.find((a: any) => a.slug === slug) ?? null;
+  
+  // ось тут
+  console.log("gallery blocks:", JSON.stringify(
+    data?.body?.blocks?.filter((b: any) => b.type === "gallery"),
+    null, 2
+  ));
+  
+  return data;
 }
 
 async function fetchAllArticles() {
@@ -41,6 +44,31 @@ async function fetchAllArticles() {
 export const dynamic = "force-dynamic";
 
 function toArticleProps(article: any) {
+  const blocks = (article.body?.blocks ?? []).map((block: any) => {
+    if (block.type === "image" && block.data?.file?.url?.startsWith("/")) {
+      return {
+        ...block,
+        data: {
+          ...block.data,
+          file: { ...block.data.file, url: `${BASE_URL}${block.data.file.url}` },
+        },
+      };
+    }
+    if (block.type === "gallery" && Array.isArray(block.data?.files)) {
+      return {
+        ...block,
+        data: {
+          ...block.data,
+          files: block.data.files.map((f: any) => ({
+            ...f,
+            url: f.url?.startsWith("/") ? `${BASE_URL}${f.url}` : f.url,
+          })),
+        },
+      };
+    }
+    return block;
+  });
+
   return {
     meta: {
       slug: article.slug ?? "",
@@ -57,7 +85,7 @@ function toArticleProps(article: any) {
       tegsBgColor: "",
     },
     author: article.authorName ?? article.author?.name ?? "",
-    body: article.body ?? { blocks: [] },
+    body: { ...article.body, blocks },
   };
 }
 
@@ -70,7 +98,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
   if (!raw) notFound();
 
-  const article = toArticleProps(raw);
+const article = toArticleProps(raw);
+console.log("gallery after patch:", JSON.stringify(
+  article.body.blocks.filter((b: any) => b.type === "gallery"),
+  null, 2
+));
   const allArticles = allRaw.map(toArticleProps);
 
   return (
