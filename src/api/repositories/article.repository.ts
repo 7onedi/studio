@@ -10,10 +10,18 @@ export const articleRepository = {
   ...crud,
   ...search,
 
-  publish(id: number) {
+  async publish(id: number) {
+    const article = await prisma.article.findUniqueOrThrow({
+      where: { id },
+      select: { published: true },
+    });
+
     return prisma.article.update({
       where: { id },
-      data: { published: true, publishedAt: new Date() },
+      data: {
+        published: !article.published,
+        publishedAt: !article.published ? new Date() : null,
+      },
     });
   },
 
