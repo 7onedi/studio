@@ -31,7 +31,7 @@ export default function Home() {
         <p className="text-headline_3">Діяльність  #Countrysidestudio</p>
       </div>
       <div className="mt-8 lg:mt-12 px-4 lg:px-0">
-        <BlogSlider slides={csStudioSlides}/>
+        <BlogSlider category="#CountrysideStudio" />
       </div>
     </div>
   );

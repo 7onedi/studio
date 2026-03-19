@@ -30,7 +30,7 @@ export default function Home() {
         <p className="text-headline_3">Цікаві статті про проєкт</p>
       </div>
       <div className="">
-        <BlogSlider slides={yiSlides}/>
+        <BlogSlider category="Youthinsight"/>
       </div>
     </div>
   );

@@ -135,7 +135,7 @@ export default async function FestivalPage({ params }: FestivalPageProps) {
       </div>
 
       <div className="my-8">
-        <BlogSlider slides={yiSlides}/>
+        <BlogSlider category="Youthinsight" />
       </div>
 
       <div className="my-12 lg:mt-16 px-4 lg:px-0">
