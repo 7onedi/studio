@@ -31,7 +31,7 @@ export default function Home() {
         <p className="text-headline_3">Цікаві статті про Movers&Shakers</p>
       </div>
       <div className="">
-        <BlogSlider slides={msSlides}/>
+        <BlogSlider category="Movers&Shakers"/>
       </div>
     </div>
   );

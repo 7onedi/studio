@@ -148,7 +148,7 @@ const yfcSlides = slug
       </div>
 
       <div className="my-8">
-        <BlogSlider slides={yfcSlides}/>
+        <BlogSlider category="#CountrysideStudio" />
       </div>
 
       <div className="my-12 lg:mt-16 px-4 lg:px-0">
