@@ -9,7 +9,7 @@ type ParagraphBlock = {
 type HeaderBlock = {
   id: string;
   type: "header";
-  data: { text: string, level?: number};
+  data: { text: string; level?: number };
 };
 
 type ListBlock = {
@@ -18,14 +18,25 @@ type ListBlock = {
   data: { style: "ordered" | "unordered"; items: readonly string[] };
 };
 
+type ImageBlock = {
+  id: string;
+  type: "image";
+  data: {
+    file: { url: string };
+    caption?: string;
+    withBorder?: boolean;
+    withBackground?: boolean;
+    stretched?: boolean;
+  };
+};
+
 type GalleryBlock = {
   id: string;
   type: "gallery";
   data: {
-    files: readonly { url: string; alt?: string }[]; // 1..4
+    files: readonly { url: string; alt?: string }[];
     caption?: string;
-
-    // спільні атрибути (не множимо)
+    style?: string;
     withBorder?: boolean;
     withBackground?: boolean;
     stretched?: boolean;
@@ -42,6 +53,7 @@ type EditorBlock =
   | ParagraphBlock
   | HeaderBlock
   | ListBlock
+  | ImageBlock
   | GalleryBlock
   | VideoBlock;
 
@@ -88,45 +100,73 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
               </ul>
             );
 
-          case "gallery": {
-            const count = Math.min(4, block.data.files.length);
+          case "image": {
+            const url = block.data.file?.url ?? "";
+            return (
+              <figure
+                key={i}
+                className={[
+                  "mb-4",
+                  block.data.withBackground ? "bg-white/5 p-2" : "",
+                  block.data.withBorder ? "border border-white/10" : "",
+                ].join(" ")}
+              >
+                <img
+                  src={url}
+                  alt={block.data.caption ?? ""}
+                  className={[
+                    "w-full object-cover rounded-xl",
+                    block.data.stretched ? "aspect-auto" : "aspect-[16/9]",
+                  ].join(" ")}
+                />
+                {block.data.caption && (
+                  <figcaption className="mt-2 text-body_mobile lg:text-body">
+                    <i>{block.data.caption}</i>
+                  </figcaption>
+                )}
+              </figure>
+            );
+          }
 
+          case "gallery": {
+            const files = block.data.files ?? [];
+            console.log("gallery files:", files);
+            const count = Math.min(4, files.length);
             const colsClass =
               count === 1
                 ? "grid-cols-1"
                 : count === 2
-                  ? "lg:grid-cols-2"
+                  ? "grid-cols-2"
                   : count === 3
-                    ? "lg:grid-cols-3"
-                    : "lg:grid-cols-4";
+                    ? "grid-cols-3"
+                    : "grid-cols-2 lg:grid-cols-4";
 
             return (
               <figure key={i} className="mb-4">
                 <div className={`grid ${colsClass} gap-3`}>
-                  {block.data.files.slice(0, 4).map((f, idx) => (
+                  {files.slice(0, 4).map((file, idx) => (
                     <div
                       key={idx}
                       className={[
-                        "relative overflow-hidden",
+                        "overflow-hidden rounded-xl",
                         block.data.withBackground ? "bg-white/5 p-2" : "",
                         block.data.withBorder ? "border border-white/10" : "",
                       ].join(" ")}
                     >
                       <img
-                        src={f.url}
-                        alt={f.alt ?? block.data.caption ?? ""}
+                        src={file.url}
+                        alt={file.alt ?? block.data.caption ?? ""}
                         className={[
-                          "h-full w-full object-cover",
+                          "w-full object-cover",
                           block.data.stretched ? "aspect-auto" : "aspect-[4/3]",
                         ].join(" ")}
                       />
                     </div>
                   ))}
                 </div>
-
                 {block.data.caption && (
                   <figcaption className="mt-2 text-body_mobile lg:text-body">
-                    <i>{block.data.caption}</i> 
+                    <i>{block.data.caption}</i>
                   </figcaption>
                 )}
               </figure>

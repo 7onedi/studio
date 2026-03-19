@@ -111,12 +111,21 @@ export default function ArticleForm({
 
 const handleSubmit = () => {
   const bodyContent = content as any;
-  const usedUrls: string[] = bodyContent?.blocks
-    ?.filter((b: any) => b.type === 'image')
-    ?.map((b: any) => b.data?.file?.url)
-    ?.filter(Boolean) ?? [];
+  
+  const usedUrls: string[] = [];
+  
+  bodyContent?.blocks?.forEach((b: any) => {
+    if (b.type === 'image' && b.data?.file?.url) {
+      usedUrls.push(b.data.file.url);
+    }
+    if (b.type === 'gallery' && Array.isArray(b.data?.files)) {
+      b.data.files.forEach((f: any) => {
+        if (f.url) usedUrls.push(f.url);
+      });
+    }
+  });
 
-  // Видаляємо невикористані картинки
+  // Видаляємо завантажені але невикористані картинки
   uploadedMedia
     .filter(({ url }) => !usedUrls.includes(url))
     .forEach(({ id }) => {
@@ -133,8 +142,6 @@ const handleSubmit = () => {
     tags,
     coverBase64,
     currentImageId: previousImageId,
-    published,
-    slider: slider as 'NONE' | 'SLIDER_1' | 'SLIDER_2',
   });
 };
 
