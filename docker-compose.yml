@@ -44,7 +44,7 @@ services:
 
     volumes:
       - ./docker/nginx:/etc/nginx/conf.d
-      - uploads_data:/app/public/uploads 
+      - ./public/uploads:/app/public/uploads
 
     ports:
       - "81:80"
@@ -69,7 +69,6 @@ services:
 
     volumes:
       - studio-mysql-data:/var/lib/mysql
-      - ./public/uploads:/app/public/uploads 
 
 
 volumes:
