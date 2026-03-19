@@ -3,15 +3,15 @@ services:
     build:
       context: .
       dockerfile: ./docker/Dockerfile
-      # target не вказуємо тут — override/prod.yml додадуть свій
     working_dir: /app
     env_file: .env
 
     volumes:
       - ./prisma:/app/prisma
-      - uploads_data:/app/public/uploads
+      - ./public/uploads:/app/public/uploads 
 
     restart: always
+
     ports:
       - "3000:3000"
 
@@ -28,15 +28,20 @@ services:
     mem_limit: 3g
     cpus: "1.0"
 
+    entrypoint: /entrypoint.sh
+
     depends_on:
       studio_pangeya_mysql:
         condition: service_healthy
 
+
   studio_pangeya_nginx:
     image: nginx:1.19
     restart: always
+
     depends_on:
       - app
+
     volumes:
       - ./docker/nginx:/etc/nginx/conf.d
       - uploads_data:/app/public/uploads 
@@ -51,6 +56,7 @@ services:
     restart: always
     env_file:
       - .env
+
     ports:
       - "3307:3306"
     healthcheck:
@@ -60,9 +66,11 @@ services:
       retries: 6
       start_period: 10s
     stop_grace_period: 60s
+
     volumes:
       - studio-mysql-data:/var/lib/mysql
+      - ./public/uploads:/app/public/uploads 
+
 
 volumes:
   studio-mysql-data:
-  uploads_data:
