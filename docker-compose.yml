@@ -72,5 +72,6 @@ services:
       - ./public/uploads:/app/public/uploads 
 
 
+
 volumes:
   studio-mysql-data:
