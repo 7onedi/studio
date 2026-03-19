@@ -5,9 +5,10 @@ import { withAuth } from "@/app/api/middleware/auth";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const result = await partnerController.findById(Number(params.id));
+  const { id } = await params;
+  const result = await partnerController.findById(Number(id));
   if (!result) return NextResponse.json({ message: "Not found" }, { status: 404 });
   return NextResponse.json(result);
 }
