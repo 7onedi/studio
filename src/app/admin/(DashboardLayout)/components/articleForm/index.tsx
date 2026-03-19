@@ -142,6 +142,8 @@ const handleSubmit = () => {
     tags,
     coverBase64,
     currentImageId: previousImageId,
+    published,
+    slider: slider as 'NONE' | 'SLIDER_1' | 'SLIDER_2',
   });
 };
 
