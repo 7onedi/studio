@@ -25,8 +25,8 @@ services:
         max-size: "10m"
         max-file: "3"
 
-    mem_limit: 768m
-    memswap_limit: 768m
+    mem_limit: 1g
+    memswap_limit: 1g
     cpus: "0.5"
 
     entrypoint: /entrypoint.sh
