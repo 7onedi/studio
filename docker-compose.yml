@@ -8,7 +8,7 @@ services:
 
     volumes:
       - ./prisma:/app/prisma
-      - ./public/uploads:/app/public/uploads 
+      - ./public/uploads:/app/public/uploads
 
     restart: always
 
@@ -25,15 +25,15 @@ services:
         max-size: "10m"
         max-file: "3"
 
-    mem_limit: 3g
-    cpus: "1.0"
+    mem_limit: 512m
+    memswap_limit: 512m
+    cpus: "0.5"
 
     entrypoint: /entrypoint.sh
 
     depends_on:
       studio_pangeya_mysql:
         condition: service_healthy
-
 
   studio_pangeya_nginx:
     image: nginx:1.19
@@ -48,7 +48,6 @@ services:
 
     ports:
       - "81:80"
-
 
   studio_pangeya_mysql:
     image: mysql:8
@@ -67,9 +66,12 @@ services:
       start_period: 10s
     stop_grace_period: 60s
 
+    mem_limit: 256m
+    memswap_limit: 256m
+    cpus: "0.3"
+
     volumes:
       - studio-mysql-data:/var/lib/mysql
-
 
 volumes:
   studio-mysql-data:
