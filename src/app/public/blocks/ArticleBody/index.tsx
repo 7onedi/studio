@@ -49,13 +49,20 @@ type VideoBlock = {
   data: VideoBlockData;
 };
 
+type EmbedBlock = {
+  id: string; type: "embed"; data: {
+    embed: string; caption?: string
+  }
+};
+
 type EditorBlock =
   | ParagraphBlock
   | HeaderBlock
   | ListBlock
   | ImageBlock
   | GalleryBlock
-  | VideoBlock;
+  | VideoBlock
+  | EmbedBlock
 
 type ArticleBodyProps = {
   blocks: readonly EditorBlock[];
@@ -179,6 +186,25 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
                 <ArticleVideoBlock data={block.data} />
               </div>
             );
+
+            case "embed":
+              return (
+                <figure key={i} className="mb-4">
+                  <div className="relative" style={{ paddingTop: '56.25%' }}>
+                    <iframe
+                      src={(block as any).data.embed}
+                      title={(block as any).data.caption ?? 'embed'}
+                      allowFullScreen
+                      className="absolute top-0 left-0 w-full h-full rounded-xl border-0"
+                    />
+                  </div>
+                  {(block as any).data.caption && (
+                    <figcaption className="mt-2 text-body_mobile lg:text-body">
+                      <i>{(block as any).data.caption}</i>
+                    </figcaption>
+                  )}
+                </figure>
+              );
 
           default:
             return null;
