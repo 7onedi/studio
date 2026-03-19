@@ -38,10 +38,7 @@ async function fetchAllArticles() {
 }
 
 // Генерація статичних слагів для SSG (опціонально)
-export async function generateStaticParams() {
-  const articles = await fetchAllArticles();
-  return articles.map((a: any) => ({ slug: a.slug }));
-}
+export const dynamic = "force-dynamic";
 
 function toArticleProps(article: any) {
   return {
@@ -64,9 +61,10 @@ function toArticleProps(article: any) {
   };
 }
 
-export default async function ArticlePage({ params }: { params: { slug: string } }) {
+export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const [raw, allRaw] = await Promise.all([
-    fetchArticleBySlug(params.slug),
+    fetchArticleBySlug(slug),
     fetchAllArticles(),
   ]);
 

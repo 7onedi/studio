@@ -12,14 +12,21 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
-async function fetchSliderArticles(): Promise<any[]> {
-  const res = await fetch(
-    `${BASE_URL}/api/articles/search?limit=100&sortBy=publishedAt&order=desc&published=true`
-  );
+async function fetchSliderArticles(category?: string): Promise<any[]> {
+  const params = new URLSearchParams({
+    limit: "100",
+    sortBy: "publishedAt",
+    order: "desc",
+    published: "true",
+    ...(category ? { category } : {}),
+  });
+  const res = await fetch(`${BASE_URL}/api/articles/search?${params}`);
   if (!res.ok) return [];
   const data = await res.json().catch(() => null);
   const all = Array.isArray(data?.data) ? data.data : [];
-  return all.filter((a: any) => a.slider === "SLIDER_2");
+  return category
+    ? all
+    : all.filter((a: any) => a.slider === "SLIDER_2");
 }
 
 function toCardProps(article: any) {
@@ -80,7 +87,7 @@ const Arrow: React.FC<ArrowProps> = ({ onClick, disabled, direction }) => (
 
 // ─── BlogSlider ───────────────────────────────────────────────────────────────
 
-export default function BlogSlider() {
+export default function BlogSlider({ category }: { category?: string }) {
   const maxMobileArticles = 4;
 
   const [articles, setArticles] = useState<any[]>([]);
@@ -92,10 +99,10 @@ export default function BlogSlider() {
   useEffect(() => setIsClient(true), []);
 
   useEffect(() => {
-    fetchSliderArticles()
+    fetchSliderArticles(category)
       .then(setArticles)
       .finally(() => setLoading(false));
-  }, []);
+  }, [category]);
 
   // Групуємо по 4 — кожна група = 1 слайд
   const slidesData = useMemo(() => groupArticles(articles, 4), [articles]);
