@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import ArticleHero from "@/app/public/blocks/ArticleHero";
-import { slides } from "@/app/public/blocks/ArticleSlider/slideContent";
 import { ArticleBody } from "@/app/public/blocks/ArticleBody";
 import Link from "next/link";
 import { Button } from "@/app/public/components/Button";
@@ -8,8 +7,7 @@ import { SvgIcon } from "@/app/public/components/SvgIcon";
 import ArticleMfkList from "@/app/public/blocks/ArticleMfkList";
 import ClientBg from "@/app/public/providers/ClientBg";
 
-// 🔧 мок даних (пізніше API / Prisma / CMS)
-const articles = [...slides];
+const BASE_URL = process.env.BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
 
 const iconNames = [
   { title: "facebook", link: "https://www.facebook.com/icyst" },
@@ -18,14 +16,68 @@ const iconNames = [
   { title: "Link", link: "#" },
 ];
 
-export default function ArticlePage({ params }: any) {
-  const article = articles.find(a => a.meta.slug === params.slug);
+async function fetchArticleBySlug(slug: string) {
+  const res = await fetch(
+    `${BASE_URL}/api/articles/search?slug=${slug}&published=true`,
+    { cache: "no-store" }
+  );
+  if (!res.ok) return null;
+  const data = await res.json().catch(() => null);
+  const items = Array.isArray(data?.data) ? data.data : [];
+  return items.find((a: any) => a.slug === slug) ?? null;
+}
 
-  if (!article) notFound();
+async function fetchAllArticles() {
+  const res = await fetch(
+    `${BASE_URL}/api/articles/search?limit=100&sortBy=publishedAt&order=desc&published=true`,
+    { cache: "no-store" }
+  );
+  if (!res.ok) return [];
+  const data = await res.json().catch(() => null);
+  return Array.isArray(data?.data) ? data.data : [];
+}
+
+// Генерація статичних слагів для SSG (опціонально)
+export async function generateStaticParams() {
+  const articles = await fetchAllArticles();
+  return articles.map((a: any) => ({ slug: a.slug }));
+}
+
+function toArticleProps(article: any) {
+  return {
+    meta: {
+      slug: article.slug ?? "",
+      title: article.title ?? "",
+      category: article.category?.name ?? "",
+      SubCategory: article.subcategories?.[0]?.name ?? "",
+      tags: (article.tags ?? []).map((t: any) => t?.name ?? "").filter(Boolean),
+      date: article.publishedAt ?? article.createdAt ?? "",
+    },
+    hero: {
+      img: article.image?.url ? `${BASE_URL}${article.image.url}` : "",
+      gradient: "",
+      gradientMob: "",
+      tegsBgColor: "",
+    },
+    author: article.authorName ?? article.author?.name ?? "",
+    body: article.body ?? { blocks: [] },
+  };
+}
+
+export default async function ArticlePage({ params }: { params: { slug: string } }) {
+  const [raw, allRaw] = await Promise.all([
+    fetchArticleBySlug(params.slug),
+    fetchAllArticles(),
+  ]);
+
+  if (!raw) notFound();
+
+  const article = toArticleProps(raw);
+  const allArticles = allRaw.map(toArticleProps);
 
   return (
     <>
-      <ClientBg bg="none"/>
+      <ClientBg bg="none" />
       <main className="">
         {/* HERO */}
         <ArticleHero
@@ -43,13 +95,13 @@ export default function ArticlePage({ params }: any) {
 
         {/* CONTENT */}
         <article className="prose prose-invert max-w-none">
-          <div className="pt-8 lg:pt-4 grid grid-cols-12 gap-2 lg:gap-4 ">
-            <div className="col-span-12 lg:col-span-9 ">
+          <div className="pt-8 lg:pt-4 grid grid-cols-12 gap-2 lg:gap-4">
+            <div className="col-span-12 lg:col-span-9">
               <ArticleBody blocks={article.body.blocks} />
             </div>
-            <div className="col-span-12 lg:col-span-3 ">
+            <div className="col-span-12 lg:col-span-3">
               <div className="py-5 border-b border-t border-main-amarant text-subtitle_2_mobile lg:text-subtitle_2">
-                <b> Поділитись новиною</b>
+                <b>Поділитись новиною</b>
                 <div className="my-2 flex gap-4 z-20">
                   {iconNames.map((iconName, i) => (
                     <Link key={i} href={iconName.link} className="flex items-center">
@@ -64,10 +116,10 @@ export default function ArticlePage({ params }: any) {
                   ))}
                 </div>
               </div>
-                <ArticleMfkList
-                  articles={articles}
-                  currentSlug={article.meta.slug}
-                />
+              <ArticleMfkList
+                articles={allArticles}
+                currentSlug={article.meta.slug}
+              />
             </div>
           </div>
         </article>

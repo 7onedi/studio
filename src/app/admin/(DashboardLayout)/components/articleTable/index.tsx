@@ -16,6 +16,7 @@ import {
   TableHead, TableRow, TablePagination, Checkbox, Chip,
   IconButton, TextField, Tooltip, Typography, Paper,
   Avatar, Stack, Button, CircularProgress,
+  Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
 } from '@mui/material';
 import {
   IconArrowUp, IconArrowDown, IconArrowsSort,
@@ -23,6 +24,7 @@ import {
 } from '@tabler/icons-react';
 import { format } from 'date-fns';
 import Link from 'next/link';
+import StatusDialog from '../StatusDialog';
 
 export interface Article {
   id: number;
@@ -75,12 +77,37 @@ export default function ArticleTable({
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [searchInput, setSearchInput] = useState(search);
   const [tableData, setTableData] = useState<Article[]>(data);
+  const [confirmDialog, setConfirmDialog] = useState<{ open: boolean; id: number; published: boolean }>({
+    open: false, id: 0, published: false,
+  });
 
   useEffect(() => {
     setTableData(data);
   }, [data]);
 
   const selectedCount = Object.keys(rowSelection).length;
+
+  const handleTogglePublish = async (id: number, currentPublished: boolean) => {
+  const action = currentPublished ? 'зняти з публікації' : 'опублікувати';
+  if (!confirm(`Ви впевнені що хочете ${action} цю статтю?`)) return;
+
+  try {
+    const res = await fetch('/api/articles/publish', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ id }),
+    });
+
+    if (!res.ok) throw new Error(`Помилка ${res.status}`);
+
+    setTableData((prev) =>
+      prev.map((a) => a.id === id ? { ...a, published: !a.published } : a)
+    );
+  } catch (err: any) {
+    console.error('Помилка зміни статусу:', err.message);
+  }
+};
 
   const handleSortClick = (colId: string) => {
     if (!onSortChange) return;
@@ -195,14 +222,19 @@ const handleBulkDelete = async () => {
     {
       accessorKey: 'published',
       header: 'Статус',
-      cell: ({ getValue }) => (
-        <Chip
-          label={(getValue() as boolean) ? 'Опубліковано' : 'Чернетка'}
-          size="small"
-          color={(getValue() as boolean) ? 'success' : 'default'}
-          variant="outlined"
-        />
-      ),
+      cell: ({ row }) => {
+        const published = row.original.published;
+        return (
+          <Chip
+            label={published ? 'Опубліковано' : 'Чернетка'}
+            size="small"
+            color={published ? 'success' : 'default'}
+            variant="outlined"
+            onClick={() => setConfirmDialog({ open: true, id: row.original.id, published })}
+            sx={{ cursor: 'pointer' }}
+          />
+        );
+      },
       size: 130,
     },
     {
@@ -374,6 +406,30 @@ const handleBulkDelete = async () => {
         onRowsPerPageChange={(e) => onPageSizeChange?.(Number(e.target.value))}
         labelRowsPerPage="Рядків:"
         labelDisplayedRows={({ from, to, count }) => `${from}–${to} з ${count}`}
+      />
+
+      <StatusDialog
+        open={confirmDialog.open}
+        id={confirmDialog.id}
+        published={confirmDialog.published}
+        onClose={() => setConfirmDialog({ ...confirmDialog, open: false })}
+        onConfirm={async (id) => {
+          setConfirmDialog({ ...confirmDialog, open: false });
+          try {
+            const res = await fetch('/api/articles/publish', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({ id }),
+            });
+            if (!res.ok) throw new Error(`Помилка ${res.status}`);
+            setTableData((prev) =>
+              prev.map((a) => a.id === id ? { ...a, published: !a.published } : a)
+            );
+          } catch (err: any) {
+            console.error('Помилка:', err.message);
+          }
+        }}
       />
     </Box>
   );

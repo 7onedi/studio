@@ -66,7 +66,14 @@ const handleSave = async (data: ArticleFormData) => {
       const json = await res.json().catch(() => ({}));
       throw new Error(json?.message || `Помилка ${res.status}`);
     }
-
+    if (data.published && resData.id) {
+      await fetch('/api/articles/publish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ id: resData.id }),
+      });
+    }
     setSuccess(true);
     setTimeout(() => router.push("/admin/production/articles"), 1500);
   } catch (err: any) {

@@ -6,6 +6,7 @@ import {
   Box, Button, Container, TextField, Typography,
   MenuItem, Select, FormControl, InputLabel,
   Chip, OutlinedInput, SelectChangeEvent,
+  Switch, FormControlLabel,
 } from "@mui/material";
 
 const ReactEditor = dynamic(() => import("../editor/ReactEditor"), {
@@ -22,8 +23,10 @@ export interface ArticleFormData {
   categoryId: number | "";
   subcategoryIds: number[];
   tags: string[];
-  coverBase64?: string | null; // ← додай
+  coverBase64?: string | null;
   currentImageId?: number | null;
+  published?: boolean;
+  slider?: 'NONE' | 'SLIDER_1' | 'SLIDER_2';
 }
 
 interface ArticleFormProps {
@@ -62,6 +65,8 @@ export default function ArticleForm({
   const [coverBase64, setCoverBase64] = useState<string | null>(null);
   const [uploadedMediaIds, setUploadedMediaIds] = useState<number[]>([]);
   const [uploadedMedia, setUploadedMedia] = useState<{ id: number; url: string }[]>([]);
+  const [published, setPublished] = useState<boolean>(initialData?.published ?? false);
+  const [slider, setSlider] = useState<string>(initialData?.slider ?? 'NONE');
   const [previousImageId, setPreviousImageId] = useState<number | null>(
     initialData?.currentImageId ?? null
   );
@@ -77,6 +82,8 @@ export default function ArticleForm({
   setTags(initialData.tags ?? []);
   setCoverBase64(initialData.coverBase64 ?? null);
   setPreviousImageId(initialData.currentImageId ?? null);
+  setPublished(initialData.published ?? false);
+  setSlider(initialData.slider ?? 'NONE');
 }, [initialData])
 
   useEffect(() => {
@@ -126,6 +133,8 @@ const handleSubmit = () => {
     tags,
     coverBase64,
     currentImageId: previousImageId,
+    published,
+    slider: slider as 'NONE' | 'SLIDER_1' | 'SLIDER_2',
   });
 };
 
@@ -190,6 +199,31 @@ const handleSubmit = () => {
         <Box sx={{ gridColumn: { xs: 'span 12', md: 'span 2' } }}>
           <TextField fullWidth label="Автор *" value={authorName}
             onChange={(e) => setAuthorName(e.target.value)} sx={{ mb: 3 }} />
+
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={published}
+                  onChange={(e) => setPublished(e.target.checked)}
+                  color="success"
+                />
+              }
+              label={published ? 'Опубліковано' : 'Чернетка'}
+              sx={{ mb: 3 }}
+            />
+
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <InputLabel>Розміщення в слайдері</InputLabel>
+              <Select
+                value={slider}
+                label="Розміщення в слайдері"
+                onChange={(e) => setSlider(e.target.value)}
+              >
+                <MenuItem value="NONE">Не розміщувати</MenuItem>
+                <MenuItem value="SLIDER_1">Банер-Слайдер</MenuItem>
+                <MenuItem value="SLIDER_2">Карусель-Слайдер</MenuItem>
+              </Select>
+            </FormControl>
 
           <FormControl fullWidth sx={{ mb: 3 }}>
             <InputLabel>Мова</InputLabel>
