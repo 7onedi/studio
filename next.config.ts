@@ -19,12 +19,12 @@ const nextConfig: NextConfig = {
         hostname: "ngo.pangeya.org.ua",
         pathname: "/**",
       },
-      {
-        protocol: (process.env.UPLOADS_PROTOCOL ?? "https") as "https" | "http",
-        hostname: process.env.UPLOADS_HOSTNAME ?? "localhost",
-        port: process.env.UPLOADS_PORT ?? "",
-        pathname: "/uploads/**",
-      },
+      // {
+      //   protocol: (process.env.UPLOADS_PROTOCOL ?? "https") as "https" | "http",
+      //   hostname: process.env.UPLOADS_HOSTNAME ?? "localhost",
+      //   port: process.env.UPLOADS_PORT ?? "",
+      //   pathname: "/uploads/**",
+      // },
     ],
   },
   webpack: (config) => {
