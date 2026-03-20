@@ -32,7 +32,7 @@ function toSlide(article: any) {
   return {
     slug: article.slug ?? "",
     title: article.title ?? "",
-    img: article.image?.url ? `${BASE_URL}${article.image.url}` : null,
+    img: article.image?.url ?? null, // ← відносний шлях /uploads/...
     gradient: "",
     gradientMob: "",
     textStyle: "",

@@ -7,7 +7,7 @@ import { SvgIcon } from "@/app/public/components/SvgIcon";
 import ArticleMfkList from "@/app/public/blocks/ArticleMfkList";
 import ClientBg from "@/app/public/providers/ClientBg";
 
-const BASE_URL = process.env.BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
+const BASE_URL = process.env.BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "";
 
 const iconNames = [
   { title: "facebook", link: "https://www.facebook.com/icyst" },
@@ -45,26 +45,11 @@ export const dynamic = "force-dynamic";
 
 function toArticleProps(article: any) {
   const blocks = (article.body?.blocks ?? []).map((block: any) => {
-    if (block.type === "image" && block.data?.file?.url?.startsWith("/")) {
-      return {
-        ...block,
-        data: {
-          ...block.data,
-          file: { ...block.data.file, url: `${BASE_URL}${block.data.file.url}` },
-        },
-      };
+    if (block.type === "image" && block.data?.file?.url) {
+      return block; // ← залишаємо відносний URL як є
     }
     if (block.type === "gallery" && Array.isArray(block.data?.files)) {
-      return {
-        ...block,
-        data: {
-          ...block.data,
-          files: block.data.files.map((f: any) => ({
-            ...f,
-            url: f.url?.startsWith("/") ? `${BASE_URL}${f.url}` : f.url,
-          })),
-        },
-      };
+      return block; // ← залишаємо відносні URL як є
     }
     return block;
   });
@@ -79,7 +64,7 @@ function toArticleProps(article: any) {
       date: article.publishedAt ?? article.createdAt ?? "",
     },
     hero: {
-      img: article.image?.url ? `${BASE_URL}${article.image.url}` : "",
+      img: article.image?.url ?? "", // ← відносний шлях /uploads/...
       gradient: "",
       gradientMob: "",
       tegsBgColor: "",
