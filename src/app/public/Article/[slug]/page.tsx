@@ -6,6 +6,8 @@ import { Button } from "@/app/public/components/Button";
 import { SvgIcon } from "@/app/public/components/SvgIcon";
 import ArticleMfkList from "@/app/public/blocks/ArticleMfkList";
 import ClientBg from "@/app/public/providers/ClientBg";
+import { getCategoryId } from '@lib/getCategoryId';
+import BlogSlider from "@/app/public/blocks/BlogSlider";
 
 const BASE_URL = process.env.BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "";
 
@@ -67,7 +69,10 @@ function toArticleProps(article: any) {
       gradientMob: "",
       tegsBgColor: "",
     },
-    author: article.authorName ?? article.author?.name ?? "",
+    author: {
+      name: article.authorName ?? article.author?.name ?? "",
+      src: article.author?.avatar ?? article.author?.image ?? "",
+    },
     body: { ...article.body, blocks },
   };
 }
@@ -87,6 +92,8 @@ console.log("gallery after patch:", JSON.stringify(
   null, 2
 ));
   const allArticles = allRaw.map(toArticleProps);
+  console.log("article =", article.author);
+  const categoryId = await getCategoryId(article.meta.category);
 
   return (
     <>
@@ -136,6 +143,9 @@ console.log("gallery after patch:", JSON.stringify(
             </div>
           </div>
         </article>
+          <div className="">
+            <BlogSlider categoryId={String(categoryId)} />
+          </div>
       </main>
     </>
   );

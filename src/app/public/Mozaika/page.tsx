@@ -1,17 +1,15 @@
 import CategoryTitle from "@/app/public/blocks/CategoryTitle";
 import { categories } from "@/app/public/blocks/Categories/categories.data";
-import MfkList from "@/app/public/blocks/MfkList";
-import { initialCategories} from '@/app/public/blocks/LeafletMap/mapData';
-import BlogSlider from "../blocks/BlogSlider";
-import { slides } from "../blocks/ArticleSlider/slideContent";
 
-const mzSlides = slides.filter(c => c.meta.category === "mozaika")!;
+import BlogSlider from "../blocks/BlogSlider";
+import { getCategoryId } from '@lib/getCategoryId';
 
 const project = categories.find(c => c.id === 3)!;
 
-const mfkCategory = initialCategories.find(c => c.id === "#mfk")!;
+export const dynamic = 'force-dynamic';
 
-export default function Home() {
+export default async function Home() {
+  const categoryId = await getCategoryId('Mozaїka');
   return (
     <div>
       <div className="mt-4 lg:mt-0 px-4 lg:px-0">
@@ -24,14 +22,11 @@ export default function Home() {
           description={project.description}
         />
       </div>
-      {/* <div className="my-12 lg:mt-16 px-4 lg:px-0">
-        <MfkList markers={mfkCategory.markers} />
-      </div> */}
       <div className="my-8 flex justify-center">
         <p className="text-headline_3">Цікаві статті про проєкт</p>
       </div>
       <div className="">
-        <BlogSlider category="Mozaika"/>
+        <BlogSlider categoryId={String(categoryId)} />
       </div>
     </div>
   );

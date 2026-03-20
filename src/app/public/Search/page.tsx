@@ -1,10 +1,16 @@
-import { Suspense } from "react";
-import SearchClient from "./SearchClient";
+// src/app/public/Search/page.tsx
+import { fetchSearchData } from '@lib/fetchSearchData';
+import SearchClient from './SearchClient';
 
-export default function Page() {
+export default async function SearchPage() {
+  const { categories, subcategories, tags, articles } = await fetchSearchData();
+
   return (
-    <Suspense fallback={<div />}>
-      <SearchClient />
-    </Suspense>
+    <SearchClient
+      initialCategories={categories}
+      initialSubcategories={subcategories}
+      initialTags={tags}
+      initialArticles={articles}
+    />
   );
 }
