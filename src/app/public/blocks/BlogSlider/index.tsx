@@ -37,9 +37,7 @@ function toCardProps(article: any) {
   const tags = (article.tags ?? [])
     .map((t: any) => (typeof t === "string" ? t : t?.name ?? ""))
     .filter(Boolean);
-  const img = article.image?.url
-    ? `${BASE_URL}${article.image.url}`
-    : null;
+  const img = article.image?.url ?? null; // ← без BASE_URL
 
   return {
     meta: {
