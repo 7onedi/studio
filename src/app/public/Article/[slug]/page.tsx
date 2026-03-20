@@ -21,7 +21,6 @@ async function fetchArticleBySlug(slug: string) {
   if (!res.ok) return null;
   const data = await res.json().catch(() => null);
   
-  // ось тут
   console.log("gallery blocks:", JSON.stringify(
     data?.body?.blocks?.filter((b: any) => b.type === "gallery"),
     null, 2
@@ -40,7 +39,6 @@ async function fetchAllArticles() {
   return Array.isArray(data?.data) ? data.data : [];
 }
 
-// Генерація статичних слагів для SSG (опціонально)
 export const dynamic = "force-dynamic";
 
 function toArticleProps(article: any) {
@@ -64,7 +62,7 @@ function toArticleProps(article: any) {
       date: article.publishedAt ?? article.createdAt ?? "",
     },
     hero: {
-      img: article.image?.url ?? "", // ← відносний шлях /uploads/...
+      img: article.image?.url ?? "",
       gradient: "",
       gradientMob: "",
       tegsBgColor: "",
