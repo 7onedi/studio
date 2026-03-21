@@ -49,6 +49,18 @@ const tagTags = Array.from(
     });
   }
 
+  const formattedDate = formatDate(date ?? "");
+
+    function formatDate(dateStr: string): string {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("uk-UA", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  }
+
   return (
     <div>
       <section className="bg-transparent relative w-full h-[700px] mb-8 lg:mb-16 overflow-hidden rounded-3xl">
