@@ -2,7 +2,7 @@ import Image from "next/image";
 import { TagButton } from "@/app/public/blocks/BlogSlider/BlogCard";
 import { Avatar } from "@mui/material";
 
-
+// ArticleHero
 type ArticleHeroProps = {
   title: string;
   image: string;
