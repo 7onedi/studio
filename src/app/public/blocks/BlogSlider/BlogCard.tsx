@@ -29,7 +29,7 @@ export const TagButton: React.FC<{ tag: string; ClassName?: string }> = ({
         px-3 py-1 font-semibold
         backdrop-blur-sm text-white rounded-full
         transition-colors duration-200
-        shadow-sm
+        shadow-sm whitespace-nowrap
         ${ClassName}
       `}
     >
@@ -41,9 +41,13 @@ export const TagButton: React.FC<{ tag: string; ClassName?: string }> = ({
 export const BlogCard: React.FC<BlogCardProps> = ({ meta, hero, onLoad }) => {
   // збираємо теги для відображення (category + subcategory + tags)
   console.log("BlogCard meta:", meta);
-  const displayTags = Array.from(
-    new Set([meta.category, meta.SubCategory, ...(meta.tags ?? [])].filter(Boolean))
-  ) as string[];
+const categoryTags = Array.from(
+  new Set([meta.category, meta.SubCategory].filter(Boolean))
+) as string[];
+
+const tagTags = Array.from(
+  new Set([...(meta.tags ?? [])].filter(Boolean))
+) as string[];
 
   return (
     <div className="flex h-full flex-col">
@@ -61,18 +65,17 @@ export const BlogCard: React.FC<BlogCardProps> = ({ meta, hero, onLoad }) => {
           ) : (
               <div className="absolute inset-0 bg-gray-200" /> // плейсхолдер
           )}
-          <div
-            className={`absolute inset-0 bg-black/30 transition-all duration-300 group-hover:bg-black/20 ${hero.gradient}`}
-          />
+            <div
+              className={`absolute inset-0 transition-all duration-300 group-hover:opacity-90 ${hero.gradient || 'bg-black/30'}`}
+            />
 
           <div className="absolute inset-0 z-10 flex flex-col justify-end p-4 md:p-6 lg:p-8">
             <div className="hidden lg:flex flex-wrap gap-2 mb-2">
-              {displayTags.map((tag, i) => (
-                <TagButton
-                  key={`${tag}-${i}`}
-                  tag={tag}
-                  ClassName="bg-white/20 hover:bg-white/30"
-                />
+              {categoryTags.map((tag, i) => (
+                <TagButton key={`cat-${tag}-${i}`} tag={tag} ClassName="bg-main-amarant hover:bg-main-amarant/80 whitespace-nowrap" />
+              ))}
+              {tagTags.map((tag, i) => (
+                <TagButton key={`tag-${tag}-${i}`} tag={tag} ClassName="bg-main-blue hover:bg-main-blue/80 whitespace-nowrap" />
               ))}
             </div>
 
@@ -84,12 +87,11 @@ export const BlogCard: React.FC<BlogCardProps> = ({ meta, hero, onLoad }) => {
       </div>
 
       <div className="pt-2 lg:hidden flex flex-wrap gap-2 mt-3 mb-1">
-        {displayTags.map((tag, i) => (
-          <TagButton
-            key={`${tag}-${i}`}
-            tag={tag}
-            ClassName="py-1 !text-button_mobile !bg-main-blue !text-white !shadow-sm !hover:bg-white/30"
-          />
+        {categoryTags.map((tag, i) => (
+          <TagButton key={`cat-${tag}-${i}`} tag={tag} ClassName="bg-main-amarant hover:bg-main-amarant/80 whitespace-nowrap" />
+        ))}
+        {tagTags.map((tag, i) => (
+          <TagButton key={`tag-${tag}-${i}`} tag={tag} ClassName="bg-main-blue hover:bg-main-blue/80 whitespace-nowrap" />
         ))}
       </div>
     </div>

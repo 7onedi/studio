@@ -9,7 +9,7 @@ import ClientBg from "@/app/public/providers/ClientBg";
 import { getCategoryId } from '@lib/getCategoryId';
 import BlogSlider from "@/app/public/blocks/BlogSlider";
 
-const BASE_URL = process.env.BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "";
 
 const iconNames = [
   { title: "facebook", link: "https://www.facebook.com/icyst" },
@@ -45,14 +45,19 @@ export const dynamic = "force-dynamic";
 
 function toArticleProps(article: any) {
   const blocks = (article.body?.blocks ?? []).map((block: any) => {
-    if (block.type === "image" && block.data?.file?.url) {
-      return block; // ← залишаємо відносний URL як є
-    }
-    if (block.type === "gallery" && Array.isArray(block.data?.files)) {
-      return block; // ← залишаємо відносні URL як є
-    }
+    if (block.type === "image" && block.data?.file?.url) return block;
+    if (block.type === "gallery" && Array.isArray(block.data?.files)) return block;
     return block;
   });
+
+  const g = article.gradient;
+
+  const gradient =
+    g === 'GRADIENT_1'
+      ? 'lg:bg-gradient-to-t lg:from-main-blue/70 lg:via-main-blue/25 lg:to-transparent bg-gradient-to-t from-main-blue/100 via-main-blue/45 to-transparent'
+      : g === 'GRADIENT_2'
+      ? 'lg:bg-gradient-to-t lg:from-main-amarant/70 lg:via-main-amarant/25 lg:to-transparent bg-gradient-to-t from-main-amarant/100 via-main-amarant/45 to-transparent'
+      : '';
 
   return {
     meta: {
@@ -65,8 +70,7 @@ function toArticleProps(article: any) {
     },
     hero: {
       img: article.image?.url ?? "",
-      gradient: "",
-      gradientMob: "",
+      gradient,
       tegsBgColor: "",
     },
     author: {
@@ -109,7 +113,6 @@ console.log("gallery after patch:", JSON.stringify(
           tegsBgColor={article.hero.tegsBgColor}
           date={article.meta.date}
           gradient={article.hero.gradient}
-          gradientMob={article.hero.gradientMob}
           creator={article.author}
         />
 
@@ -144,7 +147,7 @@ console.log("gallery after patch:", JSON.stringify(
           </div>
         </article>
           <div className="">
-            <BlogSlider categoryId={String(categoryId)} />
+            <BlogSlider categoryId={String(categoryId)} excludeSlug={article.meta.slug} />
           </div>
       </main>
     </>

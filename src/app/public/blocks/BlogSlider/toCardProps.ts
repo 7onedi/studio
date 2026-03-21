@@ -6,6 +6,14 @@ export function toCardProps(article: any) {
   const tags = (article.tags ?? [])
     .map((t: any) => (typeof t === 'string' ? t : t?.name ?? ''))
     .filter(Boolean);
+const g = article.gradient;
+
+const gradient =
+  g === 'GRADIENT_1'
+    ? 'bg-gradient-to-t from-main-blue/70 via-main-blue/25 to-transparent'
+    : g === 'GRADIENT_2'
+    ? 'bg-gradient-to-t from-main-amarant/70 via-main-amarant/25 to-transparent'
+    : '';
 
   return {
     meta: {
@@ -18,7 +26,7 @@ export function toCardProps(article: any) {
     },
     hero: {
       img: article.image?.url ?? null,
-      gradient: '',
+      gradient,
     },
   };
 }

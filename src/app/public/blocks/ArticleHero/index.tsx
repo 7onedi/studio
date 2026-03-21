@@ -2,6 +2,7 @@ import Image from "next/image";
 import { TagButton } from "@/app/public/blocks/BlogSlider/BlogCard";
 import { Avatar } from "@mui/material";
 
+
 type ArticleHeroProps = {
   title: string;
   image: string;
@@ -14,7 +15,6 @@ type ArticleHeroProps = {
   tegsBgColor?: string;
   date?: string;
   gradient?: string;
-  gradientMob?: string;
   creator?: { name: string; src: string };
 };
 
@@ -27,13 +27,15 @@ export default function ArticleHero({
   tegsBgColor,
   date,
   gradient,
-  gradientMob,
   creator = { name: "", src: "" },
 }: ArticleHeroProps) {
-  // ✅ Загальний масив для відображення (category + subCategory + tags)
-  const displayTags = Array.from(
-    new Set([category, subCategory, ...(tags ?? [])].filter(Boolean))
-  ) as string[];
+const categoryTags = Array.from(
+  new Set([category, subCategory].filter(Boolean))
+) as string[];
+
+const tagTags = Array.from(
+  new Set([...(tags ?? [])].filter(Boolean))
+) as string[];
 
   const formattedDate = formatDate(date ?? "");
 
@@ -58,7 +60,7 @@ export default function ArticleHero({
           className="h-[700px] w-full object-cover"
         />
 
-        {gradient && <div className={`absolute inset-0 ${gradientMob}`} />}
+        {gradient && <div className={`absolute inset-0 ${gradient}`} />}
 
         <div className="absolute lg:bottom-8 inset-0 flex flex-col justify-end items-center px-8 lg:px-16">
           <div className="lg:mb-8 text-white text-headline_1_mobile lg:text-headline_1">
@@ -91,14 +93,21 @@ export default function ArticleHero({
               </div>
             </div>
 
-              {displayTags.length > 0 && (
-                <div className="flex justify-center items-center col-span-8 lg:col-span-4">
+              {(categoryTags.length > 0 || tagTags.length > 0) && (
+                <div className="flex justify-center items-center col-span-4 lg:col-span-4">
                   <div className="flex flex-wrap justify-center gap-3">
-                    {displayTags.map((tag, i) => (
+                    {categoryTags.map((tag, i) => (
                       <TagButton
-                        key={`${tag}-${i}`}
+                        key={`cat-${tag}-${i}`}
                         tag={tag}
-                        ClassName={`${tegsBgColor} hover:${tegsBgColor}/80 text-button whitespace-nowrap`}
+                        ClassName="bg-main-amarant hover:bg-main-amarant/80 whitespace-nowrap"
+                      />
+                    ))}
+                    {tagTags.map((tag, i) => (
+                      <TagButton
+                        key={`tag-${tag}-${i}`}
+                        tag={tag}
+                        ClassName="bg-main-blue hover:bg-main-blue/80 whitespace-nowrap"
                       />
                     ))}
                   </div>
@@ -118,14 +127,22 @@ export default function ArticleHero({
       </section>
 
       <div className="lg:hidden grid grid-cols-12 w-full">
-        {displayTags.length > 0 && (
+        {(categoryTags.length > 0 || tagTags.length > 0) && (
           <div className="flex justify-center items-center col-span-12 lg:col-span-4 gap-2">
             <div className="grid grid-cols-2">
-              {displayTags.map((tag, i) => (
-                <span key={`${tag}-${i}`} className="mb-3 mr-3 col-span-1">
+              {categoryTags.map((tag, i) => (
+                <span key={`cat-${tag}-${i}`} className="mb-3 mr-3 col-span-1">
                   <TagButton
                     tag={tag}
-                    ClassName={`${tegsBgColor} hover:${tegsBgColor}/80 text-button bg-main-blue`}
+                    ClassName="bg-main-amarant hover:bg-main-amarant/80 text-button"
+                  />
+                </span>
+              ))}
+              {tagTags.map((tag, i) => (
+                <span key={`tag-${tag}-${i}`} className="mb-3 mr-3 col-span-1">
+                  <TagButton
+                    tag={tag}
+                    ClassName="bg-main-blue hover:bg-main-blue/80 text-button"
                   />
                 </span>
               ))}

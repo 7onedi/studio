@@ -136,17 +136,17 @@ export default function SearchPageClient({
   // Ініціалізація з URL
   useEffect(() => {
     const tags = searchParams.getAll('tag').flatMap(v => v.split(',')).map(s => s.trim()).filter(Boolean);
-    if (tags.length > 0) setSelectedTags(prev => Array.from(new Set([...prev, ...tags])));
+    if (tags.length > 0) setSelectedTags(Array.from(new Set(tags)));
 
     const q = (searchParams.get('q') ?? '').trim();
     if (q) {
-      if (allCategories.includes(q)) setSelectedCategories(prev => [...new Set([...prev, q])]);
-      if (allSubCategories.includes(q)) setSelectedSubCategories(prev => [...new Set([...prev, q])]);
+      if (allCategories.includes(q)) setSelectedCategories([q]);
+      if (allSubCategories.includes(q)) setSelectedSubCategories([q]);
       if (allTags.includes(q)) setSelectedTags(prev => [...new Set([...prev, q])]);
     }
 
     didInitFromUrl.current = true;
-  }, [searchParams, allCategories, allSubCategories, allTags]);
+  }, []);
 
   // Синхронізація URL
   useEffect(() => {
@@ -202,8 +202,8 @@ export default function SearchPageClient({
                   className={[
                     'rounded-full px-4 py-2 text-[13px] font-semibold uppercase tracking-wide transition',
                     selectedCategories.includes(c)
-                      ? 'bg-main-blue text-white shadow-[0_10px_25px_rgba(0.35,0.35,0.35,0.7)]'
-                      : 'bg-main-blue/70 text-white/95 hover:bg-main-blue',
+                      ? 'bg-main-amarant text-white shadow-[0_10px_25px_rgba(0.35,0.35,0.35,0.7)]'
+                      : 'bg-main-amarant/70 text-white/95 hover:bg-main-amarant',
                   ].join(' ')}
                 >
                   {c}
@@ -223,8 +223,8 @@ export default function SearchPageClient({
                   className={[
                     'rounded-full px-4 py-2 text-[13px] font-semibold uppercase tracking-wide transition',
                     selectedSubCategories.includes(s)
-                      ? 'bg-main-blue text-white shadow-[0_10px_25px_rgba(0.35,0.35,0.35,0.7)]'
-                      : 'bg-main-blue/70 text-white/95 hover:bg-main-blue',
+                      ? 'bg-main-amarant text-white shadow-[0_10px_25px_rgba(0.35,0.35,0.35,0.7)]'
+                      : 'bg-main-amarant/70 text-white/95 hover:bg-main-amarant',
                   ].join(' ')}
                 >
                   {s}
@@ -244,8 +244,8 @@ export default function SearchPageClient({
                   className={[
                     'rounded-full px-4 py-2 text-[13px] font-semibold uppercase tracking-wide transition',
                     selectedTags.includes(t)
-                      ? 'bg-main-amarant text-white shadow-[0_10px_25px_rgba(0.35,0.35,0.35,0.7)]'
-                      : 'bg-main-amarant/70 text-white/95 hover:bg-main-amarant',
+                      ? 'bg-main-blue text-white shadow-[0_10px_25px_rgba(0.35,0.35,0.35,0.7)]'
+                      : 'bg-main-blue/70 text-white/95 hover:bg-main-blue',
                   ].join(' ')}
                 >
                   {t}

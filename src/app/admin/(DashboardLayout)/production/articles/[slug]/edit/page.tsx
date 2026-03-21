@@ -38,6 +38,7 @@ export default function EditArticle({ params }: EditPageProps) {
         coverBase64: article.image?.url ?? null,
         published: article.published ?? false,
         slider: article.slider ?? 'NONE',
+        gradient: article.gradient ?? 'NONE',
       });
     })
 
@@ -105,14 +106,6 @@ export default function EditArticle({ params }: EditPageProps) {
     if (!res.ok) {
       const json = await res.json().catch(() => ({}));
       throw new Error(json?.message || `Помилка ${res.status}`);
-    }
-    if (data.published) {
-      await fetch('/api/articles/publish', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ id: articleId }),
-      });
     }
     setSuccess(true);
     setTimeout(() => router.push("/admin/production/articles"), 1500);
