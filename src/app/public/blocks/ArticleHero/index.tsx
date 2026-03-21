@@ -36,7 +36,7 @@ const categoryTags = Array.from(
 const tagTags = Array.from(
   new Set([...(tags ?? [])].filter(Boolean))
 ) as string[];
-
+  // formatted Date fixed
   const formattedDate = formatDate(date ?? "");
 
     function formatDate(dateStr: string): string {
