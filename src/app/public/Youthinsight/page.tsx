@@ -4,13 +4,15 @@ import MfkList from "@/app/public/blocks/MfkList";
 import { initialCategories} from '@/app/public/blocks/LeafletMap/mapData';
 import BlogSlider from "@/app/public/blocks/BlogSlider";
 import { slides } from "../blocks/ArticleSlider/slideContent";
+import { getCategoryId } from '@lib/getCategoryId';
 
 const yiSlides = slides.filter(c => c.meta.category === "youthinsight")!;
 const project = categories.find(c => c.id === 2)!;
 const festivalCategory = initialCategories.find(c => c.id === "youthinsight")!;
 
-
-export default function Home() {
+export const dynamic = 'force-dynamic';
+export default async function Home() {
+  const categoryId = await getCategoryId('Youthinsight');
   return (
     <div>
       <div className="mt-4 lg:mt-0 px-4 lg:px-0">
@@ -30,7 +32,7 @@ export default function Home() {
         <p className="text-headline_3">Цікаві статті про проєкт</p>
       </div>
       <div className="">
-        <BlogSlider category="Youthinsight"/>
+        <BlogSlider categoryId={String(categoryId)} />
       </div>
     </div>
   );

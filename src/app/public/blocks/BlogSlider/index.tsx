@@ -7,52 +7,28 @@ import { Button } from "@/app/public/components/Button";
 import { SvgIcon } from "@/app/public/components/SvgIcon";
 import { groupArticles } from "./data";
 import { BlogCard } from "./BlogCard";
+import { toCardProps } from './toCardProps';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
-async function fetchSliderArticles(category?: string): Promise<any[]> {
+async function fetchSliderArticles(categoryId?: string): Promise<any[]> {
+  console.log("Fetching articles for category:", categoryId);
   const params = new URLSearchParams({
     limit: "100",
     sortBy: "publishedAt",
     order: "desc",
     published: "true",
-    ...(category ? { category } : {}),
+    categoryId: categoryId ?? "",
   });
   const res = await fetch(`${BASE_URL}/api/articles/search?${params}`);
   if (!res.ok) return [];
   const data = await res.json().catch(() => null);
   const all = Array.isArray(data?.data) ? data.data : [];
-  return category
+  return categoryId
     ? all
     : all.filter((a: any) => a.slider === "SLIDER_2");
-}
-
-function toCardProps(article: any) {
-  if (article?.meta) return article;
-
-  const categoryName = article.category?.name ?? "";
-  const subCategoryName = article.subcategories?.[0]?.name ?? "";
-  const tags = (article.tags ?? [])
-    .map((t: any) => (typeof t === "string" ? t : t?.name ?? ""))
-    .filter(Boolean);
-  const img = article.image?.url ?? null; // ← без BASE_URL
-
-  return {
-    meta: {
-      slug: article.slug ?? "",
-      title: article.title ?? "",
-      category: categoryName,
-      SubCategory: subCategoryName,
-      tags,
-      placement: ["list"],
-    },
-    hero: {
-      img,
-      gradient: "",
-    },
-  };
 }
 
 // ─── Arrow ────────────────────────────────────────────────────────────────────
@@ -85,7 +61,7 @@ const Arrow: React.FC<ArrowProps> = ({ onClick, disabled, direction }) => (
 
 // ─── BlogSlider ───────────────────────────────────────────────────────────────
 
-export default function BlogSlider({ category }: { category?: string }) {
+export default function BlogSlider({ categoryId }: { categoryId?: string }) {
   const maxMobileArticles = 4;
 
   const [articles, setArticles] = useState<any[]>([]);
@@ -97,10 +73,10 @@ export default function BlogSlider({ category }: { category?: string }) {
   useEffect(() => setIsClient(true), []);
 
   useEffect(() => {
-    fetchSliderArticles(category)
+    fetchSliderArticles(categoryId)
       .then(setArticles)
       .finally(() => setLoading(false));
-  }, [category]);
+  }, [categoryId]);
 
   // Групуємо по 4 — кожна група = 1 слайд
   const slidesData = useMemo(() => groupArticles(articles, 4), [articles]);

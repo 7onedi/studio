@@ -9,6 +9,7 @@ import type { RichTextItem } from "@/app/public/components/RenderRichText";
 import { renderRichText } from "@/app/public/components/RenderRichText";
 import FestivalContributors from "@/app/public/blocks/FestivalContributors";
 import { slides } from "../../blocks/ArticleSlider/slideContent";
+import { getCategoryId } from '@lib/getCategoryId';
 
 interface FestivalPageProps {
   params: Promise<{
@@ -28,8 +29,9 @@ interface FestivalPageProps {
 }
 
 const yiCategory = initialCategories.find(c => c.id === "youthinsight")!;
-
+export const dynamic = 'force-dynamic';
 export default async function FestivalPage({ params }: FestivalPageProps) {
+  const categoryId = await getCategoryId('Youthinsight');
   const { slug } = await params;
 
   // знаходимо маркер по slug
@@ -135,7 +137,7 @@ export default async function FestivalPage({ params }: FestivalPageProps) {
       </div>
 
       <div className="my-8">
-        <BlogSlider category="Youthinsight" />
+        <BlogSlider categoryId={String(categoryId)} />
       </div>
 
       <div className="my-12 lg:mt-16 px-4 lg:px-0">

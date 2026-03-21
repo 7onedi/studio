@@ -8,6 +8,7 @@ import { SvgIcon } from "@/app/public/components/SvgIcon";
 import type { RichTextItem } from "@/app/public/components/RenderRichText";
 import { renderRichText } from "@/app/public/components/RenderRichText";
 import { slides } from "../../blocks/ArticleSlider/slideContent";
+import { getCategoryId } from '@lib/getCategoryId';
 
 interface MfkPageProps {
   params: Promise<{
@@ -17,8 +18,9 @@ interface MfkPageProps {
 }
 
 const mfkCategory = initialCategories.find(c => c.id === "#mfk")!;
-
+export const dynamic = 'force-dynamic';
 export default async function MfkPage({ params }: MfkPageProps) {
+  const categoryId = await getCategoryId('CountrysideStudio');
   const { slug } = await params;
 
   // знаходимо маркер по slug
@@ -148,7 +150,7 @@ const yfcSlides = slug
       </div>
 
       <div className="my-8">
-        <BlogSlider category="#CountrysideStudio" />
+        <BlogSlider categoryId={String(categoryId)} />
       </div>
 
       <div className="my-12 lg:mt-16 px-4 lg:px-0">
