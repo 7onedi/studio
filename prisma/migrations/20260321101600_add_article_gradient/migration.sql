@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Article` ADD COLUMN `gradient` ENUM('NONE', 'GRADIENT_1', 'GRADIENT_2') NOT NULL DEFAULT 'NONE';
