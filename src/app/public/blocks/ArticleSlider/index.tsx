@@ -29,13 +29,29 @@ async function fetchSlider1Articles(): Promise<any[]> {
 }
 
 function toSlide(article: any) {
+  const g = article.gradient;
+
+  const gradient =
+    g === 'GRADIENT_1'
+      ? 'lg:bg-gradient-to-r lg:from-main-blue/100 lg:via-main-blue/15 lg:to-transparent'
+      : g === 'GRADIENT_2'
+      ? 'lg:bg-gradient-to-r lg:from-main-amarant/100 lg:via-main-amarant/15 lg:to-transparent'
+      : '';
+
+  const gradientMob =
+    g === 'GRADIENT_1'
+      ? 'bg-gradient-to-t from-main-blue/100 via-main-blue/15 to-transparent'
+      : g === 'GRADIENT_2'
+      ? 'bg-gradient-to-t from-main-amarant/100 via-main-amarant/15 to-transparent'
+      : '';
+
   return {
-    slug: article.slug ?? "",
-    title: article.title ?? "",
-    img: article.image?.url ?? null, // ← відносний шлях /uploads/...
-    gradient: "",
-    gradientMob: "",
-    textStyle: "",
+    slug: article.slug ?? '',
+    title: article.title ?? '',
+    img: article.image?.url ?? null,
+    gradient,
+    gradientMob,
+    textStyle: '',
   };
 }
 

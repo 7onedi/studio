@@ -27,6 +27,7 @@ export interface ArticleFormData {
   currentImageId?: number | null;
   published?: boolean;
   slider?: 'NONE' | 'SLIDER_1' | 'SLIDER_2';
+  gradient?: 'NONE' | 'GRADIENT_1' | 'GRADIENT_2';
 }
 
 interface ArticleFormProps {
@@ -67,6 +68,7 @@ export default function ArticleForm({
   const [uploadedMedia, setUploadedMedia] = useState<{ id: number; url: string }[]>([]);
   const [published, setPublished] = useState<boolean>(initialData?.published ?? false);
   const [slider, setSlider] = useState<string>(initialData?.slider ?? 'NONE');
+  const [gradient, setGradient] = useState<string>(initialData?.gradient ?? 'NONE');
   const [previousImageId, setPreviousImageId] = useState<number | null>(
     initialData?.currentImageId ?? null
   );
@@ -84,6 +86,7 @@ export default function ArticleForm({
   setPreviousImageId(initialData.currentImageId ?? null);
   setPublished(initialData.published ?? false);
   setSlider(initialData.slider ?? 'NONE');
+  setGradient(initialData.gradient ?? 'NONE');
 }, [initialData])
 
   useEffect(() => {
@@ -144,6 +147,7 @@ const handleSubmit = () => {
     currentImageId: previousImageId,
     published,
     slider: slider as 'NONE' | 'SLIDER_1' | 'SLIDER_2',
+    gradient: gradient as 'NONE' | 'GRADIENT_1' | 'GRADIENT_2',
   });
 };
 
@@ -231,6 +235,42 @@ const handleSubmit = () => {
                 <MenuItem value="NONE">Не розміщувати</MenuItem>
                 <MenuItem value="SLIDER_1">Банер-Слайдер</MenuItem>
                 <MenuItem value="SLIDER_2">Карусель-Слайдер</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <InputLabel>Градієнт</InputLabel>
+              <Select
+                value={gradient}
+                label="Градієнт"
+                onChange={(e) => setGradient(e.target.value)}
+                renderValue={(val) => (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    {val !== 'NONE' && (
+                      <Box sx={{
+                        width: 16,
+                        height: 16,
+                        borderRadius: '50%',
+                        backgroundColor: val === 'GRADIENT_1' ? '#256BA7' : '#E91651',
+                      }} />
+                    )}
+                    {val === 'NONE' ? 'Без градієнту' : val === 'GRADIENT_1' ? 'Синій' : 'Червоний'}
+                  </Box>
+                )}
+              >
+                <MenuItem value="NONE">Без градієнту</MenuItem>
+                <MenuItem value="GRADIENT_1">
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ width: 16, height: 16, borderRadius: '50%', backgroundColor: '#256BA7' }} />
+                    Синій
+                  </Box>
+                </MenuItem>
+                <MenuItem value="GRADIENT_2">
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ width: 16, height: 16, borderRadius: '50%', backgroundColor: '#E91651' }} />
+                    Червоний
+                  </Box>
+                </MenuItem>
               </Select>
             </FormControl>
 

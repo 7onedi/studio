@@ -61,7 +61,7 @@ const Arrow: React.FC<ArrowProps> = ({ onClick, disabled, direction }) => (
 
 // ─── BlogSlider ───────────────────────────────────────────────────────────────
 
-export default function BlogSlider({ categoryId }: { categoryId?: string }) {
+export default function BlogSlider({ categoryId, excludeSlug }: { categoryId?: string; excludeSlug?: string }) {
   const maxMobileArticles = 4;
 
   const [articles, setArticles] = useState<any[]>([]);
@@ -74,9 +74,9 @@ export default function BlogSlider({ categoryId }: { categoryId?: string }) {
 
   useEffect(() => {
     fetchSliderArticles(categoryId)
-      .then(setArticles)
+      .then(data => setArticles(excludeSlug ? data.filter((a: any) => a.slug !== excludeSlug) : data))
       .finally(() => setLoading(false));
-  }, [categoryId]);
+  }, [categoryId, excludeSlug]);
 
   // Групуємо по 4 — кожна група = 1 слайд
   const slidesData = useMemo(() => groupArticles(articles, 4), [articles]);
