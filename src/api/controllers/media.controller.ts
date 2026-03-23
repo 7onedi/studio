@@ -9,4 +9,8 @@ export const mediaController = {
 
     delete: (user: any, id: number) =>
         mediaService.delete(user, id),
+    findByUrl: (url: string) =>
+        mediaService.findByUrl(url),
+    findById: (id: number) =>
+        mediaService.findById(id),
 };

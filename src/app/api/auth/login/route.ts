@@ -6,7 +6,7 @@ import { ApiError } from "@/api/utils/api-error";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    console.log("Password from request:", body.password);
+    // console.log("Password from request:", body.password);
     const { user: userData } = await authController.login(body);
 
     const token = signToken({
