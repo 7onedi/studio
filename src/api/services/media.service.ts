@@ -65,4 +65,12 @@ export const mediaService = {
 
     return mediaRepository.delete(id);
     },
+
+    async findByUrl(url: string) {
+        return mediaRepository.findByUrl(url);
+    },
+
+    async findById(id: number) {
+        return mediaRepository.findById(id);
+    }
 };
