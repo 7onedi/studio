@@ -1,5 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import { methodologyData } from "./Methodology.data";
+import { useLanguage } from "@/app/providers/LanguageProvider";
+import { getMethodologyData } from "@/locales/methodology";
 
 import type { RichTextItem } from "@/app/public/components/RenderRichText";
 import { renderRichText } from "@/app/public/components/RenderRichText";
@@ -20,15 +24,10 @@ function PageImage({ src, alt }: { src: string; alt: string }) {
 }
 
 export default function MethodologyPage() {
-  const {
-    title,
-    description,
-    topic,
-    toplist,
-    imageUrl_1,
-    imageUrl_2,
-    bottomText,
-  } = methodologyData;
+  const { locale } = useLanguage();
+  const data = getMethodologyData(locale);
+
+  const { title, description, toplist, topic, imageUrl_1, imageUrl_2, bottomText } = data;
 
   return (
     <>

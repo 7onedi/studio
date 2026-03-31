@@ -1,10 +1,16 @@
+"use client";
+
 import Image from "next/image";
-import { donorsData } from "./Donors.data";
+// import { donorsData } from "./Donors.data";
+import { useLanguage } from "@/app/providers/LanguageProvider";
+import { getDonorData } from "@/locales/donors";
 
 import type { RichTextItem } from "@/app/public/components/RenderRichText";
 import { renderRichText } from "@/app/public/components/RenderRichText";
 
 export default function DonorsSection() {
+    const { locale } = useLanguage();
+    const donorsData = getDonorData(locale);
   return (
     <section className="lg:space-y-14 ">
       {donorsData.map((item, index) => {

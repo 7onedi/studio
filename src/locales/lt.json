@@ -1,0 +1,51 @@
+{
+  "nav": {
+    "about": "Apie tinklą",
+    "methodology": "Metodika",
+    "directions": "Kryptys",
+    "places": "Vietos",
+    "support": "Paremti"
+  },
+  "views": {
+    "article": {
+      "read_more": "Peržiūrėti"
+    }
+  },
+  "join": {
+    "name_placeholder": "Vardas",
+    "member_type_description": "Nurodykite, kokio bendradarbiavimo forma jus domina:",
+    "membership_types": {
+      "member": "Narys",
+      "donor": "Rėmėjas",
+      "partner": "Partneris"
+    },
+    "join_us": "Prisijunk prie mūsų"
+  },
+  "map": {
+    "mobile": {
+      "show_all": "Visi"
+    },
+    "desktop": {
+      "show_all": "Rodyti visus"
+    }
+  },
+  "reviews": {
+    "title": "Atsiliepimai"
+  },
+  "footer": {
+    "about": "Apie tinklą",
+    "methodology": "Metodika",
+    "directions": "Kryptys",
+    "places": "Vietos"
+  },
+  "copyright": "© 2025 Visos teisės saugomos.",
+  "pages": {
+    "category_title": {
+      "title": "Įdomūs straipsniai apie projektą"
+    },
+    "project_preview_block": {
+      "description_title": "Apie projektą",
+      "activity": "#Countrysidestudio veikla"
+    }    
+  }
+}

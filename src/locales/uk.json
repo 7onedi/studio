@@ -1,0 +1,51 @@
+{
+  "nav": {
+    "about": "Про мережу",
+    "methodology": "Методика",
+    "directions": "Напрямки",
+    "places": "Місця",
+    "support": "Підтримати"
+  },
+  "views": {
+    "article": {
+      "read_more": "Переглянути"
+    }
+  },
+  "join": {
+    "name_placeholder": "Ім'я",
+    "member_type_description": "Вкажіть, в якому виді співпраці ви зацікавлені:",
+    "membership_types": {
+      "member": "Учасник/ця",
+      "donor": "Донор",
+      "partner": "Партнер"
+    },
+    "join_us": "Приєднатись"
+  },
+  "map": {
+    "mobile": {
+      "show_all": "Всі"
+    },
+    "desktop": {
+      "show_all": "Показати всі"
+    }
+  },
+  "reviews": {
+    "title": "Відгуки"
+  },
+  "footer": {
+    "about": "Про мережу",
+    "methodology": "Методика",
+    "directions": "Напрямки",
+    "places": "Місця"
+  },
+  "copyright": "© 2025 Всі права захищено.",
+  "pages": {
+    "category_title": {
+      "title": "Цікаві статті про проєкт"
+    },
+    "project_preview_block": {
+      "description_title": "Про проєкт",
+      "activity": "Діяльність #Countrysidestudio"
+    }
+  } 
+}
