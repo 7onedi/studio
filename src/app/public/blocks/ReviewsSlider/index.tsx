@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import type { FC } from "react";
+import { useLanguage } from "@/app/providers/LanguageProvider";
 
 // --- ДАНІ ДЛЯ ВІДГУКІВ ---
 const reviews = [
@@ -128,6 +129,7 @@ const Arrow: FC<ArrowProps> = ({ onClick, direction, className = "" }) => (
 
 // --- ГОЛОВНИЙ КОМПОНЕНТ ВІДГУКІВ ---
 export default function ReviewsSlider() {
+  const { t } = useLanguage();
   const [currentSlide, setCurrentSlide] = useState(0);
   const reviewsCount = reviews.length;
 
@@ -159,7 +161,7 @@ export default function ReviewsSlider() {
     <div className="lg:text-main-text py-12 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <h2 className="text-headline_2_mobile lg:text-headline_2 font-bold mb-10 text-center uppercase" style={{ color: '#E30613' }}>
-            Відгуки
+            {t("reviews.title")}
         </h2>
         
         <div className="relative mx-auto max-w-5xl lg:max-w-3xl 3xl:max-w-5xl"> 

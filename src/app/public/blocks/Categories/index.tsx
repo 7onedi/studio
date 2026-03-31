@@ -1,11 +1,16 @@
-import { categories } from "./categories.data";
+"use client";
+
+import { getCategoriesData } from "@/locales/categories";
 import CategoryCard from "./CategoryCard";
 import styles from './Categories.module.scss';
 import { Button } from "@/app/public/components/Button";
 import Link from "next/link";
 import Image from "next/image";
+import { useLanguage} from "@/app/providers/LanguageProvider";
 
 export const CategoriesSection = () => {
+  const { locale, t } = useLanguage();
+  const categories = getCategoriesData(locale);
   return (
     <section className="m-auto w-full lg:h-[960px] flex flex-col items-center gap-10 lg:gap-16 lg:pt-10">
 
@@ -50,7 +55,7 @@ export const CategoriesSection = () => {
           height={41}
         />
         <Button variant="primary" className="mx-6 lg:w-[500px]">
-          <Link href="https://pangeya.org.ua/#join">ПРИЄДНАТИСЬ</Link>
+          <Link href="https://pangeya.org.ua/#join">{t("join.join_us")}</Link>
         </Button>
         <Image
           src="/categories/CB_RightArrow.svg"

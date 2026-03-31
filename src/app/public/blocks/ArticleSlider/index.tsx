@@ -7,6 +7,7 @@ import { Button } from "@/app/public/components/Button";
 import { SvgIcon } from "@/app/public/components/SvgIcon";
 import Image from "next/image";
 import Link from "next/link";
+import { useLanguage} from "@/app/providers/LanguageProvider";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "";
 
@@ -59,6 +60,7 @@ export default function SliderHero() {
   const [slides, setSlides] = useState<ReturnType<typeof toSlide>[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const { t } = useLanguage();
 
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
     loop: true,
@@ -125,7 +127,7 @@ export default function SliderHero() {
                 className="absolute bottom-8 left-16 lg:relative lg:bottom-0 lg:left-0 z-20"
               >
                 <Button variant="secondary-alt">
-                  <span className="mr-3"> ПЕРЕГЛЯНУТИ </span>
+                  <span className="mr-3"> { t("views.article.read_more") } </span>
                   <SvgIcon name="right" size={24} color="white" />
                 </Button>
               </Link>
