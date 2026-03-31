@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import type { RichTextItem } from "@/app/public/components/RenderRichText";
 import { renderRichText } from "@/app/public/components/RenderRichText";
+import { useLanguage } from "@/app/providers/LanguageProvider";
 
 // Явно визначаємо тип для Map View, щоб уникнути помилки TS 'number[]' vs '[number, number]'
 type MapView = {
@@ -61,6 +62,7 @@ function MapUpdater({ activeCategory }: { activeCategory: string | null }) {
 
 
 export default function MapComponent() {
+  const { t } = useLanguage();
   const [visibleTextFor, setVisibleTextFor] = useState<string | null>(null);
 
   const [activeCategory, setActiveCategory] = useState<string | null>(
@@ -222,8 +224,8 @@ export default function MapComponent() {
               : 'bg-white bg-opacity-70 hover:bg-opacity-90'
           }`}
         >
-          <span className='hidden lg:block'>Показати всі</span>
-          <span className='lg:hidden text-button_mobile'>Всі</span>
+          <span className='hidden lg:block'>{t("map.desktop.show_all")}</span>
+          <span className='lg:hidden text-button_mobile'>{t("map.mobile.show_all")}</span>
         </button>
       </div>
     </div>

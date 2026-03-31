@@ -1,0 +1,51 @@
+{
+  "nav": {
+    "about": "Despre rețea",
+    "methodology": "Metodologie",
+    "directions": "Direcții",
+    "places": "Locuri",
+    "support": "Susține"
+  },
+  "views": {
+    "article": {
+      "read_more": "Vezi"
+    }
+  },
+  "join": {
+    "name_placeholder": "Nume",
+    "member_type_description": "Vă rugăm să indicați tipul de colaborare care vă interesează:",
+    "membership_types": {
+      "member": "Membru",
+      "donor": "Donator",
+      "partner": "Partener"
+    },
+    "join_us": "Alătură-te nouă"
+  },
+  "map": {
+    "mobile": {
+      "show_all": "Toate"
+    },
+    "desktop": {
+      "show_all": "Arată tot"
+    }
+  },
+  "reviews": {
+    "title": "Recenzii"
+  },
+  "footer": {
+    "about": "Despre rețea",
+    "methodology": "Metodologie",
+    "directions": "Direcții",
+    "places": "Locuri"
+  },
+  "copyright": "© 2025 Toate drepturile rezervate.",
+  "pages": {
+    "category_title": {
+      "title": "Articole interesante despre proiect"
+    },
+    "project_preview_block": {
+      "description_title": "Despre proiect",
+      "activity": "Activitatea #Countrysidestudio"
+    }
+  }
+}
