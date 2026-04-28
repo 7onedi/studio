@@ -38,6 +38,7 @@ import {
         ? { connect: { id: data.subcategoryId } }
         : undefined,
       image: data.imageId ? { connect: { id: data.imageId } } : undefined,
+      logo: data.logoId ? { connect: { id: data.logoId } } : undefined,
       location: locationInput,
       parent: data.parentId ? { connect: { id: data.parentId } } : undefined,
       author: user.id ? { connect: { id: user.id } } : undefined,
@@ -76,12 +77,14 @@ import {
       category: rest.categoryId ? { connect: { id: rest.categoryId } } : undefined,
       subcategory: rest.subcategoryId ? { connect: { id: rest.subcategoryId } } : undefined,
       image: rest.imageId ? { connect: { id: rest.imageId } } : undefined,
+      logo: rest.logoId ? { connect: { id: rest.logoId } } : undefined,
       parent: rest.parentId ? { connect: { id: rest.parentId } } : undefined,
       location: locationInput,
       categoryId: undefined,
       subcategoryId: undefined,
       imageId: undefined,
       parentId: undefined,
+      logoId: undefined,
     });
 
     if (socialLinks !== undefined) {

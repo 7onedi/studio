@@ -157,7 +157,9 @@ model StudioProject {
   body        Json?
   description String?
   imageId     Int?
-  image       Media? @relation(fields: [imageId], references: [id])
+  image       Media? @relation("ProjectImage", fields: [imageId], references: [id])
+  logoId      Int?
+  logo        Media? @relation("ProjectLogo", fields: [logoId], references: [id])
 
   socialLinks ProjectSocialLink[]
 
@@ -242,6 +244,7 @@ model Media {
 
   createdAt DateTime  @default(now())
   articles  Article[]
-  project StudioProject[]
+  projects     StudioProject[] @relation("ProjectImage")
+  projectLogos StudioProject[] @relation("ProjectLogo")
   partners Partner[]
 }

@@ -14,6 +14,7 @@ export const createStudioProjectSchema = z.object({
   categoryId: z.number(),
   subcategoryId: z.number().optional(),
   imageId: z.number().optional(),
+  logoId: z.number().optional(),
   // locationId — для connect до існуючої; locationData — для створення нової
   locationId: z.number().optional(),
   locationData: locationDataSchema.optional(),
@@ -27,7 +28,8 @@ export const updateStudioProjectSchema = z.object({
   description: z.string().optional(),
   categoryId: z.number().optional(),
   subcategoryId: z.number().optional(),
-  imageId: z.number().optional(),
+  imageId: z.number().nullable().optional(),
+  logoId: z.number().optional(),
   locationId: z.number().optional(),
   locationData: locationDataSchema.optional(),
   // null = видалити location
