@@ -1,5 +1,4 @@
-import CategoryTitle from "@/app/public/blocks/CategoryTitle";
-import { categories } from "@/app/public/blocks/Categories/categories.data";
+import CategoryTitleWrapper from "./CategoryTitleWrapper";
 import MfkList from "@/app/public/blocks/MfkList";
 import BlogSlider from "@/app/public/blocks/BlogSlider";
 import { getParentProject } from '@lib/getProjects';
@@ -37,7 +36,10 @@ export default async function Home() {
         <MfkList markers={markers} id="youthinsight" />
       </div>
       <div className="my-8 flex justify-center">
-        <p className="text-headline_3">Цікаві статті про проєкт</p>
+        <TranslatedText 
+          tKey="pages.category_title.title" 
+          className="text-headline_3" 
+        />
       </div>
       <div className="">
         <BlogSlider categoryId={String(result?.categoryId)} />

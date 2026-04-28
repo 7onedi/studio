@@ -1,0 +1,51 @@
+{
+  "nav": {
+    "about": "The Network",
+    "methodology": "Methodology",
+    "directions": "Directions",
+    "places": "Places",
+    "support": "Support"
+  },
+  "views": {
+    "article": {
+      "read_more": "View"
+    }
+  },
+  "join": {
+    "name_placeholder": "Name",
+    "member_type_description": "Please indicate the type of collaboration you are interested in:",
+    "membership_types": {
+      "member": "Member",
+      "donor": "Donor",
+      "partner": "Partner"
+    },
+    "join_us": "Join Us"
+  },
+  "map": {
+    "mobile": {
+      "show_all": "All"
+    },
+    "desktop": {
+      "show_all": "Show All"
+    }
+  },
+  "reviews": {
+    "title": "Reviews"
+  },
+  "footer": {
+    "about": "The Network",
+    "methodology": "Methodology",
+    "directions": "Directions",
+    "places": "Places"
+  },
+  "copyright": "© 2025 All rights reserved.",
+  "pages": {
+    "category_title": {
+      "title": "Interesting articles about the project"
+    },
+    "project_preview_block": {
+      "description_title": "About the project",
+      "activity": "#Countrysidestudio activity"
+    }
+  } 
+}

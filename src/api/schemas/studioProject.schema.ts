@@ -2,6 +2,7 @@ import { z } from "zod";
 import { socialLinkSchema } from "./socialLink.schema";
 import { createLocationSchema } from "./location.schema";
 
+export const ProjectLangEnum = z.enum(["UK", "EN", "PL", "LT", "RO"]);
 const locationDataSchema = createLocationSchema.omit({
   projectId: true,
   published: true,
@@ -9,6 +10,7 @@ const locationDataSchema = createLocationSchema.omit({
 
 export const createStudioProjectSchema = z.object({
   title: z.string().min(3),
+  lang: ProjectLangEnum.optional(),
   body: z.any().optional(),
   description: z.string().optional(),
   categoryId: z.number(),
@@ -24,6 +26,7 @@ export const createStudioProjectSchema = z.object({
 
 export const updateStudioProjectSchema = z.object({
   title: z.string().min(3).optional(),
+  lang: ProjectLangEnum.optional(),
   body: z.any().optional(),
   description: z.string().optional(),
   categoryId: z.number().optional(),

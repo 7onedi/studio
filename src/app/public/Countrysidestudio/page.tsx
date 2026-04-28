@@ -1,7 +1,6 @@
-import CategoryTitle from "@/app/public/blocks/CategoryTitle";
-import { categories } from "@/app/public/blocks/Categories/categories.data";
+import CategoryTitleWrapper from "./CategoryTitleWrapper";
 import MfkList from "@/app/public/blocks/MfkList";
-import { initialCategories} from '@/app/public/blocks/LeafletMap/mapData';
+import { initialCategories } from '@/app/public/blocks/LeafletMap/mapData';
 import BlogSlider from "../blocks/BlogSlider";
 import { getCategoryId } from '@lib/getCategoryId';
 import { getParentProject } from '@lib/getProjects';

@@ -33,6 +33,14 @@ enum ArticleSlider {
   SLIDER_2
 }
 
+enum ProjectLang {
+  UK
+  EN
+  PL
+  LT
+  RO
+}
+
 enum SocialPlatform {
   YOUTUBE
   INSTAGRAM
@@ -143,6 +151,7 @@ model ProjectSocialLink {
 model StudioProject {
   id Int @id @default(autoincrement())
 
+  lang ProjectLang @default(UK)
   parentId Int?
   parent StudioProject? @relation("ProjectHierarchy", fields: [parentId], references: [id])
   children StudioProject[] @relation("ProjectHierarchy")

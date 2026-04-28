@@ -1,10 +1,7 @@
-import CategoryTitle from "@/app/public/blocks/CategoryTitle";
-import { categories } from "@/app/public/blocks/Categories/categories.data";
-
+import CategoryTitleWrapper from "./CategoryTitleWrapper";
 import BlogSlider from "../blocks/BlogSlider";
 import { getCategoryId } from '@lib/getCategoryId';
-
-const project = categories.find(c => c.id === 3)!;
+import TranslatedText from "../blocks/TranslatedText";
 
 export const dynamic = 'force-dynamic';
 
@@ -22,9 +19,12 @@ export default async function Home() {
         />
       </div>
       <div className="my-8 flex justify-center">
-        <p className="text-headline_3">Цікаві статті про проєкт</p>
+        <TranslatedText 
+          tKey="pages.category_title.title" 
+          className="text-headline_3" 
+        />
       </div>
-      <div className="">
+      <div>
         <BlogSlider categoryId={String(categoryId)} />
       </div>
     </div>

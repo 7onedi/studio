@@ -1,13 +1,9 @@
+"use client";
+
 import Image from 'next/image';
 import styles from "./Footer.module.scss";
 import Link from 'next/link';
-
-export const navButtons = [
-  {name:"Про мережу", link:"/public/AboutNetwork"},
-  {name:"Методика", link:"/public/Methodology"},
-  {name:"Напрямки", link:"/public/Directions"},
-  {name:"Місця", link:"/public/Places"},
-] as const;
+import { useLanguage } from "@/app/providers/LanguageProvider";
 
 export const contactButtons = [
   {name: "youth.studio.vin@gmail.com", link: "https://mail.google.com/mail/u/0/?view=cm&fs=1&to=youth.studio.vin@gmail.com"},
@@ -20,6 +16,13 @@ export const donorsAndPartners = [
 ] as const;
 
 export default function Places() {
+  const { t } = useLanguage();
+  const navButtons = [
+    {name:t("footer.about"), link:"/public/AboutNetwork"},
+    {name:t("footer.methodology"), link:"/public/Methodology"},
+    {name:t("footer.directions"), link:"/public/Directions"},
+    {name:t("footer.places"), link:"/public/Places"},
+] as const;
   return (
     <footer className={`mt-6 ${styles["footer-wrapper"]}`}>
       <div className="lg:pt-7 grid grid-cols-12 gap-4">
@@ -83,7 +86,7 @@ export default function Places() {
           </div>
 
           <div className="py-6">
-            <span className="text-main-text">© Всі права захищено. 2025</span>
+            <span className="text-main-text">{t("copyright")}</span>
           </div>
         </div>
       </div>

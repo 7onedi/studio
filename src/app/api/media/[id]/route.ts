@@ -7,3 +7,9 @@ export const DELETE = withAuth(async (req: NextRequest, user: any) => {
     await mediaController.delete(user, id);
     return NextResponse.json({ message: "Media deleted" });
 });
+
+export const GET = async (req: NextRequest, user: any) => {
+    const id = Number(new URL(req.url).pathname.split("/").pop());
+    const media = await mediaController.findById(id);
+    return NextResponse.json(media);
+};

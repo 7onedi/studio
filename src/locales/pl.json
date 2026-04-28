@@ -1,0 +1,51 @@
+{
+  "nav": {
+    "about": "O sieci",
+    "methodology": "Metodologia",
+    "directions": "Kierunki",
+    "places": "Miejsca",
+    "support": "Wesprzyj"
+  },
+  "views": {
+    "article": {
+      "read_more": "Zobacz"
+    }
+  },
+  "join": {
+    "name_placeholder": "Imię",
+    "member_type_description": "Proszę wskazać, jakiego rodzaju współpraca Cię interesuje:",
+    "membership_types": {
+      "member": "Członek",
+      "donor": "Darczyńca",
+      "partner": "Partner"
+    },
+    "join_us": "Dołącz do nas"
+  },
+  "map": {
+    "mobile": {
+      "show_all": "Wszystkie"
+    },
+    "desktop": {
+      "show_all": "Pokaż wszystkie"
+    }
+  },
+  "reviews": {
+    "title": "Opinie"
+  },
+  "footer": {
+    "about": "O sieci",
+    "methodology": "Metodologia",
+    "directions": "Kierunki",
+    "places": "Miejsca"
+  },
+  "copyright": "© 2025 Wszelkie prawa zastrzeżone.",
+  "pages": {
+    "category_title": {
+      "title": "Ciekawe artykuły o projekcie"
+    },
+    "project_preview_block": {
+      "description_title": "O projekcie",
+      "activity": "Działalność #Countrysidestudio"
+    }
+  } 
+}

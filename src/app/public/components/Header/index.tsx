@@ -8,12 +8,7 @@ import Link from 'next/link'
 import { Button } from "@/app/public/components/Button";
 import styles from "./Header.module.scss";
 
-export const navButtons = [
-  { name: "Про мережу", link: "/public/AboutNetwork" },
-  { name: "Методика", link: "/public/Methodology" },
-  { name: "Напрямки", anchor: "directions" },
-  { name: "Місця", anchor: "places" },
-] as const;
+import { useLanguage, type Locale } from "@/app/providers/LanguageProvider";
 
 interface HeaderProps {
   onScrollTo: (id: string) => void;
@@ -37,13 +32,20 @@ export default function Header() {
       element?.scrollIntoView({ behavior: "smooth" });
     }
   };
+  const { locale, setLocale, t } = useLanguage();
 
-  const languages = [
-    { label: 'Українська', flag: '🇺🇦', value: 'UA' },
-    { label: 'English', flag: '🇬🇧', value: 'ENG' },
-    { label: 'Lietuvių',flag:'🇱🇹', value: 'LT' },
-    { label: 'Polski',flag:'🇵🇱', value: 'PL' },
-    { label: 'Moldovenească',flag:'🇲🇩', value: 'MD' },
+  const navButtons = [
+    { name: t("nav.about"),       link: "/public/AboutNetwork" },
+    { name: t("nav.methodology"), link: "/public/Methodology" },
+    { name: t("nav.directions"),  anchor: "directions" },
+    { name: t("nav.places"),      anchor: "places" },
+  ] as const;
+  const languages: { label: string; flag: string; value: Locale }[] = [
+    { label: "Українська", flag: "🇺🇦", value: "uk" },
+    { label: "English",    flag: "🇬🇧", value: "en" },
+    { label: "Lietuvių",   flag: "🇱🇹", value: "lt" },
+    { label: "Polski",     flag: "🇵🇱", value: "pl" },
+    { label: "Moldovenească", flag: "🇲🇩", value: "ro" },
   ];
 
 const iconNames = [
@@ -185,8 +187,8 @@ const iconNames = [
                 onClick={toggleLanguageDropdown}
                 className="flex items-center text-main-text hover:text-main-blue transition-colors duration-200 focus:outline-none"
               >
-                <span className="text-button pr-2">UA</span>
-                <span className="pr-4">🇺🇦</span>
+                  <span className="text-button pr-2">{locale.toUpperCase()}</span>
+                  <span className="pr-4">{languages.find(l => l.value === locale)?.flag}</span>
                 <SvgIcon name="down" />
               </button>
 
@@ -195,10 +197,14 @@ const iconNames = [
                   {languages.map((lang, inx) => (
                     <div key={inx}>
                       <button
-                        className="block w-full text-left px-4 py-2 text-sm text-main-text hover:bg-gray-100 flex justify-between"
-                        onClick={() => setIsLanguageDropdownOpen(false)}
+                        onClick={() => {
+                          setLocale(lang.value);
+                          setIsLanguageDropdownOpen(false);
+                        }}
+                        className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex justify-between
+                          ${locale === lang.value ? "text-main-blue font-bold" : "text-main-text"}`}
                       >
-                        <span className="mr-2 text-button inline-block">{lang.value}</span>
+                        <span className="mr-2 text-button inline-block">{lang.value.toUpperCase()}</span>
                         <span className="mr-2 inline-block">{lang.flag}</span>
                       </button>
                     </div>
@@ -209,7 +215,7 @@ const iconNames = [
 
             {/* Support Button */}
             <Button variant="primary"> 
-              <Link href="https://pangeya.org.ua/#join">ПІДТРИМАТИ</Link>
+              <Link href="https://pangeya.org.ua/#join">{t("nav.support")}</Link>
             </Button>
           </div>
         </nav>
@@ -251,11 +257,13 @@ const iconNames = [
             <div className="pt-4 relative flex justify-between w-full">
               {languages.map((lang,inx) => (
                 <button
-                  key={inx}
-                  className="flex items-center justify-center w-full py-2 text-headline_5_mobile text-main-text hover:text-main-blue transition-colors duration-200 focus:outline-none"
+                  onClick={() => setLocale(lang.value)}
+                  className={`flex items-center justify-center w-full py-2 text-headline_5_mobile
+                    hover:text-main-blue transition-colors duration-200 focus:outline-none
+                    ${locale === lang.value ? "text-main-blue font-bold" : "text-main-text"}`}
                 >
-                  <span className='mr-1'>{lang.value}</span>
-                  <span >{lang.flag}</span>
+                  <span className="mr-1">{lang.value.toUpperCase()}</span>
+                  <span>{lang.flag}</span>
                 </button>
               ))}
             </div>
@@ -280,7 +288,7 @@ const iconNames = [
 
             {/* Mobile Support Button */}
             <Button variant="primary">
-              <Link href="https://pangeya.org.ua/#join">ПІДТРИМАТИ</Link>
+              <Link href="https://pangeya.org.ua/#join">{t("nav.support")}</Link>
             </Button>
           </nav>
         </div>
