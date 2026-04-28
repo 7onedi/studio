@@ -23,9 +23,6 @@ export default function ProjectPreviewBlock({
   title,
   description,
 }: ProjectPreviewBlockProps) {
-
-  const { t } = useLanguage();
-
   return (
     <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 ">
       
@@ -73,7 +70,7 @@ export default function ProjectPreviewBlock({
       {/* RIGHT — CONTENT */}
       <div className="flex items-center lg:items-start flex-col gap-6 lg:gap-8 text-main-text">
         <h1 className="text-headline_4_mobile lg:text-headline_4 font-bold text-main-text">
-          {t("pages.project_preview_block.description_title")}
+          Про проєкт
         </h1>
         
         <div className="text-body_mobile lg:text-body leading-relaxed w-full">
