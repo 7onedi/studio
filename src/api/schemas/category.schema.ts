@@ -5,6 +5,5 @@ export const createCategorySchema = z.object({
 });
 
 export const updateCategorySchema = z.object({
-    id: z.number(),
     name: z.string().min(2).optional(),
 });

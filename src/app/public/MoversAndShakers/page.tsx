@@ -9,7 +9,13 @@ export default async function Home() {
   return (
     <div>
       <div className="mt-4 lg:mt-0 px-4 lg:px-0">
-        <CategoryTitleWrapper projectId={4} />
+        <CategoryTitle
+          image={project.image}
+          pattern={project.pattern}
+          gradient={project.gradient}
+          hoverGradient={project.hoverGradient}
+          title={project.title}
+        />
       </div>
       <div className="my-8 flex justify-center">
         <p className="text-headline_3">Цікаві статті про Movers&Shakers</p>

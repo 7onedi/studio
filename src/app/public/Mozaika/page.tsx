@@ -10,7 +10,13 @@ export default async function Home() {
   return (
     <div>
       <div className="mt-4 lg:mt-0 px-4 lg:px-0">
-        <CategoryTitleWrapper projectId={3} />
+        <CategoryTitle
+          image={project.image}
+          pattern={project.pattern}
+          gradient={project.gradient}
+          hoverGradient={project.hoverGradient}
+          title={project.title}
+        />
       </div>
       <div className="my-8 flex justify-center">
         <TranslatedText 

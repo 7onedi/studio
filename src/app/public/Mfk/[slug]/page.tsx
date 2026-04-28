@@ -1,41 +1,29 @@
 import Image from "next/image";
-import { initialCategories } from "@/app/public/blocks/LeafletMap/mapData";
 import BlogSlider from "@/app/public/blocks/BlogSlider";
 import MfkList from "@/app/public/blocks/MfkList";
 import Link from "next/link";
 import { Button } from "@/app/public/components/Button";
 import { SvgIcon } from "@/app/public/components/SvgIcon";
-import type { RichTextItem } from "@/app/public/components/RenderRichText";
-import { renderRichText } from "@/app/public/components/RenderRichText";
-import { slides } from "../../blocks/ArticleSlider/slideContent";
-import { getCategoryId } from '@lib/getCategoryId';
+import { getParentProject } from '@lib/getProjects';
+import { ArticleBody } from '@blocks/ArticleBody';
 
 interface MfkPageProps {
-  params: Promise<{
-    slug?: string;
-    description?: RichTextItem[];
-  }>;
+  params: Promise<{ slug: string }>;
 }
 
-const mfkCategory = initialCategories.find(c => c.id === "#mfk")!;
 export const dynamic = 'force-dynamic';
+
 export default async function MfkPage({ params }: MfkPageProps) {
-  const categoryId = await getCategoryId('CountrysideStudio');
   const { slug } = await params;
 
-  // знаходимо маркер по slug
-  let mfk;
-  for (const category of initialCategories) {
-    const found = category.markers.find(
-      (marker) => marker.popupContent.slug === slug
-    );
-    if (found) {
-      mfk = found.popupContent;
-      break;
-    }
-  }
+  const result = await getParentProject('#CountrysideStudio');
+  const children = result?.children ?? [];
 
-  if (!mfk) {
+  // знаходимо поточний дочірній проект по slug підкатегорії
+  const child = children.find((p: any) => p.subcategory?.slug === slug);
+  console.log(JSON.stringify(child.body.blocks, null, 2));
+
+  if (!child) {
     return (
       <div className="p-8 text-center text-xl font-semibold">
         MFK не знайдено
@@ -43,37 +31,40 @@ export default async function MfkPage({ params }: MfkPageProps) {
     );
   }
 
-  const otherMfkMarkers = mfkCategory.markers.filter(
-    (marker) => marker.popupContent.slug !== slug
-  );
+  // інші МФК для списку внизу
+  const otherMarkers = children
+    .filter((p: any) => p.subcategory?.slug !== slug)
+    .map((p: any) => ({
+      popupContent: {
+        slug:  p.subcategory?.slug ?? String(p.id),
+        title: p.title,
+        Logo:  p.logo?.url ?? p.image?.url ?? '',
+        zoom:  false,
+      },
+    }));
 
-const yfcSlides = slug
-  ? slides.filter(s => s.meta.SubCategory === slug)
-  : [];
+  const socialLinks = child.socialLinks ?? [];
 
   return (
     <div className="mx-auto mt-4 lg:mt-0">
       <div className="relative mb-16 lg:mb-0">
         <div className="relative w-full h-[145px] lg:h-[700px] mb-6 rounded-[20px] overflow-hidden">
           <Image
-            src={mfk.imageUrl}
-            alt={mfk.title}
+            src={child.image?.url ?? ''}
+            alt={child.title}
             fill
             className="object-cover"
             priority
           />
-          {mfk.gradient && (
-            <div className={`absolute inset-0 ${mfk.gradient}`} />
-          )}
         </div>
 
         {/* Лого + заголовок */}
         <div className="-bottom-[40px] w-full absolute lg:bottom-0 lg:left-16 lg:bottom-16 z-20 flex flex-col-reverse lg:flex-row items-start lg:items-center">
-
-          {mfk.Logo && (
+          
+          {child.logo?.url && (
             <div className="flex justify-center w-full lg:w-[376px] h-auto rounded-[20px] overflow-hidden">
               <img
-                src={mfk.Logo}
+                src={child.logo.url}
                 alt="MFK logo"
                 className="w-auto h-[65px] lg:w-[376px] lg:h-auto object-cover rounded-[20px]"
               />
@@ -81,80 +72,51 @@ const yfcSlides = slug
           )}
 
           <div className="mb-5 lg:mb-0 lg:mt-4 text-white text-center text-headline_2_mobile lg:text-headline_1 w-full lg:flex lg:ml-6">
-            {mfk.title}
+            {child.title}
           </div>
         </div>
 
-        <div className="hidden lg:flex lg:absolute bottom-16 flex right-16 gap-4 z-20">
-          {mfk.iconNames?.map((iconName, i) =>
-            iconName.link ? (
-              <Link key={i} href={iconName.link} className="flex items-center">
-                <Button
-                  variant="accent-alt"
-                  iconOnly
-                  className="lg:mx-1 shadow-[0_4px_6px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_8px_rgba(0,0,0,0.3)] transition-shadow hover:bg-gray-200"
-                >
-                  <SvgIcon name={iconName.title} size={24} color="main-blue" />
-                </Button>
-              </Link>
-            ) : (<div></div>)
-          )}
-        </div>
-
-      </div>
-
-      <div className="lg:hidden flex justify-center mb-6 gap-6">
-        {mfk.iconNames?.map((iconName, i) =>
-          iconName.link ? (
-            <Link key={i} href={iconName.link} className="flex items-center">
-              <Button
-                variant="accent-alt"
-                iconOnly
-                className="lg:mx-1 shadow-[0_4px_6px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_8px_rgba(0,0,0,0.3)] transition-shadow hover:bg-gray-200"
-              >
-                <SvgIcon name={iconName.title} size={24} color="main-blue" />
+        {/* Соцмережі десктоп */}
+        <div className="hidden lg:flex lg:absolute bottom-16 right-16 gap-4 z-20">
+          {socialLinks.map((s: any, i: number) => (
+            <Link key={i} href={s.url}>
+              <Button variant="accent-alt" iconOnly
+                className="lg:mx-1 shadow-[0_4px_6px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_8px_rgba(0,0,0,0.3)] transition-shadow hover:bg-gray-200">
+                <SvgIcon name={s.social?.platform?.toLowerCase() ?? 'instagram'} size={24} color="main-blue" />
               </Button>
             </Link>
-          ) : (null)
-        )}
-      </div>
-      <div className="
-        relative
-        space-y-6
-        rounded-2xl
-        bg-indigo-50
-        p-6
-        text-main-text
-        leading-relaxed
-        border-b-2
-        border-main-amarant
-      ">
-        {Array.isArray(mfk.description) && (
-          mfk.description?.length > 0 && (
-          <div>
-            <div className="mt-6 flex justify-center">
-              <p className="lg:mb-4 text-headline_4_mobile lg:text-headline_4">Про МФК</p>
-            </div>
-          {(mfk.description as string[]).map((t, idx) => (
-            <div className="[&_a]:text-blue-600 [&_a]:underline [&_a]:underline-offset-2">
-            <p
-              key={idx}
-              className="mb-4"
-              dangerouslySetInnerHTML={{ __html: t }}
-            />
-            </div>
           ))}
-          </div>
-          )
-        )}
+        </div>
       </div>
 
+      {/* Соцмережі мобайл */}
+      <div className="lg:hidden flex justify-center mb-6 gap-6">
+        {socialLinks.map((s: any, i: number) => (
+          <Link key={i} href={s.url}>
+            <Button variant="accent-alt" iconOnly
+              className="lg:mx-1 shadow-[0_4px_6px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_8px_rgba(0,0,0,0.3)] transition-shadow hover:bg-gray-200">
+              <SvgIcon name={s.social?.platform?.toLowerCase() ?? 'instagram'} size={24} color="main-blue" />
+            </Button>
+          </Link>
+        ))}
+      </div>
+
+      {/* Опис */}
+      {child.body?.blocks?.length > 0 && (
+        <div className="relative space-y-6 rounded-2xl bg-indigo-50 p-6 text-main-text leading-relaxed border-b-2 border-main-amarant">
+          <div className="mt-6 flex justify-center">
+            <p className="lg:mb-4 text-headline_4_mobile lg:text-headline_4">Про МФК</p>
+          </div>
+          <ArticleBody blocks={child.body.blocks as any[]} />
+        </div>
+      )}
+
       <div className="my-8">
-        <BlogSlider categoryId={String(categoryId)} />
+        <BlogSlider categoryId={String(result?.categoryId)} />
       </div>
 
       <div className="my-12 lg:mt-16 px-4 lg:px-0">
-        <MfkList markers={otherMfkMarkers} id={mfkCategory.id} />
+        <MfkList markers={otherMarkers} id="#mfk" />
       </div>
     </div>
   );

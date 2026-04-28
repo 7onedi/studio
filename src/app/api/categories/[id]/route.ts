@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
 export const PATCH = withAuth(async (req: NextRequest, user: any) => {
     const body = await req.json();
     const id = Number(new URL(req.url).pathname.split("/").pop());
-    const updated = await categoryController.update(body, id, user);
+    const updated = await categoryController.update(id, body, user);
     return NextResponse.json(updated);
 });
 
