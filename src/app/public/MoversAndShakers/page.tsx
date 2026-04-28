@@ -20,7 +20,6 @@ export default async function Home() {
           gradient={project.gradient}
           hoverGradient={project.hoverGradient}
           title={project.title}
-          description={project.description}
         />
       </div>
       {/* <div className="my-12 lg:mt-16 px-4 lg:px-0">

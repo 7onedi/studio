@@ -19,7 +19,6 @@ export default async function Home() {
           gradient={project.gradient}
           hoverGradient={project.hoverGradient}
           title={project.title}
-          description={project.description}
         />
       </div>
       <div className="my-8 flex justify-center">
