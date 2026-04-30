@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import type { RichTextItem } from "@/app/public/components/RenderRichText";
-import { renderRichText } from "@/app/public/components/RenderRichText";
-import { useLanguage } from "@/app/providers/LanguageProvider";
+import { ArticleBody } from '@blocks/ArticleBody';
+
+import dynamic from "next/dynamic";
+const ReactEditor = dynamic(() => import("@/app/admin/(DashboardLayout)/components/editor/ReactEditor"), { ssr: false });
 
 interface ProjectPreviewBlockProps {
   image: string;
@@ -11,7 +12,7 @@ interface ProjectPreviewBlockProps {
   gradient: string;
   hoverGradient: string;
   title: string;
-  description: RichTextItem[];
+  description?: { blocks: any[] };
 }
 
 export default function ProjectPreviewBlock({
@@ -22,9 +23,6 @@ export default function ProjectPreviewBlock({
   title,
   description,
 }: ProjectPreviewBlockProps) {
-
-  const { t } = useLanguage();
-
   return (
     <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 ">
       
@@ -72,14 +70,14 @@ export default function ProjectPreviewBlock({
       {/* RIGHT — CONTENT */}
       <div className="flex items-center lg:items-start flex-col gap-6 lg:gap-8 text-main-text">
         <h1 className="text-headline_4_mobile lg:text-headline_4 font-bold text-main-text">
-          {t("pages.project_preview_block.description_title")}
+          Про проєкт
         </h1>
+        
+        <div className="text-body_mobile lg:text-body leading-relaxed w-full">
+          {description?.blocks && <ArticleBody blocks={description.blocks} />}
+        </div>
 
-        <p className="whitespace-pre-line text-body_mobile lg:text-body leading-relaxed">
-            {renderRichText(description)}
-        </p>
       </div>
-
     </section>
   );
 }

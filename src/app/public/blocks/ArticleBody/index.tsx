@@ -94,15 +94,19 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
 
           case "list":
             return block.data.style === "ordered" ? (
-              <ol key={i} className="mb-4">
-                {block.data.items.map((item, idx) => (
-                  <li key={idx}>{item}</li>
+              <ol key={i} className="list-decimal pl-6 mb-4">
+                {block.data.items.map((item: any, idx: number) => (
+                  <li key={idx} dangerouslySetInnerHTML={{
+                    __html: typeof item === 'string' ? item : item.content ?? ''
+                  }} />
                 ))}
               </ol>
             ) : (
-              <ul key={i}>
-                {block.data.items.map((item, idx) => (
-                  <li key={idx}>{item}</li>
+              <ul key={i} className="list-disc pl-6 mb-4">
+                {block.data.items.map((item: any, idx: number) => (
+                  <li key={idx} dangerouslySetInnerHTML={{
+                    __html: typeof item === 'string' ? item : item.content ?? ''
+                  }} />
                 ))}
               </ul>
             );

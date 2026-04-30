@@ -45,21 +45,21 @@ const Menuitems = [
 
   {
     id: uniqueId(),
+    title: "Categories and Sub",
+    icon: IconBook,
+    href: "/admin/production/categories",
+  },
+  {
+    id: uniqueId(),
     title: "Articles",
     icon: IconTypography,
     href: "/admin/production/articles",
   },
-    {
+  {
     id: uniqueId(),
-    title: "YFC",
+    title: "Projects",
     icon: IconMapPin,
-    href: "/admin/production/yfc",
-  },
-    {
-    id: uniqueId(),
-    title: "Festivals",
-    icon: IconTicket,
-    href: "/admin/production/festivals",
+    href: "/admin/production/projects",
   },
   {
     id: uniqueId(),
