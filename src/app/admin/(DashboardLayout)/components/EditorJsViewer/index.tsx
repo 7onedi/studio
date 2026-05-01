@@ -54,20 +54,32 @@ function renderBlock(block: Block, index: number) {
       );
 
     case 'image':
+      const img = (
+        <Box
+          component="img"
+          src={data.file?.url ?? data.url}
+          alt={data.caption ?? ''}
+          sx={{
+            maxWidth: '100%',
+            borderRadius: 1,
+            cursor: data.link ? 'pointer' : 'default',
+            ...(data.stretched && { width: '100%' }),
+            ...(data.withBorder && { border: '1px solid', borderColor: 'divider' }),
+            ...(data.withBackground && { bgcolor: 'grey.100', p: 2 }),
+          }}
+        />
+      );
+
       return (
         <Box key={index} my={2} textAlign={data.withBackground ? 'center' : 'left'}>
-          <Box
-            component="img"
-            src={data.file?.url ?? data.url}
-            alt={data.caption ?? ''}
-            sx={{
-              maxWidth: '100%',
-              borderRadius: 1,
-              ...(data.stretched && { width: '100%' }),
-              ...(data.withBorder && { border: '1px solid', borderColor: 'divider' }),
-              ...(data.withBackground && { bgcolor: 'grey.100', p: 2 }),
-            }}
-          />
+          {data.link ? (
+            <a href={data.link} target="_blank" rel="noopener noreferrer">
+              {img}
+            </a>
+          ) : (
+            img
+          )}
+
           {data.caption && (
             <Typography variant="caption" color="text.secondary" display="block" mt={0.5}>
               {data.caption}
@@ -110,6 +122,34 @@ function renderBlock(block: Block, index: number) {
             )}
           </Box>
         );
+
+        case 'customImage': {
+          const imgEl = (
+            <Box
+              component="img"
+              src={data.url}
+              alt={data.caption ?? ''}
+              sx={{ maxWidth: '100%', borderRadius: 1 }}
+            />
+          );
+
+          return (
+            <Box key={index} my={2}>
+              {data.redirectUrl ? (
+                <a href={data.redirectUrl} target="_blank" rel="noopener noreferrer">
+                  {imgEl}
+                </a>
+              ) : (
+                imgEl
+              )}
+              {data.caption && (
+                <Typography variant="caption" color="text.secondary" display="block" mt={0.5}>
+                  {data.caption}
+                </Typography>
+              )}
+            </Box>
+          );
+        }
 
     case 'quote':
       return (

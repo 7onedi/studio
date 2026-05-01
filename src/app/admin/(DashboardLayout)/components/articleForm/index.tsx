@@ -126,6 +126,9 @@ const handleSubmit = () => {
         if (f.url) usedUrls.push(f.url);
       });
     }
+    if (b.type === 'customImage' && b.data?.url) {
+      usedUrls.push(b.data.url);
+    }
   });
 
   // Видаляємо завантажені але невикористані картинки

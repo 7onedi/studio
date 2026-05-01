@@ -37,6 +37,151 @@ async function run() {
 
     const userId = 2; // тестовий користувач
 
+    // Отримуємо parentId
+const parentRes = await fetch(`${BASE_URL}/api/studioprojects/search?categoryId=6&limit=100`, { headers });
+const parentData = await parentRes.json();
+const parentProject = (parentData.data as any[]).find(p => !p.parentId);
+const parentId = parentProject.id;
+console.log('parentId:', parentId);
+
+
+const subcategoryMap: Record<string, { subcategoryId: number; position: [number, number] }> = {
+  'YFC-Stina':        { subcategoryId: 20, position: [48.45262, 28.42077] },
+  'YFC-Zhmerynka':    { subcategoryId: 21, position: [49.039,   28.1085]  },
+  'YFC-Yampil':       { subcategoryId: 22, position: [48.2436,  28.287]   },
+  'YFC-Tulchyn':      { subcategoryId: 23, position: [48.67045, 28.83748] },
+  'YFC-Bershad':      { subcategoryId: 24, position: [48.3728,  29.5326]  },
+  'YFC-Voronovytsia': { subcategoryId: 25, position: [49.107373, 28.691632] },
+  'YFC-Bratslav':     { subcategoryId: 26, position: [48.82770, 28.94194] },
+  'YFC-Larga':        { subcategoryId: 27, position: [48.369281, 26.837996] },
+  'YFC-Ghindesti':    { subcategoryId: 28, position: [47.85867, 28.382760] },
+  'YFC-Racaria':      { subcategoryId: 29, position: [47.91471, 27.610583] },
+  'YFC-Glodeni-1':    { subcategoryId: 30, position: [47.775326, 27.517800] },
+};
+
+// 3. Дані МФК
+const mfkData = [
+  {
+    slug: 'YFC-Stina',
+    title: 'МФК Стіна',
+    socialLinks: [
+      { platform: 'INSTAGRAM', url: 'https://www.instagram.com/eco_center_stina' },
+      { platform: 'FACEBOOK',  url: 'https://www.facebook.com/stinaecocenter' },
+      { platform: 'TIKTOK',    url: 'https://www.tiktok.com/@stina_mfk' },
+      { platform: 'YOUTUBE',   url: 'https://www.youtube.com/channel/UCS9k8Er19EUxesrVPbLtE_w/videos' },
+    ],
+  },
+  {
+    slug: 'YFC-Zhmerynka',
+    title: 'МФК Жмеринка',
+    socialLinks: [
+      { platform: 'INSTAGRAM', url: 'https://www.instagram.com/folklore_zhmerynka' },
+      { platform: 'FACEBOOK',  url: 'https://www.facebook.com/profile.php?id=61585441253420' },
+      { platform: 'TIKTOK',    url: 'https://www.tiktok.com/@folklore_zhmerynka' },
+    ],
+  },
+  {
+    slug: 'YFC-Yampil',
+    title: 'МФК Ямпіль',
+    socialLinks: [
+      { platform: 'INSTAGRAM', url: 'https://www.instagram.com/mfk.yampil' },
+    ],
+  },
+  {
+    slug: 'YFC-Tulchyn',
+    title: 'МФК Тульчин',
+    socialLinks: [
+      { platform: 'INSTAGRAM', url: 'https://www.instagram.com/tulchyn_youth_folklore_club' },
+      { platform: 'TIKTOK',    url: 'https://www.tiktok.com/@tulchyn_mfk' },
+      { platform: 'YOUTUBE',   url: 'https://youtube.com/channel/UCU9uXEgqfXIop9oUHUWtEbA' },
+    ],
+  },
+  {
+    slug: 'YFC-Bershad',
+    title: 'МФК Бершадь',
+    socialLinks: [
+      { platform: 'INSTAGRAM', url: 'https://www.instagram.com/mfk_bershad' },
+    ],
+  },
+  {
+    slug: 'YFC-Voronovytsia',
+    title: 'МФК Вороновиця',
+    socialLinks: [
+      { platform: 'INSTAGRAM', url: 'https://www.instagram.com/mfk_voron' },
+    ],
+  },
+  {
+    slug: 'YFC-Bratslav',
+    title: 'МФК Брацлав',
+    socialLinks: [
+      { platform: 'INSTAGRAM', url: 'https://www.instagram.com/youth.wave_' },
+    ],
+  },
+  {
+    slug: 'YFC-Larga',
+    title: 'МФК Ларга',
+    socialLinks: [
+      { platform: 'INSTAGRAM', url: 'https://www.instagram.com/youthfolkclub_larga/' },
+      { platform: 'TIKTOK',    url: 'https://www.tiktok.com/@youth.folkclub_la' },
+    ],
+  },
+  {
+    slug: 'YFC-Ghindesti',
+    title: 'МФК Гіндешть',
+    socialLinks: [
+      { platform: 'INSTAGRAM', url: 'https://www.instagram.com/yfc.ghindesti' },
+      { platform: 'TIKTOK',    url: 'https://www.tiktok.com/@youth.club.ghinde' },
+    ],
+  },
+  {
+    slug: 'YFC-Racaria',
+    title: 'МФК Рекерія',
+    socialLinks: [
+      { platform: 'INSTAGRAM', url: 'https://www.instagram.com/racaria_fs/' },
+      { platform: 'FACEBOOK',  url: 'https://www.facebook.com/profile.php?id=61577867880160' },
+    ],
+  },
+  {
+    slug: 'YFC-Glodeni-1',
+    title: 'МФК Глодяни 1',
+    socialLinks: [
+      { platform: 'INSTAGRAM', url: 'https://www.instagram.com/centru_de_tineret_glodeni' },
+    ],
+  },
+];
+
+// 4. Створюємо проекти по одному
+for (const mfk of mfkData) {
+  const { subcategoryId, position } = subcategoryMap[mfk.slug];
+  const [lat, lng] = position;
+
+  const payload = {
+    title: mfk.title,
+    categoryId: 6,
+    subcategoryId,
+    parentId,
+    body: { blocks: [] },
+    locationData: {
+      name: mfk.title,
+      url: `https://pangeya.org.ua/public/Mfk/${mfk.slug}`,
+      coordinates: { lat, lng },
+    },
+    socialLinks: mfk.socialLinks,
+  };
+
+  const res = await fetch(`${BASE_URL}/api/studioprojects`, {
+    method: 'POST',
+    headers,
+    credentials: 'include',
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json();
+  console.log(`${mfk.title}:`, res.ok ? `✅ id=${data.id}` : `❌ ${JSON.stringify(data)}`);
+}
+
+console.log('Готово!');
+
   // =========================
   // SEARCH USERS
   // =========================
@@ -95,107 +240,107 @@ async function run() {
   // =========================
   // CREATE CATEGORY
   // =========================
-    const categories = [
-      "#CountrysideStudio",
-      "Youthinsight",
-      "Mozaїka",
-      "Movers&Shakers",
-    ];
+    // const categories = [
+    //   "#CountrysideStudio",
+    //   "Youthinsight",
+    //   "Mozaїka",
+    //   "Movers&Shakers",
+    // ];
 
-    const categoryIds: number[] = [];
+    // const categoryIds: number[] = [];
 
-    for (const name of categories) {
-      const res = await fetch(`${BASE_URL}/api/categories`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({ name }),
-      });
+    // for (const name of categories) {
+    //   const res = await fetch(`${BASE_URL}/api/categories`, {
+    //     method: "POST",
+    //     headers,
+    //     body: JSON.stringify({ name }),
+    //   });
 
-      const category = await res.json();
-      console.log("CATEGORY:", category);
+    //   const category = await res.json();
+    //   console.log("CATEGORY:", category);
 
-      categoryIds.push(category.id);
-    }
+    //   categoryIds.push(category.id);
+    // }
 
-    console.log("CATEGORY IDS:", categoryIds);
+    // console.log("CATEGORY IDS:", categoryIds);
 
     // =========================
     // SUBCATEGORIES #CountrysideStudio
     // =========================
-    const subcategories1 = [
-      "МФК Стіна",
-      "МФК Жмеринка",
-      "МФК Ямпіль",
-      "МФК Тульчин",
-      "МФК Бершадь",
-      "МФК Вороновиця",
-      "МФК Брацлав",
-      "МФК Ларга",
-      "МФК Гіндешть",
-      "МФК Рекерія",
-      "МФК Глодяни 1",
-    ];
+    // const subcategories1 = [
+    //   "МФК Стіна",
+    //   "МФК Жмеринка",
+    //   "МФК Ямпіль",
+    //   "МФК Тульчин",
+    //   "МФК Бершадь",
+    //   "МФК Вороновиця",
+    //   "МФК Брацлав",
+    //   "МФК Ларга",
+    //   "МФК Гіндешть",
+    //   "МФК Рекерія",
+    //   "МФК Глодяни 1",
+    // ];
 
-    for (const name of subcategories1) {
-      const res = await fetch(`${BASE_URL}/api/subcategories`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          name,
-          categoryId: categoryIds[0],
-        }),
-      });
+    // for (const name of subcategories1) {
+    //   const res = await fetch(`${BASE_URL}/api/subcategories`, {
+    //     method: "POST",
+    //     headers,
+    //     body: JSON.stringify({
+    //       name,
+    //       categoryId: categoryIds[0],
+    //     }),
+    //   });
 
-      console.log("SUBCATEGORY:", await res.json());
-    }
+    //   console.log("SUBCATEGORY:", await res.json());
+    // }
 
-    // =========================
-    // SUBCATEGORIES Youthinsight
-    // =========================
-    const subcategories2 = [
-      "Youthinsight 2017",
-      "Youthinsight 2018",
-      "Youthinsight 2019",
-      "Youthinsight 2020",
-      "Youthinsight 2021",
-    ];
+    // // =========================
+    // // SUBCATEGORIES Youthinsight
+    // // =========================
+    // const subcategories2 = [
+    //   "Youthinsight 2017",
+    //   "Youthinsight 2018",
+    //   "Youthinsight 2019",
+    //   "Youthinsight 2020",
+    //   "Youthinsight 2021",
+    // ];
 
-    for (const name of subcategories2) {
-      const res = await fetch(`${BASE_URL}/api/subcategories`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          name,
-          categoryId: categoryIds[1],
-        }),
-      });
+    // for (const name of subcategories2) {
+    //   const res = await fetch(`${BASE_URL}/api/subcategories`, {
+    //     method: "POST",
+    //     headers,
+    //     body: JSON.stringify({
+    //       name,
+    //       categoryId: categoryIds[1],
+    //     }),
+    //   });
 
-      console.log("SUBCATEGORY:", await res.json());
-    }
+    //   console.log("SUBCATEGORY:", await res.json());
+    // }
 
     // =========================
     // SUBCATEGORY Mozaїka
     // =========================
-    await fetch(`${BASE_URL}/api/subcategories`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        name: "Mozaїka",
-        categoryId: categoryIds[2],
-      }),
-    });
+    // await fetch(`${BASE_URL}/api/subcategories`, {
+    //   method: "POST",
+    //   headers,
+    //   body: JSON.stringify({
+    //     name: "Mozaїka",
+    //     categoryId: categoryIds[2],
+    //   }),
+    // });
 
     // =========================
     // SUBCATEGORY Movers&Shakers
     // =========================
-    await fetch(`${BASE_URL}/api/subcategories`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        name: "Movers&Shakers",
-        categoryId: categoryIds[3],
-      }),
-    });
+    // await fetch(`${BASE_URL}/api/subcategories`, {
+    //   method: "POST",
+    //   headers,
+    //   body: JSON.stringify({
+    //     name: "Movers&Shakers",
+    //     categoryId: categoryIds[3],
+    //   }),
+    // });
 
   // // =========================
   // // CREATE ARTICLE

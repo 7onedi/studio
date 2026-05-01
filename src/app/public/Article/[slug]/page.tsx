@@ -117,7 +117,7 @@ console.log("gallery after patch:", JSON.stringify(
         />
 
         {/* CONTENT */}
-        <article className="prose prose-invert max-w-none">
+        <article className="mb-4 prose prose-invert max-w-none">
           <div className="pt-8 lg:pt-4 grid grid-cols-12 gap-2 lg:gap-4">
             <div className="col-span-12 lg:col-span-9">
               <ArticleBody blocks={article.body.blocks} />
@@ -146,7 +146,7 @@ console.log("gallery after patch:", JSON.stringify(
             </div>
           </div>
         </article>
-          <div className="">
+          <div className="pt-6 border-t border-main-amarant text-subtitle_2_mobile lg:text-subtitle_2">
             <BlogSlider categoryId={String(categoryId)} excludeSlug={article.meta.slug} />
           </div>
       </main>

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { FontSizeTool } from "./FontSizeTool";
 import { TextColorTool, BgColorTool } from "./ColorTool";
+import { CustomImageTool } from "./CustomImageTool";
 
 interface ReactEditorProps {
   onChange: (data: any) => void;
@@ -133,6 +134,14 @@ export default function ReactEditor({ onChange, initialData, onImageUpload }: Re
                     file: { url: data.url },
                   };
                 },
+              },
+            },
+          },
+          customImage: {
+            class: CustomImageTool,
+            config: {
+              onUpload: (id: number, url: string) => {
+                onImageUploadRef.current?.(id, url);
               },
             },
           },
