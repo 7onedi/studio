@@ -1,12 +1,10 @@
-import CategoryTitle from "@/app/public/blocks/CategoryTitle";
-import { categories } from "@/app/public/blocks/Categories/categories.data";
+// Youthinsight page
+import CategoryTitleWrapper from "./CategoryTitleWrapper";
 import MfkList from "@/app/public/blocks/MfkList";
 import BlogSlider from "@/app/public/blocks/BlogSlider";
 import { getParentProject } from '@lib/getProjects';
 
 const project = categories.find(c => c.id === 2)!;
-
-export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const result = await getParentProject('Youthinsight');
@@ -24,12 +22,10 @@ export default async function Home() {
   return (
     <div>
       <div className="mt-4 lg:mt-0 px-4 lg:px-0">
-        <CategoryTitle
-          image={parent?.image?.url ?? project.image}
-          pattern={project.pattern}
-          gradient={project.gradient}
-          hoverGradient={project.hoverGradient}
-          title={parent?.title ?? project.title}
+        <CategoryTitleWrapper
+          projectId={2}
+          image={parent?.image?.url}
+          title={parent?.title}
           description={parent?.body}
         />
       </div>
