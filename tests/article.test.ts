@@ -13,16 +13,16 @@ async function getToken() {
     body: JSON.stringify({ email: LOGIN_EMAIL, password: LOGIN_PASSWORD }),
   });
 
-  const data = await res.json();
-
-  if (res.headers.get("set-cookie")) {
-    const cookie = res.headers.get("set-cookie")!;
-    return cookie.split(";")[0].split("=")[1];
+  const cookie = res.headers.get("set-cookie");
+  if (cookie) {
+    const match = cookie.match(/token=([^;]+)/);
+    if (match) return match[1];
   }
 
+  const data = await res.json();
   if (data.token) return data.token;
 
-  throw new Error("Не вдалося отримати токен");
+  throw new Error(`Не вдалося отримати токен: ${JSON.stringify(data)}`);
 }
 
 async function run() {
