@@ -13,13 +13,18 @@ async function getToken() {
     body: JSON.stringify({ email: LOGIN_EMAIL, password: LOGIN_PASSWORD }),
   });
 
+  console.log("status:", res.status);
+  console.log("headers:", Object.fromEntries(res.headers.entries()));
+  
+  const data = await res.json();
+  console.log("body:", data);
+
   const cookie = res.headers.get("set-cookie");
   if (cookie) {
     const match = cookie.match(/token=([^;]+)/);
     if (match) return match[1];
   }
 
-  const data = await res.json();
   if (data.token) return data.token;
 
   throw new Error(`Не вдалося отримати токен: ${JSON.stringify(data)}`);
