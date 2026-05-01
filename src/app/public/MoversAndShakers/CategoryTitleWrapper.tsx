@@ -16,7 +16,7 @@ export default function CategoryTitleWrapper({ projectId }: { projectId: number 
       gradient={project.gradient}
       hoverGradient={project.hoverGradient}
       title={project.title}
-      description={project.description}
+      // description={project.description}
     />
   );
 }

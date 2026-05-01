@@ -43,6 +43,16 @@ type GalleryBlock = {
   };
 };
 
+type CustomImageBlock = {
+  id: string;
+  type: "customImage";
+  data: {
+    url: string;
+    redirectUrl?: string;
+    caption?: string;
+  };
+};
+
 type VideoBlock = {
   id: string;
   type: "video";
@@ -61,6 +71,7 @@ type EditorBlock =
   | ListBlock
   | ImageBlock
   | GalleryBlock
+  | CustomImageBlock
   | VideoBlock
   | EmbedBlock
 
@@ -183,6 +194,41 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
               </figure>
             );
           }
+
+case "customImage": {
+  const url = block.data.url ?? "";
+  const redirect = block.data.redirectUrl;
+
+  const imgElement = (
+    <img
+      src={url}
+      alt={block.data.caption ?? ""}
+      className="w-full object-cover rounded-xl aspect-[16/9]"
+    />
+  );
+
+  return (
+    <figure key={i} className="mb-4">
+      {redirect ? (
+        <a
+          href={redirect}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block border border-transparent hover:border-[#E91651] hover:border-2 rounded-[14px] transition-colors duration-200"
+        >
+          {imgElement}
+        </a>
+      ) : (
+        imgElement
+      )}
+      {block.data.caption && (
+        <figcaption className="mt-2 text-body_mobile lg:text-body">
+          <i>{block.data.caption}</i>
+        </figcaption>
+      )}
+    </figure>
+  );
+}
 
           case "video":
             return (
