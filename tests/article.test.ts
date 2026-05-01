@@ -34,19 +34,20 @@ async function run() {
   const token = await getToken();
   console.log("Token:", token);
 
-  const headers = {
+  const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    Cookie: `token=${token}`,
+    "Cookie": `token=${token}`,
   };
 
 
     const userId = 1; // тестовий користувач
 
     // Отримуємо parentId
+console.log('headers:', headers);
 const parentRes = await fetch(`${BASE_URL}/api/studioprojects/search?limit=100`, { headers });
 const parentData = await parentRes.json();
 const parentProject = (parentData.data as any[]).find(p => !p.parentId && p.categoryId === 1);
-const parentId = parentProject.id;
+const parentId = 6;
 console.log('parentId:', parentId);
 
 
