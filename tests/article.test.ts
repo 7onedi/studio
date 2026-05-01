@@ -43,11 +43,11 @@ async function run() {
     const userId = 1; // тестовий користувач
 
     // Отримуємо parentId
-const parentRes = await fetch(`${BASE_URL}/api/studioprojects/search?categoryId=1&limit=100`, { headers });
+const parentRes = await fetch(`${BASE_URL}/api/studioprojects/search?limit=100`, { headers });
 const parentData = await parentRes.json();
-console.log('projects:', JSON.stringify(parentData.data?.map((p: any) => ({ id: p.id, title: p.title, parentId: p.parentId }))));
-const parentProject = (parentData.data as any[]).find(p => !p.parentId);
+const parentProject = (parentData.data as any[]).find(p => !p.parentId && p.categoryId === 1);
 const parentId = parentProject.id;
+console.log('parentId:', parentId);
 
 
 const subcategoryMap: Record<string, { subcategoryId: number; position: [number, number] }> = {
