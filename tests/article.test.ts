@@ -43,7 +43,7 @@ async function run() {
     const userId = 1; // тестовий користувач
 
     // Отримуємо parentId
-const parentRes = await fetch(`${BASE_URL}/api/studioprojects/search?categoryId=6&limit=100`, { headers });
+const parentRes = await fetch(`${BASE_URL}/api/studioprojects/search?categoryId=1&limit=100`, { headers });
 const parentData = await parentRes.json();
 const parentProject = (parentData.data as any[]).find(p => !p.parentId);
 const parentId = parentProject.id;
