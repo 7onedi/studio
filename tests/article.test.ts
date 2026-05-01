@@ -2,7 +2,7 @@ import path from "path";
 import fs from "fs";
 
 // === Налаштування ===
-const BASE_URL = "https://studio.pangeya.org.ua";
+const BASE_URL = "http://localhost:3000";
 const LOGIN_EMAIL = "yarikgera@gmail.com";
 const LOGIN_PASSWORD = "stina44449999ECOCENTER";
 
