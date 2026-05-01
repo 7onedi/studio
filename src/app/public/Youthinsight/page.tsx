@@ -4,7 +4,7 @@ import MfkList from "@/app/public/blocks/MfkList";
 import BlogSlider from "@/app/public/blocks/BlogSlider";
 import { getParentProject } from '@lib/getProjects';
 
-export const dynamic = 'force-dynamic';
+const project = categories.find(c => c.id === 2)!;
 
 export default async function Home() {
   const result = await getParentProject('Youthinsight');
