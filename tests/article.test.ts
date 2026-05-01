@@ -2,9 +2,9 @@ import path from "path";
 import fs from "fs";
 
 // === Налаштування ===
-const BASE_URL = "http://localhost:3000";
-const LOGIN_EMAIL = "test@gmail.com";
-const LOGIN_PASSWORD = "111111";
+const BASE_URL = "https://studio.pangeya.org.ua/";
+const LOGIN_EMAIL = "yarikgera@gmail.com";
+const LOGIN_PASSWORD = "stina44449999ECOCENTER";
 
 async function getToken() {
   const res = await fetch(`${BASE_URL}/api/auth/login`, {
@@ -35,7 +35,7 @@ async function run() {
   };
 
 
-    const userId = 2; // тестовий користувач
+    const userId = 1; // тестовий користувач
 
     // Отримуємо parentId
 const parentRes = await fetch(`${BASE_URL}/api/studioprojects/search?categoryId=6&limit=100`, { headers });
@@ -46,17 +46,17 @@ console.log('parentId:', parentId);
 
 
 const subcategoryMap: Record<string, { subcategoryId: number; position: [number, number] }> = {
-  'YFC-Stina':        { subcategoryId: 20, position: [48.45262, 28.42077] },
-  'YFC-Zhmerynka':    { subcategoryId: 21, position: [49.039,   28.1085]  },
-  'YFC-Yampil':       { subcategoryId: 22, position: [48.2436,  28.287]   },
-  'YFC-Tulchyn':      { subcategoryId: 23, position: [48.67045, 28.83748] },
-  'YFC-Bershad':      { subcategoryId: 24, position: [48.3728,  29.5326]  },
-  'YFC-Voronovytsia': { subcategoryId: 25, position: [49.107373, 28.691632] },
-  'YFC-Bratslav':     { subcategoryId: 26, position: [48.82770, 28.94194] },
-  'YFC-Larga':        { subcategoryId: 27, position: [48.369281, 26.837996] },
-  'YFC-Ghindesti':    { subcategoryId: 28, position: [47.85867, 28.382760] },
-  'YFC-Racaria':      { subcategoryId: 29, position: [47.91471, 27.610583] },
-  'YFC-Glodeni-1':    { subcategoryId: 30, position: [47.775326, 27.517800] },
+  'YFC-Stina':        { subcategoryId: 1, position: [48.45262, 28.42077] },
+  'YFC-Zhmerynka':    { subcategoryId: 2, position: [49.039,   28.1085]  },
+  'YFC-Yampil':       { subcategoryId: 3, position: [48.2436,  28.287]   },
+  'YFC-Tulchyn':      { subcategoryId: 4, position: [48.67045, 28.83748] },
+  'YFC-Bershad':      { subcategoryId: 5, position: [48.3728,  29.5326]  },
+  'YFC-Voronovytsia': { subcategoryId: 6, position: [49.107373, 28.691632] },
+  'YFC-Bratslav':     { subcategoryId: 7, position: [48.82770, 28.94194] },
+  'YFC-Larga':        { subcategoryId: 8, position: [48.369281, 26.837996] },
+  'YFC-Ghindesti':    { subcategoryId: 9, position: [47.85867, 28.382760] },
+  'YFC-Racaria':      { subcategoryId: 10, position: [47.91471, 27.610583] },
+  'YFC-Glodeni-1':    { subcategoryId: 11, position: [47.775326, 27.517800] },
 };
 
 // 3. Дані МФК
@@ -157,7 +157,7 @@ for (const mfk of mfkData) {
 
   const payload = {
     title: mfk.title,
-    categoryId: 6,
+    categoryId: 1,
     subcategoryId,
     parentId,
     body: { blocks: [] },
