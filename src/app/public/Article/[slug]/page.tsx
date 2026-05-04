@@ -95,7 +95,13 @@ console.log("gallery after patch:", JSON.stringify(
   article.body.blocks.filter((b: any) => b.type === "gallery"),
   null, 2
 ));
-  const allArticles = allRaw.map(toArticleProps);
+const subArticles = allRaw
+  .map(toArticleProps)
+  .filter(
+    (a: ReturnType<typeof toArticleProps>) =>
+      a.meta.SubCategory === article.meta.SubCategory &&
+      a.meta.slug !== article.meta.slug
+  );
   console.log("article =", article.author);
   const categoryId = await getCategoryId(article.meta.category);
 
@@ -140,7 +146,7 @@ console.log("gallery after patch:", JSON.stringify(
                 </div>
               </div>
               <ArticleMfkList
-                articles={allArticles}
+                articles={subArticles}
                 currentSlug={article.meta.slug}
               />
             </div>
