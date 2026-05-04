@@ -11,6 +11,7 @@ import ContributorsList from './ContributorsList';
 import { Contributor } from './ContributorCard';
 import dynamic from 'next/dynamic';
 import { Category, ParentProject, SocialLink } from './ParentProjectFormDialog';
+import { Switch, FormControlLabel } from '@mui/material';
 
 const ReactEditor = dynamic(() => import('../../components/editor/ReactEditor'), { ssr: false });
 
@@ -54,7 +55,7 @@ interface Props {
 const PLATFORMS = ['YOUTUBE', 'INSTAGRAM', 'FACEBOOK', 'TIKTOK', 'WEBSITE'];
 
 function ImageUploadBox({
-  previewSrc, existingUrl, onUpload, onRemove, inputId, label = 'Банер',
+  previewSrc, existingUrl, onUpload, onRemove, inputId, label,
 }: {
   previewSrc: string | null;
   existingUrl: string | null;
@@ -67,7 +68,7 @@ function ImageUploadBox({
 
   return (
     <Box>
-      <Typography variant="body2" color="text.secondary" mb={1}>Банер</Typography>
+      <Typography variant="body2" color="text.secondary" mb={1}>{label}</Typography>
       <Box
         sx={{
           border: '2px dashed',
@@ -121,6 +122,7 @@ export default function ChildProjectFormDialog({
   const [content, setContent]           = useState<unknown>(null);
   const [imageBase64, setImageBase64]   = useState<string | null>(null);
   const [logoBase64, setLogoBase64]     = useState<string | null>(null);
+  const [zoom, setZoom]               = useState<boolean>(false);
   const [lat, setLat]                   = useState('');
   const [lng, setLng]                   = useState('');
   const [websiteUrl, setWebsiteUrl]     = useState('');
@@ -149,6 +151,7 @@ export default function ChildProjectFormDialog({
       setLng(initial?.lng ?? '');
       setWebsiteUrl(initial?.websiteUrl ?? '');
       setContributors(fullData?.body?.contributors ?? []);
+      setZoom((fullData?.body as any)?.zoom ?? (initial?.body as any)?.zoom ?? false);
       setSocials(initial?.socialLinks?.length
         ? initial.socialLinks
         : [{ platform: 'INSTAGRAM', url: '' }]);
@@ -185,6 +188,7 @@ useEffect(() => {
   );
   setImageBase64(null);
   setLogoBase64(null);
+  setZoom((fullData?.body as any)?.zoom ?? (initial?.body as any)?.zoom ?? false);
   setError('');
 }, [open, fullData]);
 
@@ -272,6 +276,7 @@ useEffect(() => {
         body: {
           ...(content as any ?? { blocks: [] }),
           contributors,
+          zoom,
         },
         ...(imageId && { imageId }),
         ...(logoId && { logoId }),
@@ -407,6 +412,15 @@ useEffect(() => {
             onRemove={() => setImageBase64(null)}
             inputId="child-project-image"
             label="Банер клубу"
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={zoom}
+                onChange={(e) => setZoom(e.target.checked)}
+              />
+            }
+            label="Zoom"
           />
 
           <ImageUploadBox

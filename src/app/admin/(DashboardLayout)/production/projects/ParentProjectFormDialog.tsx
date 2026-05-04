@@ -194,7 +194,7 @@ export default function ParentProjectFormDialog({
         body: content ?? { blocks: [] },
         locationData: {
           name:        title,
-          url:         websiteUrl || 'https://studio.pangeya.org.ua',
+          url: websiteUrl || `https://studio.pangeya.org.ua/${selectedCategory?.slug}`,
           coordinates: { lat: parseFloat(lat) || 0, lng: parseFloat(lng) || 0 },
         },
         socialLinks: socials
