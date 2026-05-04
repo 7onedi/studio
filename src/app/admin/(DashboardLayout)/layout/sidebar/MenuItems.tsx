@@ -21,23 +21,23 @@ import {
 import { uniqueId } from "lodash";
 
 const Menuitems = [
-  {
-    navlabel: true,
-    subheader: "GENERAL",
-  },
+  // {
+  //   navlabel: true,
+  //   subheader: "GENERAL",
+  // },
 
-  {    
-    id: uniqueId(),
-    title: "Profile",
-    icon: IconUser,
-    href: "/admin/profile",
-  },
-  {
-    id: uniqueId(),
-    title: "Dashboard",
-    icon: IconLayoutDashboard,
-    href: "/admin/dashboard",
-  },
+  // {    
+  //   id: uniqueId(),
+  //   title: "Profile",
+  //   icon: IconUser,
+  //   href: "/admin/profile",
+  // },
+  // {
+  //   id: uniqueId(),
+  //   title: "Dashboard",
+  //   icon: IconLayoutDashboard,
+  //   href: "/admin/dashboard",
+  // },
   {
     navlabel: true,
     subheader: "PRODUCTION",
@@ -61,53 +61,53 @@ const Menuitems = [
     icon: IconMapPin,
     href: "/admin/production/projects",
   },
-  {
-    id: uniqueId(),
-    title: "Places",
-    icon: IconMap2,
-    href: "/admin/production/places",
-  },
-  {
-    id: uniqueId(),
-    title: "Team",
-    icon: IconUsersGroup,
-    href: "/admin/production/team",
-  },
-  {
-    id: uniqueId(),
-    title: "Contacts",
-    icon: IconPhone,
-    href: "/admin/production/contacts",
-  },
-  {
-    id: uniqueId(),
-    title: "Methodology",
-    icon: IconBook,
-    href: "/admin/production/methodology",
-  },
+  // {
+  //   id: uniqueId(),
+  //   title: "Places",
+  //   icon: IconMap2,
+  //   href: "/admin/production/places",
+  // },
+  // {
+  //   id: uniqueId(),
+  //   title: "Team",
+  //   icon: IconUsersGroup,
+  //   href: "/admin/production/team",
+  // },
+  // {
+  //   id: uniqueId(),
+  //   title: "Contacts",
+  //   icon: IconPhone,
+  //   href: "/admin/production/contacts",
+  // },
+  // {
+  //   id: uniqueId(),
+  //   title: "Methodology",
+  //   icon: IconBook,
+  //   href: "/admin/production/methodology",
+  // },
 
-  {
-    navlabel: true,
-    subheader: "ABOUT NETWORK",
-  },
-  {
-    id: uniqueId(),
-    title: "Donors",
-    icon: IconVaccine,
-    href: "/admin/production/donors",
-  },
-  {
-    id: uniqueId(),
-    title: "Partners",
-    icon: IconWorld,
-    href: "/admin/production/partners",
-  },
-  {
-    id: uniqueId(),
-    title: "Submissions",
-    icon: IconTableDown,
-    href: "/admin/production/submissions",
-  },
+  // {
+  //   navlabel: true,
+  //   subheader: "ABOUT NETWORK",
+  // },
+  // {
+  //   id: uniqueId(),
+  //   title: "Donors",
+  //   icon: IconVaccine,
+  //   href: "/admin/production/donors",
+  // },
+  // {
+  //   id: uniqueId(),
+  //   title: "Partners",
+  //   icon: IconWorld,
+  //   href: "/admin/production/partners",
+  // },
+  // {
+  //   id: uniqueId(),
+  //   title: "Submissions",
+  //   icon: IconTableDown,
+  //   href: "/admin/production/submissions",
+  // },
 
   // {
   //   navlabel: true,
