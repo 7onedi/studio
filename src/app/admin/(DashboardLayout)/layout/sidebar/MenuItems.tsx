@@ -45,15 +45,15 @@ const Menuitems = [
 
   {
     id: uniqueId(),
-    title: "Categories and Sub",
-    icon: IconBook,
-    href: "/admin/production/categories",
-  },
-  {
-    id: uniqueId(),
     title: "Articles",
     icon: IconTypography,
     href: "/admin/production/articles",
+  },
+  {
+    id: uniqueId(),
+    title: "Categories and Sub",
+    icon: IconBook,
+    href: "/admin/production/categories",
   },
   {
     id: uniqueId(),
