@@ -413,24 +413,28 @@ useEffect(() => {
             inputId="child-project-image"
             label="Банер клубу"
           />
-          <FormControlLabel
-            control={
-              <Switch
-                checked={zoom}
-                onChange={(e) => setZoom(e.target.checked)}
-              />
-            }
-            label="Zoom"
-          />
 
-          <ImageUploadBox
-            previewSrc={logoBase64}
-            existingUrl={fullData?.logo?.url ?? null}
-            onUpload={setLogoBase64}
-            onRemove={() => setLogoBase64(null)}
-            inputId="child-project-logo"
-            label="Лого клубу"
-          />
+            {categories.find((c) => c.id === Number(categoryId))?.name === '#CountrysideStudio' && (
+              <>
+                <ImageUploadBox
+                  previewSrc={logoBase64}
+                  existingUrl={fullData?.logo?.url ?? null}
+                  onUpload={setLogoBase64}
+                  onRemove={() => setLogoBase64(null)}
+                  inputId="child-project-logo"
+                  label="Лого клубу"
+                />
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={zoom}
+                      onChange={(e) => setZoom(e.target.checked)}
+                    />
+                  }
+                  label="Zoom"
+                />
+              </>
+            )}
 
           <Divider />
 
