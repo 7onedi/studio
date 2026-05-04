@@ -70,21 +70,21 @@ export default function ChildProjectTable({
       ),
       size: 180,
     },
-    {
-      accessorKey: 'published',
-      header: 'Статус',
-      cell: ({ row }) => (
-        <Chip
-          label={row.original.published ? 'Опубліковано' : 'Чернетка'}
-          size="small"
-          color={row.original.published ? 'success' : 'default'}
-          variant="outlined"
-          onClick={() => onPublish(row.original.id, row.original.published ?? false)}
-          sx={{ cursor: 'pointer' }}
-        />
-      ),
-      size: 130,
-    },
+    // {
+    //   accessorKey: 'published',
+    //   header: 'Статус',
+    //   cell: ({ row }) => (
+    //     <Chip
+    //       label={row.original.published ? 'Опубліковано' : 'Чернетка'}
+    //       size="small"
+    //       color={row.original.published ? 'success' : 'default'}
+    //       variant="outlined"
+    //       onClick={() => onPublish(row.original.id, row.original.published ?? false)}
+    //       sx={{ cursor: 'pointer' }}
+    //     />
+    //   ),
+    //   size: 130,
+    // },
     {
       id: 'actions',
       header: '',
