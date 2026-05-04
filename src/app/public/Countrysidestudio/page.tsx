@@ -16,7 +16,7 @@ export default async function Home() {
       slug:  p.subcategory?.slug ?? String(p.id),
       title: p.title,
       Logo:  p.logo?.url ?? '',
-      zoom:  p.body?.zoom ?? false,
+      zoom:  p.body?.zoom,
     },
   }));
 

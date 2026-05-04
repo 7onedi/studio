@@ -63,13 +63,12 @@ export default function MfkList({ markers, id }: MfkListProps) {
     <div className="relative group">
       <div className={`${!item.zoom ? "bg-transparent" : ""} bg-transparent overflow-hidden rounded-t-2xl bg-black border-b-2 ${id === "#mfk" ? "border-main-amarant" : "border-none"}`}>
         <div className="relative h-[220px] w-full">
-          {item.Logo && (
-            <Image
-              src={item.Logo}
-              alt={item.title}
-              fill
-            />
-          )}
+          <Image
+            src={item.Logo!}
+            alt={item.title}
+            fill
+            className={`${!item.zoom ? "object-contain" : "object-cover"} transition-transform duration-500 group-hover:scale-105`}
+          />
         </div>
       </div>
 
