@@ -1,5 +1,3 @@
-
-
 import CategoryTitle from "@/app/public/blocks/CategoryTitle";
 import { categories } from "@/app/public/blocks/Categories/categories.data";
 import BlogSlider from "../blocks/BlogSlider";
