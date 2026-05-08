@@ -1,22 +1,19 @@
 'use client';
 
-import Image from 'next/image';
+import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { initialCategories, MarkerInfo, ALL_CATEGORIES_VIEW } from './mapData';
-import { useState, useEffect } from 'react';
+import { buildCategories, Category, MarkerInfo, ALL_CATEGORIES_VIEW } from './mapData';
 import Link from 'next/link';
-import type { RichTextItem } from "@/app/public/components/RenderRichText";
-import { renderRichText } from "@/app/public/components/RenderRichText";
+// import type { RichTextItem } from "@/app/public/components/RenderRichText";
+// import { renderRichText } from "@/app/public/components/RenderRichText";
 import { useLanguage } from "@/app/providers/LanguageProvider";
 
-// Явно визначаємо тип для Map View, щоб уникнути помилки TS 'number[]' vs '[number, number]'
 type MapView = {
-    center: [number, number];
-    zoom: number;
+  center: [number, number];
+  zoom: number;
 };
 
-// Функція для створення іконки категорії
 const createCategoryIcon = (iconUrl: string) =>
   L.icon({
     iconUrl,
@@ -26,35 +23,24 @@ const createCategoryIcon = (iconUrl: string) =>
     popupAnchor: [0, -35],
   });
 
-// =================================================================
-// КОМПОНЕНТ ДЛЯ КЕРУВАННЯ ВИГЛЯДОМ КАРТИ (MapUpdater)
-// =================================================================
-function MapUpdater({ activeCategory }: { activeCategory: string | null }) {
-  const map = useMap(); 
-  
-  // ЯВНЕ оголошення типу для початкового центру
+function MapUpdater({ activeCategory, categories }: { 
+  activeCategory: string | null;
+  categories: Category[];
+}) {
+  const map = useMap();
   const initialMapCenter: [number, number] = [49.23, 28.47];
   const initialZoom = 13;
 
   useEffect(() => {
-    // Ініціалізація з ЯВНО ВКАЗАНИМ ТИПОМ MapView
     let targetView: MapView = { center: initialMapCenter, zoom: initialZoom };
-
     if (activeCategory === null) {
-      // 1. Стан "Показати всі" (використовує ALL_CATEGORIES_VIEW з mapData.ts)
-      targetView = ALL_CATEGORIES_VIEW as MapView; // Перетворюємо на MapView
+      targetView = ALL_CATEGORIES_VIEW as MapView;
     } else {
-      // 2. Стан окремої категорії
-      const category = initialCategories.find(cat => cat.id === activeCategory);
-      if (category) {
-        targetView = { center: category.center, zoom: category.zoom };
-      }
+      const category = categories.find(cat => cat.id === activeCategory);
+      if (category) targetView = { center: category.center, zoom: category.zoom };
     }
-
-    // Застосовуємо нові координати та зум з анімацією
-    map.setView(targetView.center, targetView.zoom, { animate: true, duration: 0.7 }); 
-
-  }, [activeCategory, map]); 
+    map.setView(targetView.center, targetView.zoom, { animate: true, duration: 0.7 });
+  }, [activeCategory, map, categories]);
 
   return null;
 }
@@ -63,22 +49,25 @@ function MapUpdater({ activeCategory }: { activeCategory: string | null }) {
 
 export default function MapComponent() {
   const { t } = useLanguage();
+  const [categories, setCategories] = useState<Category[]>([]);
   const [visibleTextFor, setVisibleTextFor] = useState<string | null>(null);
-
-  const [activeCategory, setActiveCategory] = useState<string | null>(
-    initialCategories[0]?.id || null
-  );
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeMarkers, setActiveMarkers] = useState<MarkerInfo[]>([]);
   const [currentIcon, setCurrentIcon] = useState<L.Icon | null>(null);
 
-  // Фільтруємо маркери + оновлюємо іконку
+  useEffect(() => {
+    buildCategories().then((cats) => {
+      setCategories(cats);
+      setActiveCategory(cats[0]?.id ?? null);
+    });
+  }, []);
   useEffect(() => {
     if (activeCategory === null) {
       // Показати всі категорії
-      setActiveMarkers(initialCategories.flatMap((cat) => cat.markers));
+      setActiveMarkers(categories.flatMap((cat) => cat.markers));
       setCurrentIcon(null); 
     } else {
-      const category = initialCategories.find((cat) => cat.id === activeCategory);
+      const category = categories.find((cat) => cat.id === activeCategory);
 
       setActiveMarkers(category ? category.markers : []);
 
@@ -90,8 +79,8 @@ export default function MapComponent() {
   const defaultCenter: [number, number] = [49.23, 28.47];
   const defaultZoom: number = 13;
 
-  const initialMapCenter: [number, number] = initialCategories[0]?.center || defaultCenter;
-  const initialZoom: number = initialCategories[0]?.zoom || defaultZoom;
+  const initialMapCenter: [number, number] = categories[0]?.center || defaultCenter;
+  const initialZoom: number = categories[0]?.zoom || defaultZoom;
 
 
   return (
@@ -110,14 +99,14 @@ export default function MapComponent() {
         />
         
         {/* Компонент, який змінює центр та зум при зміні activeCategory */}
-        <MapUpdater activeCategory={activeCategory} />
+        <MapUpdater activeCategory={activeCategory} categories={categories} />
 
         {/* Маркери */}
         {activeMarkers.map((marker) => {
           // Логіка визначення іконки
           const category =
             activeCategory === null
-              ? initialCategories.find((cat) =>
+              ? categories.find((cat) =>
                   cat.markers.some((m) => m.id === marker.id)
                 )
               : null;
@@ -175,7 +164,7 @@ export default function MapComponent() {
 
       {/* Кнопки категорій */}
       <div className={`absolute top-2 left-2 lg:top-5 lg:left-12 lg:left-0 space-y-2 z-[600] pointer-events-none`}>
-        {initialCategories.map((cat) => (
+        {categories.map((cat) => (
           <button
             key={cat.id}
             onClick={() => {

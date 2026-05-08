@@ -79,14 +79,13 @@ function ProjectsContent() {
   useEffect(() => {
     if (tab !== 0) return;
     setParentLoading(true);
-    const params = new URLSearchParams({ page, limit, sortBy, order });
+    const params = new URLSearchParams({ page, limit, sortBy, order,  hasParent: 'false' });
     if (search) params.set('title', search);
     // лише батьківські — без parentId
     fetch(`/api/studioprojects/search?${params}`)
       .then((r) => r.json())
       .then((d) => {
-        const all: ParentProject[] = Array.isArray(d.data) ? d.data : [];
-        setParents(all.filter((p: any) => !p.parentId));
+        setParents(Array.isArray(d.data) ? d.data : []);
         setParentTotal(d.total ?? 0);
       })
       .catch(console.error)
@@ -97,13 +96,12 @@ function ProjectsContent() {
   useEffect(() => {
     if (tab !== 1) return;
     setChildLoading(true);
-    const params = new URLSearchParams({ page, limit, sortBy, order });
+    const params = new URLSearchParams({ page, limit, sortBy, order, hasParent: 'true' });
     if (search) params.set('title', search);
     fetch(`/api/studioprojects/search?${params}`)
       .then((r) => r.json())
       .then((d) => {
-        const all: ChildProject[] = Array.isArray(d.data) ? d.data : [];
-        setChildren(all.filter((p: any) => p.parentId));
+        setChildren(Array.isArray(d.data) ? d.data : []);
         setChildTotal(d.total ?? 0);
       })
       .catch(console.error)
