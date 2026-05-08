@@ -6,7 +6,7 @@ import {
   Button, TextField, Stack, Typography, MenuItem,
   Box, IconButton, Divider,
 } from '@mui/material';
-import { IconTrash, IconPlus } from '@tabler/icons-react';
+import { IconTrash, IconPlus, IconMinus } from '@tabler/icons-react';
 import dynamic from 'next/dynamic';
 
 const ReactEditor = dynamic(() => import('../../components/editor/ReactEditor'), { ssr: false });
@@ -115,6 +115,7 @@ export default function ParentProjectFormDialog({
   const [fullData, setFullData]     = useState<any>(null);
   const [imageRemoved, setImageRemoved] = useState(false);
   const [lat, setLat]               = useState('');
+  const [zoom, setZoom] = useState<number>(14);
   const [lng, setLng]               = useState('');
   const [websiteUrl, setWebsiteUrl] = useState('');
   
@@ -131,6 +132,7 @@ export default function ParentProjectFormDialog({
       setContent(initial?.body ?? null);
       setLat(initial?.lat ?? '');
       setLng(initial?.lng ?? '');
+      setZoom((initial?.body as any)?.zoom ?? 14);
       setWebsiteUrl(initial?.websiteUrl ?? '');
       setSocials(initial?.socialLinks?.length ? initial.socialLinks : [{ platform: 'INSTAGRAM', url: '' }]);
       setError('');
@@ -154,6 +156,7 @@ export default function ParentProjectFormDialog({
     setContent(fullData?.body ?? initial?.body ?? null);
     setLat(String(fullData?.location?.coordinates?.lat ?? initial?.lat ?? ''));
     setLng(String(fullData?.location?.coordinates?.lng ?? initial?.lng ?? ''));
+    setZoom((fullData?.location?.coordinates as any)?.zoom ?? (initial?.body as any)?.zoom ?? 14);
     setWebsiteUrl(fullData?.location?.url ?? initial?.websiteUrl ?? '');
     setSocials(
         fullData?.socialLinks?.length
@@ -194,8 +197,8 @@ export default function ParentProjectFormDialog({
         body: content ?? { blocks: [] },
         locationData: {
           name:        title,
-          url: websiteUrl || `https://studio.pangeya.org.ua/${selectedCategory?.slug}`,
-          coordinates: { lat: parseFloat(lat) || 0, lng: parseFloat(lng) || 0 },
+          url: websiteUrl || `https://studio.pangeya.org.ua/${selectedCategory?.slug}-${Date.now()}`,
+          coordinates: { lat: parseFloat(lat) || 0, lng: parseFloat(lng) || 0, zoom },
         },
         socialLinks: socials
           .filter((s) => s.url.trim())
@@ -264,11 +267,21 @@ export default function ParentProjectFormDialog({
               onChange={(e) => setLng(e.target.value)} size="small" placeholder="28.42077" />
           </Stack>
 
-          <TextField
-            fullWidth label="Сайт" value={websiteUrl}
-            onChange={(e) => setWebsiteUrl(e.target.value)}
-            size="small" placeholder="https://..."
-          />
+<Stack direction="row" alignItems="center" spacing={1}>
+  <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'nowrap' }}>Зум</Typography>
+  <IconButton size="small" onClick={() => setZoom((z) => Math.max(1, z - 1))}>
+    <IconMinus size={14} />
+  </IconButton>
+  <TextField
+    value={zoom}
+    onChange={(e) => setZoom(Math.min(20, Math.max(1, Number(e.target.value))))}
+    size="small"
+    slotProps={{ htmlInput: { min: 1, max: 20, style: { textAlign: 'center', width: 40 } } }}
+  />
+  <IconButton size="small" onClick={() => setZoom((z) => Math.min(20, z + 1))}>
+    <IconPlus size={14} />
+  </IconButton>
+</Stack>
 
           <Divider />
 

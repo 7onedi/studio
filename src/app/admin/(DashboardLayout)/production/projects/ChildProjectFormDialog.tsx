@@ -207,12 +207,10 @@ useEffect(() => {
   useEffect(() => {
     if (!categoryId) { setParentProjects([]); setParentId(''); return; }
     setLoadingParents(true);
-    fetch(`/api/studioprojects/search?categoryId=${categoryId}&limit=100`)
+    fetch(`/api/studioprojects/search?categoryId=${categoryId}&limit=100&hasParent=false`)
       .then((r) => r.json())
       .then((d) => {
-        // лише батьківські (без parentId)
-        const all = Array.isArray(d.data) ? d.data : [];
-        setParentProjects(all.filter((p: ParentProject & { parentId?: number | null }) => !p.parentId));
+        setParentProjects(Array.isArray(d.data) ? d.data : []);
       })
       .catch(console.error)
       .finally(() => setLoadingParents(false));

@@ -8,6 +8,8 @@ function parseQuery(req: NextRequest) {
 
   if (searchParams.has("title"))       filters.title       = searchParams.get("title");
   if (searchParams.has("parentId"))    filters.parentId    = Number(searchParams.get("parentId"));
+  if (searchParams.get("hasParent") === "true")  filters.parentId = { not: null };
+  if (searchParams.get("hasParent") === "false") filters.parentId = null;
   if (searchParams.has("categoryId"))  filters.categoryId  = Number(searchParams.get("categoryId"));
   if (searchParams.has("subcategoryId")) filters.subcategoryId = Number(searchParams.get("subcategoryId"));
 

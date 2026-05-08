@@ -7,6 +7,7 @@ export const createLocationSchema = z.object({
     .object({
       lat: z.number(),
       lng: z.number(),
+      zoom: z.number().optional(),
     })
     .optional(),
   description: z.string().optional(),
