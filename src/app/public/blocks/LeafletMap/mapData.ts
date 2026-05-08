@@ -50,8 +50,9 @@ export const ALL_CATEGORIES_VIEW = {
 export async function buildCategories(): Promise<Category[]> {
   const icons = ['/map/Mark1.png', '/map/Mark2.png', '/map/Mark3.png', '/map/Mark4.png'];
 
-  // 1. Отримати всі категорії
-  const res = await fetch('/api/categories');
+  const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+
+  const res = await fetch(`${BASE_URL}/api/categories`);
   const data = await res.json();
   const allCategories = Array.isArray(data) ? data : data.items ?? [];
 
