@@ -3,7 +3,7 @@ FROM node:22 AS builder
 WORKDIR /app
 
 # Увімкнути corepack і активувати pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@10.11.0 --activate
 
 # Копіюємо lockfile та manifest
 COPY package.json pnpm-lock.yaml ./
@@ -25,7 +25,7 @@ FROM node:22-slim AS production
 WORKDIR /app
 
 # Увімкнути corepack (вже є в Node 22)
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@10.11.0 --activate
 
 # Встановити лише необхідні бібліотеки для запуску (можна пропустити, якщо немає native deps)
 RUN apt-get update && apt-get install -y \
