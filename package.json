@@ -81,13 +81,5 @@
     "tailwindcss": "^3.4.17",
     "tsx": "^4.21.0",
     "typescript": "^5"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@prisma/engines", "prisma", "esbuild", "sharp",
-      "@parcel/watcher", "unrs-resolver", "core-js-pure",
-      "tree-sitter", "tree-sitter-json", "@tree-sitter-grammars/tree-sitter-yaml",
-      "@scarf/scarf"
-    ]
   }
 }
