@@ -8,6 +8,8 @@ import {
   Chip, OutlinedInput, SelectChangeEvent,
   Switch, FormControlLabel,
 } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const ReactEditor = dynamic(() => import("../editor/ReactEditor"), {
   ssr: false,
@@ -61,6 +63,8 @@ export default function ArticleForm({
   const [subcategoryIds, setSubcategoryIds] = useState<number[]>(initialData?.subcategoryIds ?? []);
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>(initialData?.tags ?? []);
+  const [tagOptions, setTagOptions] = useState<{ id: number; name: string }[]>([]);
+  const [tagLoading, setTagLoading] = useState(false);
   const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
   const [subcategories, setSubcategories] = useState<{ id: number; name: string }[]>([]);
   const [coverBase64, setCoverBase64] = useState<string | null>(null);
@@ -105,6 +109,24 @@ export default function ArticleForm({
       })
       .catch(console.error);
   }, [categoryId]);
+
+  useEffect(() => {
+  if (!tagInput.trim()) {
+    setTagOptions([]);
+    return;
+  }
+  const timer = setTimeout(() => {
+    setTagLoading(true);
+    fetch(`/api/tags/search?name=${encodeURIComponent(tagInput.trim())}&page=1&limit=10`)
+      .then((r) => r.json())
+      .then((data) => {
+        setTagOptions(Array.isArray(data.data) ? data.data : []);
+      })
+      .catch(console.error)
+      .finally(() => setTagLoading(false));
+  }, 300);
+  return () => clearTimeout(timer);
+}, [tagInput]);
 
   const handleAddTag = () => {
     const trimmed = tagInput.trim();
@@ -169,25 +191,51 @@ const handleSubmit = () => {
           <TextField fullWidth label="Заголовок *" value={formTitle}
             onChange={(e) => setFormTitle(e.target.value)} sx={{ mb: 3 }} />
 
-
-          <Box sx={{ mb: 3 }}>
-            <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
+        <Box sx={{ mb: 3 }}>
+          <Autocomplete
+            multiple
+            freeSolo
+            options={tagOptions.map((t) => t.name)}
+            value={tags}
+            inputValue={tagInput}
+            loading={tagLoading}
+            onInputChange={(_, value, reason) => {
+              if (reason !== "reset") setTagInput(value);
+            }}
+            onChange={(_, newValue) => {
+              // newValue — масив рядків (існуючі + нові freeSolo)
+              setTags(newValue as string[]);
+              setTagInput("");
+            }}
+            filterOptions={(options) => options} // фільтрація на сервері
+            renderTags={(value, getTagProps) =>
+              value.map((option, index) => (
+                <Chip
+                  label={option}
+                  size="small"
+                  {...getTagProps({ index })}
+                  key={option}
+                />
+              ))
+            }
+            renderInput={(params) => (
               <TextField
-                label="Додати тег"
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
-                size="small"
-                sx={{ flex: 1 }}
+                {...params}
+                label="Теги"
+                placeholder="Введіть тег..."
+                InputProps={{
+                  ...params.InputProps,
+                  endAdornment: (
+                    <>
+                      {tagLoading && <CircularProgress size={16} />}
+                      {params.InputProps.endAdornment}
+                    </>
+                  ),
+                }}
               />
-              <Button variant="outlined" onClick={handleAddTag}>Додати</Button>
-            </Box>
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-              {tags.map((tag) => (
-                <Chip key={tag} label={tag} onDelete={() => setTags((p) => p.filter((t) => t !== tag))} />
-              ))}
-            </Box>
-          </Box>
+            )}
+          />
+        </Box>
 
           <Box sx={{ border: "1px solid #ddd", borderRadius: 2, p: 2, mb: 3, minHeight: 300 }}>
             {content !== null ? (
