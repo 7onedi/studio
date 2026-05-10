@@ -9,7 +9,7 @@ import {
   IconUser,
   IconMapPin,
   IconTicket,
-  IconMap2,
+  IconTags,
   IconUsersGroup,
   IconPhone,
   IconBook,
@@ -51,6 +51,12 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
+    title: "Tags",
+    icon: IconTags,
+    href: "/admin/production/tags",
+  },
+  {
+    id: uniqueId(),
     title: "Categories and Sub",
     icon: IconBook,
     href: "/admin/production/categories",
@@ -61,12 +67,6 @@ const Menuitems = [
     icon: IconMapPin,
     href: "/admin/production/projects",
   },
-  // {
-  //   id: uniqueId(),
-  //   title: "Places",
-  //   icon: IconMap2,
-  //   href: "/admin/production/places",
-  // },
   // {
   //   id: uniqueId(),
   //   title: "Team",
