@@ -21,17 +21,23 @@ import {
 import { uniqueId } from "lodash";
 
 const Menuitems = [
-  // {
-  //   navlabel: true,
-  //   subheader: "GENERAL",
-  // },
+  {
+    navlabel: true,
+    subheader: "GENERAL",
+  },
 
-  // {    
-  //   id: uniqueId(),
-  //   title: "Profile",
-  //   icon: IconUser,
-  //   href: "/admin/profile",
-  // },
+  {    
+    id: uniqueId(),
+    title: "Profile",
+    icon: IconUser,
+    href: "/admin/profile",
+  },
+  {
+    id: uniqueId(),
+    title: "Учасники",
+    icon: IconUsersGroup,
+    href: "/admin/users",
+  },
   // {
   //   id: uniqueId(),
   //   title: "Dashboard",
