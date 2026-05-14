@@ -1,61 +1,26 @@
-'use client'
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
-import { Grid, Box } from "@mui/material";
-import PageContainer from "../components/container/PageContainer";
+export default async function ProfileIndexPage() {
+  // Тягнемо поточного юзера на сервері через ту саму куку
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((c) => `${c.name}=${c.value}`)
+    .join("; ");
 
-import ProfileHeader from "../components/profile/ProfileHeader";
-import ProfileStats from "../components/profile/ProfileStats";
-import ProfileAbout from "../components/profile/ProfileAbout";
-import ProfileActivity from "../components/profile/ProfileActivity";
-import Blog from "../components/profile/Blog";
+  const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+  const res = await fetch(`${base}/api/auth/me`, {
+    headers: { cookie: cookieHeader },
+    cache: "no-store",
+  });
 
-const ProfilePage = () => {
-  return (
-    <PageContainer title="Profile" description="User profile page">
-      <Box>
+  if (!res.ok) {
+    // Не авторизований — на логін
+    redirect("/admin/authentication/login");
+  }
 
-        <Grid container spacing={3}>
+  const user = await res.json();
 
-          {/* header */}
-          <Grid size={12}>
-            <ProfileHeader />
-          </Grid>
-
-          {/* stats */}
-          <Grid size={12}>
-            <ProfileStats />
-          </Grid>
-
-          {/* about */}
-          <Grid
-            size={{
-              xs: 12,
-              lg: 4
-            }}
-          >
-            <ProfileAbout />
-          </Grid>
-
-          {/* activity */}
-          <Grid
-            size={{
-              xs: 12,
-              lg: 8
-            }}
-          >
-            <ProfileActivity />
-          </Grid>
-
-          {/* posts / products */}
-          <Grid size={12}>
-            <Blog />
-          </Grid>
-
-        </Grid>
-
-      </Box>
-    </PageContainer>
-  );
-};
-
-export default ProfilePage;
+  redirect(`/admin/profile/${user.id}`);
+}
