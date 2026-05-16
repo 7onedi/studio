@@ -48,7 +48,7 @@ export const ALL_CATEGORIES_VIEW = {
 };
 
 export async function buildCategories(): Promise<Category[]> {
-  const icons = ['/map/Mark1.png', '/map/Mark2.png', '/map/Mark3.png', '/map/Mark4.png'];
+  const icons = ['/map/Mark1.svg', '/map/Mark2.svg', '/map/Mark3.svg', '/map/Mark4.svg'];
 
   const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 

@@ -34,7 +34,7 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
-    title: "Учасники",
+    title: "Users",
     icon: IconUsersGroup,
     href: "/admin/users",
   },
@@ -102,12 +102,12 @@ const Menuitems = [
   //   icon: IconVaccine,
   //   href: "/admin/production/donors",
   // },
-  // {
-  //   id: uniqueId(),
-  //   title: "Partners",
-  //   icon: IconWorld,
-  //   href: "/admin/production/partners",
-  // },
+  {
+    id: uniqueId(),
+    title: "Partners",
+    icon: IconWorld,
+    href: "/admin/production/partners",
+  },
   // {
   //   id: uniqueId(),
   //   title: "Submissions",

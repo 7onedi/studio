@@ -49,4 +49,12 @@ export const partnerRepository = {
       include: PartnerInclude,
     });
   },
+
+  unpublish(id: number) {
+    return prisma.partner.update({
+      where: { id },
+      data: { published: false, publishedAt: null },
+      include: PartnerInclude,
+    });
+  },
 };

@@ -5,6 +5,7 @@ export const createPartnerSchema = z.object({
   email:       z.string().email("Невалідний email"),
   role:        z.enum(["PARTNER", "MEMBER", "DONOR"]),
   description: z.string().optional(),
+  link:        z.string().url("Невалідний URL").optional(),
   imageId:     z.number().optional(),
 });
 
@@ -16,5 +17,9 @@ export const updatePartnerStatusSchema = z.object({
 });
 
 export const publishPartnerSchema = z.object({
+  id: z.number(),
+});
+
+export const unpublishPartnerSchema = z.object({
   id: z.number(),
 });

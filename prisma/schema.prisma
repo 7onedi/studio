@@ -67,7 +67,8 @@ model Partner {
   email       String        @unique
   role        PartnerRole
   status      PartnerStatus @default(PENDING)
-  description String?
+  description String?       @db.Text
+  link        String?
 
   imageId Int?
   image   Media? @relation(fields: [imageId], references: [id], onDelete: SetNull)

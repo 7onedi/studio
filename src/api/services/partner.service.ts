@@ -30,6 +30,7 @@ class PartnerService extends BaseService {
       email:       data.email,
       role:        data.role,
       description: data.description,
+      link:        data.link,
       image:       data.imageId ? { connect: { id: data.imageId } } : undefined,
     });
   }
@@ -50,6 +51,7 @@ class PartnerService extends BaseService {
       email:       data.email,
       role:        data.role,
       description: data.description,
+      link:        data.link,
       image:       data.imageId ? { connect: { id: data.imageId } } : undefined,
     });
   }
@@ -66,6 +68,12 @@ class PartnerService extends BaseService {
 
     const data = publishPartnerSchema.parse(body);
     return partnerRepository.publish(data.id);
+  }
+
+  async unpublish(user: any, body: unknown) {
+    this.assertPolicy(user, canPublishPartner);
+    const data = publishPartnerSchema.parse(body);
+    return partnerRepository.unpublish(data.id);
   }
 
 async delete(user: any, id: number) {

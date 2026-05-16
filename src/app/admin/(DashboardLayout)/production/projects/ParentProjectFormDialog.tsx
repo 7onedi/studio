@@ -267,21 +267,21 @@ export default function ParentProjectFormDialog({
               onChange={(e) => setLng(e.target.value)} size="small" placeholder="28.42077" />
           </Stack>
 
-<Stack direction="row" alignItems="center" spacing={1}>
-  <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'nowrap' }}>Зум</Typography>
-  <IconButton size="small" onClick={() => setZoom((z) => Math.max(1, z - 1))}>
-    <IconMinus size={14} />
-  </IconButton>
-  <TextField
-    value={zoom}
-    onChange={(e) => setZoom(Math.min(20, Math.max(1, Number(e.target.value))))}
-    size="small"
-    slotProps={{ htmlInput: { min: 1, max: 20, style: { textAlign: 'center', width: 40 } } }}
-  />
-  <IconButton size="small" onClick={() => setZoom((z) => Math.min(20, z + 1))}>
-    <IconPlus size={14} />
-  </IconButton>
-</Stack>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'nowrap' }}>Зум</Typography>
+            <IconButton size="small" onClick={() => setZoom((z) => Math.max(1, z - 1))}>
+              <IconMinus size={14} />
+            </IconButton>
+            <TextField
+              value={zoom}
+              onChange={(e) => setZoom(Math.min(20, Math.max(1, Number(e.target.value))))}
+              size="small"
+              slotProps={{ htmlInput: { min: 1, max: 20, style: { textAlign: 'center', width: 40 } } }}
+            />
+            <IconButton size="small" onClick={() => setZoom((z) => Math.min(20, z + 1))}>
+              <IconPlus size={14} />
+            </IconButton>
+          </Stack>
 
           <Divider />
 
