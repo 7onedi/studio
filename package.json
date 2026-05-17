@@ -23,6 +23,7 @@
     "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@marsidev/react-turnstile": "^1.5.2",
     "@mui/lab": "7.0.1-beta.22",
     "@mui/material": "^7.3.8",
     "@mui/system": "^7.3.8",
@@ -84,9 +85,16 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "@prisma/engines", "prisma", "esbuild", "sharp",
-      "@parcel/watcher", "unrs-resolver", "core-js-pure",
-      "tree-sitter", "tree-sitter-json", "@tree-sitter-grammars/tree-sitter-yaml",
+      "@prisma/engines",
+      "prisma",
+      "esbuild",
+      "sharp",
+      "@parcel/watcher",
+      "unrs-resolver",
+      "core-js-pure",
+      "tree-sitter",
+      "tree-sitter-json",
+      "@tree-sitter-grammars/tree-sitter-yaml",
       "@scarf/scarf"
     ]
   }

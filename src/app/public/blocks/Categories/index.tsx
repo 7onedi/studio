@@ -7,10 +7,12 @@ import { Button } from "@/app/public/components/Button";
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage} from "@/app/providers/LanguageProvider";
+import { useRouter } from "next/navigation";
 
 export const CategoriesSection = () => {
   const { locale, t } = useLanguage();
   const categories = getCategoriesData(locale);
+  const router = useRouter();
   return (
     <section className="m-auto w-full lg:h-[960px] flex flex-col items-center gap-10 lg:gap-16 lg:pt-10">
 
@@ -54,8 +56,11 @@ export const CategoriesSection = () => {
           width={66}
           height={41}
         />
-        <Button variant="primary" className="mx-6 lg:w-[500px]">
-          <Link href="https://pangeya.org.ua/#join">{t("join.join_us")}</Link>
+        <Button
+          variant="primary"
+          className="mx-6 lg:w-[500px]"
+          onClick={() => router.push('/public/AboutNetwork#joinUs')}>
+            {t("join.join_us")}
         </Button>
         <Image
           src="/categories/CB_RightArrow.svg"
