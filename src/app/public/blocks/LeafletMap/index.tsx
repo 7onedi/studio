@@ -5,8 +5,6 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { buildCategories, Category, MarkerInfo, ALL_CATEGORIES_VIEW } from './mapData';
 import Link from 'next/link';
-// import type { RichTextItem } from "@/app/public/components/RenderRichText";
-// import { renderRichText } from "@/app/public/components/RenderRichText";
 import { useLanguage } from "@/app/providers/LanguageProvider";
 
 type MapView = {

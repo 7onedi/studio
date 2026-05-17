@@ -135,7 +135,7 @@ export default function GenericTable<TData extends { id: number }>({
         {onSearchChange && (
           <TextField
             size="small"
-            placeholder="Пошук..."
+            placeholder="Search..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={(e) => {
@@ -162,12 +162,12 @@ export default function GenericTable<TData extends { id: number }>({
             startIcon={<IconTrashX size={16} />}
             onClick={handleBulkDelete}
           >
-            Видалити вибрані ({selectedCount})
+            Delete selected ({selectedCount})
           </Button>
         )}
 
         <Typography variant="body2" color="text.secondary" sx={{ ml: 'auto' }}>
-          {loading ? 'Завантаження...' : `Всього: ${total}`}
+          {loading ? 'loading...' : `Total: ${total}`}
         </Typography>
       </Stack>
 
@@ -262,8 +262,8 @@ export default function GenericTable<TData extends { id: number }>({
         onRowsPerPageChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           onPageSizeChange?.(Number(e.target.value))
         }
-        labelRowsPerPage="Рядків:"
-        labelDisplayedRows={({ from, to, count }) => `${from}–${to} з ${count}`}
+        labelRowsPerPage="Rows per page:"
+        labelDisplayedRows={({ from, to, count }) => `${from}–${to} of ${count}`}
       />
     </Box>
   );

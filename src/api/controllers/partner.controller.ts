@@ -6,6 +6,7 @@ export const partnerController = {
   update:       (id: number, body: any, user: any)  => partnerService.update(user, id, body),
   updateStatus: (body: any, user: any)              => partnerService.updateStatus(user, body),
   publish:      (body: any, user: any)              => partnerService.publish(user, body),
+  unpublish:    (body: any, user: any)              => partnerService.unpublish(user, body),
   delete:       (id: number, user: any)             => partnerService.delete(user, id),
   findById:     (id: number)                        => partnerService.findById(id),
   search:       (filters: Record<string, any>, options?: any) =>
