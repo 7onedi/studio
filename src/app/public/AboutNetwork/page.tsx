@@ -27,7 +27,7 @@ export default async function PartnersPage() {
 
         <PartnersSection />
 
-        <div className="lg:my-12 lg:px-[25%]">
+        <div id="joinUs" className="lg:my-12 lg:px-[25%]">
           <JoinForm />
         </div>
       </main>

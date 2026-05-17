@@ -14,6 +14,13 @@
   "join": {
     "name_placeholder": "Name",
     "member_type_description": "Please indicate the type of collaboration you are interested in:",
+    "success_message": "Thank you for your application! We will contact you soon.",
+    "validation.name_required": "Please enter your name",
+    "validation.email_required": "Please enter your email",
+    "validation.email_invalid": "Invalid email format",
+    "validation.email_taken": "This email address is already registered",
+    "validation.role_required": "Please select the type of participation",
+    "validation.server_error": "Something went wrong, please try again later",
     "membership_types": {
       "member": "Member",
       "donor": "Donor",

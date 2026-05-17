@@ -14,6 +14,13 @@
   "join": {
     "name_placeholder": "Imię",
     "member_type_description": "Proszę wskazać, jakiego rodzaju współpraca Cię interesuje:",
+    "success_message": "Dziękujemy za zgłoszenie! Skontaktujemy się z Tobą wkrótce.",
+    "validation.name_required": "Proszę wpisać swoje imię",
+    "validation.email_required": "Proszę wpisać swój email",
+    "validation.email_invalid": "Nieprawidłowy format email",
+    "validation.email_taken": "Ten adres email jest już zarejestrowany",
+    "validation.role_required": "Proszę wybrać typ uczestnictwa",
+    "validation.server_error": "Coś poszło nie tak, proszę spróbować później",
     "membership_types": {
       "member": "Członek",
       "donor": "Darczyńca",

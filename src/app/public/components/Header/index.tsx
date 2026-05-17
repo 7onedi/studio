@@ -214,8 +214,11 @@ const iconNames = [
             </div>
 
             {/* Support Button */}
-            <Button variant="primary"> 
-              <Link href="https://pangeya.org.ua/#join">{t("nav.support")}</Link>
+            <Button
+              variant="primary"
+              onClick={() => router.push('/public/AboutNetwork#joinUs')}
+              > 
+              {t("nav.support")}
             </Button>
           </div>
         </nav>
@@ -287,8 +290,8 @@ const iconNames = [
             </div>
 
             {/* Mobile Support Button */}
-            <Button variant="primary">
-              <Link href="https://pangeya.org.ua/#join">{t("nav.support")}</Link>
+            <Button variant="primary" onClick={() => scrollToSection("joinUs")}>
+              {t("nav.support")}
             </Button>
           </nav>
         </div>
