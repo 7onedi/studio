@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/app/providers/LanguageProvider";
 import { useState } from "react";
+import { Turnstile } from "@marsidev/react-turnstile";
 
 interface JoinFormProps {
   title?: RichTextItem[];
@@ -17,12 +18,14 @@ type Role = "MEMBER" | "DONOR" | "PARTNER";
 
 export default function JoinForm({ title = [], description = [] }: JoinFormProps) {
   const { t } = useLanguage();
-
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<Role | "">("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [errors, setErrors] = useState<{ name?: string; email?: string; role?: string }>({});
+
 
   const roleValues: { label: string; value: Role }[] = [
     { label: t("join.membership_types.member"), value: "MEMBER" },
@@ -30,9 +33,23 @@ export default function JoinForm({ title = [], description = [] }: JoinFormProps
     { label: t("join.membership_types.partner"), value: "PARTNER" },
   ];
 
+  function validate(): boolean {
+    if (!turnstileToken) {
+      setErrorMessage(t("join.validation.captcha_required"));
+      return false;
+    }
+    const newErrors: typeof errors = {};
+    if (!name.trim()) newErrors.name = t("join.validation.name_required");
+    if (!email.trim()) newErrors.email = t("join.validation.email_required");
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = t("join.validation.email_invalid");
+    if (!role) newErrors.role = t("join.validation.role_required");
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim() || !email.trim() || !role) return;
+    if (!validate()) return;
 
     setStatus("loading");
     setErrorMessage("");
@@ -41,21 +58,29 @@ export default function JoinForm({ title = [], description = [] }: JoinFormProps
       const res = await fetch("/api/partners", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), email: email.trim(), role }),
+        body: JSON.stringify({ name: name.trim(), email: email.trim(), role, turnstileToken }),
       });
 
+      const data = await res.json().catch(() => ({}));
+
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data?.message || `HTTP ${res.status}`);
+        // обробка відомих помилок
+        if (res.status === 409 || data?.message?.includes("email")) {
+          setErrors({ email: t("join.validation.email_taken") });
+          setStatus("idle");
+          return;
+        }
+        throw new Error(t("join.validation.server_error"));
       }
 
       setStatus("success");
       setName("");
       setEmail("");
       setRole("");
+      setErrors({});
     } catch (err: any) {
       setStatus("error");
-      setErrorMessage(err.message ?? "Unknown error");
+      setErrorMessage(err.message ?? t("join.validation.server_error"));
     }
   }
 
@@ -77,19 +102,23 @@ export default function JoinForm({ title = [], description = [] }: JoinFormProps
           type="text"
           placeholder={t("join.name_placeholder")}
           value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          className="w-full border-b border-main-grey bg-transparent py-2 text-sm outline-none"
+          onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: undefined })); }}
+          className={`w-full border-b bg-transparent py-2 text-sm outline-none ${
+            errors.name ? "border-red-400" : "border-main-grey"
+          }`}
         />
+        {errors.name && <p className="text-xs text-red-400 text-left mt-1">{errors.name}</p>}
 
         <input
           type="email"
           placeholder="email@gmail.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="w-full border-b border-main-grey bg-transparent py-2 text-sm outline-none"
+          onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: undefined })); }}
+          className={`w-full border-b bg-transparent py-2 text-sm outline-none ${
+            errors.email ? "border-red-400" : "border-main-grey"
+          }`}
         />
+        {errors.email && <p className="text-xs text-red-400 text-left mt-1">{errors.email}</p>}
       </div>
 
       <div className="mb-6 text-body text-left text-main-text">
@@ -107,6 +136,7 @@ export default function JoinForm({ title = [], description = [] }: JoinFormProps
                 required
                 className="w-6 h-6 my-1"
               />
+              {errors.role && <p className="text-xs text-red-400 mt-1">{errors.role}</p>}
               {label}
             </label>
           ))}
@@ -121,6 +151,12 @@ export default function JoinForm({ title = [], description = [] }: JoinFormProps
         <p className="mb-4 text-sm text-red-500">{errorMessage}</p>
       )}
 
+      <Turnstile
+        siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+        onSuccess={setTurnstileToken}
+        onError={() => setTurnstileToken(null)}
+      />
+      
       <div className="mt-12 mb-2 flex flex-cols justify-center items-center">
         <Image
           src="/svg/Double_LeftArrow.svg"

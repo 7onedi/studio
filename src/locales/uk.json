@@ -14,6 +14,13 @@
   "join": {
     "name_placeholder": "Ім'я",
     "member_type_description": "Вкажіть, в якому виді співпраці ви зацікавлені:",
+    "success_message": "Дякуємо за вашу заявку! Ми зв'яжемося з вами найближчим часом.",
+    "validation.name_required": "Введіть ваше імʼя",
+    "validation.email_required": "Введіть email",
+    "validation.email_invalid": "Невірний формат email",
+    "validation.email_taken": "Ця адреса вже зареєстрована",
+    "validation.role_required": "Оберіть тип участі",
+    "validation.server_error": "Щось пішло не так, спробуйте пізніше",
     "membership_types": {
       "member": "Учасник/ця",
       "donor": "Донор",

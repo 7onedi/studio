@@ -14,6 +14,13 @@
   "join": {
     "name_placeholder": "Nume",
     "member_type_description": "Vă rugăm să indicați tipul de colaborare care vă interesează:",
+    "success_message": "Vă mulțumim pentru aplicație! Vă vom contacta în curând.",
+    "validation.name_required": "Vă rugăm să introduceți numele",
+    "validation.email_required": "Vă rugăm să introduceți emailul",
+    "validation.email_invalid": "Format de email invalid",
+    "validation.email_taken": "Această adresă de email este deja înregistrată",
+    "validation.role_required": "Vă rugăm să selectați tipul de participare",
+    "validation.server_error": "Ceva nu a mers bine, vă rugăm să încercați mai târziu",
     "membership_types": {
       "member": "Membru",
       "donor": "Donator",
