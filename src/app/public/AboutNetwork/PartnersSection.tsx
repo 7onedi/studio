@@ -30,8 +30,6 @@ export default function PartnersSection() {
       .catch(console.error);
   }, []);
 
-  if (!partners.length) return null;
-
   function hasDescription(raw?: string | null): boolean {
     if (!raw) return false;
     try {
@@ -42,6 +40,7 @@ export default function PartnersSection() {
     }
   }
 
+  if (!partners.length) return null;
 
   return (
     <section className="lg:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
