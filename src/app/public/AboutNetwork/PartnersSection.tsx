@@ -85,6 +85,7 @@ export default function PartnersSection() {
                               })()}
                           </p>
                         </div>
+                      </div>
                     )}
                     
                 </div>
