@@ -60,21 +60,19 @@ export default function PartnersSection() {
                         </p>
                     </div>
 
-                    {partner.description && (
-                        <div className="absolute inset-0 bg-white border border-main-amarant/90 flex items-center justify-center
-                                        p-6 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {hasDescription(partner.description) && (
+                      <div className="absolute inset-0 bg-white border border-main-amarant/90 flex items-center justify-center
+                                      p-6 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <p className="text-main-text text-body text-center">
-                            {partner.description && (() => {
-                                try {
-                                    const parsed = JSON.parse(partner.description);
-                                    if (parsed?.blocks) {
-                                    return <EditorJsViewer blocks={parsed.blocks} />;
-                                    }
-                                } catch {}
-                                return <span>{partner.description}</span>;
-                            })()}
+                          {(() => {
+                            try {
+                              const parsed = JSON.parse(partner.description!);
+                              if (parsed?.blocks) return <EditorJsViewer blocks={parsed.blocks} />;
+                            } catch {}
+                            return <span>{partner.description}</span>;
+                          })()}
                         </p>
-                        </div>
+                      </div>
                     )}
                 </div>
             </CardWrapper>
