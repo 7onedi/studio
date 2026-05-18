@@ -32,6 +32,16 @@ export default function PartnersSection() {
 
   if (!partners.length) return null;
 
+  function hasDescription(raw?: string | null): boolean {
+    if (!raw) return false;
+    try {
+      const parsed = JSON.parse(raw);
+      return parsed?.blocks?.some((b: any) => b.data?.text?.trim());
+    } catch {
+      return !!raw.trim();
+    }
+  }
+
   return (
     <section className="lg:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
       {partners.map((partner) => (
@@ -39,19 +49,19 @@ export default function PartnersSection() {
             <CardWrapper link={partner.link}>
                 <div className="group relative flex flex-col justify-between items-center
                                 bg-transparent rounded-2xl p-4 min-h-[300px] overflow-hidden">
-                    <div className="relative w-full h-[167px] flex-shrink-0">
-                        {partner.image?.url ? (
+                    <div className="relative w-full h-[167px] flex-shrink-0 overflow-hidden">
+                      {partner.image?.url ? (
                         <Image
-                            src={partner.image.url}
-                            alt={partner.name}
-                            fill
-                            className="object-contain"
+                          src={partner.image.url}
+                          alt={partner.name}
+                          fill
+                          className="object-contain transition-transform duration-300 group-hover:scale-[1.15]"
                         />
-                        ) : (
+                      ) : (
                         <div className="w-full h-full flex items-center justify-center bg-gray-100 rounded-xl">
-                            <span className="text-gray-400 text-sm">{partner.name}</span>
+                          <span className="text-gray-400 text-sm">{partner.name}</span>
                         </div>
-                        )}
+                      )}
                     </div>
 
                     <div className="mt-4 flex flex-1 flex-col justify-center items-center text-center">
@@ -63,19 +73,20 @@ export default function PartnersSection() {
                     {partner.description && (
                         <div className="absolute inset-0 bg-white border border-main-amarant/90 flex items-center justify-center
                                         p-6 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <p className="text-main-text text-body text-center">
-                            {partner.description && (() => {
-                                try {
-                                    const parsed = JSON.parse(partner.description);
-                                    if (parsed?.blocks) {
-                                    return <EditorJsViewer blocks={parsed.blocks} />;
-                                    }
-                                } catch {}
-                                return <span>{partner.description}</span>;
-                            })()}
-                        </p>
+                          <p className="text-main-text text-body text-center">
+                              {partner.description && (() => {
+                                  try {
+                                      const parsed = JSON.parse(partner.description);
+                                      if (parsed?.blocks) {
+                                      return <EditorJsViewer blocks={parsed.blocks} />;
+                                      }
+                                  } catch {}
+                                  return <span>{partner.description}</span>;
+                              })()}
+                          </p>
                         </div>
                     )}
+                    
                 </div>
             </CardWrapper>
         </div>
