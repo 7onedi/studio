@@ -15,7 +15,7 @@ export default function Home() {
       <ClientBg bg="default" />
       <div >
         <main className='overflow-hidden'>
-          <div className='relative rounded-2xl shadow-[0_20px_60px_-10px_rgba(0,0,0,0.3),0_8px_25px_-8px_rgba(0,0,0,0.2),0_2px_8px_-2px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_60px_-10px_rgba(0,0,0,0.6),0_8px_25px_-8px_rgba(0,0,0,0.5),0_2px_8px_-2px_rgba(0,0,0,0.4)]'>
+          <div className=''>
             <ArticleSlider/>
           </div>
           <div className='my-6 py-4 w-full flex item-center justify-center'>
