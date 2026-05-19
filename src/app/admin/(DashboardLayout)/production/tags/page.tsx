@@ -98,10 +98,10 @@
     };
 
     return (
-      <PageContainer title="Категорії" description="Управління категоріями та підкатегоріями">
+      <PageContainer title="Tags" description="List of tags">
         <Box>
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-            <Typography variant="h5" fontWeight={600}>Теги</Typography>
+            <Typography variant="h5" fontWeight={600}>Tags</Typography>
             <Button
               variant="contained"
               startIcon={<IconPlus size={16} />}
@@ -109,7 +109,7 @@
                 if (tab === 0) { setTegEditTarget(undefined); setTegFormOpen(true); }
               }}
             >
-              {tab === 0 && 'Новий тег'}
+              {tab === 0 && 'New Tag'}
             </Button>
           </Box>
 

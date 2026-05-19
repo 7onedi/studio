@@ -110,7 +110,7 @@ function ProjectsContent() {
 
   // --- publish ---
   const handlePublish = async (id: number, currentPublished: boolean) => {
-    if (!confirm(`${currentPublished ? 'Зняти з публікації' : 'Опублікувати'}?`)) return;
+    if (!confirm(`${currentPublished ? 'Unpublish' : 'Publish'}?`)) return;
     try {
       const res = await fetch('/api/studioprojects/publish', {
         method: 'POST',
@@ -118,7 +118,7 @@ function ProjectsContent() {
         credentials: 'include',
         body: JSON.stringify({ id }),
       });
-      if (!res.ok) throw new Error(`Помилка ${res.status}`);
+      if (!res.ok) throw new Error(`Error ${res.status}`);
       // оновлюємо стан
       if (tab === 0) {
         setParents((prev) =>
@@ -136,7 +136,7 @@ function ProjectsContent() {
 
   // --- delete батьківського ---
   const handleParentDelete = async (id: number) => {
-    if (!confirm('Видалити проект? Всі дочірні проекти також будуть видалені.')) return;
+    if (!confirm('Delete parent project? All child projects will also be deleted.')) return;
     const res = await fetch(`/api/studioprojects/${id}`, { method: 'DELETE', credentials: 'include' });
     if (!res.ok) return;
     setParents((prev) => prev.filter((p) => p.id !== id));
@@ -153,7 +153,7 @@ function ProjectsContent() {
 
   // --- delete дочірнього ---
   const handleChildDelete = async (id: number) => {
-    if (!confirm('Видалити дочірній проект?')) return;
+    if (!confirm('Delete child project?')) return;
     const res = await fetch(`/api/studioprojects/${id}`, { method: 'DELETE', credentials: 'include' });
     if (!res.ok) return;
     const deleted = children.find((c) => c.id === id);
@@ -200,10 +200,10 @@ function ProjectsContent() {
   };
 
   return (
-    <PageContainer title="Проекти" description="Управління проектами">
+    <PageContainer title="Projects" description="Management of projects">
       <Box>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-          <Typography variant="h5" fontWeight={600}>Проекти</Typography>
+          <Typography variant="h5" fontWeight={600}>Projects</Typography>
           <Button
             variant="contained"
             startIcon={<IconPlus size={16} />}
@@ -212,7 +212,7 @@ function ProjectsContent() {
               else           { setChildEditTarget(undefined);  setChildFormOpen(true); }
             }}
           >
-            {tab === 0 ? 'Новий проект' : 'Новий дочірній проект'}
+            {tab === 0 ? 'New Project' : 'New Child Project'}
           </Button>
         </Box>
 
@@ -227,8 +227,8 @@ function ProjectsContent() {
           }}
           sx={{ mb: 3 }}
         >
-          <Tab label="Батьківські проекти" />
-          <Tab label="Дочірні проекти" />
+          <Tab label="Parent Projects" />
+          <Tab label="Child Projects" />
         </Tabs>
 
         {tab === 0 && (

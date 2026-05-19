@@ -181,14 +181,14 @@ const handleSubmit = () => {
 
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 4 }}>
         <Typography variant="h4">{title}</Typography>
-        {onCancel && <Button variant="text" onClick={onCancel}>← Назад</Button>}
+        {onCancel && <Button variant="text" onClick={onCancel}>← Cancel</Button>}
       </Box>
 
       <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 4 }}>
 
             {/* основний контент */}
         <Box sx={{ gridColumn: { xs: 'span 12', md: 'span 10' } }}>
-          <TextField fullWidth label="Заголовок *" value={formTitle}
+          <TextField fullWidth label="Title *" value={formTitle}
             onChange={(e) => setFormTitle(e.target.value)} sx={{ mb: 3 }} />
 
         <Box sx={{ mb: 3 }}>
@@ -221,8 +221,8 @@ const handleSubmit = () => {
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Теги"
-                placeholder="Введіть тег..."
+                label="Tags"
+                placeholder="Enter tag..."
                 InputProps={{
                   ...params.InputProps,
                   endAdornment: (
@@ -251,17 +251,17 @@ const handleSubmit = () => {
 
           <Box sx={{ display: "flex", gap: 2 }}>
             <Button variant="contained" onClick={handleSubmit} disabled={loading} size="large">
-              {loading ? "Збереження..." : submitLabel}
+              {loading ? "Saving..." : submitLabel}
             </Button>
             {onCancel && (
-              <Button variant="outlined" onClick={onCancel} size="large">Скасувати</Button>
+              <Button variant="outlined" onClick={onCancel} size="large">Cancel</Button>
             )}
           </Box>
         </Box>
 
         {/* бічна колонка */}
         <Box sx={{ gridColumn: { xs: 'span 12', md: 'span 2' } }}>
-          <TextField fullWidth label="Автор *" value={authorName}
+          <TextField fullWidth label="Author *" value={authorName}
             onChange={(e) => setAuthorName(e.target.value)} sx={{ mb: 3 }} />
 
             <FormControlLabel
@@ -272,28 +272,28 @@ const handleSubmit = () => {
                   color="success"
                 />
               }
-              label={published ? 'Опубліковано' : 'Чернетка'}
+              label={published ? 'Published' : 'Draft'}
               sx={{ mb: 3 }}
             />
 
             <FormControl fullWidth sx={{ mb: 3 }}>
-              <InputLabel>Розміщення в слайдері</InputLabel>
+              <InputLabel>Placement in slider</InputLabel>
               <Select
                 value={slider}
-                label="Розміщення в слайдері"
+                label="Placement in slider"
                 onChange={(e) => setSlider(e.target.value)}
               >
-                <MenuItem value="NONE">Не розміщувати</MenuItem>
-                <MenuItem value="SLIDER_1">Банер-Слайдер</MenuItem>
-                <MenuItem value="SLIDER_2">Карусель-Слайдер</MenuItem>
+                <MenuItem value="NONE">Do not display</MenuItem>
+                <MenuItem value="SLIDER_1">Banner-Slider</MenuItem>
+                <MenuItem value="SLIDER_2">Carousel-Slider</MenuItem>
               </Select>
             </FormControl>
 
             <FormControl fullWidth sx={{ mb: 3 }}>
-              <InputLabel>Градієнт</InputLabel>
+              <InputLabel>Gradient</InputLabel>
               <Select
                 value={gradient}
-                label="Градієнт"
+                label="Gradient"
                 onChange={(e) => setGradient(e.target.value)}
                 renderValue={(val) => (
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -305,38 +305,38 @@ const handleSubmit = () => {
                         backgroundColor: val === 'GRADIENT_1' ? '#256BA7' : '#E91651',
                       }} />
                     )}
-                    {val === 'NONE' ? 'Без градієнту' : val === 'GRADIENT_1' ? 'Синій' : 'Червоний'}
+                    {val === 'NONE' ? 'No gradient' : val === 'GRADIENT_1' ? 'Blue' : 'Red'}
                   </Box>
                 )}
               >
-                <MenuItem value="NONE">Без градієнту</MenuItem>
+                <MenuItem value="NONE">No gradient</MenuItem>
                 <MenuItem value="GRADIENT_1">
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Box sx={{ width: 16, height: 16, borderRadius: '50%', backgroundColor: '#256BA7' }} />
-                    Синій
+                    Blue
                   </Box>
                 </MenuItem>
                 <MenuItem value="GRADIENT_2">
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Box sx={{ width: 16, height: 16, borderRadius: '50%', backgroundColor: '#E91651' }} />
-                    Червоний
+                    Red
                   </Box>
                 </MenuItem>
               </Select>
             </FormControl>
 
           <FormControl fullWidth sx={{ mb: 3 }}>
-            <InputLabel>Мова</InputLabel>
-            <Select value={lang} label="Мова" onChange={(e) => setLang(e.target.value)}>
+            <InputLabel>Language</InputLabel>
+            <Select value={lang} label="Language" onChange={(e) => setLang(e.target.value)}>
               {LANGUAGES.map((l) => <MenuItem key={l} value={l}>{l}</MenuItem>)}
             </Select>
           </FormControl>
 
           <FormControl fullWidth sx={{ mb: 3 }}>
-            <InputLabel>Категорія *</InputLabel>
+            <InputLabel>Category *</InputLabel>
             <Select
               value={categoryId}
-              label="Категорія *"
+              label="Category *"
               onChange={(e) => { setCategoryId(e.target.value as number); setSubcategoryIds([]); }}
             >
               {categories.map((c) => <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>)}
@@ -345,7 +345,7 @@ const handleSubmit = () => {
 
           {subcategories.length > 0 && (
             <FormControl fullWidth sx={{ mb: 3 }}>
-              <InputLabel>Підкатегорії</InputLabel>
+              <InputLabel>Subcategories</InputLabel>
               <Select
                 multiple
                 value={subcategoryIds}
@@ -353,7 +353,7 @@ const handleSubmit = () => {
                 const val = e.target.value;
                 setSubcategoryIds((typeof val === 'string' ? val.split(',').map(Number) : val as number[]));
                 }}
-                input={<OutlinedInput label="Підкатегорії" />}
+                input={<OutlinedInput label="Subcategories" />}
                 renderValue={(selected) => (
                   <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                     {(selected as number[]).map((id) => (
@@ -369,7 +369,7 @@ const handleSubmit = () => {
 
           <Box sx={{ mb: 3 }}>
             <Typography variant="body2" color="text.secondary" mb={1}>
-              Банер статті
+              Article Banner
             </Typography>
 
             <Box
@@ -417,12 +417,12 @@ const handleSubmit = () => {
                       setCoverBase64(null);
                     }}
                   >
-                    Видалити
+                    Delete
                   </Button>
                 </>
               ) : (
                 <Typography color="text.secondary" fontSize={14}>
-                  Натисніть щоб завантажити банер
+                  Click to upload banner
                 </Typography>
               )}
             </Box>

@@ -144,10 +144,10 @@
     };
 
     return (
-      <PageContainer title="Категорії" description="Управління категоріями та підкатегоріями">
+      <PageContainer title="Categories" description="List of categories and subcategories">
         <Box>
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-            <Typography variant="h5" fontWeight={600}>Категорії</Typography>
+            <Typography variant="h5" fontWeight={600}>Categories</Typography>
             <Button
               variant="contained"
               startIcon={<IconPlus size={16} />}
@@ -156,7 +156,7 @@
                 else           { setSubEditTarget(undefined); setSubFormOpen(true); }
               }}
             >
-              {tab === 0 ? 'Нова категорія' : 'Нова підкатегорія'}
+              {tab === 0 ? 'New Category' : 'New Subcategory'}
             </Button>
           </Box>
 
@@ -171,8 +171,8 @@
             }}
             sx={{ mb: 3 }}
           >
-            <Tab label="Категорії" />
-            <Tab label="Підкатегорії" />
+            <Tab label="Categories" />
+            <Tab label="Subcategories" />
           </Tabs>
 
           {tab === 0 && (

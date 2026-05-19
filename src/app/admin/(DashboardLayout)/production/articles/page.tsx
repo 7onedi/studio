@@ -47,18 +47,18 @@ function ArticlesContent() {
   };
 
   return (
-    <PageContainer title="Статті" description="Список статей">
+    <PageContainer title="Articles" description="List of articles">
       <Box>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
           <Typography variant="h5" fontWeight={600}>
-            Статті
+            Articles
           </Typography>
           <Button
             variant="contained"
             startIcon={<IconPlus size={16} />}
             href="/admin/production/articles/create"
           >
-            Нова стаття
+            New Article
           </Button>
         </Box>
 

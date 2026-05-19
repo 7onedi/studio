@@ -176,10 +176,10 @@ export default function ParentProjectFormDialog({
     setSocials((prev) => prev.map((s, i) => i === idx ? { ...s, [field]: val } : s));
 
   const handleSubmit = async () => {
-    if (!title.trim()) { setError("Назва обов'язкова"); return; }
-    if (!categoryId)   { setError('Оберіть категорію'); return; }
+    if (!title.trim()) { setError("Title is required"); return; }
+    if (!categoryId)   { setError('Please select a category'); return; }
     if (websiteUrl && !websiteUrl.startsWith('http')) {
-        setError('Сайт має бути валідним URL (починатись з https://)');
+        setError('Website must be a valid URL (starting with https://)');
         return;
     }
     setSaving(true);
@@ -214,7 +214,7 @@ export default function ParentProjectFormDialog({
 
       if (!res.ok) {
         const json = await res.json().catch(() => ({}));
-        throw new Error(json?.message || `Помилка ${res.status}`);
+        throw new Error(json?.message || `Error ${res.status}`);
       }
 
       onSaved(await res.json());
@@ -228,12 +228,12 @@ export default function ParentProjectFormDialog({
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>{isEdit ? 'Редагувати проект' : 'Новий батьківський проект'}</DialogTitle>
+      <DialogTitle>{isEdit ? 'Edit Project' : 'New Parent Project'}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} mt={1}>
 
           <TextField
-            select label="Категорія *" value={categoryId}
+            select label="Category *" value={categoryId}
             onChange={(e) => setCategoryId(Number(e.target.value))}
             fullWidth size="small"
           >
@@ -246,7 +246,7 @@ export default function ParentProjectFormDialog({
 
           {/* Едітор */}
           <Box>
-            <Typography variant="subtitle2" fontWeight={600} mb={1}>Опис</Typography>
+            <Typography variant="subtitle2" fontWeight={600} mb={1}>Description</Typography>
             <Box sx={{ border: '1px solid #ddd', borderRadius: 2, p: 2, minHeight: 200 }}>
               {content !== null ? (
                 <ReactEditor onChange={setContent} initialData={content} />
@@ -259,16 +259,16 @@ export default function ParentProjectFormDialog({
           <Divider />
 
           {/* Координати */}
-          <Typography variant="subtitle2" fontWeight={600}>Координати</Typography>
+          <Typography variant="subtitle2" fontWeight={600}>Coordinates</Typography>
           <Stack direction="row" spacing={2}>
-            <TextField fullWidth label="Широта (lat)" value={lat}
+            <TextField fullWidth label="(lat)" value={lat}
               onChange={(e) => setLat(e.target.value)} size="small" placeholder="48.45262" />
-            <TextField fullWidth label="Довгота (lng)" value={lng}
+            <TextField fullWidth label="(lng)" value={lng}
               onChange={(e) => setLng(e.target.value)} size="small" placeholder="28.42077" />
           </Stack>
 
           <Stack direction="row" alignItems="center" spacing={1}>
-            <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'nowrap' }}>Зум</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'nowrap' }}>Zoom</Typography>
             <IconButton size="small" onClick={() => setZoom((z) => Math.max(1, z - 1))}>
               <IconMinus size={14} />
             </IconButton>
@@ -287,23 +287,23 @@ export default function ParentProjectFormDialog({
 
           {/* Соцмережі */}
           <Stack direction="row" alignItems="center" justifyContent="space-between">
-            <Typography variant="subtitle2" fontWeight={600}>Соціальні мережі</Typography>
+            <Typography variant="subtitle2" fontWeight={600}>Social Media</Typography>
             <Button size="small" startIcon={<IconPlus size={14} />}
               onClick={() => setSocials((p) => [...p, { platform: 'INSTAGRAM', url: '' }])}>
-              Додати
+              Add
             </Button>
           </Stack>
           {socials.map((s, idx) => (
             <Stack key={idx} direction="row" spacing={1} alignItems="center">
               <TextField
-                select label="Платформа" value={s.platform}
+                select label="Platform" value={s.platform}
                 onChange={(e) => updateSocial(idx, 'platform', e.target.value)}
                 sx={{ width: 160, flexShrink: 0 }} size="small"
               >
                 {PLATFORMS.map((p) => <MenuItem key={p} value={p}>{p}</MenuItem>)}
               </TextField>
               <TextField
-                fullWidth label="Посилання" value={s.url} size="small"
+                fullWidth label="Link" value={s.url} size="small"
                 onChange={(e) => updateSocial(idx, 'url', e.target.value)}
                 placeholder="https://..."
               />
@@ -318,9 +318,9 @@ export default function ParentProjectFormDialog({
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} disabled={saving}>Скасувати</Button>
+        <Button onClick={handleClose} disabled={saving}>Cancel</Button>
         <Button variant="contained" onClick={handleSubmit} disabled={saving}>
-          {saving ? 'Збереження...' : isEdit ? 'Зберегти' : 'Створити'}
+          {saving ? 'Saving...' : isEdit ? 'Save' : 'Create'}
         </Button>
       </DialogActions>
     </Dialog>

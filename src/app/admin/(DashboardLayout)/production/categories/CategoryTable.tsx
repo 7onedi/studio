@@ -34,7 +34,7 @@ export default function CategoryTable({
   const columns: ColumnDef<Category>[] = [
     {
       accessorKey: 'name',
-      header: 'Назва',
+      header: 'Name',
       cell: ({ getValue }) => (
         <Typography variant="body2" fontWeight={500}>{getValue() as string}</Typography>
       ),
@@ -52,15 +52,15 @@ export default function CategoryTable({
     },
     {
       id: 'actions',
-      header: '',
+      header: 'Actions',
       cell: ({ row }) => (
         <Stack direction="row" spacing={0.5}>
-          <Tooltip title="Редагувати">
+          <Tooltip title="Edit">
             <IconButton size="small" onClick={() => onEdit(row.original)}>
               <IconEdit size={16} />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Видалити">
+          <Tooltip title="Delete">
             <IconButton size="small" color="error" onClick={() => onDelete(row.original.id)}>
               <IconTrash size={16} />
             </IconButton>
@@ -88,7 +88,7 @@ export default function CategoryTable({
       onPageChange={onPageChange}
       onPageSizeChange={onPageSizeChange}
       onBulkDelete={onBulkDelete}
-      emptyText="Категорій не знайдено"
+      emptyText="No categories found"
     />
   );
 }

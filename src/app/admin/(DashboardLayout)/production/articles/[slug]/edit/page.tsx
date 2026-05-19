@@ -24,7 +24,7 @@ export default function EditArticle({ params }: EditPageProps) {
   useEffect(() => {
   fetch(`/api/articles/by-slug/${slug}`)
     .then((r) => r.json())
-    .then((article) => {  
+    .then((article) => {
       setArticleId(article.id);
       setInitialData({
         title: article.title ?? "",
@@ -48,11 +48,11 @@ export default function EditArticle({ params }: EditPageProps) {
 
   const handleSave = async (data: ArticleFormData) => {
     if (!data.title || !data.authorName || !data.categoryId) {
-      setError("Заповніть обов'язкові поля: заголовок, автор, категорія");
+      setError("Fill in the required fields: title, author, category");
       return;
     }
     if (!articleId) {
-      setError("ID статті не знайдено");
+      setError("Article ID not found");
       return;
     }
 
@@ -81,7 +81,7 @@ export default function EditArticle({ params }: EditPageProps) {
       credentials: 'include',
     });
 
-    if (!uploadRes.ok) throw new Error('Помилка завантаження банера');
+    if (!uploadRes.ok) throw new Error('Error uploading cover image');
     const uploadData = await uploadRes.json();
     imageId = uploadData.id;
   } else if (data.currentImageId) {
@@ -105,7 +105,7 @@ export default function EditArticle({ params }: EditPageProps) {
 
     if (!res.ok) {
       const json = await res.json().catch(() => ({}));
-      throw new Error(json?.message || `Помилка ${res.status}`);
+      throw new Error(json?.message || `Error ${res.status}`);
     }
     setSuccess(true);
     setTimeout(() => router.push("/admin/production/articles"), 1500);
@@ -119,7 +119,7 @@ export default function EditArticle({ params }: EditPageProps) {
   if (fetching) {
     return (
       <Container maxWidth="md">
-        <Typography sx={{ mt: 4 }}>Завантаження...</Typography>
+        <Typography sx={{ mt: 4 }}>Loading...</Typography>
       </Container>
     );
   }
@@ -127,16 +127,16 @@ export default function EditArticle({ params }: EditPageProps) {
   if (!initialData) {
     return (
       <Container maxWidth="md">
-        <Typography sx={{ mt: 4 }} color="error">Статтю не знайдено</Typography>
+        <Typography sx={{ mt: 4 }} color="error">Article not found</Typography>
       </Container>
     );
   }
 
   return (
     <ArticleForm
-      title="Редагувати статтю"
-      submitLabel="Зберегти зміни"
-      successMessage="Статтю успішно оновлено! Перенаправлення..."
+      title="Edit Article"
+      submitLabel="Save Changes"
+      successMessage="Article updated successfully! Redirecting..."
       key={articleId ?? 'loading'}
       initialData={initialData}
       onSave={handleSave}

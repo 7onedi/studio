@@ -87,12 +87,12 @@ function ImageUploadBox({
             <Button size="small" color="error" variant="contained"
               sx={{ position: 'absolute', top: 8, right: 8 }}
               onClick={(e) => { e.stopPropagation(); onRemove(); }}>
-              Видалити
+              Remove
             </Button>
           </>
         ) : (
           <Typography color="text.secondary" fontSize={14}>
-            Натисніть щоб завантажити
+            Click to upload {label?.toLowerCase() ?? 'image'}
           </Typography>
         )}
       </Box>
@@ -225,14 +225,14 @@ useEffect(() => {
     setSocials((prev) => prev.map((s, i) => i === idx ? { ...s, [field]: val } : s));
 
   const handleSubmit = async () => {
-    if (!title.trim())   { setError("Назва обов'язкова"); return; }
-    if (!categoryId)     { setError('Оберіть категорію'); return; }
-    if (!subcategoryId)  { setError('Оберіть підкатегорію'); return; }
-    if (!parentId)       { setError('Оберіть батьківський проект'); return; }
+    if (!title.trim())   { setError("Title is required"); return; }
+    if (!categoryId)     { setError('Please select a category'); return; }
+    if (!subcategoryId)  { setError('Please select a subcategory'); return; }
+    if (!parentId)       { setError('Please select a parent project'); return; }
 
     // перевірка що підкатегорія не зайнята (лише при створенні)
     if (!isEdit && usedSubcategoryIds.includes(Number(subcategoryId))) {
-      setError('Ця підкатегорія вже використовується іншим проектом');
+      setError('This subcategory is already assigned to another child project. Please choose a different one.');
       return;
     }
 
@@ -247,7 +247,7 @@ useEffect(() => {
         const fd = new FormData();
         fd.append('file', blob, 'banner.jpg');
         const res = await fetch('/api/media', { method: 'POST', body: fd, credentials: 'include' });
-        if (!res.ok) throw new Error('Помилка завантаження банера');
+        if (!res.ok) throw new Error('Error uploading banner');
         imageId = (await res.json()).id;
       }
 
@@ -257,7 +257,7 @@ useEffect(() => {
         const fd = new FormData();
         fd.append('file', blob, 'logo.jpg');
         const res = await fetch('/api/media', { method: 'POST', body: fd, credentials: 'include' });
-        if (!res.ok) throw new Error('Помилка завантаження лого');
+        if (!res.ok) throw new Error('Error uploading logo');
         logoId = (await res.json()).id;
       }
 
@@ -300,7 +300,7 @@ useEffect(() => {
 
       if (!res.ok) {
         const json = await res.json().catch(() => ({}));
-        throw new Error(json?.message || `Помилка ${res.status}`);
+        throw new Error(json?.message || `Error ${res.status}`);
       }
 
       onSaved(await res.json());
@@ -314,13 +314,13 @@ useEffect(() => {
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>{isEdit ? 'Редагувати дочірній проект' : 'Новий дочірній проект'}</DialogTitle>
+      <DialogTitle>{isEdit ? 'Edit Child Project' : 'Create Child Project'}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} mt={1}>
 
           {/* Категорія */}
           <TextField
-            select label="Категорія *" value={categoryId}
+            select label="Category *" value={categoryId}
             onChange={(e) => {
               setCategoryId(Number(e.target.value));
               setSubcategoryId('');
@@ -335,11 +335,11 @@ useEffect(() => {
 
           {/* Підкатегорія */}
           <TextField
-            select label="Підкатегорія *" value={subcategoryId}
+            select label="Subcategory *" value={subcategoryId}
             onChange={(e) => setSubcategoryId(Number(e.target.value))}
             fullWidth size="small"
             disabled={!categoryId || loadingSubs}
-            helperText={!categoryId ? 'Спочатку оберіть категорію' : ''}
+            helperText={!categoryId ? 'Please select a category first' : ''}
           >
             {subcategories.map((s) => (
               <MenuItem
@@ -348,18 +348,18 @@ useEffect(() => {
                 disabled={!isEdit && usedSubcategoryIds.includes(s.id)}
               >
                 {s.name}
-                {!isEdit && usedSubcategoryIds.includes(s.id) ? ' (зайнято)' : ''}
+                {!isEdit && usedSubcategoryIds.includes(s.id) ? ' (already used)' : ''}
               </MenuItem>
             ))}
           </TextField>
 
           {/* Батьківський проект */}
           <TextField
-            select label="Батьківський проект *" value={parentId}
+            select label="Parent Project *" value={parentId}
             onChange={(e) => setParentId(Number(e.target.value))}
             fullWidth size="small"
             disabled={!categoryId || loadingParents}
-            helperText={!categoryId ? 'Спочатку оберіть категорію' : ''}
+            helperText={!categoryId ? 'Please select a category first' : ''}
           >
             {parentProjects.map((p) => (
               <MenuItem key={p.id} value={p.id}>{p.title}</MenuItem>
@@ -370,7 +370,7 @@ useEffect(() => {
 
           {/* Едітор */}
           <Box>
-            <Typography variant="subtitle2" fontWeight={600} mb={1}>Опис</Typography>
+            <Typography variant="subtitle2" fontWeight={600} mb={1}>Description</Typography>
             <Box sx={{ border: '1px solid #ddd', borderRadius: 2, p: 2, minHeight: 200 }}>
               {content !== null ? (
                 <ReactEditor onChange={setContent} initialData={content} />
@@ -388,16 +388,16 @@ useEffect(() => {
           <Divider />
 
           {/* Координати */}
-          <Typography variant="subtitle2" fontWeight={600}>Координати</Typography>
+          <Typography variant="subtitle2" fontWeight={600}>Coordinates</Typography>
           <Stack direction="row" spacing={2}>
-            <TextField fullWidth label="Широта (lat)" value={lat}
+            <TextField fullWidth label="Latitude (lat)" value={lat}
               onChange={(e) => setLat(e.target.value)} size="small" placeholder="48.45262" />
-            <TextField fullWidth label="Довгота (lng)" value={lng}
+            <TextField fullWidth label="Longitude (lng)" value={lng}
               onChange={(e) => setLng(e.target.value)} size="small" placeholder="28.42077" />
           </Stack>
 
           <TextField
-            fullWidth label="Сайт" value={websiteUrl}
+            fullWidth label="Website" value={websiteUrl}
             onChange={(e) => setWebsiteUrl(e.target.value)}
             size="small" placeholder="https://..."
           />
@@ -409,7 +409,7 @@ useEffect(() => {
             onUpload={setImageBase64}
             onRemove={() => setImageBase64(null)}
             inputId="child-project-image"
-            label="Банер клубу"
+            label="Club Banner"
           />
 
             {categories.find((c) => c.id === Number(categoryId))?.name === '#CountrysideStudio' && (
@@ -420,7 +420,7 @@ useEffect(() => {
                   onUpload={setLogoBase64}
                   onRemove={() => setLogoBase64(null)}
                   inputId="child-project-logo"
-                  label="Лого клубу"
+                  label="Club Logo"
                 />
                 <FormControlLabel
                   control={
@@ -438,24 +438,24 @@ useEffect(() => {
 
           {/* Соцмережі */}
           <Stack direction="row" alignItems="center" justifyContent="space-between">
-            <Typography variant="subtitle2" fontWeight={600}>Соціальні мережі</Typography>
+            <Typography variant="subtitle2" fontWeight={600}>Social Media</Typography>
             <Button size="small" startIcon={<IconPlus size={14} />}
               onClick={() => setSocials((p) => [...p, { platform: 'INSTAGRAM', url: '' }])}>
-              Додати
+              Add
             </Button>
           </Stack>
 
           {socials.map((s, idx) => (
             <Stack key={idx} direction="row" spacing={1} alignItems="center">
               <TextField
-                select label="Платформа" value={s.platform}
+                select label="Platform" value={s.platform}
                 onChange={(e) => updateSocial(idx, 'platform', e.target.value)}
                 sx={{ width: 160, flexShrink: 0 }} size="small"
               >
                 {PLATFORMS.map((p) => <MenuItem key={p} value={p}>{p}</MenuItem>)}
               </TextField>
               <TextField
-                fullWidth label="Посилання" value={s.url} size="small"
+                fullWidth label="Link" value={s.url} size="small"
                 onChange={(e) => updateSocial(idx, 'url', e.target.value)}
                 placeholder="https://..."
               />
@@ -470,9 +470,9 @@ useEffect(() => {
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} disabled={saving}>Скасувати</Button>
+        <Button onClick={handleClose} disabled={saving}>Cancel</Button>
         <Button variant="contained" onClick={handleSubmit} disabled={saving}>
-          {saving ? 'Збереження...' : isEdit ? 'Зберегти' : 'Створити'}
+          {saving ? 'Saving...' : isEdit ? 'Save' : 'Create'}
         </Button>
       </DialogActions>
     </Dialog>
