@@ -12,7 +12,7 @@ export default function CreateArticle() {
 
 const handleSave = async (data: ArticleFormData) => {
   if (!data.title || !data.authorName || !data.categoryId) {
-    setError("Заповніть обов'язкові поля: заголовок, автор, категорія");
+    setError("Fill in the required fields: title, author, category");
     return;
   }
 
@@ -35,7 +35,7 @@ const handleSave = async (data: ArticleFormData) => {
         credentials: 'include',
       });
 
-      if (!uploadRes.ok) throw new Error('Помилка завантаження банера');
+      if (!uploadRes.ok) throw new Error('Error uploading cover');
       const uploadData = await uploadRes.json();
       console.log('uploadData:', uploadData);
       imageId = uploadData.id;
@@ -64,7 +64,7 @@ const handleSave = async (data: ArticleFormData) => {
 
     if (!res.ok) {
       const json = await res.json().catch(() => ({}));
-      throw new Error(json?.message || `Помилка ${res.status}`);
+      throw new Error(json?.message || `Error ${res.status}`);
     }
     if (data.published && resData.id) {
       await fetch('/api/articles/publish', {
@@ -86,9 +86,9 @@ const handleSave = async (data: ArticleFormData) => {
 
   return (
     <ArticleForm
-      title="Створити статтю"
-      submitLabel="Створити статтю"
-      successMessage="Статтю успішно створено! Перенаправлення..."
+      title="Create Article"
+      submitLabel="Create Article"
+      successMessage="Article created successfully! Redirecting..."
       onSave={handleSave}
       loading={loading}
       error={error}

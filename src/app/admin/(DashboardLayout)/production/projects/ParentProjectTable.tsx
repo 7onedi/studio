@@ -34,7 +34,7 @@ export default function ParentProjectTable({
   const columns: ColumnDef<ParentProject>[] = [
     {
       accessorKey: 'title',
-      header: 'Назва',
+      header: 'Title',
       cell: ({ getValue }) => (
         <Typography variant="body2" fontWeight={500} noWrap sx={{ maxWidth: 200 }}>
           {getValue() as string}
@@ -44,7 +44,7 @@ export default function ParentProjectTable({
     },
     {
       id: 'category',
-      header: 'Категорія',
+      header: 'Category',
       accessorFn: (row) => row.category?.name ?? '—',
       cell: ({ getValue }) => (
         <Typography variant="body2" color="text.secondary">{getValue() as string}</Typography>
@@ -71,12 +71,12 @@ export default function ParentProjectTable({
       header: '',
       cell: ({ row }) => (
         <Stack direction="row" spacing={0.5}>
-          <Tooltip title="Редагувати">
+          <Tooltip title="Edit">
             <IconButton size="small" onClick={() => onEdit(row.original)}>
               <IconEdit size={16} />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Видалити">
+          <Tooltip title="Delete">
             <IconButton size="small" color="error" onClick={() => onDelete(row.original.id)}>
               <IconTrash size={16} />
             </IconButton>
@@ -104,7 +104,7 @@ export default function ParentProjectTable({
       onPageChange={onPageChange}
       onPageSizeChange={onPageSizeChange}
       onBulkDelete={onBulkDelete}
-      emptyText="Проектів не знайдено"
+      emptyText="Projects not found"
     />
   );
 }

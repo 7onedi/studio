@@ -53,7 +53,7 @@ export default function ContributorCard({ contributor, index, onChange, onRemove
       <Stack spacing={2}>
         {/* Фото */}
         <Box>
-          <Typography variant="body2" color="text.secondary" mb={1}>Фото</Typography>
+          <Typography variant="body2" color="text.secondary" mb={1}>Profile Image</Typography>
           <Stack direction="row" spacing={2} alignItems="center">
             {contributor.profileImg && (
               <Box
@@ -92,7 +92,7 @@ export default function ContributorCard({ contributor, index, onChange, onRemove
         />
 
         {/* Соцмережі */}
-        <Typography variant="caption" color="text.secondary">Соціальні мережі</Typography>
+        <Typography variant="caption" color="text.secondary">Social Media</Typography>
         <Stack direction="row" spacing={1}>
           <TextField
             label="Instagram" value={contributor.links.instagram ?? ''} size="small" fullWidth

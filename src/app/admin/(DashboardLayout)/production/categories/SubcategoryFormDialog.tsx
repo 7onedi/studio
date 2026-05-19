@@ -43,8 +43,8 @@ export default function SubcategoryFormDialog({
   }, [open, initial, fixedCategoryId]);
 
   const handleSubmit = async () => {
-    if (!name.trim()) { setError("Назва обов'язкова"); return; }
-    if (!categoryId) { setError('Оберіть категорію'); return; }
+    if (!name.trim()) { setError("Name is required"); return; }
+    if (!categoryId) { setError('Please select a category'); return; }
     setSaving(true);
     try {
       const url = isEdit ? `/api/subcategories/${initial!.id}` : '/api/subcategories';
@@ -60,7 +60,7 @@ export default function SubcategoryFormDialog({
       });
       console.log('url:', url);
       console.log('body:', JSON.stringify({ name, categoryId: Number(categoryId) }));
-      if (!res.ok) throw new Error(`Помилка ${res.status}`);
+      if (!res.ok) throw new Error(`Error ${res.status}`);
       onSaved(await res.json());
       onClose();
     } catch (err: any) {
@@ -72,17 +72,17 @@ export default function SubcategoryFormDialog({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>{isEdit ? 'Редагувати підкатегорію' : 'Нова підкатегорія'}</DialogTitle>
+      <DialogTitle>{isEdit ? 'Edit Subcategory' : 'New Subcategory'}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} mt={1}>
           <TextField
-            label="Назва" value={name}
+            label="Name" value={name}
             onChange={(e) => setName(e.target.value)}
             fullWidth size="small" required
           />
           {!fixedCategoryId && (
             <TextField
-              select label="Категорія" value={categoryId}
+              select label="Category" value={categoryId}
               onChange={(e) => setCategoryId(Number(e.target.value))}
               fullWidth size="small" required
             >
@@ -95,9 +95,9 @@ export default function SubcategoryFormDialog({
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} disabled={saving}>Скасувати</Button>
+        <Button onClick={onClose} disabled={saving}>Cancel</Button>
         <Button variant="contained" onClick={handleSubmit} disabled={saving}>
-          {saving ? 'Збереження...' : isEdit ? 'Зберегти' : 'Створити'}
+          {saving ? 'Saving...' : isEdit ? 'Save' : 'Create'}
         </Button>
       </DialogActions>
     </Dialog>

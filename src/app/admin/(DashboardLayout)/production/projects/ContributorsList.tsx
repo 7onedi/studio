@@ -32,10 +32,10 @@ export default function ContributorsList({ contributors, onChange }: Props) {
       <Divider />
       <Stack direction="row" alignItems="center" justifyContent="space-between">
         <Typography variant="subtitle2" fontWeight={600}>
-          Учасники ({contributors.length})
+          Contributors ({contributors.length})
         </Typography>
         <Button size="small" startIcon={<IconPlus size={14} />} onClick={handleAdd}>
-          Додати учасника
+          Add Contributor
         </Button>
       </Stack>
 
