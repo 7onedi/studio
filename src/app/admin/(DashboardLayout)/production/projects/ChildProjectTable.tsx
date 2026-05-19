@@ -33,7 +33,7 @@ export default function ChildProjectTable({
   const columns: ColumnDef<ChildProject>[] = [
     {
       accessorKey: 'title',
-      header: 'Назва',
+      header: 'Title',
       cell: ({ getValue }) => (
         <Typography variant="body2" fontWeight={500} noWrap sx={{ maxWidth: 200 }}>
           {getValue() as string}
@@ -43,7 +43,7 @@ export default function ChildProjectTable({
     },
     {
       id: 'category',
-      header: 'Категорія',
+      header: 'Category',
       accessorFn: (row) => row.category?.name ?? '—',
       cell: ({ getValue }) => (
         <Typography variant="body2" color="text.secondary">{getValue() as string}</Typography>
@@ -52,7 +52,7 @@ export default function ChildProjectTable({
     },
     {
       id: 'subcategory',
-      header: 'Підкатегорія',
+      header: 'Subcategory',
       accessorFn: (row) => row.subcategory?.name ?? '—',
       cell: ({ getValue }) => (
         <Typography variant="body2" color="text.secondary">{getValue() as string}</Typography>
@@ -61,7 +61,7 @@ export default function ChildProjectTable({
     },
     {
       id: 'parent',
-      header: 'Батьківський проект',
+      header: 'Parent Project',
       accessorFn: (row) => row.parent?.title ?? '—',
       cell: ({ getValue }) => (
         <Typography variant="body2" color="text.secondary" noWrap sx={{ maxWidth: 160 }}>
@@ -72,10 +72,10 @@ export default function ChildProjectTable({
     },
     // {
     //   accessorKey: 'published',
-    //   header: 'Статус',
+    //   header: 'Status',
     //   cell: ({ row }) => (
     //     <Chip
-    //       label={row.original.published ? 'Опубліковано' : 'Чернетка'}
+    //       label={row.original.published ? 'Published' : 'Draft'}
     //       size="small"
     //       color={row.original.published ? 'success' : 'default'}
     //       variant="outlined"
@@ -90,12 +90,12 @@ export default function ChildProjectTable({
       header: '',
       cell: ({ row }) => (
         <Stack direction="row" spacing={0.5}>
-          <Tooltip title="Редагувати">
+          <Tooltip title="Edit">
             <IconButton size="small" onClick={() => onEdit(row.original)}>
               <IconEdit size={16} />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Видалити">
+          <Tooltip title="Delete">
             <IconButton size="small" color="error" onClick={() => onDelete(row.original.id)}>
               <IconTrash size={16} />
             </IconButton>
@@ -123,7 +123,7 @@ export default function ChildProjectTable({
       onPageChange={onPageChange}
       onPageSizeChange={onPageSizeChange}
       onBulkDelete={onBulkDelete}
-      emptyText="Дочірніх проектів не знайдено"
+      emptyText="No child projects found"
     />
   );
 }

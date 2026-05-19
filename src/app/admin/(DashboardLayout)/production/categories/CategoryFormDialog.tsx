@@ -30,7 +30,7 @@ export default function CategoryFormDialog({ open, initial, onClose, onSaved }: 
   }, [open, initial]);
 
   const handleSubmit = async () => {
-    if (!name.trim()) { setError("Назва обов'язкова"); return; }
+    if (!name.trim()) { setError("Name is required"); return; }
     setSaving(true);
     try {
       const url = isEdit ? `/api/categories/${initial!.id}` : '/api/categories';
@@ -40,7 +40,7 @@ export default function CategoryFormDialog({ open, initial, onClose, onSaved }: 
         credentials: 'include',
         body: JSON.stringify({ name }),
       });
-      if (!res.ok) throw new Error(`Помилка ${res.status}`);
+      if (!res.ok) throw new Error(`Error ${res.status}`);
       onSaved(await res.json());
       onClose();
     } catch (err: any) {
@@ -52,17 +52,17 @@ export default function CategoryFormDialog({ open, initial, onClose, onSaved }: 
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>{isEdit ? 'Редагувати категорію' : 'Нова категорія'}</DialogTitle>
+      <DialogTitle>{isEdit ? 'Edit Category' : 'New Category'}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} mt={1}>
-          <TextField label="Назва" value={name} onChange={(e) => setName(e.target.value)} fullWidth size="small" required />
+          <TextField label="Name" value={name} onChange={(e) => setName(e.target.value)} fullWidth size="small" required />
           {error && <Typography variant="caption" color="error">{error}</Typography>}
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} disabled={saving}>Скасувати</Button>
+        <Button onClick={onClose} disabled={saving}>Cancel</Button>
         <Button variant="contained" onClick={handleSubmit} disabled={saving}>
-          {saving ? 'Збереження...' : isEdit ? 'Зберегти' : 'Створити'}
+          {saving ? 'Saving...' : isEdit ? 'Save' : 'Create'}
         </Button>
       </DialogActions>
     </Dialog>

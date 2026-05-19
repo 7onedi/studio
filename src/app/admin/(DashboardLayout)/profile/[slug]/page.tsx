@@ -150,7 +150,7 @@ const ProfileHeader = ({ user, saving, isOwn, canEdit, onSave }: ProfileHeaderPr
                 size="small"
                 onClick={() => document.getElementById("avatar-upload")?.click()}
               >
-                Змінити фото
+                {avatarBase64 ? "Change photo" : "Add photo"}
               </Button>
 
               {avatarBase64 && (
@@ -195,7 +195,7 @@ const ProfileHeader = ({ user, saving, isOwn, canEdit, onSave }: ProfileHeaderPr
               >
                 <TextField
                   fullWidth
-                  label="Ім'я *"
+                  label="Name *"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
@@ -210,10 +210,10 @@ const ProfileHeader = ({ user, saving, isOwn, canEdit, onSave }: ProfileHeaderPr
                 />
 
                 <FormControl fullWidth>
-                  <InputLabel>Роль</InputLabel>
+                  <InputLabel>Role</InputLabel>
                   <Select
                     value={role}
-                    label="Роль"
+                    label="Role"
                     onChange={(e) => setRole(e.target.value as UserRole)}
                     disabled
                   >
@@ -230,11 +230,11 @@ const ProfileHeader = ({ user, saving, isOwn, canEdit, onSave }: ProfileHeaderPr
 
                 <TextField
                   fullWidth
-                  label="Новий пароль"
+                  label="New Password"
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Залиште порожнім, щоб не змінювати"
+                  placeholder="Leave blank to not change"
                   InputProps={{
                     endAdornment: (
                       <IconButton
@@ -250,7 +250,7 @@ const ProfileHeader = ({ user, saving, isOwn, canEdit, onSave }: ProfileHeaderPr
 
                 <TextField
                   fullWidth
-                  label="Підтвердження пароля"
+                  label="Confirm Password"
                   type={showPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
@@ -268,7 +268,7 @@ const ProfileHeader = ({ user, saving, isOwn, canEdit, onSave }: ProfileHeaderPr
                 >
                   {saving
                     ? <CircularProgress size={20} sx={{ color: "#fff" }} />
-                    : "Зберегти зміни"}
+                    : "Save changes"}
                 </Button>
               </Stack>
             </>

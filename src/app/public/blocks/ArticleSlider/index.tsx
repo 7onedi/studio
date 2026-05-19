@@ -1,7 +1,7 @@
 "use client";
 
 import { useKeenSlider } from "keen-slider/react";
-import "keen-slider/keen-slider.min.css";
+// import "keen-slider/keen-slider.min.css";
 import { useState, useEffect } from "react";
 import { Button } from "@/app/public/components/Button";
 import { SvgIcon } from "@/app/public/components/SvgIcon";

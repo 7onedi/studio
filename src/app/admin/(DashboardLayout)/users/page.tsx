@@ -131,11 +131,11 @@ function UsersContent() {
     },
     {
       accessorKey: 'name',
-      header: 'Ім\'я',
+      header: 'Name',
       size: 200,
       cell: ({ row }) => (
         <Stack direction="row" spacing={0.5}>
-          <Tooltip title="Відкрити профіль">
+          <Tooltip title="View Profile">
             <IconButton
               size="small"
               onClick={() => router.push(`/admin/profile/${row.original.id}`)}
@@ -156,7 +156,7 @@ function UsersContent() {
     },
     {
       accessorKey: 'role',
-      header: 'Роль',
+      header: 'Role',
       cell: ({ row }) => {
         const role = row.original.role;
 
@@ -202,8 +202,8 @@ function UsersContent() {
       },
     },
     {
-      accessorKey: 'createdAt',
-      header: 'Дата реєстрації',
+      accessorKey: 'updatedAt',
+      header: 'Updated date',
       size: 160,
       cell: ({ getValue }) => (
         <Typography variant="body2" color="text.secondary">
@@ -217,7 +217,7 @@ function UsersContent() {
       size: 80,
       cell: ({ row }) => (
         <Stack direction="row" spacing={0.5}>
-          <Tooltip title="Відкрити профіль">
+          <Tooltip title="View Profile">
             <IconButton
               size="small"
               onClick={() => router.push(`/admin/profile/${row.original.id}`)}
@@ -242,17 +242,17 @@ function UsersContent() {
   const sortableColumns = ['name', 'email', 'createdAt'];
 
   return (
-    <PageContainer title="Учасники" description="Управління користувачами">
+    <PageContainer title="Users" description="Manage application users, their roles and permissions.">
       <Box>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-          <Typography variant="h5" fontWeight={600}>Учасники</Typography>
+          <Typography variant="h5" fontWeight={600}>Users</Typography>
         </Box>
 
         {/* Пошук */}
         <Box mb={2}>
           <TextField
             size="small"
-            placeholder="Пошук за email..."
+            placeholder="Search by email..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             InputProps={{
@@ -310,7 +310,7 @@ function UsersContent() {
                 {table.getRowModel().rows.length === 0 && !loading ? (
                   <TableRow>
                     <TableCell colSpan={columns.length} align="center" sx={{ py: 4 }}>
-                      <Typography color="text.secondary">Користувачів не знайдено</Typography>
+                      <Typography color="text.secondary">No users found</Typography>
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -336,8 +336,8 @@ function UsersContent() {
             rowsPerPageOptions={[10, 15, 25, 50]}
             onPageChange={(_, p) => updateParam('page', String(p + 1))}
             onRowsPerPageChange={(e) => updateParam('limit', e.target.value)}
-            labelRowsPerPage="Рядків:"
-            labelDisplayedRows={({ from, to, count }) => `${from}–${to} з ${count}`}
+            labelRowsPerPage="Rows:"
+            labelDisplayedRows={({ from, to, count }) => `${from}–${to} of ${count}`}
           />
         </Paper>
       </Box>

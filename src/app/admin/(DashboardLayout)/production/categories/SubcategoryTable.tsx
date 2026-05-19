@@ -34,7 +34,7 @@ export default function SubcategoryTable({
   const columns: ColumnDef<Subcategory>[] = [
     {
       accessorKey: 'name',
-      header: 'Назва',
+      header: 'Name',
       cell: ({ getValue }) => (
         <Typography variant="body2" fontWeight={500}>{getValue() as string}</Typography>
       ),
@@ -52,7 +52,7 @@ export default function SubcategoryTable({
     },
     {
       id: 'category',
-      header: 'Категорія',
+      header: 'Category',
       cell: ({ row }) => (
           <Typography variant="body2" color="text.secondary">
             {categories.find((c) => c.id === row.original.categoryId)?.name ?? '—'}
@@ -65,12 +65,12 @@ export default function SubcategoryTable({
       header: '',
       cell: ({ row }) => (
         <Stack direction="row" spacing={0.5}>
-          <Tooltip title="Редагувати">
+          <Tooltip title="Edit">
             <IconButton size="small" onClick={() => onEdit(row.original)}>
               <IconEdit size={16} />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Видалити">
+          <Tooltip title="Delete">
             <IconButton size="small" color="error" onClick={() => onDelete(row.original.id)}>
               <IconTrash size={16} />
             </IconButton>
@@ -97,7 +97,7 @@ export default function SubcategoryTable({
       onPageChange={onPageChange}
       onPageSizeChange={onPageSizeChange}
       onBulkDelete={onBulkDelete}  // ← це є в GenericTableProps
-      emptyText="Підкатегорій не знайдено"
+      emptyText="No subcategories found"
     />
   );
 }

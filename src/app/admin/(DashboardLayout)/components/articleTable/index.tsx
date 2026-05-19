@@ -99,13 +99,13 @@ export default function ArticleTable({
       body: JSON.stringify({ id }),
     });
 
-    if (!res.ok) throw new Error(`Помилка ${res.status}`);
+    if (!res.ok) throw new Error(`Error ${res.status}`);
 
     setTableData((prev) =>
       prev.map((a) => a.id === id ? { ...a, published: !a.published } : a)
     );
   } catch (err: any) {
-    console.error('Помилка зміни статусу:', err.message);
+    console.error('Error changing status:', err.message);
   }
 };
 
@@ -124,7 +124,7 @@ const handleDelete = async (id: number) => {
     const article = tableData.find((a) => a.id === id);
 
     const res = await fetch(`/api/articles/${id}`, { method: 'DELETE' });
-    if (!res.ok) throw new Error(`Помилка ${res.status}`);
+    if (!res.ok) throw new Error(`Error ${res.status}`);
 
     if (article?.imageId) {
       await fetch(`/api/media/${article.imageId}`, { method: 'DELETE', credentials: 'include' });
@@ -133,7 +133,7 @@ const handleDelete = async (id: number) => {
     setTableData((prev) => prev.filter((a) => a.id !== id)); // ← видаляємо з UI
     router.refresh();
   } catch (err: any) {
-    console.error('Помилка видалення:', err.message);
+    console.error('Error deleting article:', err.message);
   }
 };
 
@@ -154,7 +154,7 @@ const handleBulkDelete = async () => {
     setRowSelection({});
     router.refresh();
   } catch (err: any) {
-    console.error('Помилка bulk delete:', err.message);
+    console.error('Error bulk deleting articles:', err.message);
   }
 };
 
@@ -178,7 +178,7 @@ const handleBulkDelete = async () => {
     },
     {
       id: 'image',
-      header: 'Заставка',
+      header: 'Image',
       cell: ({ row }) => (
         <Avatar
           src={(row.original as any).image?.url ?? undefined}
@@ -192,7 +192,7 @@ const handleBulkDelete = async () => {
     },
     {
       accessorKey: 'title',
-      header: 'Назва',
+      header: 'Title',
       cell: ({ getValue }) => (
         <Typography variant="body2" fontWeight={500} noWrap sx={{ maxWidth: 220 }}>
           {getValue() as string}
@@ -202,7 +202,7 @@ const handleBulkDelete = async () => {
     },
     {
       id: 'author',
-      header: 'Автор',
+      header: 'Author',
       accessorFn: (row) =>row.authorName ?? row.author?.name ,
       cell: ({ getValue }) => (
         <Typography variant="body2" color="text.secondary">{getValue() as string}</Typography>
@@ -211,7 +211,7 @@ const handleBulkDelete = async () => {
     },
     {
       accessorKey: 'updatedAt',
-      header: 'Оновлено',
+      header: 'Updated date',
       cell: ({ getValue }) => (
         <Typography variant="body2" color="text.secondary" noWrap>
           {format(new Date(getValue() as string), 'dd.MM.yyyy HH:mm')}
@@ -221,12 +221,12 @@ const handleBulkDelete = async () => {
     },
     {
       accessorKey: 'published',
-      header: 'Статус',
+      header: 'Status',
       cell: ({ row }) => {
         const published = row.original.published;
         return (
           <Chip
-            label={published ? 'Опубліковано' : 'Чернетка'}
+            label={published ? 'Published' : 'Draft'}
             size="small"
             color={published ? 'success' : 'default'}
             variant="outlined"
@@ -239,7 +239,7 @@ const handleBulkDelete = async () => {
     },
     {
       accessorKey: 'lang',
-      header: 'Мова',
+      header: 'Language',
       cell: ({ getValue }) => (
         <Chip label={getValue() as string} size="small" variant="filled" sx={{ fontWeight: 600, fontSize: 11 }} />
       ),
@@ -247,7 +247,7 @@ const handleBulkDelete = async () => {
     },
     {
       id: 'category',
-      header: 'Категорія',
+      header: 'Category',
       accessorFn: (row) => row.category?.name ?? '—',
       cell: ({ getValue }) => (
         <Typography variant="body2" color="text.secondary" noWrap>{getValue() as string}</Typography>
@@ -256,7 +256,7 @@ const handleBulkDelete = async () => {
     },
     {
       id: 'subcategory',
-      header: 'Підкатегорія',
+      header: 'Subcategory',
       accessorFn: (row) => row.subcategories?.map((s) => s.name).join(', ') || '—',
       cell: ({ getValue }) => (
         <Typography variant="body2" color="text.secondary" noWrap sx={{ maxWidth: 160 }}>
@@ -270,12 +270,12 @@ const handleBulkDelete = async () => {
       header: '',
       cell: ({ row }) => (
         <Stack direction="row" spacing={0.5}>
-          <Tooltip title="Редагувати">
+          <Tooltip title="Edit">
             <IconButton size="small" href={`/admin/production/articles/${row.original.slug}/edit`}>
               <IconEdit size={16} />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Видалити">
+          <Tooltip title="Delete">
             <IconButton size="small" color="error" onClick={() => handleDelete(row.original.id)}>
               <IconTrash size={16} />
             </IconButton>
@@ -304,7 +304,7 @@ const handleBulkDelete = async () => {
       <Stack direction="row" spacing={2} alignItems="center" mb={2} flexWrap="wrap">
         <TextField
           size="small"
-          placeholder="Пошук..."
+          placeholder="Search..."
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && onSearchChange?.(searchInput)}
@@ -322,12 +322,12 @@ const handleBulkDelete = async () => {
 
         {selectedCount > 0 && (
           <Button variant="outlined" color="error" size="small" startIcon={<IconTrashX size={16} />} onClick={handleBulkDelete}>
-            Видалити вибрані ({selectedCount})
+            Delete selected ({selectedCount})
           </Button>
         )}
 
         <Typography variant="body2" color="text.secondary" sx={{ ml: 'auto' }}>
-          {loading ? 'Завантаження...' : `Всього: ${total}`}
+          {loading ? 'Loading...' : `Total: ${total}`}
         </Typography>
       </Stack>
 
@@ -371,7 +371,7 @@ const handleBulkDelete = async () => {
             {table.getRowModel().rows.length === 0 && !loading ? (
               <TableRow>
                 <TableCell colSpan={columns.length} align="center" sx={{ py: 6, color: 'text.secondary' }}>
-                  Статей не знайдено
+                  Articles not found
                 </TableCell>
               </TableRow>
             ) : (
@@ -404,8 +404,8 @@ const handleBulkDelete = async () => {
         rowsPerPageOptions={[10, 15, 25, 50]}
         onPageChange={(_, p) => onPageChange?.(p)}
         onRowsPerPageChange={(e) => onPageSizeChange?.(Number(e.target.value))}
-        labelRowsPerPage="Рядків:"
-        labelDisplayedRows={({ from, to, count }) => `${from}–${to} з ${count}`}
+        labelRowsPerPage="Rows per page:"
+        labelDisplayedRows={({ from, to, count }) => `${from}–${to} of ${count}`}
       />
 
       <StatusDialog
@@ -422,12 +422,12 @@ const handleBulkDelete = async () => {
               credentials: 'include',
               body: JSON.stringify({ id }),
             });
-            if (!res.ok) throw new Error(`Помилка ${res.status}`);
+            if (!res.ok) throw new Error(`Error ${res.status}`);
             setTableData((prev) =>
               prev.map((a) => a.id === id ? { ...a, published: !a.published } : a)
             );
           } catch (err: any) {
-            console.error('Помилка:', err.message);
+            console.error('Error:', err.message);
           }
         }}
       />
