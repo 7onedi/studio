@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import type { FC } from "react";
 import { useLanguage } from "@/app/providers/LanguageProvider";
 
@@ -154,11 +154,37 @@ export default function ReviewsSlider() {
       return () => clearTimeout(timer);
   }, [currentSlide]);
 
+  useEffect(() => {
+  const timer = setInterval(() => {
+    nextSlide();
+  }, 8000);
+  return () => clearInterval(timer);
+}, [nextSlide]);
 
   if (!currentReview) return null; // Запобігання помилкам, якщо немає відгуків
 
+  const touchStartX = useRef<number>(0);
+  const touchEndX = useRef<number>(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    touchEndX.current = e.changedTouches[0].clientX;
+    const diff = touchStartX.current - touchEndX.current;
+    
+    if (Math.abs(diff) > 50) { // мінімум 50px щоб не спрацьовував випадково
+      if (diff > 0) {
+        nextSlide(); // свайп вліво → наступний
+      } else {
+        prevSlide(); // свайп вправо → попередній
+      }
+    }
+  };
+
   return (
-    <div className="lg:text-main-text py-12 lg:px-8">
+    <div className="lg:text-main-text pt-12 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <h2 className="text-headline_2_mobile lg:text-headline_2 font-bold mb-10 text-center uppercase" style={{ color: '#E30613' }}>
             {t("reviews.title")}
@@ -169,10 +195,12 @@ export default function ReviewsSlider() {
           {/* Основний Слайд */}
           <div 
             className={`
-                flex flex-col md:flex-row items-center md:items-start p-6 rounded-xl 
-                transition-opacity duration-300
-                ${transitioning ? "opacity-0" : "opacity-100"}
+              flex flex-col md:flex-row items-center md:items-start p-6 rounded-xl 
+              transition-opacity duration-300
+              ${transitioning ? "opacity-0" : "opacity-100"}
             `}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
           >
             {/* 1. Блок профілю */}
             <div className="flex flex-col items-center h-[250px] lg:h-auto w-full lg:w-auto lg:min-w-[300px] mb-8 md:mb-0 md:mr-10">
@@ -244,7 +272,7 @@ export default function ReviewsSlider() {
 
           {/* НАВІГАЦІЯ (Стрілки) */}
           {reviewsCount > 1 && (
-            <div className="flex justify-center">
+            <div className="hidden lg:flex justify-center">
               <Arrow
                 onClick={prevSlide}
                 direction="left"

@@ -30,6 +30,13 @@ function MapUpdater({ activeCategory, categories }: {
   const initialZoom = 13;
 
   useEffect(() => {
+    map.zoomControl.setPosition('bottomleft');
+    setTimeout(() => {
+    const zoomControl = document.querySelector('.leaflet-bottom.leaflet-left') as HTMLElement;
+    if (zoomControl) {
+      zoomControl.style.left = '20px';
+    }
+  }, 100);
     let targetView: MapView = { center: initialMapCenter, zoom: initialZoom };
     if (activeCategory === null) {
       targetView = ALL_CATEGORIES_VIEW as MapView;

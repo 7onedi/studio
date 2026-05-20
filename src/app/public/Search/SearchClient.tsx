@@ -275,8 +275,8 @@ export default function SearchPageClient({
       <section className="mx-auto mt-10 max-w-6xl px-4">
         {filtered.length === 0 ? (
           <div className="mx-auto mt-14 max-w-2xl rounded-2xl border border-white/10 bg-white/5 p-8 text-center">
-            <p className="text-[18px] font-semibold text-white">Нічого не знайдено</p>
-            <p className="mt-2 text-[14px] text-white/70">Спробуй змінити запит або зняти частину тегів.</p>
+            <p className="text-[18px] font-semibold text-main-text">Нічого не знайдено</p>
+            <p className="mt-2 text-[14px] text-main-gray/70">Спробуй змінити запит або зняти частину тегів.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
@@ -293,7 +293,7 @@ export default function SearchPageClient({
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white transition hover:bg-white/10 disabled:opacity-30"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-main-blue transition hover:bg-white/10 disabled:opacity-30"
           >
             ‹
           </button>
@@ -316,7 +316,7 @@ export default function SearchPageClient({
                     'flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition',
                     page === p
                       ? 'bg-main-blue text-white shadow-lg'
-                      : 'border border-white/20 text-white hover:bg-white/10',
+                      : 'border border-white/20 text-main-blue hover:bg-white/10',
                   ].join(' ')}
                 >
                   {p}
@@ -327,7 +327,7 @@ export default function SearchPageClient({
           <button
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white transition hover:bg-white/10 disabled:opacity-30"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-main-blue transition hover:bg-white/10 disabled:opacity-30"
           >
             ›
           </button>
