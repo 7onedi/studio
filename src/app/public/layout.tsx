@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <BackgroundProvider>
           <BackgroundShell>
             {/* fixed header shell */}
-            <div className="fixed top-0 left-0 right-0 z-[500]">
+            <div className="fixed top-0 left-0 right-0 z-[1200]">
               <div className="container px-6 lg:px-0">
                 <Header />
               </div>

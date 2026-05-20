@@ -41,9 +41,9 @@ function toSlide(article: any) {
 
   const gradientMob =
     g === 'GRADIENT_1'
-      ? 'bg-gradient-to-t from-main-blue/100 via-main-blue/15 to-transparent'
+      ? 'bg-gradient-to-r from-main-blue/75 via-main-blue/45 to-transparent'
       : g === 'GRADIENT_2'
-      ? 'bg-gradient-to-t from-main-amarant/100 via-main-amarant/15 to-transparent'
+      ? 'bg-gradient-to-r from-main-amarant/75 via-main-amarant/45 to-transparent'
       : '';
 
   return {
@@ -116,7 +116,11 @@ export default function SliderHero() {
               />
             )}
 
-            <div className={`absolute inset-0 ${s.gradientMob} ${s.gradient}`} />
+            {/* Мобільний градієнт */}
+            <div className={`absolute inset-0 lg:hidden ${s.gradientMob}`} />
+
+            {/* Десктопний градієнт */}
+            <div className={`absolute inset-0 hidden lg:block ${s.gradient}`} />
 
             <div className="absolute inset-0 flex flex-col justify-between p-8 lg:p-0 lg:px-16 lg:pt-16 lg:mx-16 lg:my-10">
               <div className={`text-white text-headline_1_mobile ${s.textStyle} max-w-[600px]`}>
@@ -146,7 +150,7 @@ export default function SliderHero() {
                 ))}
               </div>
 
-              <div className="hidden lg:flex bottom-0 left-20 items-center gap-3 z-30">
+              <div className="hidden lg:flex bottom-0 left-20 items-center gap-3 z-30 md:max-w-[40%] xl:max-w-[70%]">
                 {slides.map((_, idx) => {
                   const active = currentSlide === idx;
                   return (

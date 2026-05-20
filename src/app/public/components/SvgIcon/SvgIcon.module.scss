@@ -1,28 +1,24 @@
-@use "sass:color";
 .main-blue {
-  color: #256BA7; /* або твій main-blue */
-  /* Якщо треба, можна явно вказати fill */
-  fill: currentColor;
+  color: #256BA7;
+  svg { fill: currentColor; }
 }
 
 .main-amarant {
-  color: E91651;
-  fill: currentColor;
+  color: #E91651;
+  svg { fill: currentColor; }
 }
 
 .white {
   color: white;
-  fill: currentColor;
+  svg { fill: currentColor; }
 }
 
 .main-grey {
   color: gray;
-  fill: currentColor;
+  svg { fill: currentColor; }
 }
 
 .main-text {
   color: black;
-  fill: currentColor;
+  svg { fill: currentColor; }
 }
-
-/* Додай інші кольори за потребою */
