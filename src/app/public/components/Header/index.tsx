@@ -10,10 +10,6 @@ import styles from "./Header.module.scss";
 
 import { useLanguage, type Locale } from "@/app/providers/LanguageProvider";
 
-interface HeaderProps {
-  onScrollTo: (id: string) => void;
-}
-
 export default function Header() {
   const [isHeaderHidden, setIsHeaderHidden] = useState(false);
   const lastYRef = useRef(0);
@@ -24,10 +20,8 @@ export default function Header() {
 
   const scrollToSection = (id: string) => {
     if (pathname !== "/") {
-      // якщо ми не на головній — переходимо на /
       router.push(`/#${id}`);
     } else {
-      // якщо вже на головній — просто скролимо
       const element = document.getElementById(id);
       element?.scrollIntoView({ behavior: "smooth" });
     }
@@ -40,81 +34,49 @@ export default function Header() {
     { name: t("nav.directions"),  anchor: "directions" },
     { name: t("nav.places"),      anchor: "places" },
   ] as const;
+
   const languages: { label: string; flag: string; value: Locale }[] = [
-    { label: "Українська", flag: "🇺🇦", value: "uk" },
-    { label: "English",    flag: "🇬🇧", value: "en" },
-    { label: "Lietuvių",   flag: "🇱🇹", value: "lt" },
-    { label: "Polski",     flag: "🇵🇱", value: "pl" },
+    { label: "Українська",    flag: "🇺🇦", value: "uk" },
+    { label: "English",       flag: "🇬🇧", value: "en" },
+    { label: "Lietuvių",      flag: "🇱🇹", value: "lt" },
+    { label: "Polski",        flag: "🇵🇱", value: "pl" },
     { label: "Moldovenească", flag: "🇲🇩", value: "ro" },
   ];
 
-const iconNames = [
-  {
-    title: "facebook",
-    link: "https://www.facebook.com/icyst"
-  },
-  {
-    title: "instagram",
-    link: "https://www.instagram.com/intercultural.youth.studio/"
-  }, 
-  {
-    title: "tiktok",
-    link: "https://www.tiktok.com/@pangeya.ultima"
-  }, 
-  {
-    title: "youtube",
-    link: "https://www.youtube.com/channel/UC7gRBZfWzpQiPE6a7fliZow"
-  },
-  {
-    title: "pangeya",
-    link: "https://pangeya.org.ua/"
-  },
-];
+  const iconNames = [
+    { title: "facebook",  link: "https://www.facebook.com/icyst" },
+    { title: "instagram", link: "https://www.instagram.com/intercultural.youth.studio/" },
+    { title: "tiktok",    link: "https://www.tiktok.com/@pangeya.ultima" },
+    { title: "youtube",   link: "https://www.youtube.com/channel/UC7gRBZfWzpQiPE6a7fliZow" },
+    { title: "pangeya",   link: "https://pangeya.org.ua/" },
+  ];
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
+  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
-
-  const toggleLanguageDropdown = () => {
-    setIsLanguageDropdownOpen(!isLanguageDropdownOpen);
-  };
+  const toggleLanguageDropdown = () => setIsLanguageDropdownOpen(!isLanguageDropdownOpen);
 
   useEffect(() => {
-  lastYRef.current = window.scrollY;
+    lastYRef.current = window.scrollY;
 
-  const onScroll = () => {
-    // якщо відкрите мобільне меню — не ховаємо хедер
-    if (isMobileMenuOpen) {
-      setIsHeaderHidden(false);
-      lastYRef.current = window.scrollY;
-      return;
-    }
+    const onScroll = () => {
+      if (isMobileMenuOpen) {
+        setIsHeaderHidden(false);
+        lastYRef.current = window.scrollY;
+        return;
+      }
+      const y = window.scrollY;
+      const lastY = lastYRef.current;
+      const delta = y - lastY;
+      const THRESHOLD = 8;
+      if (Math.abs(delta) < THRESHOLD) return;
+      if (y > lastY && y > 80) setIsHeaderHidden(true);
+      if (y < lastY) setIsHeaderHidden(false);
+      lastYRef.current = y;
+    };
 
-    const y = window.scrollY;
-    const lastY = lastYRef.current;
-
-    // невеликий поріг, щоб не смикалось від мікроскролу
-    const delta = y - lastY;
-    const THRESHOLD = 8;
-
-    if (Math.abs(delta) < THRESHOLD) return;
-
-    // вниз — ховаємо (але не на самому верху сторінки)
-    if (y > lastY && y > 80) setIsHeaderHidden(true);
-
-    // вгору — показуємо
-    if (y < lastY) setIsHeaderHidden(false);
-
-    lastYRef.current = y;
-  };
-
-  window.addEventListener("scroll", onScroll, { passive: true });
-  return () => window.removeEventListener("scroll", onScroll);
-}, [isMobileMenuOpen]);
-
-  
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [isMobileMenuOpen]);
 
   return (
     <header
@@ -131,10 +93,9 @@ const iconNames = [
         lg:h-20 lg:border-b lg:border-main-amarant
         bg-indigo-50 lg:mb-0"
       >
-
         {/* Logo */}
         <div className="col-span-4 lg:col-span-1 flex items-center pb-1">
-          <Link href={"/"}>    
+          <Link href={"/"}>
             <Image
               src="/mobile/icys.webp"
               alt="Intercultural Youth Studio Logo"
@@ -143,6 +104,7 @@ const iconNames = [
             />
           </Link>
         </div>
+
         <div
           className={`
             col-span-5 pl-2 lg:pl-0 text-main-text
@@ -154,60 +116,93 @@ const iconNames = [
             Intercultural Youth Studio
           </span>
         </div>
+
         {!isMobileMenuOpen && (
           <div className="block lg:hidden col-span-5 h-4"></div>
         )}
 
         {/* Desktop Navigation */}
-        <nav className="hidden lg:block lg:col-span-6 col-span-6 flex items-center justify-between w-full pl-0 pr-0">
-          <div className="flex items-center space-x-8 w-full justify-between font-sans text-main-text">
+        <nav className="hidden lg:flex lg:col-span-6 items-center justify-between w-full">
+          <div className="flex items-center justify-between w-full font-sans text-main-text gap-x-6">
+
+            {/* Nav links — рівномірно розподілені */}
             {navButtons.map((navButton, index) =>
               "link" in navButton ? (
                 <Link
                   key={index}
                   href={navButton.link}
-                  className="flex items-center hover:text-main-blue transition-colors duration-200"
-                  >
-                  <span className="text-button uppercase text-center">{navButton.name}</span>
+                  className="flex-1 flex items-center justify-center hover:text-main-blue transition-colors duration-200"
+                >
+                  <span className="text-button uppercase text-center whitespace-nowrap">{navButton.name}</span>
                 </Link>
               ) : (
                 <button
                   key={index}
                   onClick={() => scrollToSection(navButton.anchor)}
-                  className="flex items-center hover:text-main-blue transition-colors duration-200"
+                  className="flex-1 flex items-center justify-center hover:text-main-blue transition-colors duration-200"
                 >
-                  <span className="text-button uppercase text-center">{navButton.name}</span>
+                  <span className="text-button uppercase text-center whitespace-nowrap">{navButton.name}</span>
                 </button>
               )
             )}
 
+            {/* Search Icon Button */}
+            <Link
+              href="/public/search"
+              aria-label="Пошук"
+              className="group flex items-center justify-center shrink-0"
+            >
+              <span
+                style={{ color: "inherit", fill: "currentColor" }}
+                className="text-main-text group-hover:text-main-blue transition-colors duration-200 [&_svg]:fill-current"
+              >
+                <SvgIcon name="magnifying-glass" size={20} />
+              </span>
+            </Link>
+
             {/* Language Switcher */}
-            <div className="relative flex items-center space-x-2">
+            <div className="relative flex items-center shrink-0">
               <button
                 onClick={toggleLanguageDropdown}
-                className="flex items-center text-main-text hover:text-main-blue transition-colors duration-200 focus:outline-none"
+                className="flex items-center gap-2 text-main-text hover:text-main-blue transition-colors duration-200 focus:outline-none"
               >
-                  <span className="text-button pr-2">{locale.toUpperCase()}</span>
-                  <span className="pr-4">{languages.find(l => l.value === locale)?.flag}</span>
-                <SvgIcon name="down" />
+                <span className="text-button">{locale.toUpperCase()}</span>
+                <span>{languages.find(l => l.value === locale)?.flag}</span>
+                <span
+                  style={{
+                    display: "inline-flex",
+                    transition: "transform 250ms ease",
+                    transform: isLanguageDropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
+                  }}
+                >
+                  <SvgIcon name="down" size={16} />
+                </span>
               </button>
 
               {isLanguageDropdownOpen && (
-                <div className="absolute top-full left-0 mt-2 w-24 bg-white rounded-md shadow-lg py-1 z-10">
-                  {languages.map((lang, inx) => (
-                    <div key={inx}>
-                      <button
-                        onClick={() => {
-                          setLocale(lang.value);
-                          setIsLanguageDropdownOpen(false);
-                        }}
-                        className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex justify-between
-                          ${locale === lang.value ? "text-main-blue font-bold" : "text-main-text"}`}
-                      >
-                        <span className="mr-2 text-button inline-block">{lang.value.toUpperCase()}</span>
-                        <span className="mr-2 inline-block">{lang.flag}</span>
-                      </button>
-                    </div>
+                <div
+                  className="absolute top-full left-1/2 -translate-x-1/2 mt-3 py-1 z-10 rounded-xl overflow-hidden"
+                  style={{
+                    background: "rgba(255,255,255,0.08)",
+                    backdropFilter: "blur(12px)",
+                    WebkitBackdropFilter: "blur(12px)",
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
+                    minWidth: "120px",
+                  }}
+                >
+                  {languages.filter(lang => lang.value !== locale).map((lang, inx) => (
+                    <button
+                      key={inx}
+                      onClick={() => {
+                        setLocale(lang.value);
+                        setIsLanguageDropdownOpen(false);
+                      }}
+                      className="flex w-full items-center gap-3 px-4 py-2 text-sm text-main-text hover:text-main-blue transition-colors duration-150"
+                    >
+                      <span className="text-button">{lang.value.toUpperCase()}</span>
+                      <span>{lang.flag}</span>
+                    </button>
                   ))}
                 </div>
               )}
@@ -217,17 +212,17 @@ const iconNames = [
             <Button
               variant="primary"
               onClick={() => router.push('/public/AboutNetwork#joinUs')}
-              > 
+              className="shrink-0"
+            >
               {t("nav.support")}
             </Button>
           </div>
         </nav>
 
-
         {/* Mobile Menu Button */}
         <div className="col-span-3 lg:hidden flex items-end justify-end">
           <button onClick={toggleMobileMenu} className="text-white focus:outline-none">
-            {isMobileMenuOpen ? <SvgIcon name="xmark-solid"/> : <SvgIcon name="bars-solid"/>}
+            {isMobileMenuOpen ? <SvgIcon name="xmark-solid" /> : <SvgIcon name="bars-solid" />}
           </button>
         </div>
       </div>
@@ -236,10 +231,16 @@ const iconNames = [
       {isMobileMenuOpen && (
         <div className="bg-indigo-50 pb-4 pt-5 lg:mt-0 rounded-b-lg lg:hidden text-button_mobile">
           <nav className="flex flex-col items-center space-y-4">
+
+            {/* Nav links */}
             {navButtons.map((navButton, i) =>
               "link" in navButton ? (
-                <Link key={i} href={navButton.link} onClick={closeMobileMenu}
-                  className={`py-3 block hover:text-main-amarant transition-colors duration-200 ${pathname === navButton.link ? 'text-main-amarant' : 'text-main-text'}`}>
+                <Link
+                  key={i}
+                  href={navButton.link}
+                  onClick={closeMobileMenu}
+                  className={`py-3 block hover:text-main-amarant transition-colors duration-200 ${pathname === navButton.link ? 'text-main-amarant' : 'text-main-text'}`}
+                >
                   {navButton.name}
                 </Link>
               ) : (
@@ -249,17 +250,28 @@ const iconNames = [
                     closeMobileMenu();
                     scrollToSection(navButton.anchor);
                   }}
-                  className={`py-3 block hover:text-main-amarant transition-colors duration-200 text-main-text`}
+                  className="py-3 block hover:text-main-amarant transition-colors duration-200 text-main-text"
                 >
                   {navButton.name}
                 </button>
               )
             )}
 
+            {/* Mobile Search Button */}
+            <Link
+              href="/public/Search"
+              onClick={closeMobileMenu}
+              className="py-3 flex items-center gap-2 hover:text-main-amarant transition-colors duration-200 text-main-text"
+            >
+              <SvgIcon name="magnifying-glass" size={18} />
+              <span>{t("nav.search") ?? "Пошук"}</span>
+            </Link>
+
             {/* Mobile Language Switcher */}
             <div className="pt-4 relative flex justify-between w-full">
-              {languages.map((lang,inx) => (
+              {languages.map((lang, inx) => (
                 <button
+                  key={inx}
                   onClick={() => setLocale(lang.value)}
                   className={`flex items-center justify-center w-full py-2 text-headline_5_mobile
                     hover:text-main-blue transition-colors duration-200 focus:outline-none
@@ -270,18 +282,17 @@ const iconNames = [
                 </button>
               ))}
             </div>
-            <div className=" relative flex justify-between w-full">
-              {iconNames.map((iconName,i) => (
-                <div
-                  key={i}
-                  className="py-2 hover:text-main-blue transition-colors duration-200 focus:outline-none"
-                >
+
+            {/* Social Icons */}
+            <div className="relative flex justify-between w-full">
+              {iconNames.map((iconName, i) => (
+                <div key={i} className="py-2 hover:text-main-blue transition-colors duration-200">
                   <Button
                     variant="accent-alt"
                     iconOnly
                     className="shadow-[0_4px_6px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_8px_rgba(0,0,0,0.15)] transition-shadow duration-200"
                   >
-                    <Link href={iconName.link} className='flex'>
+                    <Link href={iconName.link} className="flex">
                       <SvgIcon name={iconName.title} size={24} color="main-blue" />
                     </Link>
                   </Button>
@@ -289,13 +300,17 @@ const iconNames = [
               ))}
             </div>
 
-            {/* Mobile Support Button */}
-            <Button variant="primary" onClick={() => scrollToSection("joinUs")}>
+            {/* Mobile Support Button — не закриває меню */}
+            <Button
+              variant="primary"
+              onClick={() => router.push('/public/AboutNetwork#joinUs')}
+            >
               {t("nav.support")}
             </Button>
+
           </nav>
         </div>
       )}
     </header>
   );
-};
+}

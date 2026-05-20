@@ -4,7 +4,8 @@
     "methodology": "Methodology",
     "directions": "Directions",
     "places": "Places",
-    "support": "Support"
+    "support": "Support",
+    "search": "Search"
   },
   "views": {
     "article": {
