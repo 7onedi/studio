@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useKeenSlider } from "keen-slider/react";
-// import "keen-slider/keen-slider.min.css";
+import "keen-slider/keen-slider.min.css";
 import Image from "next/image";
 import Link from "next/link";
 

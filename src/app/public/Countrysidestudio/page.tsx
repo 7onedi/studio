@@ -38,7 +38,7 @@ export default async function Home() {
       <div className="flex justify-center">
         <p className="text-headline_3">Діяльність #Countrysidestudio</p>
       </div>
-      <div className="mt-8 lg:mt-12 px-4 lg:px-0">
+      <div className="mt-8 lg:mt-12 lg:px-0">
         <BlogSlider categoryId={String(result?.categoryId)} />
       </div>
     </div>

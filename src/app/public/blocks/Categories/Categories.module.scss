@@ -65,6 +65,12 @@
 // }
 
 @use "sass:color";
-.button_primary{
-  margin-top: 290px;
+.button_primary {
+  margin-top: 0;
+  @media (min-width: 1024px) {
+    margin-top: 190px;
+  }
+  @media (min-width: 1440px) {
+    margin-top: 290px;
+  }
 }
