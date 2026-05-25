@@ -32,7 +32,22 @@
     background-image: url('/background/mainBGtriangles.png');
     background-repeat: no-repeat;
     background-size: 100% auto;
-    background-position: center 1020px;
+    background-position: center 960px;
+    @media (min-width: 1280px) {
+      background-position: center 1080px;
+    }
+    @media (min-width: 1440px) {
+      background-position: center 1160px;
+    }
+    @media (min-width: 1600px) {
+      background-position: center 1120px;
+    }
+    @media (min-width: 1920px) {
+      background-position: center 1280px;
+    }
+    @media (min-width: 2560px) {
+      background-position: center 1560px;
+    }
   }
 }
 

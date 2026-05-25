@@ -46,44 +46,44 @@ export default async function FestivalPage({ params }: FestivalPageProps) {
     <div className="mt-6 lg:mt-0">
       <div className="relative mb-16 lg:mb-0">
 
-{/* Лого + заголовок */}
-<div className="w-full lg:left-16 lg:bottom-16 z-20 flex flex-col lg:flex-row items-start lg:items-center">
-  <div className="lg:flex-col flex items-center w-full lg:w-auto">
-    <div className="relative w-full h-[200px] lg:w-[516px] lg:h-[327px] shrink-0 rounded-[20px] overflow-hidden">
-      <Image
-        src={child.image?.url ?? ''}
-        alt={child.title}
-        fill
-        className="object-cover"
-      />
-    </div>
+        {/* Лого + заголовок */}
+        <div className="w-full lg:left-16 lg:bottom-16 z-20 flex flex-col lg:flex-row items-start lg:items-center">
+          <div className="lg:flex-col flex items-center w-full lg:w-auto">
+            <div className="relative w-full h-[200px] lg:w-[516px] lg:h-[327px] shrink-0 rounded-[20px] overflow-hidden">
+              <Image
+                src={child.image?.url ?? ''}
+                alt={child.title}
+                fill
+                className="object-cover"
+              />
+            </div>
 
-        {/* Соцмережі під банером */}
-      {socialLinks.length > 0 && (
-        <div className="flex gap-4 mt-4">
-          {socialLinks.map((s: any, i: number) => (
-            <Link key={i} href={s.url}>
-              <Button variant="accent-alt" iconOnly
-                className="shadow-[0_4px_6px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_8px_rgba(0,0,0,0.3)] transition-shadow hover:bg-gray-200">
-                <SvgIcon name={s.social?.platform?.toLowerCase() ?? 'instagram'} size={24} color="main-blue" />
-              </Button>
-            </Link>
-          ))}
+                {/* Соцмережі під банером */}
+              {socialLinks.length > 0 && (
+                <div className="flex gap-4 mt-4">
+                  {socialLinks.map((s: any, i: number) => (
+                    <Link key={i} href={s.url}>
+                      <Button variant="accent-alt" iconOnly
+                        className="shadow-[0_4px_6px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_8px_rgba(0,0,0,0.3)] transition-shadow hover:bg-gray-200">
+                        <SvgIcon name={s.social?.platform?.toLowerCase() ?? 'instagram'} size={24} color="main-blue" />
+                      </Button>
+                    </Link>
+                  ))}
+                </div>
+              )}
+          </div>
+
+          <div className="my-5 lg:my-0 lg:mt-4 text-left w-full lg:flex flex-col lg:ml-6">
+            <p className="text-headline_2_mobile lg:text-headline_2 font-bold">{child.title}</p>
+
+            {/* Опис через ArticleBody */}
+            {child.body?.blocks?.length > 0 && (
+              <div className="mt-4 text-body_mobile lg:text-body">
+                <ArticleBody blocks={child.body.blocks as any[]} />
+              </div>
+            )}
+          </div>
         </div>
-      )}
-  </div>
-
-  <div className="my-5 lg:my-0 lg:mt-4 text-left w-full lg:flex flex-col lg:ml-6">
-    <p className="text-headline_2_mobile lg:text-headline_2 font-bold">{child.title}</p>
-
-    {/* Опис через ArticleBody */}
-    {child.body?.blocks?.length > 0 && (
-      <div className="mt-4 text-body_mobile lg:text-body">
-        <ArticleBody blocks={child.body.blocks as any[]} />
-      </div>
-    )}
-  </div>
-</div>
         
 
         {/* Соцмережі десктоп */}
@@ -121,7 +121,10 @@ export default async function FestivalPage({ params }: FestivalPageProps) {
       </div>
 
       <div className="my-8">
-        <BlogSlider categoryId={String(result?.categoryId)} />
+                <BlogSlider 
+                  categoryId={String(child.categoryId)} 
+                  subcategoryId={String(child.subcategoryId)} 
+                />
       </div>
 
       <div className="my-12 lg:mt-16 px-4 lg:px-0">
