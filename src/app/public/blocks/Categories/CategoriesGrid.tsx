@@ -32,9 +32,11 @@ interface CardProps {
   isReversed: boolean;
   isDesktop: boolean;
   scale?: number;
+  isFirst?: boolean;        // ← додай
+  onImageLoad?: () => void; // ← додай
 }
 
-function SvgCard({ category, x, y, W, H, path, isReversed, isDesktop, scale = 1 }: CardProps) {
+function SvgCard({ category, x, y, W, H, path, isReversed, isDesktop, scale = 1, isFirst, onImageLoad }: CardProps) {
   const [hovered, setHovered] = useState(false);
   const router = useRouter();
 
@@ -55,7 +57,7 @@ function SvgCard({ category, x, y, W, H, path, isReversed, isDesktop, scale = 1 
         transform={`translate(${W * (scale ?? 1) / 2}, ${H * (scale ?? 1) / 2}) scale(${hovered ? 1.1 : 1}) translate(-${W * (scale ?? 1) / 2}, -${H * (scale ?? 1) / 2})`}
         style={{ 
         cursor: "pointer",
-        transition: "transform 0.3s ease",
+        transition: "transform 0.2s ease",
         }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
@@ -68,15 +70,13 @@ function SvgCard({ category, x, y, W, H, path, isReversed, isDesktop, scale = 1 
 
         <pattern id={imgId} patternUnits="userSpaceOnUse" width={W} height={H}>
           <image
-            href={category.image}
-            x="0" y="0" width={W} height={H}
-            preserveAspectRatio="xMidYMid slice"
-            style={{
-              transformOrigin: `${W / 2}px ${H / 2}px`,
-              transform: hovered ? "scale(1.06)" : "scale(1)",
-              transition: "transform 0.6s ease",
-            }}
-          />
+  href={category.image}
+  x="0" y="0" width={W} height={H}
+  preserveAspectRatio="xMidYMid slice"
+  transform={isReversed ? flipTransform : undefined}
+  // @ts-ignore
+  onLoad={isFirst ? onImageLoad : undefined}
+/>
         </pattern>
 
         <pattern id={patId} patternUnits="userSpaceOnUse" width={W} height={H}>
@@ -91,11 +91,13 @@ function SvgCard({ category, x, y, W, H, path, isReversed, isDesktop, scale = 1 
     <g clipPath={`url(#${clipId})`}>
     {/* 1. Фото */}
     <image
-        href={category.image}
-        x="0" y="0" width={W} height={H}
-        preserveAspectRatio="xMidYMid slice"
-        transform={isReversed ? flipTransform : undefined}
-    />
+  href={category.image}
+  x="0" y="0" width={W} height={H}
+  preserveAspectRatio="xMidYMid slice"
+  transform={isReversed ? flipTransform : undefined}
+  // @ts-ignore
+  onLoad={isFirst ? onImageLoad : undefined}
+/>
 
     {/* 2. Градієнт */}
     <path
@@ -107,12 +109,13 @@ function SvgCard({ category, x, y, W, H, path, isReversed, isDesktop, scale = 1 
 
     {/* 3. Pattern */}
     <image
-        href={category.pattern}
-        x="0" y="0" width={W} height={H}
-        preserveAspectRatio="xMidYMid slice"
-        transform={isReversed ? flipTransform : undefined}
-        opacity={1}
-    />
+  href={category.pattern}
+  x="0" y="0" width={W} height={H}
+  preserveAspectRatio="xMidYMid slice"
+  transform={isReversed ? flipTransform : undefined}
+  // @ts-ignore
+  onLoad={isFirst ? onImageLoad : undefined}
+/>
 
     {/* 4. Верхній градієнт — зникає при наведенні */}
     <path
@@ -156,8 +159,14 @@ function SvgCard({ category, x, y, W, H, path, isReversed, isDesktop, scale = 1 
   );
 }
 
-export default function CategoriesGrid({ categories }: { categories: Category[] }) {
-  const [isDesktop, setIsDesktop] = useState(false);
+export default function CategoriesGrid({
+  categories,
+  onImageLoad,
+}: {
+  categories: Category[];
+  onImageLoad?: () => void;
+}) {
+  const [isDesktop, setIsDesktop] = useState<boolean | null>(null);
 
   useEffect(() => {
     const check = () => setIsDesktop(window.innerWidth >= 768);
@@ -165,6 +174,16 @@ export default function CategoriesGrid({ categories }: { categories: Category[] 
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
+
+  // Поки не знаємо — показуємо skeleton замість неправильного layout
+  if (isDesktop === null) {
+    return (
+      <div className="w-full animate-pulse">
+        <div className="hidden md:block h-[450px] bg-gray-200 rounded-2xl" />
+        <div className="md:hidden h-[1400px] bg-gray-200 rounded-2xl" />
+      </div>
+    );
+  }
 
   if (isDesktop) {
     const BW = DESKTOP_W;          // base path width  = 472
@@ -224,6 +243,8 @@ export default function CategoriesGrid({ categories }: { categories: Category[] 
             isReversed={positions[i].reversed}
             isDesktop={true}
             scale={S}
+                isFirst={i === 0}        // ← додай
+    onImageLoad={onImageLoad} // ← додай
           />
         ))}
       </svg>
@@ -253,6 +274,8 @@ export default function CategoriesGrid({ categories }: { categories: Category[] 
           path={MOBILE_PATH}
           isReversed={i % 2 === 1}
           isDesktop={false}
+              isFirst={i === 0}        // ← додай
+    onImageLoad={onImageLoad} // ← додай
         />
       ))}
     </svg>

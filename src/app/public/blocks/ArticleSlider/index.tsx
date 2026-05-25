@@ -2,12 +2,12 @@
 
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/app/public/components/Button";
 import { SvgIcon } from "@/app/public/components/SvgIcon";
 import Image from "next/image";
 import Link from "next/link";
-import { useLanguage} from "@/app/providers/LanguageProvider";
+import { useLanguage } from "@/app/providers/LanguageProvider";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "";
 
@@ -33,33 +33,68 @@ function toSlide(article: any) {
   const g = article.gradient;
 
   const gradient =
-    g === 'GRADIENT_1'
-      ? 'lg:bg-gradient-to-r lg:from-main-blue/100 lg:via-main-blue/15 lg:to-transparent'
-      : g === 'GRADIENT_2'
-      ? 'lg:bg-gradient-to-r lg:from-main-amarant/100 lg:via-main-amarant/15 lg:to-transparent'
-      : '';
+    g === "GRADIENT_1"
+      ? "lg:bg-gradient-to-r lg:from-main-blue/100 lg:via-main-blue/15 lg:to-transparent"
+      : g === "GRADIENT_2"
+      ? "lg:bg-gradient-to-r lg:from-main-amarant/100 lg:via-main-amarant/15 lg:to-transparent"
+      : "";
 
   const gradientMob =
-    g === 'GRADIENT_1'
-      ? 'bg-gradient-to-r from-main-blue/75 via-main-blue/45 to-transparent'
-      : g === 'GRADIENT_2'
-      ? 'bg-gradient-to-r from-main-amarant/75 via-main-amarant/45 to-transparent'
-      : '';
+    g === "GRADIENT_1"
+      ? "bg-gradient-to-r from-main-blue/75 via-main-blue/45 to-transparent"
+      : g === "GRADIENT_2"
+      ? "bg-gradient-to-r from-main-amarant/75 via-main-amarant/45 to-transparent"
+      : "";
 
   return {
-    slug: article.slug ?? '',
-    title: article.title ?? '',
+    slug: article.slug ?? "",
+    title: article.title ?? "",
     img: article.image?.url ?? null,
     gradient,
     gradientMob,
-    textStyle: '',
+    textStyle: "",
   };
+}
+
+// Skeleton — показується поки дані не завантажились
+function SliderSkeleton() {
+  return (
+    <div className="relative w-full h-[700px] overflow-hidden bg-gray-200 animate-pulse">
+      {/* Імітація градієнтного overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-gray-300/80 via-gray-200/40 to-transparent" />
+
+      {/* Імітація заголовку */}
+      <div className="absolute top-8 left-8 lg:top-16 lg:left-16 space-y-3 max-w-[500px]">
+        <div className="h-8 bg-gray-300 rounded-lg w-96" />
+        <div className="h-8 bg-gray-300 rounded-lg w-72" />
+        <div className="h-8 bg-gray-300 rounded-lg w-80" />
+      </div>
+
+      {/* Імітація кнопки */}
+      <div className="absolute bottom-8 left-8 lg:left-16 h-12 w-36 bg-gray-300 rounded-full" />
+
+      {/* Імітація dot-навігації */}
+      <div className="hidden lg:flex absolute bottom-8 left-20 gap-3">
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            className={`rounded-full bg-gray-300 ${i === 0 ? "w-8 h-4" : "w-4 h-4"}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default function SliderHero() {
   const [slides, setSlides] = useState<ReturnType<typeof toSlide>[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [mounted, setMounted] = useState(false);
+
+  // ready = перше зображення повністю завантажилось
+  const [ready, setReady] = useState(false);
+  const firstImageLoadedRef = useRef(false);
+
   const { t } = useLanguage();
 
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
@@ -84,89 +119,131 @@ export default function SliderHero() {
     return () => clearTimeout(timer);
   }, [instanceRef]);
 
-  // Оновлюємо слайдер після завантаження даних
   useEffect(() => {
     instanceRef.current?.update();
   }, [slides, instanceRef]);
 
   useEffect(() => {
-    const t = setInterval(() => instanceRef.current?.next(), 8000);
+    const t = setInterval(() => instanceRef.current?.next(), 10000);
     return () => clearInterval(t);
   }, [instanceRef]);
 
-  if (slides.length === 0) return null;
+  // Fallback: якщо зображення нема або onLoad не спрацює — показуємо через 1.5s
+  useEffect(() => {
+    if (slides.length === 0) return;
+    const fallback = setTimeout(() => {
+      if (!firstImageLoadedRef.current) {
+        setReady(true);
+      }
+    }, 1500);
+    return () => clearTimeout(fallback);
+  }, [slides]);
+
+  const handleFirstImageLoad = () => {
+    if (!firstImageLoadedRef.current) {
+      firstImageLoadedRef.current = true;
+      setReady(true);
+    }
+  };
+
+  // Поки дані ще не прийшли — skeleton
+  if (slides.length === 0) return <SliderSkeleton />;
 
   return (
-    <div
-      className={`relative w-full overflow-hidden rounded-3xl transition-opacity duration-500 ${
-        mounted ? "opacity-100" : "opacity-0"
-      }`}
-    >
-      <div ref={sliderRef} className="keen-slider w-full h-[700px]">
-        {slides.map((s, i) => (
-          <div key={s.slug} className="keen-slider__slide relative">
-            {s.img && (
-              <Image
-                src={s.img}
-                alt={s.title}
-                fill
-                className="object-cover rounded-3xl"
-                sizes="100vw"
-                priority={i === 0}
-              />
-            )}
+    <div className="relative w-full overflow-hidden ">
+      {/* Skeleton поверх слайдера, зникає після ready */}
+      {!ready && (
+        <div className="absolute inset-0 z-30">
+          <SliderSkeleton />
+        </div>
+      )}
 
-            {/* Мобільний градієнт */}
-            <div className={`absolute inset-0 lg:hidden ${s.gradientMob}`} />
+      {/* Сам слайдер — завжди в DOM, але невидимий до ready */}
+      <div
+        className={`transition-opacity duration-700 ${
+          ready && mounted ? "opacity-100" : "opacity-0"
+        }`}
+      >
+         <div ref={sliderRef} className="keen-slider w-full h-screen">
+          {slides.map((s, i) => (
+            <div key={s.slug} className="keen-slider__slide relative">
+              {s.img && (
+                <Image
+                  src={s.img}
+                  alt={s.title}
+                  fill
+                  className="object-cover"
+                  sizes="100vw"
+                  // Перший слайд — найвищий пріоритет завантаження
+                  priority={i === 0}
+                  // fetchPriority hint для браузера
+                  fetchPriority={i === 0 ? "high" : "low"}
+                  onLoad={i === 0 ? handleFirstImageLoad : undefined}
+                />
+              )}
 
-            {/* Десктопний градієнт */}
-            <div className={`absolute inset-0 hidden lg:block ${s.gradient}`} />
+              {/* Мобільний градієнт */}
+              <div className={`absolute inset-0 lg:hidden ${s.gradientMob}`} />
 
-            <div className="absolute inset-0 flex flex-col justify-between p-8 lg:p-0 lg:px-16 lg:pt-16 lg:mx-16 lg:my-10">
-              <div className={`text-white text-headline_1_mobile ${s.textStyle} max-w-[600px]`}>
-                {s.title}
-              </div>
-              <Link
-                href={`/public/Article/${s.slug}`}
-                className="absolute bottom-8 left-16 lg:relative lg:bottom-0 lg:left-0 z-20"
-              >
-                <Button variant="secondary-alt">
-                  <span className="mr-3"> { t("views.article.read_more") } </span>
-                  <SvgIcon name="right" size={24} color="white" />
-                </Button>
-              </Link>
+              {/* Десктопний градієнт */}
+              <div className={`absolute inset-0 hidden lg:block ${s.gradient}`} />
 
-              <div className="hidden lg:flex lg:absolute bottom-0 right-16 gap-4 z-20">
-                {iconNames.map((iconName) => (
-                  <Link key={iconName.title} href={iconName.link} className="flex items-center">
-                    <Button
-                      variant="accent-alt"
-                      iconOnly
-                      className="lg:mx-1 shadow-[0_4px_6px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_8px_rgba(0,0,0,0.3)] transition-shadow hover:bg-gray-200"
-                    >
-                      <SvgIcon name={iconName.title} size={24} color="main-blue" />
-                    </Button>
-                  </Link>
-                ))}
-              </div>
+               <div className="absolute inset-0 flex flex-col justify-between py-8 lg:py-10">
+  
+                {/* Контент вирівняний по container */}
+                <div className="container h-full flex flex-col justify-between">
+                  
+                  <div className={`mt-16 lg:mt-36 text-white text-headline_1_mobile ${s.textStyle} max-w-[600px] lg:pt-16`}>
+                    {s.title}
+                  </div>
 
-              <div className="hidden lg:flex bottom-0 left-20 items-center gap-3 z-30 md:max-w-[40%] xl:max-w-[70%]">
-                {slides.map((_, idx) => {
-                  const active = currentSlide === idx;
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() => instanceRef.current?.moveToIdx(idx)}
-                      className={`m-1 transition-all duration-300 ${
-                        active ? "w-8 h-4 bg-white rounded-full" : "w-4 h-4 bg-white/40 rounded-full"
-                      }`}
-                    />
-                  );
-                })}
+                  <div className="flex items-end justify-between pb-4">
+                    {/* Кнопка читати */}
+                    <Link href={`/public/Article/${s.slug}`}>
+                      <Button variant="secondary-alt">
+                        <span className="mr-3">{t("views.article.read_more")}</span>
+                        <SvgIcon name="right" size={24} color="white" />
+                      </Button>
+                    </Link>
+                  </div>
+
+                    {/* Dots навігація */}
+                    <div className="flex justify-between">
+                    <div className="hidden lg:flex items-center gap-3 ">
+                      {slides.map((_, idx) => {
+                        const active = currentSlide === idx;
+                        return (
+                          <button
+                            key={idx}
+                            onClick={() => instanceRef.current?.moveToIdx(idx)}
+                            className={`m-1 transition-all duration-300 ${
+                              active ? "w-8 h-4 bg-white rounded-full" : "w-4 h-4 bg-white/40 rounded-full"
+                            }`}
+                          />
+                        );
+                      })}
+                    </div>
+                                          {/* Іконки соцмереж */}
+                    <div className="hidden lg:flex gap-4">
+                      {iconNames.map((iconName) => (
+                        <Link key={iconName.title} href={iconName.link} className="flex items-center">
+                          <Button
+                            variant="accent-alt"
+                            iconOnly
+                            className="lg:mx-1 shadow-[0_4px_6px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_8px_rgba(0,0,0,0.3)] transition-shadow hover:bg-gray-200"
+                          >
+                            <SvgIcon name={iconName.title} size={24} color="main-blue" />
+                          </Button>
+                        </Link>
+                      ))}
+                    </div>
+                    </div>
+
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

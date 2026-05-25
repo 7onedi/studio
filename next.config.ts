@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
 
   images: {
     unoptimized: true,
+    formats: ['image/avif', 'image/webp',],
+    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 днів в секундах
     remotePatterns: [
       { protocol: "https", hostname: "img.youtube.com" },
       { protocol: "https", hostname: "i.ytimg.com" },

@@ -6,6 +6,7 @@ import L from 'leaflet';
 import { buildCategories, Category, MarkerInfo, ALL_CATEGORIES_VIEW } from './mapData';
 import Link from 'next/link';
 import { useLanguage } from "@/app/providers/LanguageProvider";
+import { ArticleBody } from "@blocks/ArticleBody";
 
 type MapView = {
   center: [number, number];
@@ -135,19 +136,20 @@ export default function MapComponent() {
                         e.currentTarget.src = `https://placehold.co/200x100/F0F4F8/333333?text=${marker.popupContent.title}`;
                     }}
                   />
-
-                  {Array.isArray(marker.popupContent.description) && (
-                    <p
-                      dangerouslySetInnerHTML={{ __html: marker.popupContent.description }}
-                      className={`
-                        mt-4
-                        text-body_mobile lg:text-body
-                        line-clamp-3
-                        lg:line-clamp-6
-                        overflow-hidden
-                      `}
-                    />
-                  )}
+                    {Array.isArray(marker.popupContent.description) && marker.popupContent.description.length > 0 && (
+                      <p className="mt-4 text-body_mobile lg:text-body line-clamp-3 overflow-hidden">
+                        {(() => {
+                          const paragraphs = (marker.popupContent.description as any[])
+                            .filter((block: any) => block.type === 'paragraph')
+                            .slice(0, 2);
+                          if (!paragraphs.length) return null;
+                          const text = paragraphs
+                            .map((block: any) => block.data.text.replace(/<[^>]*>/g, ''))
+                            .join(' ');
+                          return text.length > 128 ? text.slice(0, 128) + '…' : text;
+                        })()}
+                      </p>
+                    )}
 
 
                   {marker.popupContent.linkUrl && (

@@ -1,40 +1,25 @@
-
 import ArticleSlider from './blocks/ArticleSlider';
-import PartnerSlider from './components/PartnerSlider';
-import { CategoriesSection as Categories } from './blocks/Categories';
-import BlogSlider from './blocks/BlogSlider';
-import ReviewsSlider from './blocks/ReviewsSlider';
-import dynamic from 'next/dynamic';
 import ClientBg from "@/app/public/providers/ClientBg";
+import DynamicSections from './DynamicSections';
 
-import MapLoader from '@/app/public/components/MapLoader';
+// page.tsx
 export default function Home() {
-
   return (
     <>
       <ClientBg bg="default" />
-      <div >
-        <main className='overflow-hidden'>
-          <div className=''>
-            <ArticleSlider/>
-          </div>
-          <div className='my-6 py-4 w-full flex item-center justify-center'>
-            <PartnerSlider />
-          </div>
+      <main className='overflow-hidden'>
+
+        {/* Слайдер — повна ширина екрану */}
+        <ArticleSlider />
+
+        {/* Решта — в container */}
+        <div className="container">
           <div id="directions" className="lg:px-0 py-6 md:pt-0 xl:pt-16">
-          <Categories/>
-          <div className='lg:px-6 lg:mt-10 py-10 lg:py-16'>
-            <BlogSlider/>
+            <DynamicSections />
           </div>
-          <div id="places" className="lg:py-10 relative h-[550px] lg:h-[700px] w-full"> 
-            <MapLoader /> 
-          </div>
-          <div className='mt-6'>
-            <ReviewsSlider/>
-          </div>
-          </div>
-        </main>
-      </div>
+        </div>
+
+      </main>
     </>
   );
 }

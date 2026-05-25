@@ -13,7 +13,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
-async function fetchSliderArticles(categoryId?: string): Promise<any[]> {
+async function fetchSliderArticles(categoryId?: string, subcategoryId?: string): Promise<any[]> {
   console.log("Fetching articles for category:", categoryId);
   const params = new URLSearchParams({
     limit: "100",
@@ -21,6 +21,7 @@ async function fetchSliderArticles(categoryId?: string): Promise<any[]> {
     order: "desc",
     published: "true",
     categoryId: categoryId ?? "",
+    subcategoryId: subcategoryId ?? "",
   });
   const res = await fetch(`${BASE_URL}/api/articles/search?${params}`);
   if (!res.ok) return [];
@@ -59,9 +60,11 @@ const Arrow: React.FC<ArrowProps> = ({ onClick, disabled, direction }) => (
   </button>
 );
 
-// ─── BlogSlider ───────────────────────────────────────────────────────────────
-
-export default function BlogSlider({ categoryId, excludeSlug }: { categoryId?: string; excludeSlug?: string }) {
+export default function BlogSlider({ categoryId, excludeSlug, subcategoryId }: { 
+  categoryId?: string; 
+  excludeSlug?: string;
+  subcategoryId?: string;
+}) {
   const maxMobileArticles = 4;
 
   const [articles, setArticles] = useState<any[]>([]);
@@ -73,10 +76,10 @@ export default function BlogSlider({ categoryId, excludeSlug }: { categoryId?: s
   useEffect(() => setIsClient(true), []);
 
   useEffect(() => {
-    fetchSliderArticles(categoryId)
+    fetchSliderArticles(categoryId, subcategoryId)
       .then(data => setArticles(excludeSlug ? data.filter((a: any) => a.slug !== excludeSlug) : data))
       .finally(() => setLoading(false));
-  }, [categoryId, excludeSlug]);
+  }, [categoryId, excludeSlug, subcategoryId]);
 
   // Групуємо по 4 — кожна група = 1 слайд
   const slidesData = useMemo(() => groupArticles(articles, 4), [articles]);
@@ -123,22 +126,49 @@ export default function BlogSlider({ categoryId, excludeSlug }: { categoryId?: s
 
           <div
             ref={sliderRef}
-            className="keen-slider w-full h-[600px] sm:h-[800px] lg:h-[800px]"
+            className={`keen-slider w-full ${
+              articles.length <= 2 ? 'h-[400px]' : 'h-[800px]'
+            }`}
           >
-            {slidesData.map((group: any[], i: number) => (
-              <div
-                key={i}
-                className="keen-slider__slide grid h-full w-full grid-cols-2 grid-rows-2 gap-4 sm:gap-6 lg:gap-8"
-              >
-                {group.map((article: any, j: number) => (
-                  <BlogCard
-                    key={j}
-                    {...toCardProps(article)}
-                    onLoad={handleImageLoad}
-                  />
-                ))}
-              </div>
-            ))}
+            {slidesData.map((group: any[], i: number) => {
+              const count = group.length;
+              const totalCount = articles.length;
+
+            const gridClass = 
+              totalCount === 1 ? 'grid-cols-1 grid-rows-1' :
+              totalCount === 2 ? 'grid-cols-2 grid-rows-1' :
+              totalCount === 3 ? 'grid-cols-2 grid-rows-2' :
+              'grid-cols-2 grid-rows-2';
+
+            const heightClass =
+              totalCount === 1 ? 'h-[400px]' :
+              totalCount <= 2 ? 'h-[400px]' : 'h-[800px]';
+
+              return (
+                <div
+                  key={i}
+                  className={`keen-slider__slide grid w-full gap-4 lg:gap-8 ${gridClass} ${heightClass}`}
+                >
+                  {group.map((article: any, j: number) => (
+                    <div
+                      key={j}
+                      className={
+                        totalCount === 1
+                          ? 'col-start-1 col-end-2 w-1/2 mx-auto'
+                          : totalCount === 3 && j === 2
+                          ? 'col-start-1 col-end-3 w-1/2 mx-auto'
+                          : ''
+                      }
+                    >
+                      <BlogCard
+                        {...toCardProps(article)}
+                        onLoad={handleImageLoad}
+                      />
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
           </div>
 
           {sliderReady && slidesData.length > 1 && (
