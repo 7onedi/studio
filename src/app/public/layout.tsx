@@ -9,21 +9,25 @@ import ArrowToTop from "./components/ArrowToTop";
 
 import { BackgroundProvider } from "./providers/BackgroundProvider";
 import BackgroundShell from "@/app/public/components/BackgroundShell";
+import MainShell from "@components/MainShell";
 
 const firaSans = Fira_Sans({
   weight: ["400", "700"],
   subsets: ["latin"],
   variable: "--font-fira",
+  display: "swap",
 });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -32,22 +36,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="antialiased border-box">
         <BackgroundProvider>
           <BackgroundShell>
-            {/* fixed header shell */}
-            <div className="fixed top-0 left-0 right-0 z-[1200]">
-              <div className="container px-6 lg:px-0">
-                <Header />
-              </div>
-            </div>
-            <div className="container grid grid-cols-6">
-              <div className="col-span-6">
-                <div className="lg:pt-16">
-                  <main className="pt-16 lg:pt-20">
-                    {children}
-                  </main>
-                </div>
-                <ArrowToTop />
-                <Footer />
-              </div>
+            <Header />
+            <MainShell>
+              {children}
+            </MainShell>
+            {/* footer в container */}
+            <div className="container">
+              <ArrowToTop />
+              <Footer />
             </div>
           </BackgroundShell>
         </BackgroundProvider>

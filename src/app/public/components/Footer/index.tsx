@@ -4,6 +4,17 @@ import Image from 'next/image';
 import styles from "./Footer.module.scss";
 import Link from 'next/link';
 import { useLanguage } from "@/app/providers/LanguageProvider";
+import { useKeenSlider } from "keen-slider/react";
+import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
+
+interface DonorFromApi {
+  id: number;
+  name: string;
+  image?: { id: number; url: string } | null;
+  link?: string | null;
+}
+
 
 export const contactButtons = [
   {name: "youth.studio.vin@gmail.com", link: "https://mail.google.com/mail/u/0/?view=cm&fs=1&to=youth.studio.vin@gmail.com"},
@@ -23,6 +34,23 @@ export default function Places() {
     {name:t("footer.directions"), link:"/public/Directions"},
     {name:t("footer.places"), link:"/public/Places"},
 ] as const;
+// додай вгорі компонента:
+const [donors, setDonors] = useState<DonorFromApi[]>([]);
+const [sliderRef] = useKeenSlider<HTMLDivElement>({
+  loop: true,
+  slides: { perView: 1, spacing: 16 },
+  drag: true,
+});
+
+useEffect(() => {
+  fetch("/api/partners/search?role=DONOR&published=true&status=APPROVED&limit=100&page=1")
+    .then((r) => r.json())
+    .then((d) => setDonors(Array.isArray(d.data) ? d.data : []))
+    .catch(console.error);
+}, []);
+
+const pathname = usePathname();
+
   return (
     <footer className={`mt-6 ${styles["footer-wrapper"]}`}>
       <div className="lg:pt-7 grid grid-cols-12 gap-4">
@@ -31,13 +59,22 @@ export default function Places() {
           <div className='grid grid-cols-12 gap-4'>
             <div className='col-span-12 lg:col-start-2 lg:col-span-5'>
               {navButtons.map((navButton, i) => (
-                <Link
-                  key={i}
-                  href={navButton.link}
-                  className="py-2 lg:mb-6 lg:pb-2 block hover:text-main-amarant duration-200"
-                >
-                  {navButton.name}
-                </Link>
+                pathname === navButton.link ? (
+                  <span
+                    key={i}
+                    className="py-2 lg:mb-6 lg:pb-2 block text-main-amarant cursor-default"
+                  >
+                    {navButton.name}
+                  </span>
+                ) : (
+                  <Link
+                    key={i}
+                    href={navButton.link}
+                    className="py-2 lg:mb-6 lg:pb-2 block hover:text-main-amarant duration-200"
+                  >
+                    {navButton.name}
+                  </Link>
+                )
               ))}
             </div>
             <div className='col-span-12 lg:col-span-5'>
@@ -73,16 +110,25 @@ export default function Places() {
             <span className="text-headline_4 lg:text-headline_4">Intercultural Youth Studio</span>
           </div> 
           <div className="pt-4 flex flex-col gap-2">
-            {donorsAndPartners.map((partner, inx) => (
-              <Link key={inx} href={partner.link}>
-                <Image
-                  src={partner.image}
-                  alt={partner.title}
-                  width={342}
-                  height={72}
-                />
-              </Link>
-            ))}
+            {donors.length > 0 && (
+              <div className="w-[342px] overflow-hidden">
+                <div ref={sliderRef} className="keen-slider">
+                  {donors.map((donor) => (
+                    <div key={donor.id} className="keen-slider__slide h-[72px] flex justify-center items-center">
+                      {donor.image?.url && (
+                        donor.link ? (
+                          <Link href={donor.link} target="_blank" rel="noopener noreferrer">
+                            <Image src={donor.image.url} alt={donor.name} width={342} height={72} className="object-contain" />
+                          </Link>
+                        ) : (
+                          <Image src={donor.image.url} alt={donor.name} width={342} height={72} className="object-contain" />
+                        )
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="py-6">

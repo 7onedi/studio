@@ -44,6 +44,7 @@ export default async function MfkPage({ params }: MfkPageProps) {
     }));
 
   const socialLinks = child.socialLinks ?? [];
+  console.log(JSON.stringify(child, null, 2));
 
   return (
     <div className="mx-auto mt-4 lg:mt-0">
@@ -112,7 +113,10 @@ export default async function MfkPage({ params }: MfkPageProps) {
       )}
 
       <div className="my-8">
-        <BlogSlider categoryId={String(result?.categoryId)} />
+        <BlogSlider 
+          categoryId={String(child.categoryId)} 
+          subcategoryId={String(child.subcategoryId)} 
+        />
       </div>
 
       <div className="my-12 lg:mt-16 px-4 lg:px-0">

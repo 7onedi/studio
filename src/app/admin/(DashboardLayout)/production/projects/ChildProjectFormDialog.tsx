@@ -150,7 +150,6 @@ export default function ChildProjectFormDialog({
       setLat(initial?.lat ?? '');
       setLng(initial?.lng ?? '');
       setWebsiteUrl(initial?.websiteUrl ?? '');
-      setContributors(fullData?.body?.contributors ?? []);
       setZoom((fullData?.body as any)?.zoom ?? (initial?.body as any)?.zoom ?? false);
       setSocials(initial?.socialLinks?.length
         ? initial.socialLinks
@@ -160,16 +159,27 @@ export default function ChildProjectFormDialog({
   }, [open, initial]);
 
 // завантажуємо повні дані при відкритті форми редагування
+// заповнюємо форму після отримання даних
 useEffect(() => {
-  if (!open || !initial?.id) {
-    setFullData(null);
-    return;
-  }
-  fetch(`/api/studioprojects/${initial.id}`)
-    .then((r) => r.json())
-    .then((d) => setFullData(d))
-    .catch(console.error);
-}, [open, initial?.id]);
+  if (!open) return;
+  setCategoryId(fullData?.categoryId ?? initial?.categoryId ?? '');
+  setSubcategoryId(fullData?.subcategoryId ?? initial?.subcategoryId ?? '');
+  setParentId(fullData?.parentId ?? initial?.parentId ?? '');
+  setContent(fullData?.body ?? initial?.body ?? null);
+  setLat(String(fullData?.location?.coordinates?.lat ?? initial?.lat ?? ''));
+  setLng(String(fullData?.location?.coordinates?.lng ?? initial?.lng ?? ''));
+  setWebsiteUrl(fullData?.location?.url ?? initial?.websiteUrl ?? '');
+  setSocials(
+    fullData?.socialLinks?.length
+      ? fullData.socialLinks.map((s: any) => ({ platform: s.social?.platform ?? s.platform, url: s.url }))
+      : [{ platform: 'INSTAGRAM', url: '' }]
+  );
+  setImageBase64(null);
+  setLogoBase64(null);
+  setZoom((fullData?.body as any)?.zoom ?? (initial?.body as any)?.zoom ?? false);
+  setContributors((fullData?.body as any)?.contributors ?? (initial?.body as any)?.contributors ?? []); // ← додати
+  setError('');
+}, [open, fullData]);
 
 // заповнюємо форму після отримання даних
 useEffect(() => {
@@ -280,7 +290,7 @@ useEffect(() => {
         ...(logoId && { logoId }),
         locationData: {
           name:        title,
-          url: websiteUrl || `https://studio.pangeya.org.ua/${selectedSub?.slug ?? subcategoryId}-${Date.now()}`,
+          url: websiteUrl || `https://studio.pangeya.org.ua/public/Mfk/${selectedSub?.slug ?? subcategoryId}`,
           coordinates: {
             lat: parseFloat(lat) || 0,
             lng: parseFloat(lng) || 0,
