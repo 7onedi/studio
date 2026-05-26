@@ -73,10 +73,7 @@ export default function MfkList({ markers, id }: MfkListProps) {
       </div>
 
       <div className={`absolute text-center left-1/2 -translate-x-1/2 -bottom-4 px-6 py-2 ${id === "#mfk" ? "bg-main-amarant border-main-amarant" : "bg-main-blue border-main-blue"}  text-white text-sm font-semibold rounded-full border-b-2`}>
-        {item.title
-          .replace("МФК ", "MFK ")
-          .split(" – ")[0]
-          .toUpperCase()}
+        {item.title}
       </div>
     </div>
   );
