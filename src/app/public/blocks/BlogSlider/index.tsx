@@ -190,7 +190,7 @@ export default function BlogSlider({ categoryId, excludeSlug, subcategoryId }: {
         {/* ── MOBILE ── */}
         <div id="blogList" className="grid grid-cols-1 gap-4 lg:hidden">
           {visibleMobileItems.map((article: any, index: number) => (
-            <div key={index} className="h-[250px] sm:h-[300px]">
+            <div key={index} className="min-h-[250px] sm:min-h-[300px]">
               <BlogCard
                 {...toCardProps(article)}
                 onLoad={handleImageLoad}

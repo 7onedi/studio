@@ -1,4 +1,5 @@
 import ArticleVideoBlock, { VideoBlockData } from "./ArticleVideoBlock";
+import VideoPlayButton from "@components/PlayButton";
 
 type ParagraphBlock = {
   id: string;
@@ -60,9 +61,9 @@ type VideoBlock = {
 };
 
 type EmbedBlock = {
-  id: string; type: "embed"; data: {
-    embed: string; caption?: string
-  }
+  id: string;
+  type: "embed";
+  data: { embed: string; caption?: string };
 };
 
 type EditorBlock =
@@ -73,7 +74,7 @@ type EditorBlock =
   | GalleryBlock
   | CustomImageBlock
   | VideoBlock
-  | EmbedBlock
+  | EmbedBlock;
 
 type ArticleBodyProps = {
   blocks: readonly EditorBlock[];
@@ -108,7 +109,7 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
               <ol key={i} className="list-decimal pl-6 mb-4">
                 {block.data.items.map((item: any, idx: number) => (
                   <li key={idx} dangerouslySetInnerHTML={{
-                    __html: typeof item === 'string' ? item : item.content ?? ''
+                    __html: typeof item === "string" ? item : item.content ?? "",
                   }} />
                 ))}
               </ol>
@@ -116,7 +117,7 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
               <ul key={i} className="list-disc pl-6 mb-4">
                 {block.data.items.map((item: any, idx: number) => (
                   <li key={idx} dangerouslySetInnerHTML={{
-                    __html: typeof item === 'string' ? item : item.content ?? ''
+                    __html: typeof item === "string" ? item : item.content ?? "",
                   }} />
                 ))}
               </ul>
@@ -152,16 +153,12 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
 
           case "gallery": {
             const files = block.data.files ?? [];
-            console.log("gallery files:", files);
             const count = Math.min(4, files.length);
             const colsClass =
-              count === 1
-                ? "grid-cols-1"
-                : count === 2
-                  ? "grid-cols-2"
-                  : count === 3
-                    ? "grid-cols-3"
-                    : "grid-cols-2 lg:grid-cols-4";
+              count === 1 ? "grid-cols-1" :
+              count === 2 ? "grid-cols-2" :
+              count === 3 ? "grid-cols-3" :
+              "grid-cols-2 lg:grid-cols-4";
 
             return (
               <figure key={i} className="mb-4">
@@ -195,40 +192,43 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
             );
           }
 
-case "customImage": {
-  const url = block.data.url ?? "";
-  const redirect = block.data.redirectUrl;
+          case "customImage": {
+            const url = block.data.url ?? "";
+            const redirect = block.data.redirectUrl;
 
-  const imgElement = (
-    <img
-      src={url}
-      alt={block.data.caption ?? ""}
-      className="w-full object-cover rounded-xl aspect-[16/9]"
-    />
-  );
+            const imgElement = (
+              <img
+                src={url}
+                alt={block.data.caption ?? ""}
+                className="w-full object-cover rounded-xl aspect-[16/9]"
+              />
+            );
 
-  return (
-    <figure key={i} className="mb-4">
-      {redirect ? (
-        <a
-          href={redirect}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block border border-transparent hover:border-[#E91651] hover:border-2 rounded-[14px] transition-colors duration-200"
-        >
-          {imgElement}
-        </a>
-      ) : (
-        imgElement
-      )}
-      {block.data.caption && (
-        <figcaption className="mt-2 text-body_mobile lg:text-body">
-          <i>{block.data.caption}</i>
-        </figcaption>
-      )}
-    </figure>
-  );
-}
+            return (
+              <figure key={i} className="mb-4">
+                {redirect ? (
+                  <a
+                    href={redirect}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block border border-transparent hover:border-[#E91651] hover:border-2 rounded-[14px] transition-colors duration-200 relative"
+                  >
+                    {imgElement}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <VideoPlayButton href={redirect} />
+                    </div>
+                  </a>
+                ) : (
+                  imgElement
+                )}
+                {block.data.caption && (
+                  <figcaption className="mt-2 text-body_mobile lg:text-body">
+                    <i>{block.data.caption}</i>
+                  </figcaption>
+                )}
+              </figure>
+            );
+          }
 
           case "video":
             return (
@@ -237,24 +237,24 @@ case "customImage": {
               </div>
             );
 
-            case "embed":
-              return (
-                <figure key={i} className="mb-4">
-                  <div className="relative" style={{ paddingTop: '56.25%' }}>
-                    <iframe
-                      src={(block as any).data.embed}
-                      title={(block as any).data.caption ?? 'embed'}
-                      allowFullScreen
-                      className="absolute top-0 left-0 w-full h-full rounded-xl border-0"
-                    />
-                  </div>
-                  {(block as any).data.caption && (
-                    <figcaption className="mt-2 text-body_mobile lg:text-body">
-                      <i>{(block as any).data.caption}</i>
-                    </figcaption>
-                  )}
-                </figure>
-              );
+          case "embed":
+            return (
+              <figure key={i} className="mb-4">
+                <div className="relative" style={{ paddingTop: "56.25%" }}>
+                  <iframe
+                    src={(block as any).data.embed}
+                    title={(block as any).data.caption ?? "embed"}
+                    allowFullScreen
+                    className="absolute top-0 left-0 w-full h-full rounded-xl border-0"
+                  />
+                </div>
+                {(block as any).data.caption && (
+                  <figcaption className="mt-2 text-body_mobile lg:text-body">
+                    <i>{(block as any).data.caption}</i>
+                  </figcaption>
+                )}
+              </figure>
+            );
 
           default:
             return null;

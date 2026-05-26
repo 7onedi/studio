@@ -159,48 +159,38 @@ export default function ChildProjectFormDialog({
   }, [open, initial]);
 
 // завантажуємо повні дані при відкритті форми редагування
-// заповнюємо форму після отримання даних
-useEffect(() => {
-  if (!open) return;
-  setCategoryId(fullData?.categoryId ?? initial?.categoryId ?? '');
-  setSubcategoryId(fullData?.subcategoryId ?? initial?.subcategoryId ?? '');
-  setParentId(fullData?.parentId ?? initial?.parentId ?? '');
-  setContent(fullData?.body ?? initial?.body ?? null);
-  setLat(String(fullData?.location?.coordinates?.lat ?? initial?.lat ?? ''));
-  setLng(String(fullData?.location?.coordinates?.lng ?? initial?.lng ?? ''));
-  setWebsiteUrl(fullData?.location?.url ?? initial?.websiteUrl ?? '');
-  setSocials(
-    fullData?.socialLinks?.length
-      ? fullData.socialLinks.map((s: any) => ({ platform: s.social?.platform ?? s.platform, url: s.url }))
-      : [{ platform: 'INSTAGRAM', url: '' }]
-  );
-  setImageBase64(null);
-  setLogoBase64(null);
-  setZoom((fullData?.body as any)?.zoom ?? (initial?.body as any)?.zoom ?? false);
-  setContributors((fullData?.body as any)?.contributors ?? (initial?.body as any)?.contributors ?? []); // ← додати
-  setError('');
-}, [open, fullData]);
+  useEffect(() => {
+    if (!open || !initial?.id) {
+      setFullData(null);
+      return;
+    }
+    fetch(`/api/studioprojects/${initial.id}`)
+      .then((r) => r.json())
+      .then((d) => setFullData(d))
+      .catch(console.error);
+  }, [open, initial?.id]);
 
-// заповнюємо форму після отримання даних
-useEffect(() => {
-  if (!open) return;
-  setCategoryId(fullData?.categoryId ?? initial?.categoryId ?? '');
-  setSubcategoryId(fullData?.subcategoryId ?? initial?.subcategoryId ?? '');
-  setParentId(fullData?.parentId ?? initial?.parentId ?? '');
-  setContent(fullData?.body ?? initial?.body ?? null);
-  setLat(String(fullData?.location?.coordinates?.lat ?? initial?.lat ?? ''));
-  setLng(String(fullData?.location?.coordinates?.lng ?? initial?.lng ?? ''));
-  setWebsiteUrl(fullData?.location?.url ?? initial?.websiteUrl ?? '');
-  setSocials(
-    fullData?.socialLinks?.length
-      ? fullData.socialLinks.map((s: any) => ({ platform: s.social?.platform ?? s.platform, url: s.url }))
-      : [{ platform: 'INSTAGRAM', url: '' }]
-  );
-  setImageBase64(null);
-  setLogoBase64(null);
-  setZoom((fullData?.body as any)?.zoom ?? (initial?.body as any)?.zoom ?? false);
-  setError('');
-}, [open, fullData]);
+  // заповнюємо форму після отримання даних
+  useEffect(() => {
+    if (!open) return;
+    setCategoryId(fullData?.categoryId ?? initial?.categoryId ?? '');
+    setSubcategoryId(fullData?.subcategoryId ?? initial?.subcategoryId ?? '');
+    setParentId(fullData?.parentId ?? initial?.parentId ?? '');
+    setContent(fullData?.body ?? initial?.body ?? null);
+    setLat(String(fullData?.location?.coordinates?.lat ?? initial?.lat ?? ''));
+    setLng(String(fullData?.location?.coordinates?.lng ?? initial?.lng ?? ''));
+    setWebsiteUrl(fullData?.location?.url ?? initial?.websiteUrl ?? '');
+    setSocials(
+      fullData?.socialLinks?.length
+        ? fullData.socialLinks.map((s: any) => ({ platform: s.social?.platform ?? s.platform, url: s.url }))
+        : [{ platform: 'INSTAGRAM', url: '' }]
+    );
+    setImageBase64(null);
+    setLogoBase64(null);
+    setZoom((fullData?.body as any)?.zoom ?? (initial?.body as any)?.zoom ?? false);
+    setContributors((fullData?.body as any)?.contributors ?? (initial?.body as any)?.contributors ?? []);
+    setError('');
+  }, [open, fullData]);
 
   // --- підкатегорії по categoryId ---
   useEffect(() => {
