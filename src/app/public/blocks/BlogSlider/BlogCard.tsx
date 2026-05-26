@@ -50,8 +50,8 @@ const tagTags = Array.from(
 ) as string[];
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="relative flex-grow overflow-hidden rounded-xl group">
+    <div className="flex flex-col h-full">
+      <div className="relative h-[220px] sm:h-[260px] lg:h-full lg:flex-grow overflow-hidden rounded-xl group">
         <Link href={`/public/Article/${meta.slug}`} className="block h-full w-full">
           {hero.img ? (
             <Image

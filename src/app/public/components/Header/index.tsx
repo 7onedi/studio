@@ -117,21 +117,20 @@ export default function Header() {
           <div className="flex items-center justify-between w-full h-16 lg:h-20 lg:border-b lg:border-main-amarant bg-indigo-50 md:px-2">
 
             {/* ЛІВА ЧАСТИНА — лого + назва */}
-            <div className="flex items-center gap-3 shrink-0">
+            <div className="flex items-center gap-3 shrink-0 lg:shrink">
               <Link href={"/"}>
                 <Image src="/mobile/icys.webp" alt="Intercultural Youth Studio Logo" width={105} height={58} />
               </Link>
-          <span className="hidden xl:inline-block xl:w-auto w-0 overflow-hidden text-main-text text-headline_4 whitespace-nowrap">
-            Intercultural Youth Studio
-          </span>
-            {isMobileMenuOpen && (
-              <div className="absolute left-1/2 -translate-x-1/2 lg:hidden pointer-events-none">
-                <span className="text-main-text text-headline_4_mobile whitespace-nowrap">
-                  Intercultural Youth Studio
-                </span>
-              </div>
-            )}
+              <span className="hidden xl:inline-block xl:w-auto w-0 overflow-hidden text-main-text text-headline_4 whitespace-nowrap">
+                Intercultural Youth Studio
+              </span>
+                {isMobileMenuOpen && (
+                  <span className="lg:hidden absolute left-0 right-0 text-center text-main-text text-headline_4_mobile leading-tight pointer-events-none">
+                    Intercultural<br /> Youth Studio
+                  </span>
+                )}
             </div>
+
 
             {/* ПРАВА ЧАСТИНА — nav + language + кнопка */}
             <div className="hidden lg:flex items-center gap-x-4 lg:gap-x-6 xl:gap-x-0 2xl:gap-x-6 min-w-0">
@@ -230,7 +229,7 @@ export default function Header() {
             </div>
 
             {/* Mobile burger */}
-            <div className="lg:hidden flex items-center justify-end mr-4">
+            <div className="mt-2 lg:hidden flex items-center justify-end mr-4">
               <button onClick={toggleMobileMenu} className="text-white focus:outline-none">
                 {isMobileMenuOpen ? <SvgIcon name="xmark-solid" /> : <SvgIcon name="bars-solid" />}
               </button>
