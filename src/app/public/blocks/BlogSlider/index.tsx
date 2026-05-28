@@ -12,6 +12,28 @@ import { toCardProps } from './toCardProps';
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
+function BlogSliderSkeleton({ count }: { count?: number }) {
+  const total = count ?? 4;
+  const gridClass =
+    total === 1 ? 'grid-cols-1 grid-rows-1' :
+    total === 2 ? 'grid-cols-2 grid-rows-1' :
+    'grid-cols-2 grid-rows-2';
+  const heightClass = total <= 2 ? 'h-[400px]' : 'h-[800px]';
+
+  return (
+    <div className={`hidden lg:grid w-full gap-4 lg:gap-8 ${gridClass} ${heightClass} animate-pulse`}>
+      {Array.from({ length: Math.min(total, 4) }).map((_, i) => (
+        <div
+          key={i}
+          className={`bg-gray-200 rounded-xl ${
+            total === 1 ? 'col-start-1 col-end-2 w-1/2 mx-auto' :
+            total === 3 && i === 2 ? 'col-start-1 col-end-3 w-1/2 mx-auto' : ''
+          }`}
+        />
+      ))}
+    </div>
+  );
+}
 
 async function fetchSliderArticles(categoryId?: string, subcategoryId?: string): Promise<any[]> {
   console.log("Fetching articles for category:", categoryId);
@@ -116,73 +138,56 @@ export default function BlogSlider({ categoryId, excludeSlug, subcategoryId }: {
       <div className="relative">
         {/* ── DESKTOP ── */}
         <div className="relative hidden lg:block">
-          {loading && (
-            <div className="absolute inset-0 z-40 flex items-center justify-center bg-white/60 rounded-xl">
-              <span className="text-gray-400 text-sm animate-pulse">
-                Завантаження...
-              </span>
+          {loading && <BlogSliderSkeleton />}
+
+          <div className={`transition-opacity duration-500 ${loading ? 'opacity-0 absolute inset-0' : 'opacity-100'}`}>
+            <div ref={sliderRef} className={`keen-slider w-full ${articles.length <= 2 ? 'h-[400px]' : 'h-[800px]'}`}>
+              {slidesData.map((group: any[], i: number) => {
+                const count = group.length;
+                const totalCount = articles.length;
+
+              const gridClass = 
+                totalCount === 1 ? 'grid-cols-1 grid-rows-1' :
+                totalCount === 2 ? 'grid-cols-2 grid-rows-1' :
+                totalCount === 3 ? 'grid-cols-2 grid-rows-2' :
+                'grid-cols-2 grid-rows-2';
+
+              const heightClass =
+                totalCount === 1 ? 'h-[400px]' :
+                totalCount <= 2 ? 'h-[400px]' : 'h-[800px]';
+
+                return (
+                  <div
+                    key={i}
+                    className={`keen-slider__slide grid w-full gap-4 lg:gap-8 ${gridClass} ${heightClass}`}
+                  >
+                    {group.map((article: any, j: number) => (
+                      <div
+                        key={j}
+                        className={
+                          totalCount === 1
+                            ? 'col-start-1 col-end-2 w-1/2 mx-auto'
+                            : totalCount === 3 && j === 2
+                            ? 'col-start-1 col-end-3 w-1/2 mx-auto'
+                            : ''
+                        }
+                      >
+                        <BlogCard
+                          {...toCardProps(article)}
+                          onLoad={handleImageLoad}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
             </div>
-          )}
 
-          <div
-            ref={sliderRef}
-            className={`keen-slider w-full ${
-              articles.length <= 2 ? 'h-[400px]' : 'h-[800px]'
-            }`}
-          >
-            {slidesData.map((group: any[], i: number) => {
-              const count = group.length;
-              const totalCount = articles.length;
-
-            const gridClass = 
-              totalCount === 1 ? 'grid-cols-1 grid-rows-1' :
-              totalCount === 2 ? 'grid-cols-2 grid-rows-1' :
-              totalCount === 3 ? 'grid-cols-2 grid-rows-2' :
-              'grid-cols-2 grid-rows-2';
-
-            const heightClass =
-              totalCount === 1 ? 'h-[400px]' :
-              totalCount <= 2 ? 'h-[400px]' : 'h-[800px]';
-
-              return (
-                <div
-                  key={i}
-                  className={`keen-slider__slide grid w-full gap-4 lg:gap-8 ${gridClass} ${heightClass}`}
-                >
-                  {group.map((article: any, j: number) => (
-                    <div
-                      key={j}
-                      className={
-                        totalCount === 1
-                          ? 'col-start-1 col-end-2 w-1/2 mx-auto'
-                          : totalCount === 3 && j === 2
-                          ? 'col-start-1 col-end-3 w-1/2 mx-auto'
-                          : ''
-                      }
-                    >
-                      <BlogCard
-                        {...toCardProps(article)}
-                        onLoad={handleImageLoad}
-                      />
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
-          </div>
-
+        </div>
           {sliderReady && slidesData.length > 1 && (
             <>
-              <Arrow
-                direction="left"
-                disabled={false}
-                onClick={() => instanceRef.current?.prev()}
-              />
-              <Arrow
-                direction="right"
-                disabled={false}
-                onClick={() => instanceRef.current?.next()}
-              />
+              <Arrow direction="left" disabled={false} onClick={() => instanceRef.current?.prev()} />
+              <Arrow direction="right" disabled={false} onClick={() => instanceRef.current?.next()} />
             </>
           )}
         </div>

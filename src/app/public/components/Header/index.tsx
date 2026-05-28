@@ -134,7 +134,7 @@ export default function Header() {
 
             {/* ПРАВА ЧАСТИНА — nav + language + кнопка */}
             <div className="hidden lg:flex items-center gap-x-4 lg:gap-x-6 xl:gap-x-0 2xl:gap-x-6 min-w-0">
-              <Link href="/public/Search" aria-label="Пошук" className="group shrink-0">
+              <Link href="/public/Search" aria-label="Пошук" className="lg:mt-2 group shrink-0">
                 <span className="text-main-text group-hover:text-main-blue transition-colors duration-200">
                   <SvgIcon name="magnifying-glass" size={20} />
                 </span>
@@ -230,8 +230,11 @@ export default function Header() {
 
             {/* Mobile burger */}
             <div className="mt-2 lg:hidden flex items-center justify-end mr-4">
-              <button onClick={toggleMobileMenu} className="text-white focus:outline-none">
-                {isMobileMenuOpen ? <SvgIcon name="xmark-solid" /> : <SvgIcon name="bars-solid" />}
+              <button onClick={toggleMobileMenu} className="focus:outline-none">
+                {isMobileMenuOpen 
+                  ? <SvgIcon name="xmark-solid" size={24} color="main-text" />
+                  : <SvgIcon name="bars-solid" size={24} color="main-text" />
+                }
               </button>
             </div>
 

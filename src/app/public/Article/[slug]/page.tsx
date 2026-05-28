@@ -129,7 +129,7 @@ const subArticles = allRaw
               <ArticleBody blocks={article.body.blocks} />
             </div>
             <div className="col-span-12 lg:col-span-3">
-              <div className="py-5 border-b border-t border-main-amarant text-subtitle_2_mobile lg:text-subtitle_2">
+              <div className="py-5 px-4 border-b border-t border-main-amarant text-subtitle_2_mobile lg:text-subtitle_2">
                 <b>Поділитись новиною</b>
                 <div className="my-2 flex gap-4 z-20">
                   {iconNames.map((iconName, i) => (
@@ -152,7 +152,7 @@ const subArticles = allRaw
             </div>
           </div>
         </article>
-          <div className="pt-6 border-t border-main-amarant text-subtitle_2_mobile lg:text-subtitle_2">
+          <div className="pt-6 border-t border-main-amarant not-prose">
             <BlogSlider categoryId={String(categoryId)} excludeSlug={article.meta.slug} />
           </div>
       </main>
