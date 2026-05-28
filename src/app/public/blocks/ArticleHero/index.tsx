@@ -1,6 +1,8 @@
+"use client";
 import Image from "next/image";
 import { TagButton } from "@/app/public/blocks/BlogSlider/BlogCard";
 import { Avatar } from "@mui/material";
+import { useState } from "react";
 
 
 type ArticleHeroProps = {
@@ -29,6 +31,8 @@ export default function ArticleHero({
   gradient,
   creator = { name: "", src: "" },
 }: ArticleHeroProps) {
+const [imageLoaded, setImageLoaded] = useState(false);
+
 const categoryTags = Array.from(
   new Set([category, subCategory].filter(Boolean))
 ) as string[];
@@ -52,12 +56,18 @@ const tagTags = Array.from(
   return (
     <div>
       <section className="bg-transparent relative w-full h-[700px] mb-8 lg:mb-16 overflow-hidden rounded-3xl">
+
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-3xl" />
+        )}
+
         <Image
           src={image}
           alt={title}
           fill
           priority
-          className="h-[700px] w-full object-cover"
+          onLoad={() => setImageLoaded(true)}
+          className={`h-[700px] w-full object-cover transition-opacity duration-500 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
         />
 
         {gradient && <div className={`absolute inset-0 ${gradient}`} />}
@@ -128,23 +138,21 @@ const tagTags = Array.from(
 
       <div className="lg:hidden grid grid-cols-12 w-full">
         {(categoryTags.length > 0 || tagTags.length > 0) && (
-          <div className="flex justify-center items-center col-span-12 lg:col-span-4 gap-2">
-            <div className="grid grid-cols-2">
+          <div className="flex justify-center items-center col-span-12 lg:col-span-4">
+            <div className="flex flex-wrap gap-2">
               {categoryTags.map((tag, i) => (
-                <span key={`cat-${tag}-${i}`} className="mb-3 mr-3 col-span-1">
-                  <TagButton
-                    tag={tag}
-                    ClassName="bg-main-amarant hover:bg-main-amarant/80 text-button"
-                  />
-                </span>
+                <TagButton
+                  key={`cat-${tag}-${i}`}
+                  tag={tag}
+                  ClassName="bg-main-amarant hover:bg-main-amarant/80 text-button"
+                />
               ))}
               {tagTags.map((tag, i) => (
-                <span key={`tag-${tag}-${i}`} className="mb-3 mr-3 col-span-1">
-                  <TagButton
-                    tag={tag}
-                    ClassName="bg-main-blue hover:bg-main-blue/80 text-button"
-                  />
-                </span>
+                <TagButton
+                  key={`tag-${tag}-${i}`}
+                  tag={tag}
+                  ClassName="bg-main-blue hover:bg-main-blue/80 text-button"
+                />
               ))}
             </div>
           </div>
@@ -187,4 +195,3 @@ const tagTags = Array.from(
    </div>
   );
 }
-

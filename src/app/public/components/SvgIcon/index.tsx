@@ -32,7 +32,7 @@ export const SvgIcon: React.FC<SvgIconProps> = ({
         let updatedSvg = svg
           .replace(/width=".*?"/g, `width="${w}"`)
           .replace(/height=".*?"/g, `height="${h}"`)
-          .replace(/fill=".*?"/g, "");
+          .replace(/fill=".*?"/g, 'fill="currentColor"')
 
         setSvgContent(updatedSvg);
       })
