@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useLanguage } from "@/app/providers/LanguageProvider";
 import { useKeenSlider } from "keen-slider/react";
 import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface DonorFromApi {
   id: number;
@@ -29,11 +29,11 @@ export const donorsAndPartners = [
 export default function Places() {
   const { t } = useLanguage();
   const navButtons = [
-    {name:t("footer.about"), link:"/public/AboutNetwork"},
-    {name:t("footer.methodology"), link:"/public/Methodology"},
-    {name:t("footer.directions"), link:"/public/Directions"},
-    {name:t("footer.places"), link:"/public/Places"},
-] as const;
+    { name: t("nav.about"),       link: "/public/AboutNetwork" },
+    { name: t("nav.methodology"), link: "/public/Methodology" },
+    { name: t("nav.directions"),  anchor: "directions" },
+    { name: t("nav.places"),      anchor: "places" },
+  ] as const;
 // додай вгорі компонента:
 const [donors, setDonors] = useState<DonorFromApi[]>([]);
 const [sliderRef] = useKeenSlider<HTMLDivElement>({
@@ -41,6 +41,17 @@ const [sliderRef] = useKeenSlider<HTMLDivElement>({
   slides: { perView: 1, spacing: 16 },
   drag: true,
 });
+
+const router = useRouter();
+
+  const scrollToSection = (id: string) => {
+    if (pathname !== "/") {
+      router.push(`/#${id}`);
+    } else {
+      const element = document.getElementById(id);
+      element?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
 useEffect(() => {
   fetch("/api/partners/search?role=DONOR&published=true&status=APPROVED&limit=100&page=1")
@@ -57,23 +68,33 @@ const pathname = usePathname();
         {/* Навігація (на мобільних зверху) */}
         <div className="col-span-12 lg:col-span-6 order-1 lg:order-2">
           <div className='grid grid-cols-12 gap-4'>
-            <div className='col-span-12 lg:col-start-2 lg:col-span-5'>
+            <div className='text-button_mobile lg:text-button col-span-12 lg:col-start-2 lg:col-span-5'>
               {navButtons.map((navButton, i) => (
-                pathname === navButton.link ? (
-                  <span
-                    key={i}
-                    className="py-2 lg:mb-6 lg:pb-2 block text-main-amarant cursor-default"
-                  >
-                    {navButton.name}
-                  </span>
+                "link" in navButton ? (
+                  pathname === navButton.link ? (
+                    <span
+                      key={i}
+                      className="py-2 lg:mb-6 lg:pb-2 block text-main-amarant cursor-default"
+                    >
+                      {navButton.name}
+                    </span>
+                  ) : (
+                    <Link
+                      key={i}
+                      href={navButton.link}
+                      className="py-2 lg:mb-6 lg:pb-2 block hover:text-main-amarant duration-200"
+                    >
+                      {navButton.name}
+                    </Link>
+                  )
                 ) : (
-                  <Link
+                  <button
                     key={i}
-                    href={navButton.link}
+                    onClick={() => scrollToSection(navButton.anchor)}
                     className="py-2 lg:mb-6 lg:pb-2 block hover:text-main-amarant duration-200"
                   >
                     {navButton.name}
-                  </Link>
+                  </button>
                 )
               ))}
             </div>
