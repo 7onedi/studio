@@ -22,6 +22,14 @@ export interface Subcategory {
   categoryId: number;
 }
 
+const LANGUAGES = [
+  {"value": "UK", "label": "Українська 🇺🇦"},
+  {"value": "EN", "label": "English 🇬🇧"},
+  {"value": "PL", "label": "Polski 🇵🇱"},
+  {"value": "LT", "label": "Lietuviškai 🇱🇹"},
+  {"value": "RO", "label": "Română 🇲🇩"}
+];
+
 export interface ChildProject {
   id: number;
   title: string;
@@ -40,6 +48,7 @@ interface Props {
     body: unknown;
     imageBase64?: string | null;
     imageId?: number | null;
+    lang: string;
     lat: string;
     lng: string;
     websiteUrl: string;
@@ -122,6 +131,7 @@ export default function ChildProjectFormDialog({
   const [content, setContent]           = useState<unknown>(null);
   const [imageBase64, setImageBase64]   = useState<string | null>(null);
   const [logoBase64, setLogoBase64]     = useState<string | null>(null);
+  const [lang, setLang]                 = useState<string>(initial?.lang ?? 'UK');
   const [zoom, setZoom]               = useState<boolean>(false);
   const [lat, setLat]                   = useState('');
   const [lng, setLng]                   = useState('');
@@ -147,6 +157,7 @@ export default function ChildProjectFormDialog({
       setParentId(initial?.parentId ?? '');
       setContent(initial?.body ?? null);
       setImageBase64(initial?.imageBase64 ?? null);
+      setLang(fullData?.lang ?? initial?.lang ?? 'UK');
       setLat(initial?.lat ?? '');
       setLng(initial?.lng ?? '');
       setWebsiteUrl(initial?.websiteUrl ?? '');
@@ -268,6 +279,7 @@ export default function ChildProjectFormDialog({
 
       const payload = {
         title,
+        lang,
         categoryId:    Number(categoryId),
         subcategoryId: Number(subcategoryId),
         parentId:      Number(parentId),
@@ -379,6 +391,18 @@ export default function ChildProjectFormDialog({
               )}
             </Box>
           </Box>
+
+          <TextField
+            select label="Language" value={lang}
+            onChange={(e) => setLang(e.target.value)}
+            fullWidth size="small"
+          >
+            {LANGUAGES.map((l) => (
+              <MenuItem key={l.value} value={l.value}>
+                {l.label}
+              </MenuItem>
+            ))}
+          </TextField>
 
           <ContributorsList
             contributors={contributors}

@@ -12,7 +12,7 @@ export const fontSize: Record<string, FontSizeConfig> = {
   headline_2: ['42px', { lineHeight: '60px', letterSpacing: '0.014em', fontWeight: '700' }],
   headline_3: ['32px', { lineHeight: '40px', letterSpacing: '0.014em', fontWeight: '700' }],
   headline_4: ['28px', { lineHeight: '38px', letterSpacing: '0.014em', fontWeight: '700' }],
-  headline_5: ['24px', { lineHeight: '14px', letterSpacing: '0.0125em', fontWeight: '700' }],
+  headline_5: ['24px', { lineHeight: '34px', letterSpacing: '0.0125em', fontWeight: '700' }],
   subtitle_1: ['24px', { lineHeight: '32px', letterSpacing: '0.014em', fontWeight: '400' }],
   subtitle_2: ['24px', { lineHeight: '42px', letterSpacing: '0.014em', fontWeight: '700' }],
   button: ['16px', { lineHeight: '24px', letterSpacing: '0.014em', fontWeight: '600' }],

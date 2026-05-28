@@ -20,7 +20,7 @@ import {
 } from '@mui/material';
 import {
   IconArrowUp, IconArrowDown, IconArrowsSort,
-  IconEdit, IconTrash, IconTrashX, IconSearch,
+  IconEdit, IconTrash, IconTrashX, IconSearch, IconCopy,
 } from '@tabler/icons-react';
 import { format } from 'date-fns';
 import Link from 'next/link';
@@ -116,6 +116,10 @@ export default function ArticleTable({
     } else {
       onSortChange(colId, 'desc');
     }
+  };
+
+  const handleDuplicate = (slug: string) => {
+    router.push(`/admin/production/articles/create?duplicate=${slug}`);
   };
 
 const handleDelete = async (id: number) => {
@@ -214,7 +218,7 @@ const handleBulkDelete = async () => {
       header: 'Updated date',
       cell: ({ getValue }) => (
         <Typography variant="body2" color="text.secondary" noWrap>
-          {format(new Date(getValue() as string), 'dd.MM.yyyy HH:mm')}
+          {format(new Date(getValue() as string), 'dd.MM.yy HH:mm')}
         </Typography>
       ),
       size: 130,
@@ -252,7 +256,7 @@ const handleBulkDelete = async () => {
       cell: ({ getValue }) => (
         <Typography variant="body2" color="text.secondary" noWrap>{getValue() as string}</Typography>
       ),
-      size: 150,
+      size: 100,
     },
     {
       id: 'subcategory',
@@ -270,6 +274,11 @@ const handleBulkDelete = async () => {
       header: '',
       cell: ({ row }) => (
         <Stack direction="row" spacing={0.5}>
+          <Tooltip title="Duplicate">
+            <IconButton size="small" onClick={() => handleDuplicate(row.original.slug)}>
+              <IconCopy size={16} />
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Edit">
             <IconButton size="small" href={`/admin/production/articles/${row.original.slug}/edit`}>
               <IconEdit size={16} />
@@ -282,7 +291,7 @@ const handleBulkDelete = async () => {
           </Tooltip>
         </Stack>
       ),
-      size: 80,
+      size: 120,
     },
   ];
 
