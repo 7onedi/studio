@@ -95,7 +95,7 @@ export default function SliderHero() {
   const [ready, setReady] = useState(false);
   const firstImageLoadedRef = useRef(false);
 
-  const { t } = useLanguage();
+const { t, locale } = useLanguage();
 
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
     loop: true,
@@ -107,9 +107,9 @@ export default function SliderHero() {
 
   useEffect(() => {
     fetchSlider1Articles().then((articles) => {
-      setSlides(articles.map(toSlide));
+      setSlides(articles.filter((a: any) => a.lang?.toLowerCase() === locale).map(toSlide));
     });
-  }, []);
+  }, [locale]);
 
   useEffect(() => {
     setMounted(true);

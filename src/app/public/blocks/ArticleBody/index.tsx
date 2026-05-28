@@ -1,3 +1,4 @@
+"use client";
 import ArticleVideoBlock, { VideoBlockData } from "./ArticleVideoBlock";
 import VideoPlayButton from "@components/PlayButton";
 
@@ -207,17 +208,15 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
             return (
               <figure key={i} className="mb-4">
                 {redirect ? (
-                  <a
-                    href={redirect}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block border border-transparent hover:border-[#E91651] hover:border-2 rounded-[14px] transition-colors duration-200 relative"
+                  <div
+                    onClick={() => window.open(redirect, '_blank')}
+                    className="block border border-transparent hover:border-[#E91651] hover:border-2 rounded-[14px] transition-colors duration-200 relative cursor-pointer"
                   >
                     {imgElement}
                     <div className="absolute inset-0 flex items-center justify-center">
                       <VideoPlayButton href={redirect} />
                     </div>
-                  </a>
+                  </div>
                 ) : (
                   imgElement
                 )}

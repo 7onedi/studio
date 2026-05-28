@@ -1,14 +1,40 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import ArticleForm, { ArticleFormData } from "../../../components/articleForm";
 
-export default function CreateArticle() {
+function CreateArticleContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const duplicateSlug = searchParams.get('duplicate');
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [initialData, setInitialData] = useState<Partial<ArticleFormData> | undefined>(undefined);
+
+  useEffect(() => {
+    if (!duplicateSlug) return;
+    fetch(`/api/articles/by-slug/${duplicateSlug}`)
+      .then(r => r.json())
+      .then(article => {
+        setInitialData({
+          title: article.title + ' (копія)',
+          lang: article.lang,
+          body: article.body,
+          authorName: article.author?.name ?? article.authorName ?? '',
+          categoryId: article.categoryId,
+          subcategoryIds: article.subcategories?.map((s: any) => s.id) ?? [],
+          tags: article.tags?.map((t: any) => t.name) ?? [],
+          coverBase64: article.image?.url ?? null,
+          currentImageId: null,
+          published: false,
+          slider: article.slider ?? 'NONE',
+          gradient: article.gradient ?? 'NONE',
+        });
+      });
+  }, [duplicateSlug]);
 
 const handleSave = async (data: ArticleFormData) => {
   if (!data.title || !data.authorName || !data.categoryId) {
@@ -83,17 +109,28 @@ const handleSave = async (data: ArticleFormData) => {
   }
 };
 
+if (duplicateSlug && !initialData) return null;
 
   return (
     <ArticleForm
+      key={duplicateSlug ?? 'new'}
       title="Create Article"
       submitLabel="Create Article"
       successMessage="Article created successfully! Redirecting..."
+      initialData={initialData}
       onSave={handleSave}
       loading={loading}
       error={error}
       success={success}
       onCancel={() => router.back()}
     />
+  );
+}
+
+export default function CreateArticle() {
+  return (
+    <Suspense>
+      <CreateArticleContent />
+    </Suspense>
   );
 }
