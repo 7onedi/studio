@@ -8,6 +8,7 @@ import { SvgIcon } from "@/app/public/components/SvgIcon";
 import { groupArticles } from "./data";
 import { BlogCard } from "./BlogCard";
 import { toCardProps } from './toCardProps';
+import { useLanguage } from "@/app/providers/LanguageProvider";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "";
 
@@ -94,14 +95,18 @@ export default function BlogSlider({ categoryId, excludeSlug, subcategoryId }: {
   const [sliderReady, setSliderReady] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [visibleCount, setVisibleCount] = useState(maxMobileArticles);
+  const { locale } = useLanguage();
 
   useEffect(() => setIsClient(true), []);
 
   useEffect(() => {
     fetchSliderArticles(categoryId, subcategoryId)
-      .then(data => setArticles(excludeSlug ? data.filter((a: any) => a.slug !== excludeSlug) : data))
+      .then(data => {
+        const filtered = data.filter((a: any) => a.lang?.toLowerCase() === locale);
+        setArticles(excludeSlug ? filtered.filter((a: any) => a.slug !== excludeSlug) : filtered);
+      })
       .finally(() => setLoading(false));
-  }, [categoryId, excludeSlug, subcategoryId]);
+    }, [categoryId, excludeSlug, subcategoryId, locale]);
 
   // Групуємо по 4 — кожна група = 1 слайд
   const slidesData = useMemo(() => groupArticles(articles, 4), [articles]);

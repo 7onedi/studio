@@ -17,6 +17,7 @@ export default async function Home() {
       title: p.title,
       Logo:  p.logo?.url ?? '',
       zoom:  p.body?.zoom,
+      lang:  p.lang ?? 'uk',
     },
   }));
 

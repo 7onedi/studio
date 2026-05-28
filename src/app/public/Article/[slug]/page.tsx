@@ -4,7 +4,7 @@ import { ArticleBody } from "@/app/public/blocks/ArticleBody";
 import Link from "next/link";
 import { Button } from "@/app/public/components/Button";
 import { SvgIcon } from "@/app/public/components/SvgIcon";
-import ArticleMfkList from "@/app/public/blocks/ArticleMfkList";
+import ArticleMfkList from "@blocks/ArticleMfkList";
 import ClientBg from "@/app/public/providers/ClientBg";
 import { getCategoryId } from '@lib/getCategoryId';
 import BlogSlider from "@/app/public/blocks/BlogSlider";
@@ -38,6 +38,7 @@ async function fetchAllArticles() {
   );
   if (!res.ok) return [];
   const data = await res.json().catch(() => null);
+  console.log("sample lang:", data?.data?.[0]?.lang);
   return Array.isArray(data?.data) ? data.data : [];
 }
 
@@ -63,6 +64,7 @@ function toArticleProps(article: any) {
     meta: {
       slug: article.slug ?? "",
       title: article.title ?? "",
+      lang: article.lang ?? "", 
       category: article.category?.name ?? "",
       SubCategory: article.subcategories?.[0]?.name ?? "",
       tags: (article.tags ?? []).map((t: any) => t?.name ?? "").filter(Boolean),

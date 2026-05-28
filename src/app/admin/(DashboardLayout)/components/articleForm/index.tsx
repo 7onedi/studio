@@ -15,7 +15,13 @@ const ReactEditor = dynamic(() => import("../editor/ReactEditor"), {
   ssr: false,
 });
 
-const LANGUAGES = ["UK", "EN", "PL", "LT", "RO"];
+const LANGUAGES = [
+  {"value": "UK", "label": "Українська 🇺🇦"},
+  {"value": "EN", "label": "English 🇬🇧"},
+  {"value": "PL", "label": "Polski 🇵🇱"},
+  {"value": "LT", "label": "Lietuviškai 🇱🇹"},
+  {"value": "RO", "label": "Română 🇲🇩"}
+];
 
 export interface ArticleFormData {
   title: string;
@@ -328,7 +334,7 @@ const handleSubmit = () => {
           <FormControl fullWidth sx={{ mb: 3 }}>
             <InputLabel>Language</InputLabel>
             <Select value={lang} label="Language" onChange={(e) => setLang(e.target.value)}>
-              {LANGUAGES.map((l) => <MenuItem key={l} value={l}>{l}</MenuItem>)}
+              {LANGUAGES.map((l) => <MenuItem key={l.value} value={l.value}>{l.label}</MenuItem>)}
             </Select>
           </FormControl>
 
