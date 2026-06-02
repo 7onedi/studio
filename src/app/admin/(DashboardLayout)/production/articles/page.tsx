@@ -15,6 +15,13 @@ function ArticlesContent() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [me, setMe] = useState<{ id: number; role: string } | null>(null);
+  
+    useEffect(() => {
+      fetch('/api/auth/me', { credentials: 'include' })
+        .then(r => r.json())
+        .then(setMe);
+    }, []);
 
   const page = searchParams.get('page') ?? '1';
   const search = searchParams.get('search') ?? '';
@@ -78,6 +85,8 @@ function ArticlesContent() {
           }}
           onPageChange={(p) => updateParam('page', String(p + 1))}
           onPageSizeChange={(size) => updateParam('limit', String(size))}
+          userRole={me?.role}
+          userId={me?.id}
         />
       </Box>
     </PageContainer>

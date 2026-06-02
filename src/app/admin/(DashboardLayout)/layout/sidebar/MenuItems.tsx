@@ -2,7 +2,7 @@ import {
   // IconAperture,
   IconCopy,
   IconLayoutDashboard,
-  IconLogin,
+  IconLogout,
   // IconMoodHappy,
   IconTypography,
   IconUserPlus,
@@ -131,16 +131,16 @@ const Menuitems = [
   //   icon: IconCopy,
   //   href: "/admin/utilities/shadow",
   // },
-  // {
-  //   navlabel: true,
-  //   subheader: "AUTH",
-  // },
-  // {
-  //   id: uniqueId(),
-  //   title: "Login",
-  //   icon: IconLogin,
-  //   href: "/admin/authentication/login",
-  // },
+  {
+    navlabel: true,
+    subheader: "AUTH",
+  },
+  {
+    id: uniqueId(),
+    title: "Logout",
+    icon: IconLogout,
+    href: "/admin/authentication/login",
+  },
   // {
   //   id: uniqueId(),
   //   title: "Register",

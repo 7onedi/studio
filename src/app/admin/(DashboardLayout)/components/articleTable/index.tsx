@@ -57,6 +57,8 @@ interface ArticleTableProps {
   onSortChange?: (col: string, dir: 'asc' | 'desc') => void;
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
+    userRole?: string;
+  userId?: number;
 }
 
 export default function ArticleTable({
@@ -72,6 +74,8 @@ export default function ArticleTable({
   onSortChange,
   onPageChange,
   onPageSizeChange,
+  userRole,
+  userId
 }: ArticleTableProps) {
   const router = useRouter();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
@@ -272,25 +276,30 @@ const handleBulkDelete = async () => {
     {
       id: 'actions',
       header: '',
-      cell: ({ row }) => (
-        <Stack direction="row" spacing={0.5}>
-          <Tooltip title="Duplicate">
-            <IconButton size="small" onClick={() => handleDuplicate(row.original.slug)}>
-              <IconCopy size={16} />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Edit">
-            <IconButton size="small" href={`/admin/production/articles/${row.original.slug}/edit`}>
-              <IconEdit size={16} />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete">
-            <IconButton size="small" color="error" onClick={() => handleDelete(row.original.id)}>
-              <IconTrash size={16} />
-            </IconButton>
-          </Tooltip>
-        </Stack>
-      ),
+        // в колонці actions:
+        cell: ({ row }) => (
+          <Stack direction="row" spacing={0.5}>
+            {userRole !== 'EDITOR' && (
+              <Tooltip title="Duplicate">
+                <IconButton size="small" onClick={() => handleDuplicate(row.original.slug)}>
+                  <IconCopy size={16} />
+                </IconButton>
+              </Tooltip>
+            )}
+            <Tooltip title="Edit">
+              <IconButton size="small" href={`/admin/production/articles/${row.original.slug}/edit`}>
+                <IconEdit size={16} />
+              </IconButton>
+            </Tooltip>
+            {(userRole === 'ADMIN' || userRole === 'OWNER') && (
+              <Tooltip title="Delete">
+                <IconButton size="small" color="error" onClick={() => handleDelete(row.original.id)}>
+                  <IconTrash size={16} />
+                </IconButton>
+              </Tooltip>
+            )}
+          </Stack>
+        ),
       size: 120,
     },
   ];

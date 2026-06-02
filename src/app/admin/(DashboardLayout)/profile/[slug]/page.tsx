@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import React, { useState, useEffect, Suspense } from "react";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
 import {
   Box,
   Avatar,
@@ -19,28 +19,31 @@ import {
   Alert,
   IconButton,
 } from "@mui/material";
-import { IconEye, IconEyeOff } from "@tabler/icons-react";
+import { IconEye, IconEyeOff, IconEdit } from "@tabler/icons-react";
 import PageContainer from "../../components/container/PageContainer";
 import DashboardCard from "../../components/shared/DashboardCard";
 import Blog from "../../components/profile/Blog";
+import router from "next/dist/shared/lib/router/router";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type UserRole = "ADMIN" | "EDITOR" | "USER" | "VIEWER";
+type UserRole = "ADMIN" | "EDITOR" | "USER" | "OWNER";
 
 interface UserProfile {
   id: string;
   name: string;
   email: string;
   role: UserRole;
-  avatarBase64: string | null;
+  avatarId: number | null;      // замість avatarBase64
+  avatarUrl: string | null;
 }
 
 interface SavePayload {
   name: string;
   email: string;
   role: UserRole;
-  avatarBase64: string | null;
+  avatarId: number | null;      // замість avatarBase64
+  avatarUrl: string | null;     // для відображення
   password?: string;
 }
 
@@ -53,10 +56,10 @@ const ROLE_COLORS: Record<
   ADMIN: "error",
   EDITOR: "primary",
   USER: "success",
-  VIEWER: "default",
+  OWNER: "secondary",
 };
 
-const ROLES: UserRole[] = ["ADMIN", "EDITOR", "USER", "VIEWER"];
+const ROLES: UserRole[] = ["ADMIN", "EDITOR", "USER"];
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
@@ -67,51 +70,79 @@ interface ProfileHeaderProps {
   saving: boolean;
   isOwn: boolean;
   canEdit: boolean;
+  editing: boolean;
+  isCreate?: boolean;
+  onEditStart: () => void;
+  onEditEnd: () => void;
   onSave: (patch: SavePayload) => Promise<void>;
 }
 
-const ProfileHeader = ({ user, saving, isOwn, canEdit, onSave }: ProfileHeaderProps) => {
+const ProfileHeader = ({ user, saving, isOwn, canEdit, editing, isCreate, onEditStart, onEditEnd, onSave }: ProfileHeaderProps) => {
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
   const [role, setRole] = useState<UserRole>(user.role);
-  const [avatarBase64, setAvatarBase64] = useState<string | null>(user.avatarBase64);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [passwordError, setPasswordError] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(user.avatarUrl);
+  const [avatarId, setAvatarId] = useState<number | null>(user.avatarId);
+  const [avatarUploading, setAvatarUploading] = useState(false);
 
   // Синхронізація коли user оновився ззовні (після збереження)
   useEffect(() => {
     setName(user.name);
     setEmail(user.email);
     setRole(user.role);
-    setAvatarBase64(user.avatarBase64);
+    setAvatarUrl(user.avatarUrl);
+    setAvatarId(user.avatarId);
   }, [user]);
 
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setAvatarBase64(reader.result as string);
-    reader.readAsDataURL(file);
     e.target.value = "";
+
+    setAvatarUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/media", {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+      if (!res.ok) throw new Error(await res.text());
+
+      const uploaded = await res.json(); // { id, url }
+      setAvatarId(uploaded.id);
+      setAvatarUrl(uploaded.url);
+    } catch (err) {
+      console.error("Avatar upload failed:", err);
+    } finally {
+      setAvatarUploading(false);
+    }
   };
 
   const handleSubmit = () => {
+    if (isCreate && !password) {
+      setPasswordError('Password is required');
+      return;
+    }
+    if (password && password !== confirmPassword) {
+      setPasswordError('Passwords do not match');
+      return;
+    }
     if (password && password !== confirmPassword) {
       setPasswordError("Паролі не співпадають");
       return;
     }
     setPasswordError("");
-    onSave({
-      name,
-      email,
-      role,
-      avatarBase64,
-      ...(password ? { password } : {}),
-    });
+    onSave({ name, email, role, avatarId, avatarUrl, ...(password ? { password } : {}) });
     setPassword("");
     setConfirmPassword("");
+    onEditEnd();
   };
 
   return (
@@ -128,37 +159,44 @@ const ProfileHeader = ({ user, saving, isOwn, canEdit, onSave }: ProfileHeaderPr
           <Box
             sx={{
               border: "2px dashed",
-              borderColor: avatarBase64 ? "primary.main" : "grey.300",
+              borderColor: avatarUrl ? "primary.main" : "grey.300",
               borderRadius: "50%",
               p: "4px",
               cursor: canEdit ? "pointer" : "default",
+              position: "relative",
             }}
-            onClick={() => canEdit && document.getElementById("avatar-upload")?.click()}
+            onClick={() => canEdit && !avatarUploading && document.getElementById("avatar-upload")?.click()}
           >
-            <Avatar
-              src={avatarBase64 ?? undefined}
-              sx={{ width: 120, height: 120 }}
-            >
+            <Avatar src={avatarUrl ?? undefined} sx={{ width: 120, height: 120 }}>
               {user.name?.[0]?.toUpperCase()}
             </Avatar>
+            {avatarUploading && (
+              <Box sx={{
+                position: "absolute", inset: 0, borderRadius: "50%",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                bgcolor: "rgba(255,255,255,0.7)",
+              }}>
+                <CircularProgress size={32} />
+              </Box>
+            )}
           </Box>
 
-          {canEdit && (
+          {canEdit && editing && (
             <>
               <Button
                 variant="outlined"
                 size="small"
                 onClick={() => document.getElementById("avatar-upload")?.click()}
               >
-                {avatarBase64 ? "Change photo" : "Add photo"}
+                {avatarUrl ? "Change photo" : "Add photo"}
               </Button>
 
-              {avatarBase64 && (
+              {avatarUrl && (
                 <Button
                   variant="text"
                   size="small"
                   color="error"
-                  onClick={() => setAvatarBase64(null)}
+                  onClick={() => setAvatarUrl(null)}
                 >
                   Видалити фото
                 </Button>
@@ -184,12 +222,24 @@ const ProfileHeader = ({ user, saving, isOwn, canEdit, onSave }: ProfileHeaderPr
             <Chip label={user.role} color={ROLE_COLORS[user.role]} size="small" />
           </Stack>
 
-          {canEdit ? (
+          {canEdit && !editing && (
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<IconEdit size={16} />}
+              onClick={() => onEditStart()}
+              sx={{ mb: 2 }}
+            >
+              Edit
+            </Button>
+          )}
+
+          {editing ? (
             <>
               <Box
                 sx={{
                   display: "grid",
-                  gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+                  gridTemplateColumns: { xs: "1fr", lg: "1fr 1fr" },
                   gap: 3,
                 }}
               >
@@ -200,33 +250,32 @@ const ProfileHeader = ({ user, saving, isOwn, canEdit, onSave }: ProfileHeaderPr
                   onChange={(e) => setName(e.target.value)}
                 />
 
+              { isCreate && (
                 <TextField
                   fullWidth
                   label="Email *"
                   type="email"
                   value={email}
-                  disabled
                   onChange={(e) => setEmail(e.target.value)}
                 />
+              )}
 
+              {(!isOwn || isCreate) && (
                 <FormControl fullWidth>
                   <InputLabel>Role</InputLabel>
                   <Select
                     value={role}
                     label="Role"
                     onChange={(e) => setRole(e.target.value as UserRole)}
-                    disabled
                   >
-                    {ROLES.map((r) => (
+                    {ROLES.filter(r => r !== 'OWNER').map((r) => (
                       <MenuItem key={r} value={r}>
                         {r}
                       </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
-
-                {/* spacer */}
-                <Box />
+              )}
 
                 <TextField
                   fullWidth
@@ -273,9 +322,9 @@ const ProfileHeader = ({ user, saving, isOwn, canEdit, onSave }: ProfileHeaderPr
               </Stack>
             </>
           ) : (
-            // Чужий профіль — тільки перегляд
             <Stack spacing={1}>
-              <Typography variant="body2" color="text.secondary">{user.email}</Typography>
+              <Typography variant="body2">{user.email}</Typography>
+              <Typography variant="body2" color="text.secondary">{user.role}</Typography>
             </Stack>
           )}
         </Box>
@@ -288,6 +337,7 @@ const ProfileHeader = ({ user, saving, isOwn, canEdit, onSave }: ProfileHeaderPr
 
 const ProfilePage = () => {
   const params = useParams();
+  const router = useRouter();
   const slugParam = params?.slug as string | undefined;
 
   const [me, setMe] = useState<{ id: string; role: UserRole } | null>(null);
@@ -299,104 +349,172 @@ const ProfilePage = () => {
     message: string;
     severity: "success" | "error";
   }>({ open: false, message: "", severity: "success" });
+  const searchParams = useSearchParams();
+  const [editing, setEditing] = useState(searchParams.get('edit') === '1');
 
   // ✅ isOwn першим — canEdit залежить від нього
   const isOwn = !slugParam || (me !== null && slugParam === me.id);
 
+  const isCreate = slugParam === 'create';
+
   const canEdit =
     isOwn ||
-    (me?.role === "ADMIN" && user?.role !== "ADMIN");
+    me?.role === "OWNER" ||
+    (me?.role === "ADMIN" && user?.role !== "ADMIN" && user?.role !== "OWNER");
+
+  const availableRoles = isOwn
+    ? ROLES.filter(r => r !== "OWNER")  // своєму собі не можна стати OWNER
+    : me?.role === "OWNER"
+      ? ROLES  // OWNER бачить всі ролі
+      : ROLES.filter(r => r !== "OWNER" && r !== "ADMIN"); // ADMIN не може призначити OWNER/ADMIN
 
   const notify = (message: string, severity: "success" | "error" = "success") =>
     setSnackbar({ open: true, message, severity });
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        // Завжди тягнемо себе щоб знати свій id
-        const meRes = await fetch("/api/auth/me", { credentials: "include" });
-        if (!meRes.ok) return;
-        const meData = await meRes.json();
-        setMe({ id: String(meData.id), role: meData.role });
-
-        // Якщо є slug і це не наш id — тягнемо чужий профіль
-        const targetId = slugParam && slugParam !== String(meData.id)
-          ? slugParam
-          : null;
-
-        if (targetId) {
-          const userRes = await fetch(`${BASE_URL}/api/users/${targetId}`, {
-            credentials: "include",
-          });
-          if (!userRes.ok) return;
-          const userData = await userRes.json();
-          setUser({
-            id: String(userData.id),
-            name: userData.name ?? "",
-            email: userData.email ?? "",
-            role: (userData.role as UserRole) ?? "USER",
-            avatarBase64: userData.avatarUrl ?? null,
-          });
-        } else {
-          // Власний профіль
-          setUser({
-            id: String(meData.id),
-            name: meData.name ?? "",
-            email: meData.email ?? "",
-            role: (meData.role as UserRole) ?? "USER",
-            avatarBase64: meData.avatarUrl ?? null,
-          });
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setPageLoading(false);
-      }
-    };
-    load();
-  }, [slugParam]);
-
-  const handleSave = async (patch: SavePayload) => {
-    if (!user) return;
-    setSaving(true);
+useEffect(() => {
+  const load = async () => {
     try {
-      const res = await fetch(`${BASE_URL}/api/users/${user.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          name: patch.name,
-          email: patch.email,
-          avatarBase64: patch.avatarBase64,
-          ...(patch.password ? { password: patch.password } : {}),
-        }),
-      });
-      if (!res.ok) throw new Error(await res.text());
-
-      // Роль — окремий endpoint
-      if (patch.role !== user.role) {
-        const roleRes = await fetch(`${BASE_URL}/api/users/${user.id}/role`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ role: patch.role }),
+      if (isCreate) {
+        setUser({
+          id: '',
+          name: '',
+          email: '',
+          role: 'USER',
+          avatarId: null,
+          avatarUrl: null,
         });
-        if (!roleRes.ok) throw new Error(await roleRes.text());
+        setEditing(true);
+        setPageLoading(false);
+        return;
       }
 
-      setUser((prev) =>
-        prev
-          ? { ...prev, name: patch.name, email: patch.email, role: patch.role, avatarBase64: patch.avatarBase64 }
-          : prev
-      );
+      const meRes = await fetch("/api/auth/me", { credentials: "include" });
+      if (!meRes.ok) return;
+      const meData = await meRes.json();
+      setMe({ id: String(meData.id), role: meData.role });
 
-      notify("Профіль збережено");
-    } catch (err: any) {
-      notify(err?.message ?? "Помилка збереження", "error");
+      const targetId = slugParam && slugParam !== String(meData.id)
+        ? slugParam
+        : null;
+
+      if (targetId) {
+        const userRes = await fetch(`${BASE_URL}/api/users/${targetId}`, {
+          credentials: "include",
+        });
+        if (!userRes.ok) return;
+        const userData = await userRes.json();
+        setUser({
+          id: String(userData.id),
+          name: userData.name ?? "",
+          email: userData.email ?? "",
+          role: (userData.role as UserRole) ?? "USER",
+          avatarId: userData.avatarId ?? null,
+          avatarUrl: userData.avatar?.url ?? null,
+        });
+      } else {
+        setUser({
+          id: String(meData.id),
+          name: meData.name ?? "",
+          email: meData.email ?? "",
+          role: (meData.role as UserRole) ?? "USER",
+          avatarId: meData.avatarId ?? null,
+          avatarUrl: meData.avatar?.url ?? null,
+        });
+      }
+    } catch (err) {
+      console.error(err);
     } finally {
-      setSaving(false);
+      setPageLoading(false);
     }
   };
+  load();
+}, [slugParam, isCreate]);
+
+const handleSave = async (patch: SavePayload) => {
+  if (!user) return;
+  setSaving(true);
+  try {
+    if (isCreate) {
+      if (!patch.password) {
+        notify('Password is required', 'error');
+        setSaving(false);
+        return;
+      }
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ name: patch.name, email: patch.email, password: patch.password }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const created = await res.json();
+
+      // Роль
+      if (patch.role !== 'USER') {
+        await fetch(`/api/users/${created.user.id}/role`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ role: patch.role }),
+        });
+      }
+
+      // Аватар
+      if (patch.avatarId) {
+        await fetch(`/api/users/${created.user.id}/role`, { 
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ avatarId: patch.avatarId }),
+        });
+      }
+
+      notify('User created successfully');
+      setTimeout(() => router.push(`/admin/profile/${created.user.id}`), 1000);
+      return;
+    }
+    
+    const res = await fetch(`${BASE_URL}/api/users/${user.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        name: patch.name,
+        avatarId: patch.avatarId,
+        ...(!isOwn ? { role: patch.role } : {}),
+        ...(patch.password ? { password: patch.password } : {}),
+      }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+
+    // ✅ Перечитуємо актуальний профіль з сервера
+    const refreshRes = await fetch(`${BASE_URL}/api/users/${user.id}`, {
+      credentials: "include",
+    });
+    if (refreshRes.ok) {
+      const refreshed = await refreshRes.json();
+      setUser({
+        id: String(refreshed.id),
+        name: refreshed.name ?? "",
+        email: refreshed.email ?? "",
+        role: refreshed.role ?? "USER",
+        avatarId: refreshed.avatarId ?? null,
+        avatarUrl: refreshed.avatar?.url ?? null,  // ✅ береться з сервера
+      });
+    }
+
+    notify("Профіль збережено");
+    if (patch.role !== user.role) {
+      notify(`Role changed to ${patch.role}`);
+    } else {
+      notify("Профіль збережено");
+    }
+  } catch (err: any) {
+    notify(err?.message ?? "Помилка збереження", "error");
+  } finally {
+    setSaving(false);
+  }
+};
 
   if (pageLoading) {
     return (
@@ -426,6 +544,10 @@ const ProfilePage = () => {
           saving={saving}
           isOwn={isOwn}
           canEdit={canEdit}
+          editing={editing}
+          isCreate={isCreate}
+          onEditStart={() => setEditing(true)}
+          onEditEnd={() => setEditing(false)}
           onSave={handleSave}
         />
 
@@ -458,4 +580,10 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default function ProfilePageWrapper() {
+  return (
+    <Suspense>
+      <ProfilePage />
+    </Suspense>
+  );
+}

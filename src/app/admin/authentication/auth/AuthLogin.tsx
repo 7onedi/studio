@@ -122,7 +122,7 @@ const AuthLogin: React.FC<LoginProps> = ({
             />
           </FormGroup>
 
-          <Typography
+          {/* <Typography
             component={Link}
             href="/"
             fontWeight="500"
@@ -132,7 +132,7 @@ const AuthLogin: React.FC<LoginProps> = ({
             }}
           >
             Forgot Password?
-          </Typography>
+          </Typography> */}
         </Stack>
       </Stack>
 
