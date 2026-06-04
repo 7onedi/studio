@@ -39,7 +39,7 @@ export const authService = {
 
 
   async login(email: string, password: string) {
-    // console.log("Login attempt with:", email, password);
+    console.log("Login attempt with:", email, password);
     const user = await userRepository.findByEmail(email);
       if (!user)
         throw new ApiError(
@@ -48,7 +48,7 @@ export const authService = {
         );
 
     const valid = await comparePassword( password, user.passwordHash);
-    // console.log("Password valid?", valid);
+    console.log("Password valid?", valid);
       if (!valid)
         throw new ApiError(
           400,
