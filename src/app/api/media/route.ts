@@ -3,9 +3,12 @@ import { mediaController } from "@/api/controllers/media.controller";
 import { withAuth } from "@/app/api/middleware/auth";
 
 // GET /api/media
-export async function GET() {
-    const media = await mediaController.list();
-    return NextResponse.json(media);
+export async function GET(req: NextRequest) {
+  const url = new URL(req.url);
+  const page = Number(url.searchParams.get('page') ?? 1);
+  const limit = Number(url.searchParams.get('limit') ?? 24);
+  const media = await mediaController.list(page, limit);
+  return NextResponse.json(media);
 }
 
 // POST /api/media (upload)

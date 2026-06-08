@@ -22,8 +22,6 @@ import {
 import { IconEye, IconEyeOff, IconEdit } from "@tabler/icons-react";
 import PageContainer from "../../components/container/PageContainer";
 import DashboardCard from "../../components/shared/DashboardCard";
-import Blog from "../../components/profile/Blog";
-import router from "next/dist/shared/lib/router/router";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -59,8 +57,6 @@ const ROLE_COLORS: Record<
   OWNER: "secondary",
 };
 
-const ROLES: UserRole[] = ["ADMIN", "EDITOR", "USER"];
-
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 // ─── ProfileHeader ────────────────────────────────────────────────────────────
@@ -72,12 +68,13 @@ interface ProfileHeaderProps {
   canEdit: boolean;
   editing: boolean;
   isCreate?: boolean;
+  meRole: UserRole;
   onEditStart: () => void;
   onEditEnd: () => void;
   onSave: (patch: SavePayload) => Promise<void>;
 }
 
-const ProfileHeader = ({ user, saving, isOwn, canEdit, editing, isCreate, onEditStart, onEditEnd, onSave }: ProfileHeaderProps) => {
+const ProfileHeader = ({ user, saving, isOwn, canEdit, editing, isCreate, onEditStart, onEditEnd, onSave, meRole }: ProfileHeaderProps) => {
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
   const [role, setRole] = useState<UserRole>(user.role);
@@ -88,6 +85,10 @@ const ProfileHeader = ({ user, saving, isOwn, canEdit, editing, isCreate, onEdit
   const [avatarUrl, setAvatarUrl] = useState<string | null>(user.avatarUrl);
   const [avatarId, setAvatarId] = useState<number | null>(user.avatarId);
   const [avatarUploading, setAvatarUploading] = useState(false);
+
+  const availableRoles: UserRole[] = meRole === 'OWNER'
+  ? ['ADMIN', 'EDITOR', 'USER']
+  : ['EDITOR', 'USER'];
 
   // Синхронізація коли user оновився ззовні (після збереження)
   useEffect(() => {
@@ -268,10 +269,8 @@ const ProfileHeader = ({ user, saving, isOwn, canEdit, editing, isCreate, onEdit
                     label="Role"
                     onChange={(e) => setRole(e.target.value as UserRole)}
                   >
-                    {ROLES.filter(r => r !== 'OWNER').map((r) => (
-                      <MenuItem key={r} value={r}>
-                        {r}
-                      </MenuItem>
+                    {availableRoles.map((r) => (
+                      <MenuItem key={r} value={r}>{r}</MenuItem>
                     ))}
                   </Select>
                 </FormControl>
@@ -361,12 +360,6 @@ const ProfilePage = () => {
     isOwn ||
     me?.role === "OWNER" ||
     (me?.role === "ADMIN" && user?.role !== "ADMIN" && user?.role !== "OWNER");
-
-  const availableRoles = isOwn
-    ? ROLES.filter(r => r !== "OWNER")  // своєму собі не можна стати OWNER
-    : me?.role === "OWNER"
-      ? ROLES  // OWNER бачить всі ролі
-      : ROLES.filter(r => r !== "OWNER" && r !== "ADMIN"); // ADMIN не може призначити OWNER/ADMIN
 
   const notify = (message: string, severity: "success" | "error" = "success") =>
     setSnackbar({ open: true, message, severity });
@@ -549,6 +542,7 @@ const handleSave = async (patch: SavePayload) => {
           onEditStart={() => setEditing(true)}
           onEditEnd={() => setEditing(false)}
           onSave={handleSave}
+          meRole={me?.role ?? 'USER'}
         />
 
         {/* Тут можна розкоментувати Stats / About / Activity / Blog */}

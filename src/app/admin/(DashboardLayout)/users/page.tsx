@@ -216,11 +216,22 @@ function UsersContent() {
       header: 'Role',
       cell: ({ row }) => {
         const role = row.original.role;
-        const isOwnRow = me?.id === row.original.id;
-        const canChangeRole = !isOwnRow && (me?.role === 'OWNER' || me?.role === 'ADMIN') && row.original.role !== 'OWNER';
+        const canChangeRole = (target: User) => {
+          if (!me) return false;
+          if (target.id === me.id) return false;
+          if (target.role === 'OWNER') return false;
+
+          if (me.role === 'OWNER') return true;
+
+          if (me.role === 'ADMIN') {
+            return target.role !== 'ADMIN';
+          }
+
+          return false;
+        };
 
         // Якщо не можна змінювати — просто показуємо чіп
-        if (!canChangeRole) {
+        if (!canChangeRole(row.original)) {
           return (
             <Box sx={{ px: 1.5 }}>
               <Chip label={role} size="small" color={ROLE_COLORS[role]} />
@@ -228,7 +239,7 @@ function UsersContent() {
           );
         }
 
-        const availableRoles = ['USER', 'EDITOR', 'ADMIN'];
+        const availableRoles = me?.role === 'OWNER' ? ['USER', 'EDITOR', 'ADMIN'] : ['USER', 'EDITOR'];
 
         return (
           <FormControl size="small" sx={{ minWidth: 120 }}>

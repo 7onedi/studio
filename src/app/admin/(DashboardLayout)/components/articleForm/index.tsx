@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import CircularProgress from "@mui/material/CircularProgress";
+import MediaPickerDialog, { MediaItem } from '../../components/Mediapickerdialog';
 
 const ReactEditor = dynamic(() => import("../editor/ReactEditor"), {
   ssr: false,
@@ -84,6 +85,8 @@ export default function ArticleForm({
   const [authorOptions, setAuthorOptions] = useState<{ id: number; name: string }[]>([]);
   const [authorInput, setAuthorInput] = useState(initialData?.authorName ?? '');
   const [authorLoading, setAuthorLoading] = useState(false);
+  const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
+  const [selectedMediaId, setSelectedMediaId] = useState<number | null>(initialData?.currentImageId ?? null);
   const [previousImageId, setPreviousImageId] = useState<number | null>(
     initialData?.currentImageId ?? null
   );
@@ -421,81 +424,38 @@ const handleSubmit = () => {
             </FormControl>
           )}
 
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="body2" color="text.secondary" mb={1}>
-              Article Banner
-            </Typography>
+          <Button
+            variant="outlined"
+            fullWidth
+            onClick={() => setMediaPickerOpen(true)}
+            sx={{ mb: 1 }}
+          >
+            {coverBase64 ? 'Change Banner' : 'Select Banner'}
+          </Button>
 
-            <Box
-              sx={{
-                border: '2px dashed',
-                borderColor: coverBase64 ? 'primary.main' : 'grey.300',
-                borderRadius: 2,
-                p: 2,
-                textAlign: 'center',
-                cursor: 'pointer',
-                position: 'relative',
-                minHeight: 160,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                overflow: 'hidden',
-              }}
-              onClick={() => document.getElementById('cover-upload')?.click()}
-            >
-              {coverBase64 ? (
-                <>
-                  <Box
-                    component="img"
-                    src={coverBase64}
-                    sx={{ maxWidth: '100%', maxHeight: 240, borderRadius: 1, display: 'block' }}
-                  />
-                  <Button
-                    size="small"
-                    color="error"
-                    variant="contained"
-                    sx={{ position: 'absolute', top: 8, right: 8 }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      console.log('previousImageId:', previousImageId);
-                      if (previousImageId) {
-                        fetch(`/api/media/${previousImageId}`, { 
-                          method: 'DELETE',
-                          credentials: 'include',
-                        })
-                        .then(r => r.json())
-                        .then(d => console.log('delete result:', d))
-                        .catch(err => console.error('delete error:', err));
-                        setPreviousImageId(null);
-                      }
-                      setCoverBase64(null);
-                    }}
-                  >
-                    Delete
-                  </Button>
-                </>
-              ) : (
-                <Typography color="text.secondary" fontSize={14}>
-                  Click to upload banner
-                </Typography>
-              )}
+          {coverBase64 && (
+            <Box sx={{ position: 'relative' }}>
+              <Box component="img" src={coverBase64} sx={{ width: '100%', borderRadius: 2 }} />
+              <Button
+                size="small" color="error" variant="contained"
+                sx={{ position: 'absolute', top: 8, right: 8 }}
+                onClick={() => { setCoverBase64(null); setSelectedMediaId(null); }}
+              >
+                Delete
+              </Button>
             </Box>
+          )}
 
-            <input
-              id="cover-upload"
-              type="file"
-              accept="image/*"
-              style={{ display: 'none' }}
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = () => setCoverBase64(reader.result as string);
-                reader.readAsDataURL(file);
-                e.target.value = '';
-              }}
-            />
-          </Box>
+          <MediaPickerDialog
+            open={mediaPickerOpen}
+            onClose={() => setMediaPickerOpen(false)}
+            selected={selectedMediaId}
+            onSelect={(item: MediaItem) => {
+              setCoverBase64(item.url);
+              setSelectedMediaId(item.id);
+              setPreviousImageId(item.id);
+            }}
+          />
         </Box>
       </Box>
       

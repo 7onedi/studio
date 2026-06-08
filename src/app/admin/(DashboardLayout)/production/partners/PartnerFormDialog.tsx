@@ -8,6 +8,8 @@ import {
 } from '@mui/material';
 import { Partner } from './PartnersTable';
 import dynamic from 'next/dynamic';
+import MediaPickerDialog, { MediaItem } from '../../components/Mediapickerdialog';
+
 const PartnerDescriptionEditor = dynamic(
   () => import('../../components/editor/PartnerDescriptionEditor'),
   { ssr: false }
@@ -112,6 +114,9 @@ export default function PartnerFormDialog({ open, initial, defaultRole, onClose,
   const [imageBase64, setImageBase64] = useState<string | null>(null);
   const [saving,      setSaving]      = useState(false);
   const [error,       setError]       = useState('');
+  const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
+  const [selectedImageId, setSelectedImageId] = useState<number | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -124,19 +129,20 @@ export default function PartnerFormDialog({ open, initial, defaultRole, onClose,
       
       setImageBase64(null);
       setError('');
+      setImageBase64(null);
+      setImageUrl(null);
+      setSelectedImageId(initial?.imageId ?? null);
     }
   }, [open, initial, defaultRole]);
 
   useEffect(() => {
   if (open) {
-    // ...
     try {
       const raw = initial?.description;
       setDescription(raw ? JSON.parse(raw) : null);
     } catch {
       setDescription(null);
     }
-    // ...
   }
 }, [open, initial]);
 
@@ -149,8 +155,8 @@ export default function PartnerFormDialog({ open, initial, defaultRole, onClose,
 
     try {
       // 1. Завантаження фото
-      let imageId: number | null = initial?.imageId ?? null;
-      if (imageBase64) {
+      let imageId: number | null = selectedImageId ?? initial?.imageId ?? null;
+      if (imageBase64 && imageBase64.startsWith('data:')) {
         const blob = await (await fetch(imageBase64)).blob();
         const fd = new FormData();
         fd.append('file', blob, 'partner.jpg');
@@ -262,12 +268,36 @@ export default function PartnerFormDialog({ open, initial, defaultRole, onClose,
       <DialogContent>
         <Stack spacing={2} mt={1}>
 
-          <ImageUploadBox
-            previewSrc={imageBase64}
-            existingUrl={initial?.image?.url ?? null}
-            onUpload={setImageBase64}
-            onRemove={() => setImageBase64(null)}
-          />
+        <Box>
+          <Typography variant="body2" color="text.secondary" mb={1}>Logo</Typography>
+          {(imageBase64 ?? imageUrl ?? initial?.image?.url) ? (
+            <Box sx={{ position: 'relative', mb: 1 }}>
+              <Box component="img"
+                src={imageBase64 ?? imageUrl ?? initial?.image?.url}
+                sx={{ width: '100%', maxHeight: 160, objectFit: 'cover', borderRadius: 2 }}
+              />
+              <Button size="small" color="error" variant="contained"
+                sx={{ position: 'absolute', top: 8, right: 8 }}
+                onClick={() => { setImageBase64(null); setImageUrl(null); setSelectedImageId(null); }}>
+                Remove
+              </Button>
+            </Box>
+          ) : null}
+          <Button variant="outlined" fullWidth size="small" onClick={() => setMediaPickerOpen(true)}>
+            {(imageBase64 ?? imageUrl ?? initial?.image?.url) ? 'Change Logo' : 'Select Logo'}
+          </Button>
+        </Box>
+
+        <MediaPickerDialog
+          open={mediaPickerOpen}
+          onClose={() => setMediaPickerOpen(false)}
+          selected={selectedImageId}
+          onSelect={(item: MediaItem) => {
+            setImageUrl(item.url);
+            setImageBase64(item.url);
+            setSelectedImageId(item.id);
+          }}
+        />
 
           <TextField
             label="Name *" value={name} size="small" fullWidth
