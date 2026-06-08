@@ -44,13 +44,18 @@ export const mediaService = {
         });
     },
 
-    list() {
-        return mediaRepository.findMany();
+    async list(page = 1, limit = 24) {
+        const skip = (page - 1) * limit;
+        const [data, total] = await Promise.all([
+            mediaRepository.findMany({ skip, take: limit }),
+            mediaRepository.count(),
+        ]);
+        return { data, total, page, limit };
     },
 
     async delete(user: any, id: number) {
     if (!user) throw new ApiError(401, "Unauthorized");
-    if (user.role !== "ADMIN")
+    if (user.role !== 'ADMIN' && user.role !== 'OWNER')
         throw new ApiError(403, "Only ADMIN can delete media");
 
     const media = await mediaRepository.findById(id);
