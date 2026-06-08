@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { articleController } from "@/api/controllers/article.controller";
-import { withAuth } from "@/app/api/middleware/auth";
 
-export const GET = withAuth(async (req: NextRequest, user: any) => {
+export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const query: Record<string, string> = {};
   url.searchParams.forEach((v, k) => { query[k] = v; });
@@ -31,4 +30,4 @@ export const GET = withAuth(async (req: NextRequest, user: any) => {
 
   const results = await articleController.search(filters, options);
   return NextResponse.json(results);
-});
+};
