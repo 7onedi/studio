@@ -14,8 +14,7 @@ function ProjectsContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
-  const tab = Number(searchParams.get('tab') ?? '0');
+  const [me, setMe] = useState<{ id: number; role: string } | null>(null);
 
   // --- батьківські ---
   const [parents, setParents]       = useState<ParentProject[]>([]);
@@ -52,6 +51,17 @@ function ProjectsContent() {
     if (key !== 'page') params.set('page', '1');
     router.push(`${pathname}?${params}`);
   };
+
+  useEffect(() => {
+    fetch('/api/auth/me', { credentials: 'include' })
+      .then(r => r.json())
+      .then(setMe);
+  }, []);
+
+  const userRole = me?.role;
+
+  const isOwner = userRole === 'OWNER';
+  const tab = isOwner ? Number(searchParams.get('tab') ?? 0) : 1;
 
   // --- категорії ---
   useEffect(() => {
@@ -212,24 +222,28 @@ function ProjectsContent() {
               else           { setChildEditTarget(undefined);  setChildFormOpen(true); }
             }}
           >
-            {tab === 0 ? 'New Project' : 'New Child Project'}
+            {tab === 0 ? 'New Parent Project' : 'New Project'}
           </Button>
         </Box>
 
-        <Tabs
-          value={tab}
-          onChange={(_, v) => {
-            const params = new URLSearchParams(searchParams.toString());
-            params.set('tab', String(v));
-            params.set('page', '1');
-            params.delete('search');
-            router.push(`${pathname}?${params}`);
-          }}
-          sx={{ mb: 3 }}
-        >
-          <Tab label="Parent Projects" />
-          <Tab label="Child Projects" />
-        </Tabs>
+        {isOwner && (
+          <Tabs
+            value={tab}
+            onChange={(_, v) => {
+              const params = new URLSearchParams(searchParams.toString());
+              params.set('tab', String(v));
+              params.set('page', '1');
+              params.delete('search');
+              router.push(`${pathname}?${params}`);
+            }}
+            sx={{ mb: 3 }}
+          >
+              <Tab label="Parent Projects" />
+
+            <Tab label="Projects" />
+
+          </Tabs>
+        )}
 
         {tab === 0 && (
           <ParentProjectTable
@@ -270,6 +284,7 @@ function ProjectsContent() {
             onDelete={handleChildDelete}
             onBulkDelete={handleChildBulkDelete}
             onPublish={handlePublish}
+            userRole={userRole}
           />
         )}
       </Box>

@@ -48,6 +48,7 @@ interface ArticleFormProps {
   submitLabel?: string;
   title?: string;
   onCancel?: () => void;
+  userRole?: string;
 }
 
 export default function ArticleForm({
@@ -60,6 +61,7 @@ export default function ArticleForm({
   submitLabel = "Зберегти",
   title = "Стаття",
   onCancel,
+  userRole,
 }: ArticleFormProps) {
   const [formTitle, setFormTitle] = useState(initialData?.title ?? "");
   const [lang, setLang] = useState(initialData?.lang ?? "UK");
@@ -79,9 +81,25 @@ export default function ArticleForm({
   const [published, setPublished] = useState<boolean>(initialData?.published ?? false);
   const [slider, setSlider] = useState<string>(initialData?.slider ?? 'NONE');
   const [gradient, setGradient] = useState<string>(initialData?.gradient ?? 'NONE');
+  const [authorOptions, setAuthorOptions] = useState<{ id: number; name: string }[]>([]);
+  const [authorInput, setAuthorInput] = useState(initialData?.authorName ?? '');
+  const [authorLoading, setAuthorLoading] = useState(false);
   const [previousImageId, setPreviousImageId] = useState<number | null>(
     initialData?.currentImageId ?? null
   );
+
+  useEffect(() => {
+    if (!authorInput.trim()) { setAuthorOptions([]); return; }
+    const timer = setTimeout(() => {
+      setAuthorLoading(true);
+      fetch(`/api/users/search?name=${encodeURIComponent(authorInput.trim())}&page=1&limit=10`, { credentials: 'include' })
+        .then(r => r.json())
+        .then(d => setAuthorOptions(Array.isArray(d.data) ? d.data : []))
+        .catch(console.error)
+        .finally(() => setAuthorLoading(false));
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [authorInput]);
 
   useEffect(() => {
   if (!initialData) return;
@@ -267,69 +285,99 @@ const handleSubmit = () => {
 
         {/* бічна колонка */}
         <Box sx={{ gridColumn: { xs: 'span 12', md: 'span 2' } }}>
-          <TextField fullWidth label="Author *" value={authorName}
-            onChange={(e) => setAuthorName(e.target.value)} sx={{ mb: 3 }} />
+          <Autocomplete
+            freeSolo
+            options={authorOptions.map(u => u.name)}
+            value={authorName}
+            inputValue={authorInput}
+            loading={authorLoading}
+            onInputChange={(_, value, reason) => {
+              setAuthorInput(value);
+              if (reason === 'input') setAuthorName(value);
+            }}
+            onChange={(_, value) => {
+              setAuthorName(value ?? '');
+              setAuthorInput(value ?? '');
+            }}
+            filterOptions={(options) => options}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Author *"
+                sx={{ mb: 3 }}
+                InputProps={{
+                  ...params.InputProps,
+                  endAdornment: (
+                    <>
+                      {authorLoading && <CircularProgress size={16} />}
+                      {params.InputProps.endAdornment}
+                    </>
+                  ),
+                }}
+              />
+            )}
+          />
 
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={published}
-                  onChange={(e) => setPublished(e.target.checked)}
-                  color="success"
-                />
-              }
-              label={published ? 'Published' : 'Draft'}
-              sx={{ mb: 3 }}
-            />
+            {userRole !== 'USER' && (
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={published}
+                    onChange={(e) => setPublished(e.target.checked)}
+                    color="success"
+                  />
+                }
+                label={published ? 'Published' : 'Draft'}
+                sx={{ mb: 3 }}
+              />
+            )}
 
-            <FormControl fullWidth sx={{ mb: 3 }}>
-              <InputLabel>Placement in slider</InputLabel>
-              <Select
-                value={slider}
-                label="Placement in slider"
-                onChange={(e) => setSlider(e.target.value)}
-              >
-                <MenuItem value="NONE">Do not display</MenuItem>
-                <MenuItem value="SLIDER_1">Banner-Slider</MenuItem>
-                <MenuItem value="SLIDER_2">Carousel-Slider</MenuItem>
-              </Select>
-            </FormControl>
+            {userRole !== 'USER' && (
+              <FormControl fullWidth sx={{ mb: 3 }}>
+                <InputLabel>Placement in slider</InputLabel>
+                <Select value={slider} label="Placement in slider" onChange={(e) => setSlider(e.target.value)}>
+                  <MenuItem value="NONE">Do not display</MenuItem>
+                  <MenuItem value="SLIDER_1">Banner-Slider</MenuItem>
+                  <MenuItem value="SLIDER_2">Carousel-Slider</MenuItem>
+                </Select>
+              </FormControl>
+            )}
 
-            <FormControl fullWidth sx={{ mb: 3 }}>
-              <InputLabel>Gradient</InputLabel>
-              <Select
-                value={gradient}
-                label="Gradient"
-                onChange={(e) => setGradient(e.target.value)}
-                renderValue={(val) => (
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    {val !== 'NONE' && (
-                      <Box sx={{
-                        width: 16,
-                        height: 16,
-                        borderRadius: '50%',
-                        backgroundColor: val === 'GRADIENT_1' ? '#256BA7' : '#E91651',
-                      }} />
-                    )}
-                    {val === 'NONE' ? 'No gradient' : val === 'GRADIENT_1' ? 'Blue' : 'Red'}
-                  </Box>
-                )}
-              >
-                <MenuItem value="NONE">No gradient</MenuItem>
-                <MenuItem value="GRADIENT_1">
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Box sx={{ width: 16, height: 16, borderRadius: '50%', backgroundColor: '#256BA7' }} />
-                    Blue
-                  </Box>
-                </MenuItem>
-                <MenuItem value="GRADIENT_2">
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Box sx={{ width: 16, height: 16, borderRadius: '50%', backgroundColor: '#E91651' }} />
-                    Red
-                  </Box>
-                </MenuItem>
-              </Select>
-            </FormControl>
+            {userRole !== 'USER' && (
+              <FormControl fullWidth sx={{ mb: 3 }}>
+                <InputLabel>Gradient</InputLabel>
+                <Select
+                  value={gradient}
+                  label="Gradient"
+                  onChange={(e) => setGradient(e.target.value)}
+                  renderValue={(val) => (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      {val !== 'NONE' && (
+                        <Box sx={{
+                          width: 16, height: 16, borderRadius: '50%',
+                          backgroundColor: val === 'GRADIENT_1' ? '#256BA7' : '#E91651',
+                        }} />
+                      )}
+                      {val === 'NONE' ? 'No gradient' : val === 'GRADIENT_1' ? 'Blue' : 'Red'}
+                    </Box>
+                  )}
+                >
+                  <MenuItem value="NONE">No gradient</MenuItem>
+                  <MenuItem value="GRADIENT_1">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Box sx={{ width: 16, height: 16, borderRadius: '50%', backgroundColor: '#256BA7' }} />
+                      Blue
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="GRADIENT_2">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Box sx={{ width: 16, height: 16, borderRadius: '50%', backgroundColor: '#E91651' }} />
+                      Red
+                    </Box>
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            )}
 
           <FormControl fullWidth sx={{ mb: 3 }}>
             <InputLabel>Language</InputLabel>

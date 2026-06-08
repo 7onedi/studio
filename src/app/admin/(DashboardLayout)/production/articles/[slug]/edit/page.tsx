@@ -20,6 +20,13 @@ export default function EditArticle({ params }: EditPageProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [me, setMe] = useState<{ id: number; role: string } | null>(null);
+
+  useEffect(() => {
+    fetch('/api/auth/me', { credentials: 'include' })
+      .then(r => r.json())
+      .then(setMe);
+  }, []);
 
   useEffect(() => {
   fetch(`/api/articles/by-slug/${slug}`)
@@ -144,6 +151,7 @@ export default function EditArticle({ params }: EditPageProps) {
       error={error}
       success={success}
       onCancel={() => router.back()}
+      userRole={me?.role}
     />
   );
 }

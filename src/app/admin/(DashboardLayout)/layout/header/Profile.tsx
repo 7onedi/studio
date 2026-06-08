@@ -19,6 +19,7 @@ interface User {
   name: string;
   email: string;
   role: string;
+  avatar?: { url: string };
 }
 
 const Profile = () => {
@@ -104,12 +105,9 @@ const Profile = () => {
         onClick={handleClick2}
       >
         <Avatar
-          src="/images/profile/user-1.jpg"
+          src={user?.avatar?.url ?? '/images/profile/user-1.jpg'}
           alt="image"
-          sx={{
-            width: 35,
-            height: 35,
-          }}
+          sx={{ width: 50, height: 50 }}
         >
           {user?.name?.[0]}
         </Avatar>

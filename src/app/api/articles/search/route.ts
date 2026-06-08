@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { articleController } from "@/api/controllers/article.controller";
+import { withAuth } from "@/app/api/middleware/auth";
 
-export async function GET(req: NextRequest) {
+export const GET = withAuth(async (req: NextRequest, user: any) => {
   const url = new URL(req.url);
-
   const query: Record<string, string> = {};
-  url.searchParams.forEach((v, k) => {
-    query[k] = v;
-  });
+  url.searchParams.forEach((v, k) => { query[k] = v; });
 
   const filters: Record<string, any> = {};
   if (query.title) filters.title = query.title;
@@ -17,6 +15,12 @@ export async function GET(req: NextRequest) {
   if (query.slider) filters.slider = query.slider;
   if (query.published === "true") filters.published = true;
   if (query.published === "false") filters.published = false;
+  if (query.authorId) filters.authorId = Number(query.authorId);
+
+  // USER бачить лише свої статті
+  // if (user.role === "USER") {
+  //   filters.authorId = user.id;
+  // }
 
   const options = {
     page: Number(query.page ?? 1),
@@ -26,6 +30,5 @@ export async function GET(req: NextRequest) {
   };
 
   const results = await articleController.search(filters, options);
-
   return NextResponse.json(results);
-}
+});
