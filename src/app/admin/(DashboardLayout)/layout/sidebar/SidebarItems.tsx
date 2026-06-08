@@ -1,5 +1,5 @@
-import React from "react";
-import Menuitems from "./MenuItems";
+import React, { useEffect, useState } from "react";
+import Menuitems, { getMenuItems } from "./MenuItems";
 import { Box, Typography } from "@mui/material";
 import {
   Logo,
@@ -66,23 +66,33 @@ const renderMenuItems = (items: any, pathDirect: any) => {
 };
 
 
-const SidebarItems = () => {
-  const pathname = usePathname();
-  const pathDirect = pathname;
+  const SidebarItems = () => {
+    const pathname = usePathname();
+    const [role, setRole] = useState<string | undefined>();
 
-  return (
-    < >
-      <MUI_Sidebar width={"100%"} showProfile={false} themeColor={"#5D87FF"} themeSecondaryColor={'#49beff'} >
+    useEffect(() => {
+      fetch("/api/auth/me", { credentials: "include" })
+        .then((r) => r.json())
+        .then((d) => setRole(d.role))
+        .catch(console.error);
+    }, []);
 
-        <Logo img='/mobile/icys.webp' component={Link}   href="/">ICYS</Logo>
+    const items = getMenuItems(role);
 
-        {renderMenuItems(Menuitems, pathDirect)}
-        <Box px={2}>
-          {/* <Upgrade /> */}
-        </Box>
-      </MUI_Sidebar>
+    return (
+      <>
+        <MUI_Sidebar width={"100%"} showProfile={false} themeColor={"#5D87FF"} themeSecondaryColor={'#49beff'} >
 
-    </>
-  );
-};
+          <Logo img='/mobile/icys.webp' component={Link}   href="/">ICYS</Logo>
+
+          {renderMenuItems(items, pathname)}
+          <Box px={2}>
+            {/* <Upgrade /> */}
+          </Box>
+        </MUI_Sidebar>
+
+      </>
+    );
+  };
+  
 export default SidebarItems;

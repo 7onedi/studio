@@ -1,6 +1,6 @@
 #!/bin/bash
-# assignAdminDocker.sh
-# Використання: ./assignAdminDocker.sh user@example.com
+# assignAdmin.sh
+# Використання: ./assignAdmin.sh user@example.com
 
 EMAIL="$1"
 

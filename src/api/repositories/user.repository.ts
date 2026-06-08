@@ -34,6 +34,10 @@ export const userRepository = {
         name: true,
         email: true,
         role: true,
+        avatarId: true,
+        avatar: {
+          select: { url: true }
+        },
       },
     });
   },
@@ -50,5 +54,46 @@ export const userRepository = {
       where: { id: userId },
       data: { role },
     });
-  }
+  },
+
+  async updatePassword(id: number, passwordHash: string) {
+    return prisma.user.update({
+      where: { id },
+      data: { passwordHash },
+    });
+  },
+
+  async updateAvatar(id: number, avatarId: number | null) {
+    return prisma.user.update({
+      where: { id },
+      data: { avatarId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        avatarId: true,
+        avatar: { select: { url: true } },
+      },
+    });
+  },
+  
+  async transferOwner(fromId: number, toId: number) {
+  return prisma.$transaction([
+    prisma.user.update({
+      where: { id: fromId },
+      data: { role: "ADMIN" },
+    }),
+    prisma.user.update({
+      where: { id: toId },
+      data: { role: "OWNER" },
+    }),
+  ]);
+},
+
+async findOwner() {
+  return prisma.user.findFirst({
+    where: { role: "OWNER" },
+  });
+},
 };

@@ -11,6 +11,7 @@ enum UserRole {
   USER
   EDITOR
   ADMIN
+  OWNER
 }
 
 enum ArticleGradient {
@@ -89,9 +90,12 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  avatarId Int?
+  avatar   Media? @relation("UserAvatar", fields: [avatarId], references: [id], onDelete: SetNull)
+
   studioProjects StudioProject[]
-  media    Media[]
-  articles Article[]
+  media          Media[]         @relation("UserMedia")
+  articles       Article[]
 }
 
 model Article {
@@ -250,11 +254,12 @@ model Media {
   size     Int
 
   uploaderId Int
-  uploader   User @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+  uploader   User @relation("UserMedia", fields: [uploaderId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime  @default(now())
-  articles  Article[]
+  createdAt    DateTime        @default(now())
+  articles     Article[]
   projects     StudioProject[] @relation("ProjectImage")
   projectLogos StudioProject[] @relation("ProjectLogo")
-  partners Partner[]
+  partners     Partner[]
+  userAvatars  User[]          @relation("UserAvatar")
 }

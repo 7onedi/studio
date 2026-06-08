@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
     order: query.order === "asc" ? "asc" : "desc",
   };
 
-  const results = await userController.search(filters, options);
+  const results = await userController.search(filters, options, { avatar: true });
 
   return NextResponse.json(results);
 }

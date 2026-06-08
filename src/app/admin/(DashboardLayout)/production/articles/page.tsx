@@ -15,6 +15,13 @@ function ArticlesContent() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [me, setMe] = useState<{ id: number; role: string } | null>(null);
+  
+    useEffect(() => {
+      fetch('/api/auth/me', { credentials: 'include' })
+        .then(r => r.json())
+        .then(setMe);
+    }, []);
 
   const page = searchParams.get('page') ?? '1';
   const search = searchParams.get('search') ?? '';
@@ -23,20 +30,22 @@ function ArticlesContent() {
   const limit = searchParams.get('limit') ?? '15';
 
   useEffect(() => {
+    if (!me) return;
+    
     setLoading(true);
     const params = new URLSearchParams({ page, limit, sortBy, order });
     if (search) params.set('title', search);
+    if (me.role === 'USER') params.set('authorId', String(me.id));
 
     fetch(`/api/articles/search?${params}`)
       .then((r) => r.json())
       .then((d) => {
-        console.log('first article:', d.data?.[0]); // ← додай
         setArticles(Array.isArray(d.data) ? d.data : []);
         setTotal(d.total ?? 0);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [page, limit, search, sortBy, order]);
+  }, [page, limit, search, sortBy, order, me]);
   console.log('articles:', articles);
 
   const updateParam = (key: string, value: string) => {
@@ -78,6 +87,8 @@ function ArticlesContent() {
           }}
           onPageChange={(p) => updateParam('page', String(p + 1))}
           onPageSizeChange={(size) => updateParam('limit', String(size))}
+          userRole={me?.role}
+          userId={me?.id}
         />
       </Box>
     </PageContainer>

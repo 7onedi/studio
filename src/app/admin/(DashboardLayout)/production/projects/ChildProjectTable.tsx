@@ -23,12 +23,13 @@ interface Props {
   onDelete: (id: number) => void;
   onBulkDelete: (ids: number[]) => Promise<void>;
   onPublish: (id: number, published: boolean) => void;
+  userRole?: string;
 }
 
 export default function ChildProjectTable({
   data, total, loading, page, pageSize, search, sortBy, order,
   onSearchChange, onSortChange, onPageChange, onPageSizeChange,
-  onEdit, onDelete, onBulkDelete, onPublish,
+  onEdit, onDelete, onBulkDelete, onPublish, userRole,
 }: Props) {
   const columns: ColumnDef<ChildProject>[] = [
     {
@@ -106,11 +107,16 @@ export default function ChildProjectTable({
     },
   ];
 
+  const filteredColumns = columns.filter((col: any) => {
+    if (col.id === 'parent' && userRole !== 'OWNER') return false;
+    return true;
+  });
+
   return (
     <GenericTable<ChildProject>
       data={data}
       total={total}
-      columns={columns}
+      columns={filteredColumns}
       sortableColumns={['title', 'published']}
       loading={loading}
       page={page}
