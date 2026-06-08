@@ -14,12 +14,13 @@ export const mediaRepository = {
         return prisma.media.create({ data });
     },
 
-    findMany() {
-        return prisma.media.findMany({
-        include: { uploader: true },
-        orderBy: { createdAt: "desc" },
-        });
-    },
+    findMany: (opts?: { skip?: number; take?: number }) =>
+        prisma.media.findMany({
+            orderBy: { createdAt: 'desc' },
+            skip: opts?.skip,
+            take: opts?.take,
+        }),
+    count: () => prisma.media.count(),
 
     delete(id: number) {
         return prisma.media.delete({

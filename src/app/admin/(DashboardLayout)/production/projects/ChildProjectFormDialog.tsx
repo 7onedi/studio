@@ -13,6 +13,7 @@ import dynamic from 'next/dynamic';
 import { Category, ParentProject, SocialLink } from './ParentProjectFormDialog';
 import { Switch, FormControlLabel } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
+import MediaPickerDialog, { MediaItem } from '../../components/Mediapickerdialog';
 
 const ReactEditor = dynamic(() => import('../../components/editor/ReactEditor'), { ssr: false });
 
@@ -152,6 +153,13 @@ export default function ChildProjectFormDialog({
   const [fullData, setFullData] = useState<any>(null);
   const [subcategoryInput, setSubcategoryInput] = useState('');
   const [creatingSubcategory, setCreatingSubcategory] = useState(false);
+  const [bannerPickerOpen, setBannerPickerOpen] = useState(false);
+  const [logoPickerOpen, setLogoPickerOpen] = useState(false);
+  const [selectedBannerId, setSelectedBannerId] = useState<number | null>(initial?.imageId ?? null);
+  const [selectedLogoId, setSelectedLogoId] = useState<number | null>(null);
+  const [bannerUrl, setBannerUrl] = useState<string | null>(null);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+
   useEffect(() => {
     if (open) {
       setCategoryId(initial?.categoryId ?? '');
@@ -205,6 +213,12 @@ export default function ChildProjectFormDialog({
     setZoom((fullData?.body as any)?.zoom ?? (initial?.body as any)?.zoom ?? false);
     setContributors((fullData?.body as any)?.contributors ?? (initial?.body as any)?.contributors ?? []);
     setError('');
+    setImageBase64(null);
+    setLogoBase64(null);
+    setBannerUrl(null);
+    setLogoUrl(null);
+    setSelectedBannerId(fullData?.imageId ?? initial?.imageId ?? null);
+    setSelectedLogoId(fullData?.logoId ?? null);
   }, [open, fullData]);
 
   // --- підкатегорії по categoryId ---
@@ -280,9 +294,9 @@ export default function ChildProjectFormDialog({
     setError('');
 
     try {
-      // 1. Завантаження банера
-      let imageId: number | null = initial?.imageId ?? null;
-      if (imageBase64) {
+      // банер
+      let imageId: number | null = selectedBannerId ?? initial?.imageId ?? null;
+      if (imageBase64 && imageBase64.startsWith('data:')) {
         const blob = await (await fetch(imageBase64)).blob();
         const fd = new FormData();
         fd.append('file', blob, 'banner.jpg');
@@ -291,8 +305,9 @@ export default function ChildProjectFormDialog({
         imageId = (await res.json()).id;
       }
 
-      let logoId: number | null = fullData?.logoId ?? null;
-      if (logoBase64) {
+      // логотип
+      let logoId: number | null = selectedLogoId ?? fullData?.logoId ?? null;
+      if (logoBase64 && logoBase64.startsWith('data:')) {
         const blob = await (await fetch(logoBase64)).blob();
         const fd = new FormData();
         fd.append('file', blob, 'logo.jpg');
@@ -488,36 +503,76 @@ export default function ChildProjectFormDialog({
           />
 
           {/* Банер */}
-          <ImageUploadBox
-            previewSrc={imageBase64}
-            existingUrl={fullData?.image?.url ?? null}
-            onUpload={setImageBase64}
-            onRemove={() => setImageBase64(null)}
-            inputId="child-project-image"
-            label="Club Banner"
+          <Box>
+            <Typography variant="body2" color="text.secondary" mb={1}>Club Banner</Typography>
+            {(imageBase64 ?? bannerUrl ?? fullData?.image?.url) ? (
+              <Box sx={{ position: 'relative', mb: 1 }}>
+                <Box component="img"
+                  src={imageBase64 ?? bannerUrl ?? fullData?.image?.url}
+                  sx={{ width: '100%', maxHeight: 160, objectFit: 'cover', borderRadius: 2 }}
+                />
+                <Button size="small" color="error" variant="contained"
+                  sx={{ position: 'absolute', top: 8, right: 8 }}
+                  onClick={() => { setImageBase64(null); setBannerUrl(null); setSelectedBannerId(null); }}>
+                  Remove
+                </Button>
+              </Box>
+            ) : null}
+            <Button variant="outlined" fullWidth size="small" onClick={() => setBannerPickerOpen(true)}>
+              {(imageBase64 ?? bannerUrl ?? fullData?.image?.url) ? 'Change Banner' : 'Select Banner'}
+            </Button>
+          </Box>
+
+          <MediaPickerDialog
+            open={bannerPickerOpen}
+            onClose={() => setBannerPickerOpen(false)}
+            selected={selectedBannerId}
+            onSelect={(item: MediaItem) => {
+              setBannerUrl(item.url);
+              setImageBase64(item.url);
+              setSelectedBannerId(item.id);
+            }}
           />
 
-            {categories.find((c) => c.id === Number(categoryId))?.name === '#CountrysideStudio' && (
-              <>
-                <ImageUploadBox
-                  previewSrc={logoBase64}
-                  existingUrl={fullData?.logo?.url ?? null}
-                  onUpload={setLogoBase64}
-                  onRemove={() => setLogoBase64(null)}
-                  inputId="child-project-logo"
-                  label="Club Logo"
-                />
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={zoom}
-                      onChange={(e) => setZoom(e.target.checked)}
+          {categories.find((c) => c.id === Number(categoryId))?.name === '#CountrysideStudio' && (
+            <>
+              <Box>
+                <Typography variant="body2" color="text.secondary" mb={1}>Club Logo</Typography>
+                {(logoBase64 ?? logoUrl ?? fullData?.logo?.url) ? (
+                  <Box sx={{ position: 'relative', mb: 1 }}>
+                    <Box component="img"
+                      src={logoBase64 ?? logoUrl ?? fullData?.logo?.url}
+                      sx={{ width: '100%', maxHeight: 160, objectFit: 'cover', borderRadius: 2 }}
                     />
-                  }
-                  label="Zoom"
-                />
-              </>
-            )}
+                    <Button size="small" color="error" variant="contained"
+                      sx={{ position: 'absolute', top: 8, right: 8 }}
+                      onClick={() => { setLogoBase64(null); setLogoUrl(null); setSelectedLogoId(null); }}>
+                      Remove
+                    </Button>
+                  </Box>
+                ) : null}
+                <Button variant="outlined" fullWidth size="small" onClick={() => setLogoPickerOpen(true)}>
+                  {(logoBase64 ?? logoUrl ?? fullData?.logo?.url) ? 'Change Logo' : 'Select Logo'}
+                </Button>
+              </Box>
+
+              <MediaPickerDialog
+                open={logoPickerOpen}
+                onClose={() => setLogoPickerOpen(false)}
+                selected={selectedLogoId}
+                onSelect={(item: MediaItem) => {
+                  setLogoUrl(item.url);
+                  setLogoBase64(item.url);
+                  setSelectedLogoId(item.id);
+                }}
+              />
+
+              <FormControlLabel
+                control={<Switch checked={zoom} onChange={(e) => setZoom(e.target.checked)} />}
+                label="Zoom"
+              />
+            </>
+          )}
 
           <Divider />
 
