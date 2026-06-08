@@ -181,7 +181,7 @@ const ProfileHeader = ({ user, saving, isOwn, canEdit, editing, isCreate, onEdit
             )}
           </Box>
 
-          {canEdit && editing && (
+          {(isCreate || canEdit) && editing && (
             <>
               <Button
                 variant="outlined"
@@ -461,7 +461,7 @@ const handleSave = async (patch: SavePayload) => {
 
       // Аватар
       if (patch.avatarId) {
-        await fetch(`/api/users/${created.user.id}/role`, { 
+        await fetch(`/api/users/${created.user.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',

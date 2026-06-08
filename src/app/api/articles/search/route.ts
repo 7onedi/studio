@@ -15,11 +15,12 @@ export const GET = withAuth(async (req: NextRequest, user: any) => {
   if (query.slider) filters.slider = query.slider;
   if (query.published === "true") filters.published = true;
   if (query.published === "false") filters.published = false;
+  if (query.authorId) filters.authorId = Number(query.authorId);
 
   // USER бачить лише свої статті
-  if (user.role === "USER") {
-    filters.authorId = user.id;
-  }
+  // if (user.role === "USER") {
+  //   filters.authorId = user.id;
+  // }
 
   const options = {
     page: Number(query.page ?? 1),

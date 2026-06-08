@@ -217,7 +217,7 @@ function UsersContent() {
       cell: ({ row }) => {
         const role = row.original.role;
         const isOwnRow = me?.id === row.original.id;
-        const canChangeRole = !isOwnRow && (me?.role === 'OWNER' || me?.role === 'ADMIN');
+        const canChangeRole = !isOwnRow && (me?.role === 'OWNER' || me?.role === 'ADMIN') && row.original.role !== 'OWNER';
 
         // Якщо не можна змінювати — просто показуємо чіп
         if (!canChangeRole) {

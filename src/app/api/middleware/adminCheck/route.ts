@@ -18,12 +18,12 @@ export async function GET(req: NextRequest) {
     const payload: any = jwt.verify(token, SECRET);
     // console.log("[AdminCheck] Payload:", payload);
 
-    if (payload.role === "USER") {
-      // console.log("[AdminCheck] Role USER → logging out and redirect");
-      const res = NextResponse.json({ message: "Access denied" }, { status: 403 });
-      res.cookies.set("token", "", { maxAge: 0, path: "/" });
-      return res;
-    }
+    // if (payload.role === "USER") {
+    //   // console.log("[AdminCheck] Role USER → logging out and redirect");
+    //   const res = NextResponse.json({ message: "Access denied" }, { status: 403 });
+    //   res.cookies.set("token", "", { maxAge: 0, path: "/" });
+    //   return res;
+    // }
 
     // console.log("[AdminCheck] Role allowed → ADMIN/EDITOR");
     return NextResponse.json({ message: "Authorized", user: payload }, { status: 200 });

@@ -12,6 +12,7 @@ import { Contributor } from './ContributorCard';
 import dynamic from 'next/dynamic';
 import { Category, ParentProject, SocialLink } from './ParentProjectFormDialog';
 import { Switch, FormControlLabel } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
 
 const ReactEditor = dynamic(() => import('../../components/editor/ReactEditor'), { ssr: false });
 
@@ -147,9 +148,10 @@ export default function ChildProjectFormDialog({
   const [loadingParents, setLoadingParents] = useState(false);
   const [contributors, setContributors] = useState<Contributor[]>([]);
 
-  const selectedSub = subcategories.find((s) => s.id === Number(subcategoryId));
-  const title = selectedSub?.name ?? '';
+  const [title, setTitle] = useState('');
   const [fullData, setFullData] = useState<any>(null);
+  const [subcategoryInput, setSubcategoryInput] = useState('');
+  const [creatingSubcategory, setCreatingSubcategory] = useState(false);
   useEffect(() => {
     if (open) {
       setCategoryId(initial?.categoryId ?? '');
@@ -186,6 +188,8 @@ export default function ChildProjectFormDialog({
     if (!open) return;
     setCategoryId(fullData?.categoryId ?? initial?.categoryId ?? '');
     setSubcategoryId(fullData?.subcategoryId ?? initial?.subcategoryId ?? '');
+    setTitle(fullData?.subcategory?.name ?? initial?.title ?? '');
+    setSubcategoryInput(fullData?.subcategory?.name ?? initial?.title ?? '');
     setParentId(fullData?.parentId ?? initial?.parentId ?? '');
     setContent(fullData?.body ?? initial?.body ?? null);
     setLat(String(fullData?.location?.coordinates?.lat ?? initial?.lat ?? ''));
@@ -235,11 +239,36 @@ export default function ChildProjectFormDialog({
   const updateSocial = (idx: number, field: keyof SocialLink, val: string) =>
     setSocials((prev) => prev.map((s, i) => i === idx ? { ...s, [field]: val } : s));
 
+  const handleCreateSubcategory = async (name: string) => {
+    if (!categoryId) return;
+    setCreatingSubcategory(true);
+    try {
+      const res = await fetch('/api/subcategories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ name, categoryId: Number(categoryId) }),
+      });
+      if (!res.ok) throw new Error(`Error ${res.status}`);
+      const created = await res.json();
+      console.log('created subcategory:', created);
+      setSubcategories((prev) => [...prev, created]);
+      setSubcategoryId(created.id);
+      setSubcategoryInput(created.name);
+      setTitle(created.name); // ← додай
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setCreatingSubcategory(false);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!title.trim())   { setError("Title is required"); return; }
     if (!categoryId)     { setError('Please select a category'); return; }
-    if (!subcategoryId)  { setError('Please select a subcategory'); return; }
     if (!parentId)       { setError('Please select a parent project'); return; }
+    if (creatingSubcategory) return;
+    if (!subcategoryId || subcategoryId === -1) { setError('Please select a subcategory'); return; }
 
     // перевірка що підкатегорія не зайнята (лише при створенні)
     if (!isEdit && usedSubcategoryIds.includes(Number(subcategoryId))) {
@@ -291,8 +320,8 @@ export default function ChildProjectFormDialog({
         ...(imageId && { imageId }),
         ...(logoId && { logoId }),
         locationData: {
-          name:        title,
-          url: websiteUrl || `https://studio.pangeya.org.ua/public/Mfk/${selectedSub?.slug ?? subcategoryId}`,
+          name: title,
+          url: websiteUrl || `https://studio.pangeya.org.ua/public/Mfk/${subcategories.find(s => s.id === Number(subcategoryId))?.slug ?? subcategoryId}`,
           coordinates: {
             lat: parseFloat(lat) || 0,
             lng: parseFloat(lng) || 0,
@@ -326,7 +355,7 @@ export default function ChildProjectFormDialog({
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>{isEdit ? 'Edit Child Project' : 'Create Child Project'}</DialogTitle>
+      <DialogTitle>{isEdit ? 'Edit Project' : 'Create Project'}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} mt={1}>
 
@@ -346,24 +375,56 @@ export default function ChildProjectFormDialog({
           </TextField>
 
           {/* Підкатегорія */}
-          <TextField
-            select label="Subcategory *" value={subcategoryId}
-            onChange={(e) => setSubcategoryId(Number(e.target.value))}
-            fullWidth size="small"
-            disabled={!categoryId || loadingSubs}
-            helperText={!categoryId ? 'Please select a category first' : ''}
-          >
-            {subcategories.map((s) => (
-              <MenuItem
-                key={s.id}
-                value={s.id}
-                disabled={!isEdit && usedSubcategoryIds.includes(s.id)}
-              >
-                {s.name}
-                {!isEdit && usedSubcategoryIds.includes(s.id) ? ' (already used)' : ''}
-              </MenuItem>
-            ))}
-          </TextField>
+            <Autocomplete
+              freeSolo
+              options={subcategories}
+              getOptionLabel={(o) => typeof o === 'string' ? o : o.name}
+              getOptionDisabled={(o) => typeof o !== 'string' && !isEdit && usedSubcategoryIds.includes(o.id)}
+              value={subcategories.find((s) => s.id === Number(subcategoryId)) ?? null}
+              inputValue={subcategoryInput}
+              disabled={!categoryId || loadingSubs || creatingSubcategory}
+              onInputChange={(_, val) => setSubcategoryInput(val)}
+              onChange={(_, val) => {
+                if (!val) { setSubcategoryId(''); setTitle(''); return; }
+                if (typeof val === 'string') {
+                  handleCreateSubcategory(val.trim());
+                } else if (val.id !== -1) {
+                  setSubcategoryId(val.id);
+                  setSubcategoryInput(val.name);
+                  setTitle(val.name);
+                } else {
+                  handleCreateSubcategory(val.name.trim());
+                }
+              }}
+              filterOptions={(options, state) => {
+                const filtered = options.filter((o) =>
+                  o.name.toLowerCase().includes(state.inputValue.toLowerCase())
+                );
+                if (state.inputValue.trim() && !options.find((o) => o.name.toLowerCase() === state.inputValue.toLowerCase())) {
+                  filtered.push({ id: -1, name: `${state.inputValue}`, slug: '', categoryId: Number(categoryId) });
+                }
+                return filtered;
+              }}
+              renderOption={(props, option) => (
+                <MenuItem {...props} key={option.id} disabled={!isEdit && usedSubcategoryIds.includes(option.id)}>
+                  {option.id === -1
+                    ? <Typography color="primary">{option.name}</Typography>
+                    : <>
+                        {option.name}
+                        {!isEdit && usedSubcategoryIds.includes(option.id) ? ' (already used)' : ''}
+                      </>
+                  }
+                </MenuItem>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Subcategory *"
+                  size="small"
+                  helperText={!categoryId ? 'Please select a category first' : ''}
+                />
+              )}
+            />
 
           {/* Батьківський проект */}
           <TextField
@@ -495,8 +556,8 @@ export default function ChildProjectFormDialog({
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} disabled={saving}>Cancel</Button>
-        <Button variant="contained" onClick={handleSubmit} disabled={saving}>
-          {saving ? 'Saving...' : isEdit ? 'Save' : 'Create'}
+        <Button variant="contained" onClick={handleSubmit} disabled={saving || creatingSubcategory}>
+          {saving || creatingSubcategory ? 'Saving...' : isEdit ? 'Save' : 'Create'}
         </Button>
       </DialogActions>
     </Dialog>

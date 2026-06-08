@@ -15,8 +15,6 @@
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    const tab = Number(searchParams.get('tab') ?? '0');
-
     // --- категорії ---
     const [categories, setCategories] = useState<Category[]>([]);
     const [catTotal, setCatTotal] = useState(0);
@@ -44,11 +42,24 @@
     const limit   = searchParams.get('limit')  ?? '15';
 
     const updateParam = (key: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams.toString());
       params.set(key, value);
       if (key !== 'page') params.set('page', '1');
       router.push(`${pathname}?${params}`);
     };
+
+    const [me, setMe] = useState<{ id: number; role: string } | null>(null);
+
+    useEffect(() => {
+      fetch('/api/auth/me', { credentials: 'include' })
+        .then(r => r.json())
+        .then(setMe);
+    }, []);
+
+    const userRole = me?.role;
+
+    const isOwner = userRole === 'OWNER';
+    const tab = isOwner ? Number(searchParams.get('tab') ?? 0) : 1;
 
     // --- завантаження всіх категорій для селекту ---
     useEffect(() => {
@@ -160,20 +171,22 @@
             </Button>
           </Box>
 
-          <Tabs
-            value={tab}
-            onChange={(_, v) => {
-              const params = new URLSearchParams(searchParams.toString());
-              params.set('tab', String(v));
-              params.set('page', '1');
-              params.delete('search');
-              router.push(`${pathname}?${params}`);
-            }}
-            sx={{ mb: 3 }}
-          >
-            <Tab label="Categories" />
-            <Tab label="Subcategories" />
-          </Tabs>
+          {isOwner && (
+            <Tabs
+              value={tab}
+              onChange={(_, v) => {
+                const params = new URLSearchParams(searchParams.toString());
+                params.set('tab', String(v));
+                params.set('page', '1');
+                params.delete('search');
+                router.push(`${pathname}?${params}`);
+              }}
+              sx={{ mb: 3 }}
+            >
+              <Tab label="Categories" />
+              <Tab label="Subcategories" />
+            </Tabs>
+          )}
 
           {tab === 0 && (
             <CategoryTable

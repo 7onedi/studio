@@ -13,6 +13,13 @@ function CreateArticleContent() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [initialData, setInitialData] = useState<Partial<ArticleFormData> | undefined>(undefined);
+  const [me, setMe] = useState<{ id: number; role: string } | null>(null);
+
+  useEffect(() => {
+    fetch('/api/auth/me', { credentials: 'include' })
+      .then(r => r.json())
+      .then(setMe);
+  }, []);
 
   useEffect(() => {
     if (!duplicateSlug) return;
@@ -123,6 +130,7 @@ if (duplicateSlug && !initialData) return null;
       error={error}
       success={success}
       onCancel={() => router.back()}
+      userRole={me?.role}
     />
   );
 }

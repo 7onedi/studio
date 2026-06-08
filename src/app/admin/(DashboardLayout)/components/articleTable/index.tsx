@@ -251,7 +251,7 @@ const handleBulkDelete = async () => {
       cell: ({ getValue }) => (
         <Chip label={getValue() as string} size="small" variant="filled" sx={{ fontWeight: 600, fontSize: 11 }} />
       ),
-      size: 72,
+      size: 64,
     },
     {
       id: 'category',
@@ -277,36 +277,41 @@ const handleBulkDelete = async () => {
       id: 'actions',
       header: '',
         // в колонці actions:
-        cell: ({ row }) => (
-          <Stack direction="row" spacing={0.5}>
-            {userRole !== 'EDITOR' && (
+          cell: ({ row }) => (
+            <Stack direction="row" spacing={0.5}>
               <Tooltip title="Duplicate">
                 <IconButton size="small" onClick={() => handleDuplicate(row.original.slug)}>
                   <IconCopy size={16} />
                 </IconButton>
               </Tooltip>
-            )}
-            <Tooltip title="Edit">
-              <IconButton size="small" href={`/admin/production/articles/${row.original.slug}/edit`}>
-                <IconEdit size={16} />
-              </IconButton>
-            </Tooltip>
-            {(userRole === 'ADMIN' || userRole === 'OWNER') && (
-              <Tooltip title="Delete">
-                <IconButton size="small" color="error" onClick={() => handleDelete(row.original.id)}>
-                  <IconTrash size={16} />
-                </IconButton>
-              </Tooltip>
-            )}
-          </Stack>
-        ),
-      size: 120,
+              {(userRole === 'ADMIN' || userRole === 'OWNER' || userRole === 'EDITOR') && (
+                <Tooltip title="Edit">
+                  <IconButton size="small" href={`/admin/production/articles/${row.original.slug}/edit`}>
+                    <IconEdit size={16} />
+                  </IconButton>
+                </Tooltip>
+              )}
+              {(userRole === 'ADMIN' || userRole === 'OWNER') && (
+                <Tooltip title="Delete">
+                  <IconButton size="small" color="error" onClick={() => handleDelete(row.original.id)}>
+                    <IconTrash size={16} />
+                  </IconButton>
+                </Tooltip>
+              )}
+            </Stack>
+          ),
+      size: 30,
     },
   ];
 
+  const filteredColumns = columns.filter((col: any) => {
+    if (col.accessorKey === 'published' && userRole === 'USER') return false;
+    return true;
+  });
+
   const table = useReactTable({
     data: tableData,
-    columns,
+    columns: filteredColumns,
     state: { rowSelection },
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
@@ -338,7 +343,7 @@ const handleBulkDelete = async () => {
           sx={{ width: 260 }}
         />
 
-        {selectedCount > 0 && (
+        {selectedCount > 0 && (userRole === 'ADMIN' || userRole === 'OWNER') && (
           <Button variant="outlined" color="error" size="small" startIcon={<IconTrashX size={16} />} onClick={handleBulkDelete}>
             Delete selected ({selectedCount})
           </Button>
