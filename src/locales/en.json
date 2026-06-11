@@ -5,7 +5,14 @@
     "directions": "Directions",
     "places": "Places",
     "support": "Support",
-    "search": "Search"
+    "search": "Search",
+    "locale": {
+      "uk": "Ukraine",
+      "en": "Great Britain",
+      "lt": "Lithuania",
+      "pl": "Poland",
+      "md": "Moldova"
+    }
   },
   "views": {
     "article": {

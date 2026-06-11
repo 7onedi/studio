@@ -37,11 +37,11 @@ export default function Header() {
   ] as const;
 
   const languages: { label: string; flag: string; value: Locale }[] = [
-    { label: "Українська",    flag: "🇺🇦", value: "uk" },
-    { label: "English",       flag: "🇬🇧", value: "en" },
-    { label: "Lietuvių",      flag: "🇱🇹", value: "lt" },
-    { label: "Polski",        flag: "🇵🇱", value: "pl" },
-    { label: "Moldovenească", flag: "🇲🇩", value: "ro" },
+    { label: t("nav.locale.uk"), flag: "/flags/UA.svg", value: "uk" },
+    { label: t("nav.locale.en"), flag: "/flags/GB.svg", value: "en" },
+    { label: t("nav.locale.lt"), flag: "/flags/LT.svg", value: "lt" },
+    { label: t("nav.locale.pl"), flag: "/flags/PL.svg", value: "pl" },
+    { label: t("nav.locale.md"), flag: "/flags/RO.svg", value: "ro" },
   ];
 
   const iconNames = [
@@ -184,7 +184,7 @@ export default function Header() {
                   }}
                 >
                   <span className="text-button">{locale.toUpperCase()}</span>
-                  <span>{languages.find(l => l.value === locale)?.flag}</span>
+                  <span>{languages.find(l => l.value === locale)?.flag && <img src={languages.find(l => l.value === locale)?.flag} width={24} height={24} alt={languages.find(l => l.value === locale)?.label} style={{ borderRadius: 2 }} />}</span>
                   <span style={{
                     display: "inline-flex",
                     transition: "transform 250ms ease",
@@ -212,7 +212,7 @@ export default function Header() {
                       className="flex w-full items-center gap-3 px-4 py-2 text-sm text-main-text hover:text-main-blue transition-colors duration-150"
                     >
                       <span className="text-button">{lang.value.toUpperCase()}</span>
-                      <span>{lang.flag}</span>
+                      <span>{lang.flag && <img src={lang.flag} width={24} height={24} alt={lang.label} style={{ borderRadius: 2 }} />}</span>
                     </button>
                   ))}
                 </div>
@@ -291,7 +291,7 @@ export default function Header() {
                       ${locale === lang.value ? "text-main-blue font-bold" : "text-main-text"}`}
                   >
                     <span className="mr-1">{lang.value.toUpperCase()}</span>
-                    <span>{lang.flag}</span>
+                    <span>{lang.flag && <img src={lang.flag} width={24} height={24} alt={lang.label} style={{ borderRadius: 2 }} />}</span>
                   </button>
                 ))}
               </div>

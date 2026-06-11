@@ -71,21 +71,16 @@ export default function ChildProjectTable({
       ),
       size: 180,
     },
-    // {
-    //   accessorKey: 'published',
-    //   header: 'Status',
-    //   cell: ({ row }) => (
-    //     <Chip
-    //       label={row.original.published ? 'Published' : 'Draft'}
-    //       size="small"
-    //       color={row.original.published ? 'success' : 'default'}
-    //       variant="outlined"
-    //       onClick={() => onPublish(row.original.id, row.original.published ?? false)}
-    //       sx={{ cursor: 'pointer' }}
-    //     />
-    //   ),
-    //   size: 130,
-    // },
+    {
+      accessorKey: 'lang',
+      header: 'Locale',
+      cell: ({ getValue }) => (
+        <Typography variant="body2" color="text.secondary">
+          {getValue() as string}
+        </Typography>
+      ),
+      size: 130,
+    },
     {
       id: 'actions',
       header: '',
