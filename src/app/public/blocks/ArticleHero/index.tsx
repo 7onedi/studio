@@ -73,7 +73,7 @@ const tagTags = Array.from(
         {gradient && <div className={`absolute inset-0 ${gradient}`} />}
 
         <div className="absolute lg:bottom-8 inset-0 flex flex-col justify-end items-center px-8 lg:px-16">
-          <div className="lg:mb-8 text-white text-headline_1_mobile lg:text-headline_1">
+          <div className="lg:mb-8 text-white text-headline_5_mobile lg:text-headline_1">
             {title}
           </div>
 

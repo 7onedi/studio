@@ -5,7 +5,14 @@
     "directions": "Direcții",
     "places": "Locuri",
     "support": "Susține",
-    "search": "Căutare"
+    "search": "Căutare",
+    "locale": {
+      "uk": "Ucraina",
+      "en": "Marea Britanie",
+      "lt": "Lituania",
+      "pl": "Polonia",
+      "md": "Moldova"
+    }
   },
   "views": {
     "article": {

@@ -5,7 +5,14 @@
     "directions": "Kierunki",
     "places": "Miejsca",
     "support": "Wesprzyj",
-    "search": "Szukaj"
+    "search": "Szukaj",
+    "locale": {
+      "uk": "Ukraina",
+      "en": "Wielka Brytania",
+      "lt": "Litwa",
+      "pl": "Polska",
+      "md": "Mołdawia"
+    }
   },
   "views": {
     "article": {

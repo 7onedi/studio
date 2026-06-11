@@ -25,11 +25,11 @@ export interface Subcategory {
 }
 
 const LANGUAGES = [
-  {"value": "UK", "label": "Українська 🇺🇦"},
-  {"value": "EN", "label": "English 🇬🇧"},
-  {"value": "PL", "label": "Polski 🇵🇱"},
-  {"value": "LT", "label": "Lietuviškai 🇱🇹"},
-  {"value": "RO", "label": "Română 🇲🇩"}
+  { value: 'UK', icon: '/flags/UA.svg', label: 'Ukrainian' },
+  { value: 'EN', icon: '/flags/GB.svg', label: 'English' },
+  { value: 'PL', icon: '/flags/PL.svg', label: 'Polish' },
+  { value: 'LT', icon: '/flags/LT.svg', label: 'Lithuanian' },
+  { value: 'RO', icon: '/flags/RO.svg', label: 'Romanian' },
 ];
 
 export interface ChildProject {
@@ -474,9 +474,12 @@ export default function ChildProjectFormDialog({
             fullWidth size="small"
           >
             {LANGUAGES.map((l) => (
-              <MenuItem key={l.value} value={l.value}>
-                {l.label}
-              </MenuItem>
+                <MenuItem key={l.value} value={l.value}>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    {l.icon && <img src={l.icon} width={24} height={24} alt={l.label} style={{ borderRadius: 2 }} />}
+                    <span>{l.label}</span>
+                  </Box>
+                </MenuItem>
             ))}
           </TextField>
 

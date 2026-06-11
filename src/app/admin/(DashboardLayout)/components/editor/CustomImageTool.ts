@@ -93,6 +93,21 @@ export class CustomImageTool {
     container.innerHTML = "";
     container.style.cssText += "cursor:pointer;padding:32px;text-align:center;";
 
+    // Кнопка галереї
+    const galleryBtn = document.createElement("button");
+    galleryBtn.textContent = "📁 З галереї";
+    galleryBtn.style.cssText = "display:block;margin:0 auto 12px;padding:6px 16px;background:#1976d2;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer;";
+    galleryBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const picker = (window as any).__openMediaPicker;
+      if (!picker) return;
+      const item = await picker();
+      this.data.url = item.url;
+      this.config?.onUpload?.(item.id, item.url);
+      this._renderImage(container, item.url);
+    });
+
     const label = document.createElement("label");
     label.style.cssText = "cursor:pointer;display:block;";
     label.innerHTML = `<div style="font-size:32px">📷</div><div style="color:#6b7280;font-size:13px;margin-top:8px;">Клікни або перетягни зображення</div>`;
@@ -123,6 +138,7 @@ export class CustomImageTool {
     });
 
     label.appendChild(fileInput);
+    container.appendChild(galleryBtn);
     container.appendChild(label);
   }
 
@@ -161,3 +177,4 @@ export class CustomImageTool {
     return !!data.url;
   }
 }
+
