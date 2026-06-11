@@ -5,7 +5,14 @@
     "directions": "Kryptys",
     "places": "Vietos",
     "support": "Paremti",
-    "search": "Paieška"
+    "search": "Paieška",
+    "locale": {
+      "uk": "Ukraina",
+      "en": "Didžioji Britanija",
+      "lt": "Litwa",
+      "pl": "Polska",
+      "md": "Mołdawia"
+    }
   },
   "views": {
     "article": {
@@ -16,12 +23,12 @@
     "name_placeholder": "Vardas",
     "member_type_description": "Nurodykite, kokio bendradarbiavimo forma jus domina:",
     "success_message": "Dėkojame už jūsų paraišką! Susisieksime su jumis netrukus.",
-    "validation.name_required": "Введіть ваше імʼя",
-    "validation.email_required": "Введіть email",
-    "validation.email_invalid": "Невірний формат email",
-    "validation.email_taken": "Ця адреса вже зареєстрована",
-    "validation.role_required": "Оберіть тип участі",
-    "validation.server_error": "Щось пішло не так, спробуйте пізніше",
+    "validation.name_required": "Įveskite savo vardą",
+    "validation.email_required": "Įveskite el. pašto adresą",
+    "validation.email_invalid": "Neteisingas el. pašto formatas",
+    "validation.email_taken": "Šis el. pašto adresas jau naudojamas",
+    "validation.role_required": "Pasirinkite dalyvavimo tipą",
+    "validation.server_error": "Kažkas nepavyko, pabandykite vėliau",
     "membership_types": {
       "member": "Narys",
       "donor": "Rėmėjas",

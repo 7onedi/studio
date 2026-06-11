@@ -17,11 +17,11 @@ const ReactEditor = dynamic(() => import("../editor/ReactEditor"), {
 });
 
 const LANGUAGES = [
-  {"value": "UK", "label": "Українська 🇺🇦"},
-  {"value": "EN", "label": "English 🇬🇧"},
-  {"value": "PL", "label": "Polski 🇵🇱"},
-  {"value": "LT", "label": "Lietuviškai 🇱🇹"},
-  {"value": "RO", "label": "Română 🇲🇩"}
+  { code: 'UK', icon: '/flags/UA.svg', label: 'Ukrainian' },
+  { code: 'EN', icon: '/flags/GB.svg', label: 'English' },
+  { code: 'PL', icon: '/flags/PL.svg', label: 'Polish' },
+  { code: 'LT', icon: '/flags/LT.svg', label: 'Lithuanian' },
+  { code: 'RO', icon: '/flags/RO.svg', label: 'Romanian' },
 ];
 
 export interface ArticleFormData {
@@ -385,7 +385,14 @@ const handleSubmit = () => {
           <FormControl fullWidth sx={{ mb: 3 }}>
             <InputLabel>Language</InputLabel>
             <Select value={lang} label="Language" onChange={(e) => setLang(e.target.value)}>
-              {LANGUAGES.map((l) => <MenuItem key={l.value} value={l.value}>{l.label}</MenuItem>)}
+              {LANGUAGES.map((l) => (
+                <MenuItem key={l.code} value={l.code}>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    {l.icon && <img src={l.icon} width={24} height={24} alt={l.label} style={{ borderRadius: 2 }} />}
+                    <span>{l.label}</span>
+                  </Box>
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
 

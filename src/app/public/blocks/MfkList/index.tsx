@@ -23,14 +23,6 @@ interface MfkListProps {
 
 const ROW_PATTERN = [4, 3, 4, 3, 4];
 
-const LANGS = [
-  { code: "UK", flag: "🇺🇦", label: "Українська" },
-  { code: "EN", flag: "🇬🇧", label: "English" },
-  { code: "PL", flag: "🇵🇱", label: "Polski" },
-  { code: "LT", flag: "🇱🇹", label: "Lietuviškai" },
-  { code: "RO", flag: "🇲🇩", label: "Română" },
-];
-
 function splitIntoRows<T>(items: T[]) {
   const rows: T[][] = [];
   let index = 0;
@@ -43,8 +35,18 @@ function splitIntoRows<T>(items: T[]) {
 }
 
 export default function MfkList({ markers, id }: MfkListProps) {
-  const { locale } = useLanguage();
-  const [selectedLangs, setSelectedLangs] = useState<string[]>([locale.toUpperCase()]);
+  const { t } = useLanguage();
+
+const LANGS = [
+  { code: 'UK', icon: '/flags/UA.svg', label: t("nav.locale.uk") },
+  // { code: 'EN', icon: '/flags/GB.svg', label: t("nav.locale.en") },
+  { code: 'PL', icon: '/flags/PL.svg', label: t("nav.locale.pl") },
+  { code: 'LT', icon: '/flags/LT.svg', label: t("nav.locale.lt") },
+  { code: 'RO', icon: '/flags/RO.svg', label: t("nav.locale.md") },
+];
+  const [selectedLangs, setSelectedLangs] = useState<string[]>(
+    LANGS.map((l) => l.code)
+  );
 
   const toggleLang = (code: string) => {
     setSelectedLangs((prev) => {
@@ -68,7 +70,7 @@ export default function MfkList({ markers, id }: MfkListProps) {
   const rows = splitIntoRows(items);
 
   const Card = (item: PopupContent) => {
-    const flag = LANGS.find((l) => l.code === item.lang)?.flag;
+    const icon = LANGS.find((l) => l.code === item.lang)?.icon;
     return (
       <div className="relative group">
         <div className={`bg-transparent overflow-hidden rounded-t-2xl border-b-2 ${id === "#mfk" ? "border-main-amarant" : "border-none"}`}>
@@ -79,10 +81,9 @@ export default function MfkList({ markers, id }: MfkListProps) {
               fill
               className={`${!item.zoom ? "object-contain" : "object-cover"} transition-transform duration-500 group-hover:scale-105`}
             />
-            {/* прапор поверх логотипу в нижньому правому куті */}
-            {flag && (
+            {icon && (
               <div className="absolute bottom-2 right-2 text-2xl leading-none drop-shadow-md">
-                {flag}
+                <img src={icon} width={36} height={36} alt={item.lang} style={{ borderRadius: 2 }} />
               </div>
             )}
           </div>
@@ -99,7 +100,7 @@ export default function MfkList({ markers, id }: MfkListProps) {
     <section className="flex flex-col gap-10" id="mfkList">
 
       {/* СВІТЧЕР МОВ */}
-      <div className="flex justify-center gap-3 flex-wrap">
+      <div className="flex justify-center gap-6 flex-wrap">
         {LANGS.map((l) => {
           const isActive = selectedLangs.includes(l.code);
           return (
@@ -112,7 +113,9 @@ export default function MfkList({ markers, id }: MfkListProps) {
                   : "opacity-40 grayscale hover:opacity-60 hover:grayscale-0"
               }`}
             >
-              <span className="text-2xl">{l.flag}</span>
+              {l.icon && (
+                <img src={l.icon} width={36} height={36} alt={l.label} style={{ borderRadius: 2 }} />
+              )}
               <span className="text-xs font-medium">{l.label}</span>
             </button>
           );

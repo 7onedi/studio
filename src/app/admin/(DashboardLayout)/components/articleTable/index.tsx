@@ -300,7 +300,7 @@ const handleBulkDelete = async () => {
               )}
             </Stack>
           ),
-      size: 30,
+      size: (userRole === 'ADMIN' || userRole === 'OWNER') ? 100 : 30,
     },
   ];
 

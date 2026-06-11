@@ -2,10 +2,19 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, Tabs, Tab } from '@mui/material';
 import { IconPlus } from '@tabler/icons-react';
 import PageContainer from '../../components/container/PageContainer';
 import ArticleTable, { Article } from '../../components/articleTable';
+
+const LANGS = [
+  { code: '', icon: null, label: 'All' },
+  { code: 'UK', icon: '/flags/UA.svg', label: 'Ukrainian' },
+  { code: 'EN', icon: '/flags/GB.svg', label: 'English' },
+  { code: 'PL', icon: '/flags/PL.svg', label: 'Polish' },
+  { code: 'LT', icon: '/flags/LT.svg', label: 'Lithuanian' },
+  { code: 'RO', icon: '/flags/RO.svg', label: 'Romanian' },
+];
 
 function ArticlesContent() {
   const router = useRouter();
@@ -16,25 +25,27 @@ function ArticlesContent() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [me, setMe] = useState<{ id: number; role: string } | null>(null);
-  
-    useEffect(() => {
-      fetch('/api/auth/me', { credentials: 'include' })
-        .then(r => r.json())
-        .then(setMe);
-    }, []);
+
+  useEffect(() => {
+    fetch('/api/auth/me', { credentials: 'include' })
+      .then(r => r.json())
+      .then(setMe);
+  }, []);
 
   const page = searchParams.get('page') ?? '1';
   const search = searchParams.get('search') ?? '';
   const sortBy = searchParams.get('sortBy') ?? 'createdAt';
   const order = searchParams.get('order') ?? 'desc';
   const limit = searchParams.get('limit') ?? '15';
+  const lang = searchParams.get('lang') ?? '';
 
   useEffect(() => {
     if (!me) return;
-    
+
     setLoading(true);
     const params = new URLSearchParams({ page, limit, sortBy, order });
     if (search) params.set('title', search);
+    if (lang) params.set('lang', lang);
     if (me.role === 'USER') params.set('authorId', String(me.id));
 
     fetch(`/api/articles/search?${params}`)
@@ -45,8 +56,7 @@ function ArticlesContent() {
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [page, limit, search, sortBy, order, me]);
-  console.log('articles:', articles);
+  }, [page, limit, search, sortBy, order, lang, me]);
 
   const updateParam = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -70,6 +80,32 @@ function ArticlesContent() {
             New Article
           </Button>
         </Box>
+
+        <Tabs
+          value={lang}
+          onChange={(_, v) => {
+            const params = new URLSearchParams(searchParams.toString());
+            params.set('lang', v);
+            params.set('page', '1');
+            router.push(`${pathname}?${params}`);
+          }}
+          sx={{ mb: 2 }}
+        >
+          {LANGS.map((l) => (
+            <Tab
+              key={l.code}
+              value={l.code}
+              label={
+                <Box display="flex" alignItems="center" gap={0.75}>
+                  {l.icon && (
+                    <img src={l.icon} width={24} height={24} alt={l.label} style={{ borderRadius: 2 }} />
+                  )}
+                  {l.label}
+                </Box>
+              }
+            />
+          ))}
+        </Tabs>
 
         <ArticleTable
           data={articles}

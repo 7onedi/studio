@@ -1,7 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FontSizeTool } from "./FontSizeTool";
 import { TextColorTool, BgColorTool } from "./ColorTool";
 import { CustomImageTool } from "./CustomImageTool";
+import MediaPickerDialog, { MediaItem } from '../Mediapickerdialog'; 
+import { CustomGalleryTool } from "./CustomGalleryTool";
+import { CustomImageBlockTool } from "./CustomImageBlockTool";
 
 interface ReactEditorProps {
   onChange: (data: any) => void;
@@ -11,6 +14,16 @@ interface ReactEditorProps {
 
 
 export default function ReactEditor({ onChange, initialData, onImageUpload }: ReactEditorProps) {
+  const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
+  const mediaPickerResolveRef = useRef<((item: MediaItem) => void) | null>(null);
+
+  useEffect(() => {
+    (window as any).__openMediaPicker = () => new Promise<MediaItem>((resolve) => {
+      mediaPickerResolveRef.current = resolve;
+      setMediaPickerOpen(true);
+    });
+    return () => { delete (window as any).__openMediaPicker; };
+  }, []);
   const editorRef = useRef<any>(null);
   const onChangeRef = useRef(onChange);
   const onImageUploadRef = useRef(onImageUpload);
@@ -76,64 +89,32 @@ export default function ReactEditor({ onChange, initialData, onImageUpload }: Re
           embed: Embed,
           linkTool: LinkTool,
           image: {
-            class: ImageTool,
+            class: CustomImageBlockTool,
             config: {
+              onUpload: (id: number, url: string) => {
+                onImageUploadRef.current?.(id, url);
+              },
               uploader: {
                 async uploadByFile(file: File) {
                   const formData = new FormData();
                   formData.append("file", file);
-
-                  const res = await fetch("/api/media", {
-                    method: "POST",
-                    body: formData,
-                    credentials: "include",
-                  });
-
+                  const res = await fetch("/api/media", { method: "POST", body: formData, credentials: "include" });
                   if (!res.ok) return { success: 0 };
-
                   const data = await res.json();
-                  
                   onImageUploadRef.current?.(data.id, data.url);
-
-                  return {
-                    success: 1,
-                    file: { url: data.url },
-                  };
+                  return { success: 1, file: { url: data.url } };
                 },
-
                 async uploadByUrl(url: string) {
-                  return {
-                    success: 1,
-                    file: { url },
-                  };
+                  return { success: 1, file: { url } };
                 },
               },
             },
           },
           gallery: {
-            class: Gallery,
+            class: CustomGalleryTool,
             config: {
-              uploader: {
-                async uploadByFile(file: File) {
-                  const formData = new FormData();
-                  formData.append("file", file);
-
-                  const res = await fetch("/api/media", {
-                    method: "POST",
-                    body: formData,
-                    credentials: "include",
-                  });
-
-                  if (!res.ok) return { success: 0 };
-
-                  const data = await res.json();
-                  onImageUploadRef.current?.(data.id, data.url);
-
-                  return {
-                    success: 1,
-                    file: { url: data.url },
-                  };
-                },
+              onUpload: (id: number, url: string) => {
+                onImageUploadRef.current?.(id, url);
               },
             },
           },
@@ -168,5 +149,19 @@ export default function ReactEditor({ onChange, initialData, onImageUpload }: Re
     };
   }, []);
 
-  return <div id="editorjs" />;
+  return (
+    <>
+      <div id="editorjs" />
+      <MediaPickerDialog
+        open={mediaPickerOpen}
+        onClose={() => setMediaPickerOpen(false)}
+        selected={null}
+        onSelect={(item) => {
+          setMediaPickerOpen(false);
+          mediaPickerResolveRef.current?.(item);
+          mediaPickerResolveRef.current = null;
+        }}
+      />
+    </>
+  );
 }

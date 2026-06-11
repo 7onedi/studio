@@ -191,22 +191,29 @@ const { t, locale } = useLanguage();
                <div className="absolute inset-0 flex flex-col justify-between py-8 lg:py-10">
   
                 {/* Контент вирівняний по container */}
-                  <div className="container h-full flex flex-col justify-between items-start lg:items-stretch"> 
-                    
-                    <div className={`mt-36 lg:mt-36 text-white text-headline_1_mobile ${s.textStyle} max-w-[600px] lg:pt-16 text-left`}>
-                      {s.title.length > 128 ? s.title.slice(0, 128) + '…' : s.title}
-                    </div>
+                <div className="container h-full flex flex-col justify-between items-start lg:items-stretch"> 
+                  
+                  {/* Заголовок — тільки десктоп, зверху */}
+                  <div className={`hidden lg:block mt-36 text-white text-headline_2 ${s.textStyle} max-w-[600px] lg:pt-16 text-left`}>
+                    {s.title.length > 128 ? s.title.slice(0, 128) + '…' : s.title}
+                  </div>
 
-                    <div className="flex items-end lg:justify-between pb-4 lg:mt-0 mt-auto">
-                      <div className="w-full flex lg:block justify-center">
-                        <Link href={`/public/Article/${s.slug}`}>
-                          <Button variant="secondary-alt">
-                            <span className="mr-3">{t("views.article.read_more")}</span>
-                            <SvgIcon name="right" size={24} color="white" />
-                          </Button>
-                        </Link>
+                  <div className="flex items-end lg:justify-between pb-4 lg:mt-0 mt-auto">
+                    <div className="w-full flex flex-col lg:block justify-center">
+                      
+                      {/* Заголовок — тільки мобільний, над кнопкою */}
+                      <div className={`mb-8 lg:hidden text-white text-headline_2_mobile ${s.textStyle} max-w-[600px] text-left`}>
+                        {s.title.length > 128 ? s.title.slice(0, 128) + '…' : s.title}
                       </div>
+
+                      <Link href={`/public/Article/${s.slug}`}>
+                        <Button variant="secondary-alt">
+                          <span className="mr-3">{t("views.article.read_more")}</span>
+                          <SvgIcon name="right" size={24} color="white" />
+                        </Button>
+                      </Link>
                     </div>
+                  </div>
 
                     {/* Dots навігація */}
                     <div className="flex justify-between">
