@@ -42,7 +42,9 @@ class PartnerService extends BaseService {
     if (data.imageId) {
       const existing = await partnerRepository.findById(id);
       if (existing?.imageId && existing.imageId !== data.imageId) {
-        await mediaService.delete(user, existing.imageId);
+        try {
+          await mediaService.delete(user, existing.imageId);
+        } catch {}
       }
     }
 
