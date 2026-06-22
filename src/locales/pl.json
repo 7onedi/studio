@@ -53,7 +53,7 @@
     "directions": "Kierunki",
     "places": "Miejsca"
   },
-  "copyright": "© 2025 Wszelkie prawa zastrzeżone.",
+  "copyright": "© 2026 Wszelkie prawa zastrzeżone.",
   "pages": {
     "category_title": {
       "title": "Ciekawe artykuły o projekcie"
@@ -62,5 +62,9 @@
       "description_title": "O projekcie",
       "activity": "Działalność #Countrysidestudio"
     }
-  } 
+  },
+  "article": {
+    "share": "Udostępnij wiadomość",
+    "author": "Autor"
+  }
 }

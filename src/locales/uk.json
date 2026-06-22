@@ -53,7 +53,7 @@
     "directions": "Напрямки",
     "places": "Місця"
   },
-  "copyright": "© 2025 Всі права захищено.",
+  "copyright": "© 2026 Всі права захищено.",
   "pages": {
     "category_title": {
       "title": "Цікаві статті про проєкт"
@@ -62,5 +62,9 @@
       "description_title": "Про проєкт",
       "activity": "Діяльність #Countrysidestudio"
     }
-  } 
+  },
+  "article": {
+    "share": "Поділитись новиною",
+    "author": "Автор"
+  }
 }

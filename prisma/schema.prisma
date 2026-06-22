@@ -169,6 +169,10 @@ model StudioProject {
 
   title       String
   body        Json?
+  body_en     Json?
+  body_pl     Json?
+  body_lt     Json?
+  body_ro     Json?
   description String?
   imageId     Int?
   image       Media? @relation("ProjectImage", fields: [imageId], references: [id])
