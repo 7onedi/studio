@@ -3,7 +3,7 @@ import Image from "next/image";
 import { TagButton } from "@/app/public/blocks/BlogSlider/BlogCard";
 import { Avatar } from "@mui/material";
 import { useState } from "react";
-
+import { useLanguage } from "@/app/providers/LanguageProvider";
 
 type ArticleHeroProps = {
   title: string;
@@ -31,25 +31,33 @@ export default function ArticleHero({
   gradient,
   creator = { name: "", src: "" },
 }: ArticleHeroProps) {
-const [imageLoaded, setImageLoaded] = useState(false);
+  const { t, locale } = useLanguage();
+  const [imageLoaded, setImageLoaded] = useState(false);
 
-const categoryTags = Array.from(
-  new Set([category, subCategory].filter(Boolean))
-) as string[];
+  const categoryTags = Array.from(
+    new Set([category, subCategory].filter(Boolean))
+  ) as string[];
 
-const tagTags = Array.from(
-  new Set([...(tags ?? [])].filter(Boolean))
-) as string[];
+  const tagTags = Array.from(
+    new Set([...(tags ?? [])].filter(Boolean))
+  ) as string[];
 
   const formattedDate = formatDate(date ?? "");
 
-    function formatDate(dateStr: string): string {
+  function formatDate(dateStr: string): string {
     if (!dateStr) return "";
     const date = new Date(dateStr);
-    return date.toLocaleDateString("uk-UA", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
+    const localeMap: Record<string, string> = {
+      uk: 'uk-UA',
+      en: 'en-GB',
+      pl: 'pl-PL',
+      lt: 'lt-LT',
+      ro: 'ro-RO',
+    };
+    return date.toLocaleDateString(localeMap[locale] ?? 'uk-UA', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
     });
   }
 
@@ -96,7 +104,7 @@ const tagTags = Array.from(
                 )}
               </div>
               <div className="text-Headline_5_mobile lg:text-Headline_5 text-white text h-auto">
-                <span>Автор:</span>
+                <span>{t("article.author")}:</span>
                 <div>
                   <b>{creator?.name}</b>
                 </div>
@@ -177,7 +185,7 @@ const tagTags = Array.from(
           </div>
 
           <div className="text-Headline_5_mobile lg:text-Headline_5 h-auto">
-            <b>Автор:</b>
+            <b>{t("article.author")}:</b>
             <div>
               <b>{creator?.name}</b>
             </div>

@@ -1,9 +1,7 @@
-import CategoryTitle from "@/app/public/blocks/CategoryTitle";
+import CategoryTitleWrapper from "@components/CategoryTitleWrapper";
 import { categories } from "@/app/public/blocks/Categories/categories.data";
 import BlogSlider from "../blocks/BlogSlider";
 import { getParentProject } from '@lib/getProjects';
-
-const project = categories.find(c => c.id === 4)!;
 
 export const dynamic = 'force-dynamic';
 
@@ -14,13 +12,11 @@ export default async function Home() {
   return (
     <div>
       <div className="mt-4 lg:mt-0 px-4 lg:px-0">
-        <CategoryTitle
-          image={parent?.image?.url ?? project.image}
-          pattern={project.pattern}
-          gradient={project.gradient}
-          hoverGradient={project.hoverGradient}
-          title={parent?.title ?? project.title}
-          description={parent?.body}
+        <CategoryTitleWrapper
+          projectId={1}
+          image={parent?.image?.url}
+          title={parent?.title}
+          parent={parent}
         />
       </div>
       <div className="my-8 flex justify-center">

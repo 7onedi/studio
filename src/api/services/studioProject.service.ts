@@ -32,6 +32,10 @@ import {
     const project = await this.repository.create({
       title: data.title,
       body: data.body,
+      body_en: data.body_en,
+      body_pl: data.body_pl,
+      body_lt: data.body_lt,
+      body_ro: data.body_ro,
       description: data.description,
       category: { connect: { id: data.categoryId } },
       subcategory: data.subcategoryId

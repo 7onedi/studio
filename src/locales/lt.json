@@ -53,7 +53,7 @@
     "directions": "Kryptys",
     "places": "Vietos"
   },
-  "copyright": "© 2025 Visos teisės saugomos.",
+  "copyright": "© 2026 Visos teisės saugomos.",
   "pages": {
     "category_title": {
       "title": "Įdomūs straipsniai apie projektą"
@@ -62,5 +62,9 @@
       "description_title": "Apie projektą",
       "activity": "#Countrysidestudio veikla"
     }    
+  },
+  "article": {
+    "share": "Podėliotis naujieną",
+    "author": "Autorius"
   }
 }

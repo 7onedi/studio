@@ -3,64 +3,27 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import type { FC } from "react";
 import { useLanguage } from "@/app/providers/LanguageProvider";
+import { getreviewsData } from "@/locales/reviews";
 
-// --- ДАНІ ДЛЯ ВІДГУКІВ ---
-const reviews = [
-  {
-    name: "Ярослав Геращенко",
-    title: "Програмний координатор",
-    text: '"Працювати із молоддю за темою аматорського медіа - це дуже захоплююче. Адже молодь дуже креативна і має великий запас ентузіазму. Я, як молодіжний працівник, часто заряджаюсь від них в процесі творіння."',
-    profileImg: "/review/profile2.jpg",
-  },
-  {
-    name: "Ася Козлова",
-    title: "Менеджерка проєкту #countrysidestudio",
-    text: '"Мені подобається проєкт #countrysidestudio тому, що він об’єднує молодь, якій важливий  зміст, розвиток і бажання досліджувати. Саме тому я ціную #countrysidestudio і те, що тут створюється"',
-    profileImg: "/review/profile3.jpg", // <-- ТУТ ПОРОЖНІЙ РЯДОК
-  },
-  {
-    name: "Jules Marquet",
-    title: "Volunteer MOZAIKA author",
-    text: '"Before arriving in Ukraine I had little knowledge about the traditional art and history of this country. However, I even couldn’t imagine that Ukrainian culture is so unique and has very deep historical roots. Furthermore, I was astonished how proud Ukrainians are of their traditions. They do know and try to save them."',
-    profileImg: "/review/profile1.jpg", // <-- ТУТ ПОРОЖНІЙ РЯДОК
-  },
-  {
-    name: "Вероніка Шевчук",
-    title: "Учасниця проекту #Countrysidestudio",
-    text: '""Проєкт #countrysidestudio є неперевершеним досвідом для мене. Цей проєкт показав, як можна розвиватись та навчатись з користю. Це надало мотивацію мені доєднувати інших та розвивати нашу молодь. Саме тому я рекомендую обирати вам #countrysidestudio !""',
-    profileImg: "/review/profile4.jpg", // <-- ТУТ ПОРОЖНІЙ РЯДОК
-  },
-];
-
-// --- КОМПОНЕНТ ЗАГЛУШКИ ЗОБРАЖЕННЯ (Спрощена версія) ---
 interface ImageProps {
     src: string;
-    alt: string; // Використовуємо alt для генерації ініціалів
+    alt: string;
     className?: string;
 }
 const Image: FC<ImageProps> = (props) => {
-    // 1. Перевіряємо, чи є валідний шлях до зображення
     const isSrcMissing = !props.src || props.src.trim() === "";
-    
-    // 2. Логіка для генерації ініціалів (до двох літер, наприклад: В.О. або М.К.)
     const nameParts = props.alt.split(' ');
     const initials = nameParts.length > 1 
         ? (nameParts[0][0] + nameParts[1][0]).toUpperCase() 
         : (nameParts[0][0] || 'P').toUpperCase();
-    
-    // 3. Створення URL для плейсхолдера
-    // Використовуємо розмір 300x400, щоб відповідати aspect-[3/4]
     const placeholderUrl = `https://placehold.co/300x400/3B82F6/ffffff?text=${initials}`;
 
-    // Якщо шлях відсутній, одразу відображаємо плейсхолдер.
-    // Це вирішує проблему з src=""
     if (isSrcMissing) {
          return (
             <img
                 src={placeholderUrl} 
                 alt={props.alt}
                 className={`${props.className} object-cover`}
-                // Встановлюємо alt, оскільки це вже фінальне зображення
                 aria-label={`Аватар: ${props.alt}`}
             />
         );
@@ -72,7 +35,6 @@ const Image: FC<ImageProps> = (props) => {
             alt={props.alt}
             className={`${props.className} object-cover`}
             onError={(e) => {
-                // У разі помилки завантаження (404), замінюємо на плейсхолдер з ініціалами
                 (e.target as HTMLImageElement).src = placeholderUrl;
             }}
         />
@@ -80,7 +42,6 @@ const Image: FC<ImageProps> = (props) => {
 };
 
 
-// --- КОМПОНЕНТ НАВІГАЦІЙНОЇ СТРІЛКИ ---
 interface ArrowProps {
   onClick: () => void;
   direction: "left" | "right";
@@ -129,7 +90,8 @@ const Arrow: FC<ArrowProps> = ({ onClick, direction, className = "" }) => (
 
 // --- ГОЛОВНИЙ КОМПОНЕНТ ВІДГУКІВ ---
 export default function ReviewsSlider() {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  const reviews = getreviewsData(locale);
   const [currentSlide, setCurrentSlide] = useState(0);
   const reviewsCount = reviews.length;
 
@@ -161,8 +123,7 @@ export default function ReviewsSlider() {
   return () => clearInterval(timer);
 }, [nextSlide]);
 
-  if (!currentReview) return null; // Запобігання помилкам, якщо немає відгуків
-
+  if (!currentReview) return null;
   const touchStartX = useRef<number>(0);
   const touchEndX = useRef<number>(0);
 
@@ -174,11 +135,11 @@ export default function ReviewsSlider() {
     touchEndX.current = e.changedTouches[0].clientX;
     const diff = touchStartX.current - touchEndX.current;
     
-    if (Math.abs(diff) > 50) { // мінімум 50px щоб не спрацьовував випадково
+    if (Math.abs(diff) > 50) {
       if (diff > 0) {
-        nextSlide(); // свайп вліво → наступний
+        nextSlide();
       } else {
-        prevSlide(); // свайп вправо → попередній
+        prevSlide();
       }
     }
   };
