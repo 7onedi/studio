@@ -1,5 +1,5 @@
 // Youthinsight page
-import CategoryTitleWrapper from "./CategoryTitleWrapper";
+import CategoryTitleWrapper from "@components/CategoryTitleWrapper";
 import MfkList from "@/app/public/blocks/MfkList";
 import BlogSlider from "@/app/public/blocks/BlogSlider";
 import { getParentProject } from '@lib/getProjects';
@@ -23,10 +23,10 @@ export default async function Home() {
     <div>
       <div className="mt-4 lg:mt-0 px-4 lg:px-0">
         <CategoryTitleWrapper
-          projectId={2}
+          projectId={1}
           image={parent?.image?.url}
           title={parent?.title}
-          description={parent?.body}
+          parent={parent}
         />
       </div>
       <div className="my-12 lg:mt-16 px-4 lg:px-0">

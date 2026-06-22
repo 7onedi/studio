@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
   Button, TextField, Stack, Typography, MenuItem,
-  Box, IconButton, Divider,
+  Box, IconButton, Divider, Tabs, Tab,
 } from '@mui/material';
 import { IconTrash, IconPlus, IconMinus } from '@tabler/icons-react';
 import dynamic from 'next/dynamic';
@@ -34,6 +34,10 @@ export interface ParentProjectFormData {
   title: string;
   categoryId: number | '';
   body: unknown;
+  body_en: unknown;
+  body_pl: unknown;
+  body_lt: unknown;
+  body_ro: unknown;
   lat: string;
   lng: string;
   websiteUrl: string;
@@ -41,6 +45,14 @@ export interface ParentProjectFormData {
 }
 
 const PLATFORMS = ['YOUTUBE', 'INSTAGRAM', 'FACEBOOK', 'TIKTOK', 'TWITTER'];
+
+const LANGS = [
+  { code: 'UK', icon: '/flags/UA.svg', label: 'Ukrainian' },
+  { code: 'EN', icon: '/flags/GB.svg', label: 'English' },
+  { code: 'PL', icon: '/flags/PL.svg', label: 'Polish' },
+  { code: 'LT', icon: '/flags/LT.svg', label: 'Lithuanian' },
+  { code: 'RO', icon: '/flags/RO.svg', label: 'Romanian' },
+];
 
 interface Props {
   open: boolean;
@@ -50,75 +62,23 @@ interface Props {
   onSaved: (project: ParentProject) => void;
 }
 
-function ImageUploadBox({
-  previewSrc, existingUrl, onUpload, onRemove,
-}: {
-  previewSrc: string | null;
-  existingUrl?: string | null; 
-  onUpload: (base64: string) => void;
-  onRemove: () => void;
-}) {
-  const src = previewSrc ?? existingUrl ?? null;
-
-  return (
-    <Box>
-      <Typography variant="body2" color="text.secondary" mb={1}>Банер</Typography>
-      <Box
-        sx={{
-          border: '2px dashed',
-          borderColor: previewSrc ? 'primary.main' : 'grey.300',
-          borderRadius: 2, p: 2, textAlign: 'center',
-          cursor: 'pointer', position: 'relative',
-          minHeight: 120, display: 'flex',
-          alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
-        }}
-        onClick={() => document.getElementById('parent-project-image')?.click()}
-      >
-        {src ? (
-          <>
-            <Box component="img" src={src}
-              sx={{ maxWidth: '100%', maxHeight: 160, borderRadius: 1 }} />
-            <Button size="small" color="error" variant="contained"
-              sx={{ position: 'absolute', top: 8, right: 8 }}
-              onClick={(e) => { e.stopPropagation(); onRemove(); }}>
-              Видалити
-            </Button>
-          </>
-        ) : (
-          <Typography color="text.secondary" fontSize={14}>
-            Натисніть щоб завантажити
-          </Typography>
-        )}
-      </Box>
-      <input id="parent-project-image" type="file" accept="image/*"
-        style={{ display: 'none' }}
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (!file) return;
-          const reader = new FileReader();
-          reader.onload = () => onUpload(reader.result as string);
-          reader.readAsDataURL(file);
-          e.target.value = '';
-        }}
-      />
-    </Box>
-  );
-}
-
 export default function ParentProjectFormDialog({
   open, initial, categories, onClose, onSaved,
 }: Props) {
   const isEdit = Boolean(initial?.id);
 
   const [categoryId, setCategoryId] = useState<number | ''>('');
+  const [langTab, setLangTab]       = useState('UK');
   const [content, setContent]       = useState<unknown>(null);
+  const [content_en, setContent_en] = useState<unknown>(null);
+  const [content_pl, setContent_pl] = useState<unknown>(null);
+  const [content_lt, setContent_lt] = useState<unknown>(null);
+  const [content_ro, setContent_ro] = useState<unknown>(null);
   const [fullData, setFullData]     = useState<any>(null);
-  const [imageRemoved, setImageRemoved] = useState(false);
   const [lat, setLat]               = useState('');
-  const [zoom, setZoom] = useState<number>(14);
+  const [zoom, setZoom]             = useState<number>(14);
   const [lng, setLng]               = useState('');
   const [websiteUrl, setWebsiteUrl] = useState('');
-  
   const [socials, setSocials]       = useState<SocialLink[]>([{ platform: 'INSTAGRAM', url: '' }]);
   const [saving, setSaving]         = useState(false);
   const [error, setError]           = useState('');
@@ -130,73 +90,75 @@ export default function ParentProjectFormDialog({
     if (open) {
       setCategoryId(initial?.categoryId ?? '');
       setContent(initial?.body ?? null);
+      setContent_en(initial?.body_en ?? null);
+      setContent_pl(initial?.body_pl ?? null);
+      setContent_lt(initial?.body_lt ?? null);
+      setContent_ro(initial?.body_ro ?? null);
       setLat(initial?.lat ?? '');
       setLng(initial?.lng ?? '');
       setZoom((initial?.body as any)?.zoom ?? 14);
       setWebsiteUrl(initial?.websiteUrl ?? '');
       setSocials(initial?.socialLinks?.length ? initial.socialLinks : [{ platform: 'INSTAGRAM', url: '' }]);
+      setLangTab('UK');
       setError('');
     }
   }, [open, initial]);
 
   useEffect(() => {
-    if (!open || !initial?.id) {
-      setFullData(null);
-      return;
-    }
+    if (!open || !initial?.id) { setFullData(null); return; }
     fetch(`/api/studioprojects/${initial.id}`)
-        .then((r) => r.json())
-        .then((d) => setFullData(d))
-        .catch(console.error);
-    }, [open, initial?.id]);
+      .then((r) => r.json())
+      .then((d) => setFullData(d))
+      .catch(console.error);
+  }, [open, initial?.id]);
 
-    useEffect(() => {
+  useEffect(() => {
     if (!open) return;
     setCategoryId(fullData?.categoryId ?? initial?.categoryId ?? '');
     setContent(fullData?.body ?? initial?.body ?? null);
+    setContent_en(fullData?.body_en ?? initial?.body_en ?? null);
+    setContent_pl(fullData?.body_pl ?? initial?.body_pl ?? null);
+    setContent_lt(fullData?.body_lt ?? initial?.body_lt ?? null);
+    setContent_ro(fullData?.body_ro ?? initial?.body_ro ?? null);
     setLat(String(fullData?.location?.coordinates?.lat ?? initial?.lat ?? ''));
     setLng(String(fullData?.location?.coordinates?.lng ?? initial?.lng ?? ''));
     setZoom((fullData?.location?.coordinates as any)?.zoom ?? (initial?.body as any)?.zoom ?? 14);
     setWebsiteUrl(fullData?.location?.url ?? initial?.websiteUrl ?? '');
     setSocials(
-        fullData?.socialLinks?.length
+      fullData?.socialLinks?.length
         ? fullData.socialLinks.map((s: any) => ({ platform: s.platform, url: s.url }))
         : [{ platform: 'INSTAGRAM', url: '' }]
     );
-    setImageRemoved(false);
     setError('');
-    }, [open, fullData]);
+  }, [open, fullData]);
 
-    const handleClose = () => {
-      setFullData(null);
-      onClose();
-    };
+  const handleClose = () => { setFullData(null); onClose(); };
 
   const updateSocial = (idx: number, field: keyof SocialLink, val: string) =>
     setSocials((prev) => prev.map((s, i) => i === idx ? { ...s, [field]: val } : s));
 
   const handleSubmit = async () => {
-    if (!title.trim()) { setError("Title is required"); return; }
+    if (!title.trim()) { setError('Title is required'); return; }
     if (!categoryId)   { setError('Please select a category'); return; }
     if (websiteUrl && !websiteUrl.startsWith('http')) {
-        setError('Website must be a valid URL (starting with https://)');
-        return;
+      setError('Website must be a valid URL (starting with https://)');
+      return;
     }
     setSaving(true);
     setError('');
     try {
-
-      // 2. Збереження проекту
-      const url = isEdit
-        ? `/api/studioprojects/${initial!.id}`
-        : '/api/studioprojects';
+      const url = isEdit ? `/api/studioprojects/${initial!.id}` : '/api/studioprojects';
 
       const payload = {
         title,
         categoryId: Number(categoryId),
-        body: content ?? { blocks: [] },
+        body:    content    ?? { blocks: [] },
+        body_en: content_en ?? { blocks: [] },
+        body_pl: content_pl ?? { blocks: [] },
+        body_lt: content_lt ?? { blocks: [] },
+        body_ro: content_ro ?? { blocks: [] },
         locationData: {
-          name:        title,
+          name: title,
           url: websiteUrl || `https://studio.pangeya.org.ua/${selectedCategory?.slug}-${Date.now()}`,
           coordinates: { lat: parseFloat(lat) || 0, lng: parseFloat(lng) || 0, zoom },
         },
@@ -226,6 +188,14 @@ export default function ParentProjectFormDialog({
     }
   };
 
+  const bodyMap: Record<string, { value: unknown; set: (v: unknown) => void }> = {
+    UK: { value: content,    set: setContent    },
+    EN: { value: content_en, set: setContent_en },
+    PL: { value: content_pl, set: setContent_pl },
+    LT: { value: content_lt, set: setContent_lt },
+    RO: { value: content_ro, set: setContent_ro },
+  };
+
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle>{isEdit ? 'Edit Project' : 'New Parent Project'}</DialogTitle>
@@ -244,16 +214,47 @@ export default function ParentProjectFormDialog({
 
           <Divider />
 
-          {/* Едітор */}
+          {/* Мовні таби */}
           <Box>
             <Typography variant="subtitle2" fontWeight={600} mb={1}>Description</Typography>
-            <Box sx={{ border: '1px solid #ddd', borderRadius: 2, p: 2, minHeight: 200 }}>
-              {content !== null ? (
-                <ReactEditor onChange={setContent} initialData={content} />
-              ) : (
-                <ReactEditor onChange={setContent} />
-              )}
-            </Box>
+            <Tabs
+              value={langTab}
+              onChange={(_, v) => setLangTab(v)}
+              variant="scrollable"
+              scrollButtons="auto"
+              sx={{ mb: 2, borderBottom: 1, borderColor: 'divider' }}
+            >
+              {LANGS.map((l) => (
+                <Tab
+                  key={l.code}
+                  value={l.code}
+                  label={
+                    <Box display="flex" alignItems="center" gap={0.75}>
+                      <img src={l.icon} width={20} height={20} alt={l.label} style={{ borderRadius: 2 }} />
+                      {l.label}
+                    </Box>
+                  }
+                />
+              ))}
+            </Tabs>
+
+            {LANGS.map((l) => {
+              const { value, set } = bodyMap[l.code];
+              if (langTab !== l.code) return null;
+              return (
+                <Box
+                  key={l.code}
+                  sx={{ border: '1px solid #ddd', borderRadius: 2, p: 2, minHeight: 200 }}
+                >
+                  <ReactEditor
+                    key={l.code}
+                    onChange={set}
+                    initialData={value ?? undefined}
+                    holderId={`editorjs-${l.code.toLowerCase()}`}
+                  />
+                </Box>
+              );
+            })}
           </Box>
 
           <Divider />

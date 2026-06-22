@@ -8,6 +8,7 @@ import ArticleMfkList from "@blocks/ArticleMfkList";
 import ClientBg from "@/app/public/providers/ClientBg";
 import { getCategoryId } from '@lib/getCategoryId';
 import BlogSlider from "@/app/public/blocks/BlogSlider";
+import ShareLabel from "./ShareLabel";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "";
 
@@ -132,7 +133,9 @@ const subArticles = allRaw
             </div>
             <div className="col-span-12 lg:col-span-3">
               <div className="py-5 px-4 border-b border-t border-main-amarant text-subtitle_2_mobile lg:text-subtitle_2">
-                <b>Поділитись новиною</b>
+                <b>
+                  <ShareLabel />
+                </b>
                 <div className="my-2 flex gap-4 z-20">
                   {iconNames.map((iconName, i) => (
                     <Link key={i} href={iconName.link} className="flex items-center">

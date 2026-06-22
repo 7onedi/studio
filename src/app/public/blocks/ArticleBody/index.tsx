@@ -209,7 +209,6 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
               <figure key={i} className="mb-4">
                 {redirect ? (
                   <div
-                    onClick={() => window.open(redirect, '_blank')}
                     className="block border border-transparent hover:border-[#E91651] hover:border-2 rounded-[14px] transition-colors duration-200 relative cursor-pointer"
                   >
                     {imgElement}

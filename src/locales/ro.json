@@ -53,7 +53,7 @@
     "directions": "Direcții",
     "places": "Locuri"
   },
-  "copyright": "© 2025 Toate drepturile rezervate.",
+  "copyright": "© 2026 Toate drepturile rezervate.",
   "pages": {
     "category_title": {
       "title": "Articole interesante despre proiect"
@@ -62,5 +62,9 @@
       "description_title": "Despre proiect",
       "activity": "Activitatea #Countrysidestudio"
     }
+  },
+  "article": {
+    "share": "Distribuie noutățile",
+    "author": "Autor"
   }
 }

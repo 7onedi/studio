@@ -53,7 +53,7 @@
     "directions": "Directions",
     "places": "Places"
   },
-  "copyright": "© 2025 All rights reserved.",
+  "copyright": "© 2026 All rights reserved.",
   "pages": {
     "category_title": {
       "title": "Interesting articles about the project"
@@ -62,5 +62,9 @@
       "description_title": "About the project",
       "activity": "#Countrysidestudio activity"
     }
-  } 
+  },
+  "article": {
+    "share": "Share news",
+    "author": "Author"
+  }
 }

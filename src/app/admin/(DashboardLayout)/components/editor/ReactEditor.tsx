@@ -10,10 +10,11 @@ interface ReactEditorProps {
   onChange: (data: any) => void;
   initialData?: any;
   onImageUpload?: (mediaId: number, url: string) => void;
+  holderId?: string;
 }
 
 
-export default function ReactEditor({ onChange, initialData, onImageUpload }: ReactEditorProps) {
+export default function ReactEditor({ onChange, initialData, onImageUpload, holderId = 'editorjs' }: ReactEditorProps) {
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
   const mediaPickerResolveRef = useRef<((item: MediaItem) => void) | null>(null);
 
@@ -71,7 +72,7 @@ export default function ReactEditor({ onChange, initialData, onImageUpload }: Re
       }
 
       const editor = new EditorJS({
-        holder: "editorjs",
+        holder: holderId,
         inlineToolbar: true,
         data: initialData ?? { blocks: [] }, // ← додай це
         tools: {
@@ -151,7 +152,7 @@ export default function ReactEditor({ onChange, initialData, onImageUpload }: Re
 
   return (
     <>
-      <div id="editorjs" />
+      <div id={holderId} />
       <MediaPickerDialog
         open={mediaPickerOpen}
         onClose={() => setMediaPickerOpen(false)}
