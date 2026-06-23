@@ -6,7 +6,7 @@ import {
   Box, Button, Container, TextField, Typography,
   MenuItem, Select, FormControl, InputLabel,
   Chip, OutlinedInput, SelectChangeEvent,
-  Switch, FormControlLabel,
+  Switch, FormControlLabel, Avatar
 } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -29,6 +29,8 @@ export interface ArticleFormData {
   lang: string;
   body: unknown;
   authorName: string;
+  authorAvatarId?: number | null;
+  authorAvatarUrl?: string | null; 
   categoryId: number | "";
   subcategoryIds: number[];
   tags: string[];
@@ -77,19 +79,27 @@ export default function ArticleForm({
   const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
   const [subcategories, setSubcategories] = useState<{ id: number; name: string }[]>([]);
   const [coverBase64, setCoverBase64] = useState<string | null>(null);
-  const [uploadedMediaIds, setUploadedMediaIds] = useState<number[]>([]);
   const [uploadedMedia, setUploadedMedia] = useState<{ id: number; url: string }[]>([]);
   const [published, setPublished] = useState<boolean>(initialData?.published ?? false);
   const [slider, setSlider] = useState<string>(initialData?.slider ?? 'NONE');
   const [gradient, setGradient] = useState<string>(initialData?.gradient ?? 'NONE');
-  const [authorOptions, setAuthorOptions] = useState<{ id: number; name: string }[]>([]);
   const [authorInput, setAuthorInput] = useState(initialData?.authorName ?? '');
   const [authorLoading, setAuthorLoading] = useState(false);
+  const [authorAvatarId, setAuthorAvatarId] = useState<number | null>(initialData?.authorAvatarId ?? null);
+  const [authorAvatarUrl, setAuthorAvatarUrl] = useState<string | null>(null);
+  const [authorRole, setAuthorRole] = useState<string | null>(null);
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
   const [selectedMediaId, setSelectedMediaId] = useState<number | null>(initialData?.currentImageId ?? null);
   const [previousImageId, setPreviousImageId] = useState<number | null>(
     initialData?.currentImageId ?? null
   );
+  const [authorOptions, setAuthorOptions] = useState<{
+    id: number;
+    name: string;
+    role?: string;
+    avatarId?: number | null;
+    avatar?: { url: string } | null;
+  }[]>([]);
 
   useEffect(() => {
     if (!authorInput.trim()) { setAuthorOptions([]); return; }
@@ -110,6 +120,8 @@ export default function ArticleForm({
   setLang(initialData.lang ?? "UK");
   setContent(initialData.body ?? null);
   setAuthorName(initialData.authorName ?? "");
+  setAuthorAvatarId(initialData.authorAvatarId ?? null);
+  setAuthorAvatarUrl(initialData.authorAvatarUrl ?? null);
   setCategoryId(initialData.categoryId ?? "");
   setSubcategoryIds(initialData.subcategoryIds ?? []);
   setTags(initialData.tags ?? []);
@@ -124,6 +136,20 @@ export default function ArticleForm({
     fetch("/api/categories")
       .then((r) => r.json())
       .then((data) => setCategories(Array.isArray(data) ? data : data.items ?? []))
+      .catch(console.error);
+  }, []);
+
+  useEffect(() => {
+    if (initialData) return; // тільки для нової статті
+    fetch('/api/auth/me', { credentials: 'include' })
+      .then(r => r.json())
+      .then(me => {
+        setAuthorName(me.name ?? '');
+        setAuthorInput(me.name ?? '');
+        setAuthorAvatarId(me.avatarId ?? null);
+        setAuthorAvatarUrl(me.avatar?.url ?? null);
+        setAuthorRole(me.role ?? null);
+      })
       .catch(console.error);
   }, []);
 
@@ -192,6 +218,7 @@ const handleSubmit = () => {
     lang,
     body: content ?? { blocks: [] },
     authorName,
+    authorAvatarId,
     categoryId,
     subcategoryIds,
     tags,
@@ -290,26 +317,73 @@ const handleSubmit = () => {
         <Box sx={{ gridColumn: { xs: 'span 12', md: 'span 2' } }}>
           <Autocomplete
             freeSolo
-            options={authorOptions.map(u => u.name)}
-            value={authorName}
+            options={authorOptions}
+            value={authorOptions.find(u => u.name === authorName) ?? authorName}
             inputValue={authorInput}
             loading={authorLoading}
+            getOptionLabel={(option) => typeof option === 'string' ? option : option.name}
             onInputChange={(_, value, reason) => {
               setAuthorInput(value);
-              if (reason === 'input') setAuthorName(value);
+              if (reason === 'input') {
+                setAuthorName(value);
+                // якщо вручну — скидаємо аватар
+                setAuthorAvatarId(null);
+                setAuthorAvatarUrl(null);
+                setAuthorRole(null);
+              }
             }}
             onChange={(_, value) => {
-              setAuthorName(value ?? '');
-              setAuthorInput(value ?? '');
+              if (!value) {
+                setAuthorName('');
+                setAuthorInput('');
+                setAuthorAvatarId(null);
+                setAuthorAvatarUrl(null);
+                setAuthorRole(null);
+              } else if (typeof value === 'string') {
+                setAuthorName(value);
+                setAuthorInput(value);
+                setAuthorAvatarId(null);
+                setAuthorAvatarUrl(null);
+                setAuthorRole(null);
+              } else {
+                setAuthorName(value.name);
+                setAuthorInput(value.name);
+                setAuthorAvatarId(value.avatarId ?? null);
+                setAuthorAvatarUrl(value.avatar?.url ?? null);
+                setAuthorRole(value.role ?? null);
+              }
             }}
             filterOptions={(options) => options}
+            renderOption={(props, option) => (
+              <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <Avatar
+                  src={typeof option === 'string' ? undefined : option.avatar?.url ?? undefined}
+                  sx={{ width: 32, height: 32, fontSize: 14 }}
+                >
+                  {typeof option === 'string' ? option[0] : option.name?.[0]?.toUpperCase()}
+                </Avatar>
+                <Box>
+                  <Typography variant="body2" fontWeight={500}>
+                    {typeof option === 'string' ? option : option.name}
+                  </Typography>
+                  {typeof option !== 'string' && option.role && (
+                    <Typography variant="caption" color="text.secondary">
+                      {option.role}
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
+            )}
             renderInput={(params) => (
               <TextField
                 {...params}
                 label="Author *"
-                sx={{ mb: 3 }}
+                sx={{ mb: 1 }}
                 InputProps={{
                   ...params.InputProps,
+                  startAdornment: authorAvatarUrl ? (
+                    <Avatar src={authorAvatarUrl} sx={{ width: 24, height: 24, mr: 1 }} />
+                  ) : undefined,
                   endAdornment: (
                     <>
                       {authorLoading && <CircularProgress size={16} />}
@@ -320,6 +394,61 @@ const handleSubmit = () => {
               />
             )}
           />
+
+          {/* Аватар автора */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
+                Author avatar
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Avatar
+                  src={authorAvatarUrl ?? undefined}
+                  sx={{ width: 48, height: 48, fontSize: 18 }}
+                >
+                  {authorName?.[0]?.toUpperCase()}
+                </Avatar>
+                <Box>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    component="label"
+                    sx={{ mb: 0.5, display: 'block' }}
+                  >
+                    Upload photo
+                    <input
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        e.target.value = '';
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        const res = await fetch('/api/media', {
+                          method: 'POST',
+                          body: formData,
+                          credentials: 'include',
+                        });
+                        if (!res.ok) return;
+                        const data = await res.json();
+                        setAuthorAvatarId(data.id);
+                        setAuthorAvatarUrl(data.url);
+                      }}
+                    />
+                  </Button>
+                  {authorAvatarUrl && (
+                    <Button
+                      size="small"
+                      color="error"
+                      onClick={() => { setAuthorAvatarId(null); setAuthorAvatarUrl(null); }}
+                    >
+                      Remove
+                    </Button>
+                  )}
+                </Box>
+              </Box>
+            </Box>
 
             {userRole !== 'USER' && (
               <FormControlLabel

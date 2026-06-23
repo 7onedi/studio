@@ -2,6 +2,7 @@ import CategoryTitleWrapper from "@components/CategoryTitleWrapper";
 import MfkList from "@/app/public/blocks/MfkList";
 import BlogSlider from "../blocks/BlogSlider";
 import { getParentProject } from '@lib/getProjects';
+import TranslatedText from "@components/TranslatedText";
 
 export const dynamic = 'force-dynamic';
 
@@ -32,7 +33,9 @@ export default async function Home() {
         <MfkList markers={markers} id="#mfk" />
       </div>
       <div className="flex justify-center">
-        <p className="text-headline_3">Діяльність #Countrysidestudio</p>
+        <p className="text-headline_3">
+          <TranslatedText tKey="pages.project_preview_block.activity" />
+        </p>
       </div>
       <div className="mt-8 lg:mt-12 lg:px-0">
         <BlogSlider categoryId={String(result?.categoryId)} />

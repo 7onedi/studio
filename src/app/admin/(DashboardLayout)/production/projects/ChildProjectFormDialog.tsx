@@ -25,11 +25,11 @@ export interface Subcategory {
 }
 
 const LANGUAGES = [
-  { value: 'UK', icon: '/flags/UA.svg', label: 'Ukrainian' },
-  { value: 'EN', icon: '/flags/GB.svg', label: 'English' },
-  { value: 'PL', icon: '/flags/PL.svg', label: 'Polish' },
-  { value: 'LT', icon: '/flags/LT.svg', label: 'Lithuanian' },
-  { value: 'RO', icon: '/flags/RO.svg', label: 'Romanian' },
+  { value: 'UK', icon: '/flags/UA.svg', label: 'Ukraine' },
+  { value: 'EN', icon: '/flags/GB.svg', label: 'Great Britain' },
+  { value: 'PL', icon: '/flags/PL.svg', label: 'Poland' },
+  { value: 'LT', icon: '/flags/LT.svg', label: 'Lithuania' },
+  { value: 'RO', icon: '/flags/RO.svg', label: 'Romania' },
 ];
 
 export interface ChildProject {

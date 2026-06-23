@@ -59,6 +59,7 @@
       "title": "Articole interesante despre proiect"
     },
     "project_preview_block": {
+      "title": "Articole interesante despre",
       "description_title": "Despre proiect",
       "activity": "Activitatea #Countrysidestudio"
     }
@@ -66,5 +67,18 @@
   "article": {
     "share": "Distribuie noutățile",
     "author": "Autor"
+  },
+  "partners_data": {
+    "topic": "Despre rețea",
+    "subtitle1": "Donorii noștri",
+    "subtitle2": "Partenerii noștri"
+  },
+  "search": {
+    "placeholder" : "Introduceți interogarea dvs.",
+    "search_button" : "Căutare",
+    "clear_button" : "Șterge Filtrarea",
+    "result" : "Găsite",
+    "no_result" : "Nu s-au găsit rezultate",
+    "no_result_description" : "Încearcă să modifici interogarea sau să elimini unele etichete."
   }
 }

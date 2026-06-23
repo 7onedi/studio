@@ -10,3 +10,5 @@ export const canUpdateUser = (user: any) =>
 
 export const canUpdateOwnProfile = (user: any, targetId: number) =>
   user.id === targetId || user.role === "ADMIN" || user.role === "OWNER";
+
+export const canDeleteUser = (user: any) => user.role === "OWNER";

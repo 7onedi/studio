@@ -61,6 +61,14 @@ class UserService extends BaseService {
     return this.repository.updateAvatar(id, avatarId);
   }
 
+  async delete(user: any, id: number) {
+    const target = await this.repository.findById(id);
+    if (!target) throw new ApiError(404, "User not found");
+    if (target.role !== 'USER') throw new ApiError(403, "Can only delete users with USER role");
+    if (user.role !== 'ADMIN' && user.role !== 'OWNER') throw new ApiError(403, "Forbidden");
+    return this.repository.delete(id);
+  }
+
 }
 
 export const userService = new UserService();

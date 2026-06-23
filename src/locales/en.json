@@ -59,6 +59,7 @@
       "title": "Interesting articles about the project"
     },
     "project_preview_block": {
+      "title": "Interesting articles about",
       "description_title": "About the project",
       "activity": "#Countrysidestudio activity"
     }
@@ -66,5 +67,18 @@
   "article": {
     "share": "Share news",
     "author": "Author"
+  },
+  "partners_data": {
+    "topic": "The Network",
+    "subtitle1": "Our Donors",
+    "subtitle2": "Our Partners"
+  },
+  "search": {
+    "placeholder" : "Enter your search query",
+    "search_button" : "Search",
+    "clear_button" : "Clear Filters",
+    "result" : "Found",
+    "no_result" : "No results found",
+    "no_result_description" : "Try changing your search query or removing some tags."
   }
 }

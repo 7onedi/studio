@@ -112,6 +112,9 @@ model Article {
   authorId Int
   author   User @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
+  authorAvatarId Int?
+  authorAvatar   Media? @relation("ArticleAuthorAvatar", fields: [authorAvatarId], references: [id], onDelete: SetNull)
+
   categoryId Int
   category   Category @relation(fields: [categoryId], references: [id])
 
@@ -260,10 +263,11 @@ model Media {
   uploaderId Int
   uploader   User @relation("UserMedia", fields: [uploaderId], references: [id], onDelete: Cascade)
 
-  createdAt    DateTime        @default(now())
-  articles     Article[]
-  projects     StudioProject[] @relation("ProjectImage")
-  projectLogos StudioProject[] @relation("ProjectLogo")
-  partners     Partner[]
-  userAvatars  User[]          @relation("UserAvatar")
+  createdAt             DateTime          @default(now())
+  articles              Article[]
+  projects              StudioProject[]   @relation("ProjectImage")
+  projectLogos          StudioProject[]   @relation("ProjectLogo")
+  partners              Partner[]
+  userAvatars           User[]            @relation("UserAvatar")
+  articleAuthorAvatars  Article[]         @relation("ArticleAuthorAvatar")
 }

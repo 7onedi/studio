@@ -50,7 +50,10 @@ export default async function ArticleSlugPage({ params }: PageProps) {
 
         <Stack direction="row" spacing={1} mb={2} flexWrap="wrap" className='flex justify-between'>
         <Stack direction="row" spacing={1.5} alignItems="center" mb={3}>
-          <Avatar sx={{ width: 28, height: 28, fontSize: 13 }}>
+          <Avatar
+            src={article.authorAvatar?.url ?? undefined}
+            sx={{ width: 28, height: 28, fontSize: 13 }}
+          >
             {(article.author?.name ?? article.authorName)?.[0]}
           </Avatar>
           <Typography variant="body2" color="text.secondary">

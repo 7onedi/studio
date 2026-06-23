@@ -18,3 +18,9 @@ export const PATCH = withAuth(async (req: NextRequest, user: any) => {
 
   return NextResponse.json(updated);
 });
+
+export const DELETE = withAuth(async (req: NextRequest, user: any) => {
+  const id = Number(new URL(req.url).pathname.split("/").pop());
+  await userController.delete(id, user);
+  return NextResponse.json({ message: "User deleted" });
+});

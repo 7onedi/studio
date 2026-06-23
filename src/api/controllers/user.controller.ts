@@ -8,4 +8,5 @@ export const userController = {
   search: (filters: Record<string, any>, options?: any, include?: any) => userService.search(filters, options, include),
   changePassword: (id: number, body: any, user: any) => userService.changePassword(user, id, body),
   updateAvatar: (id: number, body: any, user: any) => userService.updateAvatar(user, id, body),
+  delete: (id: number, user: any) => userService.delete(user, id),
 };

@@ -7,7 +7,7 @@ import {
   TextField, InputAdornment, MenuItem, Select, TablePagination,
   Avatar
 } from '@mui/material';
-import { IconSearch, IconEye, IconEdit } from '@tabler/icons-react';
+import { IconSearch, IconEye, IconEdit, IconTrash } from '@tabler/icons-react';
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import {
   Table, TableBody, TableCell, TableContainer,
@@ -62,7 +62,8 @@ function UsersContent() {
   const [createForm, setCreateForm] = useState({ name: '', email: '', password: '' });
   const [creating, setCreating] = useState(false);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({ open: false, message: '', severity: 'success' });
-  const [ownerConfirm, setOwnerConfirm] = useState<{ open: boolean; id: number | null; }>({ open: false, id: null });
+  const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; id: number | null }>({ open: false, id: null });
+  const [deleting, setDeleting] = useState(false);
 
   const notify = (message: string, severity: 'success' | 'error' = 'success') => setSnackbar({ open: true, message, severity });
 
@@ -161,6 +162,26 @@ function UsersContent() {
       notify(err?.message ?? 'Failed to create user', 'error');
     } finally {
       setCreating(false);
+    }
+  };
+
+  // Функція видалення
+  const handleDelete = async (id: number) => {
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/users/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error(await res.text());
+      setUsers(prev => prev.filter(u => u.id !== id));
+      setTotal(prev => prev - 1);
+      notify('User deleted successfully');
+    } catch (err: any) {
+      notify(err?.message ?? 'Failed to delete user', 'error');
+    } finally {
+      setDeleting(false);
+      setDeleteConfirm({ open: false, id: null });
     }
   };
 
@@ -279,20 +300,38 @@ function UsersContent() {
       id: 'actions',
       header: '',
       size: 100,
-      cell: ({ row }) => (
-        <Stack direction="row" spacing={0.5}>
-          <Tooltip title="View Profile">
-            <IconButton size="small" onClick={() => router.push(`/admin/profile/${row.original.id}`)}>
-              <IconEye size={16} />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Edit Profile">
-            <IconButton size="small" onClick={() => router.push(`/admin/profile/${row.original.id}?edit=1`)}>
-              <IconEdit size={16} />
-            </IconButton>
-          </Tooltip>
-        </Stack>
-      ),
+      cell: ({ row }) => {
+        const canDelete =
+          me?.role === 'OWNER' &&
+          row.original.role === 'USER' &&
+          row.original.id !== me?.id;
+
+        return (
+          <Stack direction="row" spacing={0.5}>
+            <Tooltip title="View Profile">
+              <IconButton size="small" onClick={() => router.push(`/admin/profile/${row.original.id}`)}>
+                <IconEye size={16} />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Edit Profile">
+              <IconButton size="small" onClick={() => router.push(`/admin/profile/${row.original.id}?edit=1`)}>
+                <IconEdit size={16} />
+              </IconButton>
+            </Tooltip>
+            {canDelete && (
+              <Tooltip title="Delete User">
+                <IconButton
+                  size="small"
+                  color="error"
+                  onClick={() => setDeleteConfirm({ open: true, id: row.original.id })}
+                >
+                  <IconTrash size={16} />
+                </IconButton>
+              </Tooltip>
+            )}
+          </Stack>
+        );
+      },
     },
   ];
 
@@ -418,6 +457,25 @@ function UsersContent() {
           />
         </Paper>
       </Box>
+      <Dialog open={deleteConfirm.open} onClose={() => setDeleteConfirm({ open: false, id: null })}>
+        <DialogTitle>Delete User</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this user? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteConfirm({ open: false, id: null })}>Cancel</Button>
+          <Button
+            color="error"
+            variant="contained"
+            disabled={deleting}
+            onClick={() => deleteConfirm.id && handleDelete(deleteConfirm.id)}
+          >
+            {deleting ? <CircularProgress size={16} /> : 'Delete'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </PageContainer>
   );
 }
