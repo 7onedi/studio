@@ -1,7 +1,7 @@
 import CategoryTitleWrapper from "@components/CategoryTitleWrapper";
-import { categories } from "@/app/public/blocks/Categories/categories.data";
 import BlogSlider from "../blocks/BlogSlider";
 import { getParentProject } from '@lib/getProjects';
+import TranslatedText from "@components/TranslatedText";
 
 export const dynamic = 'force-dynamic';
 
@@ -20,7 +20,10 @@ export default async function Home() {
         />
       </div>
       <div className="my-8 flex justify-center">
-        <p className="text-headline_3">Цікаві статті про Movers&Shakers</p>
+        <p className="text-headline_3">
+          <TranslatedText tKey="pages.project_preview_block.title" />
+          {' Movers&Shakers'}
+        </p>
       </div>
       <div className="">
         <BlogSlider categoryId={String(result?.categoryId)} />

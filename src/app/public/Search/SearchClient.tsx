@@ -4,6 +4,7 @@ import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { BlogCard } from '@/app/public/blocks/BlogSlider/BlogCard';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { toCardProps } from '@blocks/BlogSlider/toCardProps';
+import { useLanguage } from "@/app/providers/LanguageProvider";
 
 interface Category { id: number; name: string; }
 interface Subcategory { id: number; name: string; categoryId: number; }
@@ -40,6 +41,7 @@ export default function SearchPageClient({
   initialTags,
   initialArticles,
 }: Props) {
+  const { t } = useLanguage();
   const searchParams = useSearchParams();
   const router = useRouter();
   const didInitFromUrl = useRef(false);
@@ -174,16 +176,16 @@ export default function SearchPageClient({
               <input
                 value={query}
                 onChange={e => setQuery(e.target.value)}
-                placeholder="Введіть ваш запит"
+                placeholder={t("search.placeholder")}
                 className="w-full bg-transparent text-[16px] text-black outline-none placeholder:text-black/45"
               />
             </div>
             <button
               type="button"
               className="flex h-[54px] shrink-0 items-center gap-2 rounded-full bg-sky-600 px-6 text-[14px] font-semibold uppercase tracking-wide text-white shadow-[0_10px_30px_rgba(0,0,0,0.35)] transition hover:bg-sky-500"
-              aria-label="Шукати"
+              aria-label={t("search.search_button")}
             >
-              <span className="hidden lg:flex">шукати</span>
+              <span className="hidden lg:flex">{t("search.search_button")}</span>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <path d="M10.5 18.5a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" strokeWidth="2" />
                 <path d="M16.5 16.5 21 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -257,14 +259,14 @@ export default function SearchPageClient({
           {hasAnyFilter && (
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
               <div className="text-headline_5">
-                Знайдено: <span className="font-semibold text-[green]">{filtered.length}</span>
+                {t("search.result")}: <span className="font-semibold text-[green]">{filtered.length}</span>
               </div>
               <button
                 type="button"
                 onClick={clearFilters}
                 className="rounded-full border border-main-amarant p-4 text-button font-semibold text-main-amarant transition hover:bg-main-amarant/90 hover:text-white/90"
               >
-                Очистити фільтри
+                {t("search.clear_button")}
               </button>
             </div>
           )}
@@ -275,8 +277,8 @@ export default function SearchPageClient({
       <section className="mx-auto mt-10 max-w-6xl px-4">
         {filtered.length === 0 ? (
           <div className="mx-auto mt-14 max-w-2xl rounded-2xl border border-white/10 bg-white/5 p-8 text-center">
-            <p className="text-[18px] font-semibold text-main-text">Нічого не знайдено</p>
-            <p className="mt-2 text-[14px] text-main-gray/70">Спробуй змінити запит або зняти частину тегів.</p>
+            <p className="text-[18px] font-semibold text-main-text">{t("search.no_result")}</p>
+            <p className="mt-2 text-[14px] text-main-gray/70">{t("search.no_result_description")}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">

@@ -59,6 +59,7 @@
       "title": "Įdomūs straipsniai apie projektą"
     },
     "project_preview_block": {
+      "title": "Įdomūs straipsniai apie",
       "description_title": "Apie projektą",
       "activity": "#Countrysidestudio veikla"
     }    
@@ -66,5 +67,18 @@
   "article": {
     "share": "Podėliotis naujieną",
     "author": "Autorius"
+  },
+  "partners_data": {
+    "topic": "Apie tinklą",
+    "subtitle1": "Mūsų rėmėjai",
+    "subtitle2": "Mūsų partneriai"
+  },
+  "search": {
+    "placeholder" : "Įveskite paieškos užklausą",
+    "search_button" : "Paieška",
+    "clear_button" : "Išvalyti filtrus",
+    "result" : "Rasta",
+    "no_result" : "Rezultatų nerasta",
+    "no_result_description" : "Pabandykite pakeisti paieškos užklausą arba pašalinti kai kurias žymes."
   }
 }

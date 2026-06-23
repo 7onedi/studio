@@ -59,6 +59,7 @@
       "title": "Цікаві статті про проєкт"
     },
     "project_preview_block": {
+      "title": "Цікаві статті про",
       "description_title": "Про проєкт",
       "activity": "Діяльність #Countrysidestudio"
     }
@@ -66,5 +67,18 @@
   "article": {
     "share": "Поділитись новиною",
     "author": "Автор"
+  },
+  "partners_data": {
+    "topic": "Про мережу",
+    "subtitle1": "Наші донори",
+    "subtitle2": "Наші партнери"
+  },
+  "search": {
+    "placeholder" : "Введіть ваш запит",
+    "search_button" : "Шукати",
+    "clear_button" : "Очистити фільтри",
+    "result" : "Знайдено",
+    "no_result" : "Нічого не знайдено",
+    "no_result_description" : "Спробуй змінити запит або зняти частину тегів."
   }
 }

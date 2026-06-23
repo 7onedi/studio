@@ -59,6 +59,7 @@
       "title": "Ciekawe artykuły o projekcie"
     },
     "project_preview_block": {
+      "title": "Ciekawe artykuły o",
       "description_title": "O projekcie",
       "activity": "Działalność #Countrysidestudio"
     }
@@ -66,5 +67,18 @@
   "article": {
     "share": "Udostępnij wiadomość",
     "author": "Autor"
+  },
+  "partners_data": {
+    "topic": "O sieci",
+    "subtitle1": "Nasi darczyńcy",
+    "subtitle2": "Nasi partnerzy"
+  },
+  "search": {
+    "placeholder" : "Wprowadź swój zapytanie",
+    "search_button" : "Szukaj",
+    "clear_button" : "Wyczyść filtry",
+    "result" : "Znaleziono",
+    "no_result" : "Nie znaleziono wyników",
+    "no_result_description" : "Spróbuj zmienić zapytanie lub usunąć część tagów."
   }
 }

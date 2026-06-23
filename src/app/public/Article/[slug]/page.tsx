@@ -8,7 +8,7 @@ import ArticleMfkList from "@blocks/ArticleMfkList";
 import ClientBg from "@/app/public/providers/ClientBg";
 import { getCategoryId } from '@lib/getCategoryId';
 import BlogSlider from "@/app/public/blocks/BlogSlider";
-import ShareLabel from "./ShareLabel";
+import TranslatedText from "@components/TranslatedText";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "";
 
@@ -78,7 +78,7 @@ function toArticleProps(article: any) {
     },
     author: {
       name: article.authorName ?? article.author?.name ?? "",
-      src: article.author?.avatar ?? article.author?.image ?? "",
+      src: article.authorAvatar?.url ?? "",
     },
     body: { ...article.body, blocks },
   };
@@ -134,7 +134,7 @@ const subArticles = allRaw
             <div className="col-span-12 lg:col-span-3">
               <div className="py-5 px-4 border-b border-t border-main-amarant text-subtitle_2_mobile lg:text-subtitle_2">
                 <b>
-                  <ShareLabel />
+                  <TranslatedText tKey="article.share" />
                 </b>
                 <div className="my-2 flex gap-4 z-20">
                   {iconNames.map((iconName, i) => (

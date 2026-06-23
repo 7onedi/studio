@@ -23,7 +23,7 @@ class ArticleService extends BaseService {
 			data.title
 		);
 
-		const { categoryId, subcategoryIds, tags, imageId, ...rest } = data;
+		const { categoryId, subcategoryIds, tags, imageId, authorAvatarId, ...rest } = data;
 
 		return this.repository.create({
 			slug,
@@ -37,6 +37,10 @@ class ArticleService extends BaseService {
 			? { connect: { id: imageId } }
 			: undefined,
 
+			authorAvatar: authorAvatarId
+			? { connect: { id: authorAvatarId } }
+			: undefined,
+
 			subcategories: subcategoryIds
 			? { connect: subcategoryIds.map((id) => ({ id })) }
 			: undefined,
@@ -45,15 +49,15 @@ class ArticleService extends BaseService {
 			? {
 				connectOrCreate: await Promise.all(
 					tags.map(async (tag) => {
-					const tagSlug = await generateUniqueSlug(
-						(slug) => tagRepository.existsBySlug(slug),
-						tag.name
-					);
+						const tagSlug = await generateUniqueSlug(
+							(slug) => tagRepository.existsBySlug(slug),
+							tag.name
+						);
 
-					return {
-						where: { name: tag.name },
-						create: { name: tag.name, slug: tagSlug },
-					};
+						return {
+							where: { name: tag.name },
+							create: { name: tag.name, slug: tagSlug },
+						};
 					})
 				),
 				}
@@ -65,7 +69,7 @@ class ArticleService extends BaseService {
 		this.assertPolicy(user, canUpdateArticle);
 
 		const data = updateArticleSchema.partial().parse(body);
-		const { categoryId, subcategoryIds, tags, imageId, ...rest } = data;
+		const { categoryId, subcategoryIds, tags, imageId, authorAvatarId, ...rest } = data;
 
 		return this.repository.update(id, {
 			...rest,
@@ -73,6 +77,12 @@ class ArticleService extends BaseService {
 			image: imageId
 			? { connect: { id: imageId } }
 			: undefined,
+
+			  authorAvatar: authorAvatarId !== undefined
+			  ? authorAvatarId === null
+				? { disconnect: true }
+				: { connect: { id: authorAvatarId } }
+			  : undefined,
 
 			category: categoryId
 				? { connect: { id: categoryId } }

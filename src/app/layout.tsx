@@ -6,34 +6,30 @@ const firaSans = Fira_Sans({
   weight: ["400", "700"],
   subsets: ["latin", "cyrillic"],
   variable: "--font-fira",
-  display: "optional",
+  display: "swap",
   preload: true,
-  adjustFontFallback: true,
 });
 
 const mavenPro = Maven_Pro({
   weight: ["400", "600", "700"],
   subsets: ["latin"],
   variable: "--font-maven",
-  display: "optional",
+  display: "swap",
   preload: true,
-  adjustFontFallback: true,
 });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-  display: "optional",
+  display: "swap",
   preload: true,
-  adjustFontFallback: true,
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-  display: "optional",
+  display: "swap",
   preload: true,
-  adjustFontFallback: true,
 });
 
 export const metadata: Metadata = {
