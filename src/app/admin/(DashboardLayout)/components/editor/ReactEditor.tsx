@@ -47,9 +47,6 @@ export default function ReactEditor({ onChange, initialData, onImageUpload, hold
         { default: List },
         { default: Embed },
         { default: LinkTool },
-        { default: ImageTool },
-        { default: Gallery },
-        { default: Marker },
         { default: SimpleImage },
       ] = await Promise.all([
         import("@editorjs/editorjs"),
@@ -57,9 +54,6 @@ export default function ReactEditor({ onChange, initialData, onImageUpload, hold
         import("@editorjs/list"),
         import("@editorjs/embed"),
         import("@editorjs/link"),
-        import("@editorjs/image"),
-        import("editorjs-gallery"),
-        import("@editorjs/marker"),
         import("@editorjs/simple-image"),
       ]);
 
@@ -94,20 +88,6 @@ export default function ReactEditor({ onChange, initialData, onImageUpload, hold
             config: {
               onUpload: (id: number, url: string) => {
                 onImageUploadRef.current?.(id, url);
-              },
-              uploader: {
-                async uploadByFile(file: File) {
-                  const formData = new FormData();
-                  formData.append("file", file);
-                  const res = await fetch("/api/media", { method: "POST", body: formData, credentials: "include" });
-                  if (!res.ok) return { success: 0 };
-                  const data = await res.json();
-                  onImageUploadRef.current?.(data.id, data.url);
-                  return { success: 1, file: { url: data.url } };
-                },
-                async uploadByUrl(url: string) {
-                  return { success: 1, file: { url } };
-                },
               },
             },
           },

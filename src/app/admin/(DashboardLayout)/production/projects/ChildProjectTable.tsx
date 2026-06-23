@@ -26,6 +26,14 @@ interface Props {
   userRole?: string;
 }
 
+const LANG_TO_COUNTRY: Record<string, string> = {
+  UK: 'UA',
+  EN: 'GB',
+  PL: 'PL',
+  LT: 'LT',
+  RO: 'MD',
+};
+
 export default function ChildProjectTable({
   data, total, loading, page, pageSize, search, sortBy, order,
   onSearchChange, onSortChange, onPageChange, onPageSizeChange,
@@ -76,7 +84,7 @@ export default function ChildProjectTable({
       header: 'Locale',
       cell: ({ getValue }) => (
         <Typography variant="body2" color="text.secondary">
-          {getValue() as string}
+          {LANG_TO_COUNTRY[getValue() as string] ?? getValue() as string}
         </Typography>
       ),
       size: 130,

@@ -1,8 +1,8 @@
-// ShareLabel.tsx
 "use client";
+
 import { useLanguage } from "@/app/providers/LanguageProvider";
 
-export default function ShareLabel() {
+export default function TranslatedText({ tKey }: { tKey: string }) {
   const { t } = useLanguage();
-  return <b>{t("article.share")}</b>;
+  return <>{t(tKey)}</>;
 }

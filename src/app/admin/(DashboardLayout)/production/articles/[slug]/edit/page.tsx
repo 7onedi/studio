@@ -38,6 +38,8 @@ export default function EditArticle({ params }: EditPageProps) {
         lang: article.lang ?? "UK",
         body: article.body ?? { blocks: [] },
         authorName: article.author?.name ?? article.authorName ?? "",
+        authorAvatarId: article.authorAvatarId ?? null,
+        authorAvatarUrl: article.authorAvatar?.url ?? null,
         categoryId: article.categoryId ?? "",
         subcategoryIds: article.subcategories?.map((s: any) => s.id) ?? [],
         tags: article.tags?.map((t: any) => t.name) ?? [],

@@ -89,6 +89,15 @@ export default function ArticleTable({
     setTableData(data);
   }, [data]);
 
+  useEffect(() => {
+    if (searchInput.length === 0 || searchInput.length >= 3) {
+      const timer = setTimeout(() => {
+        onSearchChange?.(searchInput);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [searchInput]);
+
   const selectedCount = Object.keys(rowSelection).length;
 
   const handleTogglePublish = async (id: number, currentPublished: boolean) => {
@@ -330,7 +339,6 @@ const handleBulkDelete = async () => {
           placeholder="Search..."
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && onSearchChange?.(searchInput)}
           InputProps={{
             startAdornment: (
               <IconSearch

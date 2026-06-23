@@ -49,6 +49,10 @@ export const userRepository = {
     });
   },
 
+  delete(id: number) {
+    return prisma.user.delete({ where: { id } });
+  },
+
   async updateRole(userId: number, role: UserRole) {
     return prisma.user.update({
       where: { id: userId },
