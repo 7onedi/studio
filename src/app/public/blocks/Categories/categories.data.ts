@@ -49,7 +49,7 @@ export const categories = [
     id: 4,
     title: "Movers&Shakers",
     image: "/categories/category4.webp",
-    pattern: "/categories/cetegory4_pattern.webp",
+    pattern: "/categories/cetegory4_pattern.png",
     gradient: "from-main-amarant/60 to-main-amarant/60",
     hoverGradient: "from-main-amarant/40 to-main-amarant/40",
     link: "/public/MoversAndShakers",

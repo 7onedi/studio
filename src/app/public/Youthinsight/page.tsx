@@ -24,7 +24,7 @@ export default async function Home() {
     <div>
       <div className="mt-4 lg:mt-0 px-4 lg:px-0">
         <CategoryTitleWrapper
-          projectId={1}
+          projectId={2}
           image={parent?.image?.url}
           title={parent?.title}
           parent={parent}
