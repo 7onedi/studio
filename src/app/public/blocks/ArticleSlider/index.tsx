@@ -90,6 +90,7 @@ export default function SliderHero() {
   const [slides, setSlides] = useState<ReturnType<typeof toSlide>[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [slideKey, setSlideKey] = useState(0);
 
   // ready = перше зображення повністю завантажилось
   const [ready, setReady] = useState(false);
@@ -107,7 +108,11 @@ const { t, locale } = useLanguage();
 
   useEffect(() => {
     fetchSlider1Articles().then((articles) => {
-      setSlides(articles.filter((a: any) => a.lang?.toLowerCase() === locale).map(toSlide));
+      const filtered = articles.filter((a: any) => a.lang?.toLowerCase() === locale).map(toSlide);
+      setSlides(filtered);
+      setSlideKey((k) => k + 1);
+      setReady(false);
+      firstImageLoadedRef.current = false;
     });
   }, [locale]);
 
@@ -160,6 +165,7 @@ const { t, locale } = useLanguage();
 
       {/* Сам слайдер — завжди в DOM, але невидимий до ready */}
       <div
+        key={slideKey}
         className={`transition-opacity duration-700 ${
           ready && mounted ? "opacity-100" : "opacity-0"
         }`}
