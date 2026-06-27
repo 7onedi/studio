@@ -81,7 +81,7 @@ class ArticleService extends BaseService {
 			  authorAvatar: authorAvatarId !== undefined
 			  ? authorAvatarId === null
 				? { disconnect: true }
-				: { connect: { id: authorAvatarId } }
+				: { connect: { id: authorAvatarId! } }
 			  : undefined,
 
 			category: categoryId
@@ -120,35 +120,6 @@ class ArticleService extends BaseService {
 
 	async delete(user: any, id: number) {
 		this.assertPolicy(user, canDeleteArticle);
-
-		const article = await this.repository.findById(id);
-
-		if (article) {
-			// Видаляємо картинки з body Editor.js
-			const body = article.body as any;
-			const imageBlocks = body?.blocks?.filter((b: any) => b.type === 'image') ?? [];
-
-			for (const block of imageBlocks) {
-				const url = block.data?.file?.url;
-				if (url) {
-					const filePath = path.join(process.cwd(), 'public', url);
-					try { fs.unlinkSync(filePath); } catch {}
-					const media = await mediaRepository.findByUrl(url);
-					if (media) await mediaRepository.delete(media.id);
-				}
-			}
-
-			// Видаляємо банер
-			if (article.imageId) {
-				const media = await mediaRepository.findById(article.imageId);
-				if (media) {
-					const filePath = path.join(process.cwd(), 'public', media.url);
-					try { fs.unlinkSync(filePath); } catch {}
-					await mediaRepository.delete(media.id);
-				}
-			}
-		}
-
 		return this.repository.delete(id);
 	}
 

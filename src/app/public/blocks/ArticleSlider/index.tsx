@@ -180,9 +180,7 @@ const { t, locale } = useLanguage();
                   fill
                   className="object-cover"
                   sizes="100vw"
-                  // Перший слайд — найвищий пріоритет завантаження
                   priority={i === 0}
-                  // fetchPriority hint для браузера
                   fetchPriority={i === 0 ? "high" : "low"}
                   onLoad={i === 0 ? handleFirstImageLoad : undefined}
                 />

@@ -37,7 +37,7 @@ function CreateArticleContent() {
           subcategoryIds: article.subcategories?.map((s: any) => s.id) ?? [],
           tags: article.tags?.map((t: any) => t.name) ?? [],
           coverBase64: article.image?.url ?? null,
-          currentImageId: null,
+          currentImageId: article.imageId ?? null,
           published: false,
           slider: article.slider ?? 'NONE',
           gradient: article.gradient ?? 'NONE',
@@ -57,9 +57,9 @@ const handleSave = async (data: ArticleFormData) => {
 
   try {
     // 1. Завантажуємо банер якщо є
-    let imageId: number | null = null;
+    let imageId: number | null = data.currentImageId ?? null;
 
-    if (data.coverBase64) {
+    if (data.coverBase64 && !data.currentImageId) {
       const fetchRes = await fetch(data.coverBase64);
       const blob = await fetchRes.blob();
       const formData = new FormData();
@@ -72,10 +72,7 @@ const handleSave = async (data: ArticleFormData) => {
 
       if (!uploadRes.ok) throw new Error('Error uploading cover');
       const uploadData = await uploadRes.json();
-      console.log('uploadData:', uploadData);
       imageId = uploadData.id;
-      console.log('imageId:', imageId);
-      
     }
 
     console.log('imageId before fetch:', imageId);
