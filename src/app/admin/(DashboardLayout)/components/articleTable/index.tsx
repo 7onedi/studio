@@ -135,45 +135,33 @@ export default function ArticleTable({
     router.push(`/admin/production/articles/create?duplicate=${slug}`);
   };
 
-const handleDelete = async (id: number) => {
-  if (!confirm('Видалити статтю?')) return;
-  try {
-    const article = tableData.find((a) => a.id === id);
-
-    const res = await fetch(`/api/articles/${id}`, { method: 'DELETE' });
-    if (!res.ok) throw new Error(`Error ${res.status}`);
-
-    if (article?.imageId) {
-      await fetch(`/api/media/${article.imageId}`, { method: 'DELETE', credentials: 'include' });
+  const handleDelete = async (id: number) => {
+    if (!confirm('Видалити статтю?')) return;
+    try {
+      const res = await fetch(`/api/articles/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error(`Error ${res.status}`);
+      setTableData((prev) => prev.filter((a) => a.id !== id));
+      router.refresh();
+    } catch (err: any) {
+      console.error('Error deleting article:', err.message);
     }
+  };
 
-    setTableData((prev) => prev.filter((a) => a.id !== id)); // ← видаляємо з UI
-    router.refresh();
-  } catch (err: any) {
-    console.error('Error deleting article:', err.message);
-  }
-};
-
-const handleBulkDelete = async () => {
-  const rows = table.getSelectedRowModel().rows;
-  const ids = rows.map((r) => r.original.id);
-  if (!confirm(`Видалити ${ids.length} статей?`)) return;
-  try {
-    await Promise.all(
-      rows.map(async (r) => {
-        await fetch(`/api/articles/${r.original.id}`, { method: 'DELETE' });
-        if (r.original.imageId) {
-          await fetch(`/api/media/${r.original.imageId}`, { method: 'DELETE', credentials: 'include' });
-        }
-      })
-    );
-    setTableData((prev) => prev.filter((a) => !ids.includes(a.id))); // ← видаляємо з UI
-    setRowSelection({});
-    router.refresh();
-  } catch (err: any) {
-    console.error('Error bulk deleting articles:', err.message);
-  }
-};
+  const handleBulkDelete = async () => {
+    const rows = table.getSelectedRowModel().rows;
+    const ids = rows.map((r) => r.original.id);
+    if (!confirm(`Видалити ${ids.length} статей?`)) return;
+    try {
+      await Promise.all(
+        rows.map((r) => fetch(`/api/articles/${r.original.id}`, { method: 'DELETE' }))
+      );
+      setTableData((prev) => prev.filter((a) => !ids.includes(a.id)));
+      setRowSelection({});
+      router.refresh();
+    } catch (err: any) {
+      console.error('Error bulk deleting articles:', err.message);
+    }
+  };
 
   const sortableColumns = ['title', 'updatedAt', 'published', 'lang'];
 
