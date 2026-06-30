@@ -114,27 +114,29 @@ const LANGS = [
     <section className="flex flex-col gap-10" id="mfkList">
 
       {/* СВІТЧЕР МОВ */}
-      <div className="flex justify-center gap-6 flex-wrap">
-        {LANGS.map((l) => {
-          const isActive = selectedLangs.includes(l.code);
-          return (
-            <button
-              key={l.code}
-              onClick={() => toggleLang(l.code)}
-              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition ${
-                isActive
-                  ? "bg-white/10"
-                  : "opacity-40 grayscale hover:opacity-60 hover:grayscale-0"
-              }`}
-            >
-              {l.icon && (
-                <img src={l.icon} width={36} height={36} alt={l.label} style={{ borderRadius: 2 }} />
-              )}
-              <span className="text-xs font-medium">{l.label}</span>
-            </button>
-          );
-        })}
-      </div>
+      { (id === '#CountrysideStudio' || id === 'Imagemapping') &&
+        <div className="flex justify-center gap-6 flex-wrap">
+          {LANGS.map((l) => {
+            const isActive = selectedLangs.includes(l.code);
+            return (
+              <button
+                key={l.code}
+                onClick={() => toggleLang(l.code)}
+                className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition ${
+                  isActive
+                    ? "bg-white/10"
+                    : "opacity-40 grayscale hover:opacity-60 hover:grayscale-0"
+                }`}
+              >
+                {l.icon && (
+                  <img src={l.icon} width={36} height={36} alt={l.label} style={{ borderRadius: 2 }} />
+                )}
+                <span className="text-xs font-medium">{l.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      }
 
       {/* MOBILE */}
       <div className="flex flex-col gap-8 md:hidden">

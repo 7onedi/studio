@@ -47,12 +47,12 @@ export const categories = [
   },
   {
     id: 4,
-    title: "Movers&Shakers",
+    title: "Imagemapping",
     image: "/categories/category4.webp",
     pattern: "/categories/cetegory4_pattern.png",
     gradient: "from-main-amarant/60 to-main-amarant/60",
     hoverGradient: "from-main-amarant/40 to-main-amarant/40",
-    link: "/public/MoversAndShakers",
-    description: [{ strong: "MOVERS&SHAKERS" }, ' - це англомовний аматорський театр, котрий працює на міжнародному рівні, підіймаючи важливі соціальні теми. Учасники це часто люди без досвіду, котрі шукають нагоди спробувати себе акторами, розкрити свій потенціал та потренувати власні м’які навички як public speaking, співпраця в командах і т.д. Також ', { strong: "MOVERS&SHAKERS" }, ' це спільнота осіб, котрі готові до креативу та шаленого драйву у своїх перфомансах, що захоплюють!'],
+    link: "/public/Imagemapping",
+    description: [{ strong: "Imagemapping" }, ' - це англомовний аматорський театр, котрий працює на міжнародному рівні, підіймаючи важливі соціальні теми. Учасники це часто люди без досвіду, котрі шукають нагоди спробувати себе акторами, розкрити свій потенціал та потренувати власні м’які навички як public speaking, співпраця в командах і т.д. Також ', { strong: "Imagemapping" }, ' це спільнота осіб, котрі готові до креативу та шаленого драйву у своїх перфомансах, що захоплюють!'],
   },
 ];

@@ -45,8 +45,8 @@ export const categoriesDataPl: CategoryData[] = [
     title: "Mozaika",
     image: "/categories/category3.webp",
     pattern: "/categories/cetegory3_pattern.webp",
-    gradient: "from-main-blue/60 to-main-blue/60",
-    hoverGradient: "from-main-blue/40 to-main-blue/40",
+    gradient: "from-main-purple/60 to-main-purple/60",
+    hoverGradient: "from-main-purple/40 to-main-purple/40",
     link: "/public/Mozaika",
     description: [
       { strong: "MOZAЇKA" },
@@ -55,16 +55,16 @@ export const categoriesDataPl: CategoryData[] = [
   },
   {
     id: 4,
-    title: "Movers&Shakers",
+    title: "Imagemapping",
     image: "/categories/category4.webp",
     pattern: "/categories/cetegory4_pattern.png",
-    gradient: "from-main-amarant/60 to-main-amarant/60",
-    hoverGradient: "from-main-amarant/40 to-main-amarant/40",
-    link: "/public/MoversAndShakers",
+    gradient: "from-main-grass/60 to-main-grass/60",
+    hoverGradient: "from-main-grass/40 to-main-grass/40",
+    link: "/public/Imagemapping",
     description: [
-      { strong: "MOVERS&SHAKERS" },
+      { strong: "Imagemapping" },
       " – to anglojęzyczny teatr amatorski działający na poziomie międzynarodowym, poruszający ważne tematy społeczne. Uczestnikami są często osoby bez doświadczenia, które chcą spróbować swoich sił jako aktorzy, odkryć swój potencjał oraz rozwijać umiejętności miękkie, takie jak wystąpienia publiczne, praca zespołowa itp. ",
-      { strong: "MOVERS&SHAKERS" },
+      { strong: "Imagemapping" },
       " to także społeczność ludzi gotowych na kreatywność i pełne energii występy, które zachwycają!"
     ],
   },

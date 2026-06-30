@@ -47,7 +47,7 @@ function SvgCard({ category, x, y, W, H, path, isReversed, isDesktop, scale = 1,
 
  const gradColor = category.gradient.includes("amarant")
   ? "#E91651"
-  : category.gradient.includes("81b214")
+  : category.gradient.includes("grass")
   ? "#81b214"
   : category.gradient.includes("purple")
   ? "#7B2FBE"

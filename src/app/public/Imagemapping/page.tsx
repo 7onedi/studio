@@ -6,7 +6,7 @@ import TranslatedText from "@components/TranslatedText";
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const result = await getParentProject('Movers&Shakers');
+  const result = await getParentProject('Imagemapping');
   const parent = result?.parent;
 
   return (
@@ -22,7 +22,7 @@ export default async function Home() {
       <div className="my-8 flex justify-center">
         <p className="text-headline_3">
           <TranslatedText tKey="pages.project_preview_block.title" />
-          {' Movers&Shakers'}
+          {' Imagemapping'}
         </p>
       </div>
       <div className="">
