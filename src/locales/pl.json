@@ -14,6 +14,12 @@
       "md": "Mołdawia"
     }
   },
+  "public": {
+    "mfkList": {
+      "showMore": "Pokaż więcej",
+      "showLess": "Zwiń"
+    }
+  },
   "views": {
     "article": {
       "read_more": "Zobacz"
@@ -62,6 +68,9 @@
       "title": "Ciekawe artykuły o",
       "description_title": "O projekcie",
       "activity": "Działalność #Countrysidestudio"
+    },
+    "club_preview_block": {
+      "aboutYFC": "O MFK"
     }
   },
   "article": {

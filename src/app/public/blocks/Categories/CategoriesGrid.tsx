@@ -32,11 +32,12 @@ interface CardProps {
   isReversed: boolean;
   isDesktop: boolean;
   scale?: number;
-  isFirst?: boolean;        // ← додай
-  onImageLoad?: () => void; // ← додай
+  isFirst?: boolean; 
+  onImageLoad?: () => void;
+  isFourth?: boolean;
 }
 
-function SvgCard({ category, x, y, W, H, path, isReversed, isDesktop, scale = 1, isFirst, onImageLoad }: CardProps) {
+function SvgCard({ category, x, y, W, H, path, isReversed, isDesktop, scale = 1, isFirst, onImageLoad, isFourth }: CardProps) {
   const [hovered, setHovered] = useState(false);
   const router = useRouter();
 
@@ -44,7 +45,13 @@ function SvgCard({ category, x, y, W, H, path, isReversed, isDesktop, scale = 1,
   const imgId  = `img-card-${category.id}`;
   const patId  = `pat-card-${category.id}`;
 
-  const gradColor = category.gradient.includes("amarant") ? "#E91651" : "#256BA7";
+ const gradColor = category.gradient.includes("amarant")
+  ? "#E91651"
+  : category.gradient.includes("grass")
+  ? "#81b214"
+  : category.gradient.includes("purple")
+  ? "#7B2FBE"
+  : "#1A4D8F";
 
   const textCX = isReversed ? W * 0.55 : W * 0.45;
   const textCY = H * 0.5;
@@ -64,19 +71,34 @@ function SvgCard({ category, x, y, W, H, path, isReversed, isDesktop, scale = 1,
         onClick={() => router.push(category.link)}
       >
       <defs>
+        {gradColor === "#81b214" && (
+        <linearGradient
+          id={`grad-diag-${category.id}`}
+          x1={isReversed ? "1" : "0"}
+          y1="0"
+          x2={isReversed ? "0" : "1"}
+          y2="1"
+          gradientUnits="objectBoundingBox"
+        >
+          <stop offset="49%" stopColor="#F5A623" />
+          <stop offset="49%" stopColor="#ffffff" />
+          <stop offset="51%" stopColor="#ffffff" />
+          <stop offset="51%" stopColor="#81b214" />
+        </linearGradient>
+      )}
         <clipPath id={clipId}>
           <path d={path} transform={isReversed ? flipTransform : undefined} />
         </clipPath>
 
         <pattern id={imgId} patternUnits="userSpaceOnUse" width={W} height={H}>
           <image
-  href={category.image}
-  x="0" y="0" width={W} height={H}
-  preserveAspectRatio="xMidYMid slice"
-  transform={isReversed ? flipTransform : undefined}
-  // @ts-ignore
-  onLoad={isFirst ? onImageLoad : undefined}
-/>
+            href={category.image}
+            x="0" y="0" width={W} height={H}
+            preserveAspectRatio="xMidYMid slice"
+            transform={isReversed ? flipTransform : undefined}
+            // @ts-ignore
+            onLoad={isFirst ? onImageLoad : undefined}
+          />
         </pattern>
 
         <pattern id={patId} patternUnits="userSpaceOnUse" width={W} height={H}>
@@ -88,43 +110,42 @@ function SvgCard({ category, x, y, W, H, path, isReversed, isDesktop, scale = 1,
         </pattern>
       </defs>
 
-    <g clipPath={`url(#${clipId})`}>
-    {/* 1. Фото */}
-    <image
-  href={category.image}
-  x="0" y="0" width={W} height={H}
-  preserveAspectRatio="xMidYMid slice"
-  transform={isReversed ? flipTransform : undefined}
-  // @ts-ignore
-  onLoad={isFirst ? onImageLoad : undefined}
-/>
+      <g clipPath={`url(#${clipId})`}>
 
-    {/* 2. Градієнт */}
-    <path
-        d={path}
-        transform={isReversed ? flipTransform : undefined}
-        fill={gradColor}
-        opacity={0.6}
-    />
+      {/* 1. Фото */}
+        <image
+          href={category.image}
+          x="0" y="0" width={W} height={H}
+          preserveAspectRatio="xMidYMid slice"
+          transform={isReversed && !isFourth ? flipTransform : undefined}
+          // @ts-ignore
+          onLoad={isFirst ? onImageLoad : undefined}
+        />
 
-    {/* 3. Pattern */}
-    <image
-  href={category.pattern}
-  x="0" y="0" width={W} height={H}
-  preserveAspectRatio="xMidYMid slice"
-  transform={isReversed ? flipTransform : undefined}
-  // @ts-ignore
-  onLoad={isFirst ? onImageLoad : undefined}
-/>
+        {/* 2. Градієнт */}
+        <path
+          d={path}
+          transform={isReversed ? flipTransform : undefined}
+          fill={gradColor}
+          opacity={0.6}
+        />
 
-    {/* 4. Верхній градієнт — зникає при наведенні */}
-    <path
-        d={path}
-        transform={isReversed ? flipTransform : undefined}
-        fill={gradColor}
-        style={{ opacity: hovered ? 0 : 0.4, transition: "opacity 0.5s" }}
-    />
-    </g>
+        {/* 3. Pattern */}
+        <image
+          href={category.pattern}
+          x="0" y="0" width={W} height={H}
+          preserveAspectRatio="xMidYMid slice"
+          transform={isReversed && !isFourth ? flipTransform : undefined}
+        />
+
+        {/* 4. Верхній градієнт — зникає при наведенні */}
+        <path
+          d={path}
+          transform={isReversed || isFourth ? flipTransform : undefined}
+          fill={gradColor === "#81b214" ? `url(#grad-diag-${category.id})` : gradColor}
+          style={{ opacity: hovered ? 0 : 0.4, transition: "opacity 0.5s" }}
+        />
+      </g>
 
       {/* Текст */}
       <text
@@ -243,8 +264,9 @@ export default function CategoriesGrid({
             isReversed={positions[i].reversed}
             isDesktop={true}
             scale={S}
-                isFirst={i === 0}        // ← додай
-    onImageLoad={onImageLoad} // ← додай
+            isFirst={i === 0}
+            isFourth={i === 3}
+            onImageLoad={onImageLoad}
           />
         ))}
       </svg>
@@ -274,8 +296,9 @@ export default function CategoriesGrid({
           path={MOBILE_PATH}
           isReversed={i % 2 === 1}
           isDesktop={false}
-              isFirst={i === 0}        // ← додай
-    onImageLoad={onImageLoad} // ← додай
+          isFirst={i === 0}
+          isFourth={i === 3}
+          onImageLoad={onImageLoad}
         />
       ))}
     </svg>

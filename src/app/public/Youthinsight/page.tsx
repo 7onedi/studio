@@ -15,6 +15,10 @@ export default async function Home() {
     popupContent: {
       slug:  p.subcategory?.slug ?? String(p.id),
       title: p.title,
+      title_en: p.title_en,
+      title_pl: p.title_pl,
+      title_lt: p.title_lt,
+      title_ro: p.title_ro,
       Logo:  p.image?.url ?? '',
       zoom:  false,
     },
@@ -24,7 +28,7 @@ export default async function Home() {
     <div>
       <div className="mt-4 lg:mt-0 px-4 lg:px-0">
         <CategoryTitleWrapper
-          projectId={1}
+          projectId={2}
           image={parent?.image?.url}
           title={parent?.title}
           parent={parent}

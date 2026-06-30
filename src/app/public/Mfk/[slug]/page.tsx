@@ -5,7 +5,8 @@ import Link from "next/link";
 import { Button } from "@/app/public/components/Button";
 import { SvgIcon } from "@/app/public/components/SvgIcon";
 import { getParentProject } from '@lib/getProjects';
-import { ArticleBody } from '@blocks/ArticleBody';
+import { MfkTranslatedBody, MfkTranslatedTitle } from './MfkTranslated';
+import TranslatedText from "@components/TranslatedText";
 
 interface MfkPageProps {
   params: Promise<{ slug: string }>;
@@ -38,6 +39,10 @@ export default async function MfkPage({ params }: MfkPageProps) {
       popupContent: {
         slug:  p.subcategory?.slug ?? String(p.id),
         title: p.title,
+        title_en: p.title_en,
+        title_pl: p.title_pl,
+        title_lt: p.title_lt,
+        title_ro: p.title_ro,
         Logo:  p.logo?.url ?? p.image?.url ?? '',
         zoom:  false,
       },
@@ -73,7 +78,7 @@ export default async function MfkPage({ params }: MfkPageProps) {
           )}
 
           <div className="mb-5 lg:mb-0 lg:mt-4 text-white text-center text-headline_2_mobile lg:text-headline_1 w-full lg:flex lg:ml-6">
-            {child.title}
+            <MfkTranslatedTitle child={child} />
           </div>
         </div>
 
@@ -106,9 +111,11 @@ export default async function MfkPage({ params }: MfkPageProps) {
       {child.body?.blocks?.length > 0 && (
         <div className="relative space-y-6 rounded-2xl bg-indigo-50 p-6 text-main-text leading-relaxed border-b-2 border-main-amarant">
           <div className="mt-6 flex justify-center">
-            <p className="lg:mb-4 text-headline_4_mobile lg:text-headline_4">Про МФК</p>
+            <p className="lg:mb-4 text-headline_4_mobile lg:text-headline_4">
+              <TranslatedText tKey="pages.club_preview_block.aboutYFC" />
+            </p>
           </div>
-          <ArticleBody blocks={child.body.blocks as any[]} />
+          <MfkTranslatedBody child={child} />
         </div>
       )}
 

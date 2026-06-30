@@ -171,6 +171,10 @@ model StudioProject {
   subcategory   Subcategory? @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
 
   title       String
+  title_en    String?
+  title_pl    String?
+  title_lt    String?
+  title_ro    String?
   body        Json?
   body_en     Json?
   body_pl     Json?

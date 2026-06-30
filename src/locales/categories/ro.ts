@@ -44,8 +44,8 @@ export const categoriesDataRo: CategoryData[] = [
     id: 3,
     image: "/categories/category3.webp",
     pattern: "/categories/cetegory3_pattern.webp",
-    gradient: "from-main-blue/60 to-main-blue/60",
-    hoverGradient: "from-main-blue/40 to-main-blue/40",
+    gradient: "from-main-purple/60 to-main-purple/60",
+    hoverGradient: "from-main-purple/40 to-main-purple/40",
     link: "/public/Mozaika",
     title: "Mozaika",
     description: [
@@ -56,15 +56,15 @@ export const categoriesDataRo: CategoryData[] = [
   {
     id: 4,
     image: "/categories/category4.webp",
-    pattern: "/categories/cetegory4_pattern.webp",
-    gradient: "from-main-amarant/60 to-main-amarant/60",
-    hoverGradient: "from-main-amarant/40 to-main-amarant/40",
-    link: "/public/MoversAndShakers",
-    title: "Movers&Shakers",
+    pattern: "/categories/cetegory4_pattern.png",
+    gradient: "from-main-grass/60 to-main-grass/60",
+    hoverGradient: "from-main-grass/40 to-main-grass/40",
+    link: "/public/Imagemapping",
+    title: "Imagemapping",
     description: [
-      { strong: "MOVERS&SHAKERS" },
+      { strong: "Imagemapping" },
       " – este un teatru amator în limba engleză care operează la nivel internațional, abordând teme sociale importante. Participanții sunt adesea persoane fără experiență, care caută oportunități de a se încerca ca actori, de a-și descoperi potențialul și de a-și dezvolta abilitățile soft, precum vorbitul în public, lucrul în echipă etc. De asemenea, ",
-      { strong: "MOVERS&SHAKERS" },
+      { strong: "Imagemapping" },
       " este o comunitate de persoane pregătite pentru creativitate și energie intensă în performanțele lor captivante!"
     ],
   },

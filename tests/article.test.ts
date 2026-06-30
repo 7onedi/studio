@@ -250,7 +250,7 @@ console.log('Готово!');
     //   "#CountrysideStudio",
     //   "Youthinsight",
     //   "Mozaїka",
-    //   "Movers&Shakers",
+    //   "Imagemapping",
     // ];
 
     // const categoryIds: number[] = [];
@@ -337,13 +337,13 @@ console.log('Готово!');
     // });
 
     // =========================
-    // SUBCATEGORY Movers&Shakers
+    // SUBCATEGORY Imagemapping
     // =========================
     // await fetch(`${BASE_URL}/api/subcategories`, {
     //   method: "POST",
     //   headers,
     //   body: JSON.stringify({
-    //     name: "Movers&Shakers",
+    //     name: "Imagemapping",
     //     categoryId: categoryIds[3],
     //   }),
     // });

@@ -14,6 +14,12 @@
       "md": "Mołdawia"
     }
   },
+  "public": {
+    "mfkList": {
+      "showMore": "Rodyti daugiau",
+      "showLess": "Sumažinti"
+    }
+  },
   "views": {
     "article": {
       "read_more": "Peržiūrėti"
@@ -62,7 +68,10 @@
       "title": "Įdomūs straipsniai apie",
       "description_title": "Apie projektą",
       "activity": "#Countrysidestudio veikla"
-    }    
+    },
+    "club_preview_block": {
+      "aboutYFC": "Apie JFC"
+    }
   },
   "article": {
     "share": "Podėliotis naujieną",

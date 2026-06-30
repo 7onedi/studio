@@ -9,9 +9,13 @@ const locationDataSchema = createLocationSchema.omit({
 });
 
 export const createStudioProjectSchema = z.object({
-  title: z.string().min(3),
-  lang: ProjectLangEnum.optional(),
-  body: z.any().optional(),
+  title:    z.string().optional().nullable(),
+  title_en: z.string().min(3),
+  title_pl: z.string().optional().nullable(),
+  title_lt: z.string().optional().nullable(),
+  title_ro: z.string().optional().nullable(),
+  lang:    ProjectLangEnum.optional(),
+  body:    z.any().optional(),
   body_en: z.any().optional(),
   body_pl: z.any().optional(),
   body_lt: z.any().optional(),
@@ -21,7 +25,6 @@ export const createStudioProjectSchema = z.object({
   subcategoryId: z.number().optional(),
   imageId: z.number().optional(),
   logoId: z.number().optional(),
-  // locationId — для connect до існуючої; locationData — для створення нової
   locationId: z.number().optional(),
   locationData: locationDataSchema.optional(),
   socialLinks: z.array(socialLinkSchema).optional(),
@@ -29,13 +32,17 @@ export const createStudioProjectSchema = z.object({
 });
 
 export const updateStudioProjectSchema = z.object({
-  title: z.string().min(3).optional(),
-  lang: ProjectLangEnum.optional(),
-  body: z.any().optional(),
-  body_en: z.any().optional(),
-  body_pl: z.any().optional(),
-  body_lt: z.any().optional(),
-  body_ro: z.any().optional(),
+  title:    z.string().optional().nullable(),
+  title_en: z.string().min(3).optional(),
+  title_pl: z.string().optional().nullable(),
+  title_lt: z.string().optional().nullable(),
+  title_ro: z.string().optional().nullable(),
+  lang:     ProjectLangEnum.optional(),
+  body:     z.any().optional(),
+  body_en:  z.any().optional(),
+  body_pl:  z.any().optional(),
+  body_lt:  z.any().optional(),
+  body_ro:  z.any().optional(),
   description: z.string().optional(),
   categoryId: z.number().optional(),
   subcategoryId: z.number().optional(),
@@ -43,7 +50,6 @@ export const updateStudioProjectSchema = z.object({
   logoId: z.number().optional(),
   locationId: z.number().optional(),
   locationData: locationDataSchema.optional(),
-  // null = видалити location
   deleteLocation: z.boolean().optional(),
   socialLinks: z.array(socialLinkSchema).optional(),
   parentId: z.number().optional(),
