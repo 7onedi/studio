@@ -14,6 +14,12 @@
       "md": "Moldova"
     }
   },
+  "public": {
+    "mfkList": {
+      "showMore": "Arată mai mult",
+      "showLess": "Restrânge"
+    }
+  },
   "views": {
     "article": {
       "read_more": "Vezi"
@@ -62,6 +68,9 @@
       "title": "Articole interesante despre",
       "description_title": "Despre proiect",
       "activity": "Activitatea #Countrysidestudio"
+    },
+    "club_preview_block": {
+      "aboutYFC": "Despre CFT"
     }
   },
   "article": {
