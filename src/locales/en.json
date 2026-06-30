@@ -14,6 +14,12 @@
       "md": "Moldova"
     }
   },
+  "public": {
+    "mfkList": {
+      "showMore": "Show More",
+      "showLess": "Show Less"
+    }
+  },
   "views": {
     "article": {
       "read_more": "View"
@@ -62,6 +68,9 @@
       "title": "Interesting articles about",
       "description_title": "About the project",
       "activity": "#Countrysidestudio activity"
+    },
+    "club_preview_block": {
+      "aboutYFC": "About YFC"
     }
   },
   "article": {

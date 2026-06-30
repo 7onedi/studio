@@ -1,0 +1,22 @@
+"use client";
+
+import { useLanguage } from "@/app/providers/LanguageProvider";
+import { ArticleBody } from '@blocks/ArticleBody';
+
+function getLocalized(child: any, field: string, locale: string) {
+  return (locale !== 'en' && child[`${field}_${locale}`]) || child[`${field}_en`] || child[field];
+}
+
+export function FestivalTranslatedTitle({ child }: { child: any }) {
+  const { locale } = useLanguage();
+  return <>{getLocalized(child, 'title', locale)}</>;
+}
+
+export function FestivalTranslatedBody({ child }: { child: any }) {
+  const { locale } = useLanguage();
+  const body = getLocalized(child, 'body', locale);
+
+  if (!body?.blocks?.length) return null;
+
+  return <ArticleBody blocks={body.blocks as any[]} />;
+}

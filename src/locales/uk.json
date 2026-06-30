@@ -14,6 +14,12 @@
       "md": "Молдова"
     }
   },
+  "public": {
+    "mfkList": {
+      "showMore": "Показати ще",
+      "showLess": "Згорнути"
+    }
+  },
   "views": {
     "article": {
       "read_more": "Переглянути"
@@ -62,6 +68,9 @@
       "title": "Цікаві статті про",
       "description_title": "Про проєкт",
       "activity": "Діяльність #Countrysidestudio"
+    },
+    "club_preview_block": {
+      "aboutYFC": "Про МФК"
     }
   },
   "article": {

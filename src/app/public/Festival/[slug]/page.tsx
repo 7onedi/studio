@@ -5,7 +5,8 @@ import Link from "next/link";
 import { Button } from "@/app/public/components/Button";
 import { SvgIcon } from "@/app/public/components/SvgIcon";
 import { getParentProject } from '@lib/getProjects';
-import { ArticleBody } from '@blocks/ArticleBody';
+import { FestivalTranslatedTitle, FestivalTranslatedBody } from './FestivalTranslated';
+
 import FestivalContributors from "@blocks/FestivalContributors";
 interface FestivalPageProps {
   params: Promise<{ slug: string }>;
@@ -35,6 +36,10 @@ export default async function FestivalPage({ params }: FestivalPageProps) {
       popupContent: {
         slug:  p.subcategory?.slug ?? String(p.id),
         title: p.title,
+        title_en: p.title_en,
+        title_pl: p.title_pl,
+        title_lt: p.title_lt,
+        title_ro: p.title_ro,
         Logo:  p.image?.url ?? '',
         zoom:  false,
       },
@@ -74,14 +79,13 @@ export default async function FestivalPage({ params }: FestivalPageProps) {
           </div>
 
           <div className="my-5 lg:my-0 lg:mt-4 text-left w-full lg:flex flex-col lg:ml-6">
-            <p className="text-headline_2_mobile lg:text-headline_2 font-bold">{child.title}</p>
+            <p className="text-headline_2_mobile lg:text-headline_2 font-bold">
+              <FestivalTranslatedTitle child={child} />
+            </p>
 
-            {/* Опис через ArticleBody */}
-            {child.body?.blocks?.length > 0 && (
-              <div className="mt-4 text-body_mobile lg:text-body">
-                <ArticleBody blocks={child.body.blocks as any[]} />
-              </div>
-            )}
+            <div className="mt-4 text-body_mobile lg:text-body">
+              <FestivalTranslatedBody child={child} />
+            </div>
           </div>
         </div>
         
@@ -121,10 +125,10 @@ export default async function FestivalPage({ params }: FestivalPageProps) {
       </div>
 
       <div className="my-8">
-                <BlogSlider 
-                  categoryId={String(child.categoryId)} 
-                  subcategoryId={String(child.subcategoryId)} 
-                />
+        <BlogSlider 
+          categoryId={String(child.categoryId)} 
+          subcategoryId={String(child.subcategoryId)} 
+        />
       </div>
 
       <div className="my-12 lg:mt-16 px-4 lg:px-0">

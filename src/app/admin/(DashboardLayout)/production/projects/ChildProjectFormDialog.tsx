@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
   Button, TextField, Stack, Typography, MenuItem,
-  Box, IconButton, Divider,
+  Box, IconButton, Divider, Tabs, Tab,
 } from '@mui/material';
 import { IconTrash, IconPlus } from '@tabler/icons-react';
 import ContributorsList from './ContributorsList';
@@ -35,6 +35,10 @@ const LANGUAGES = [
 export interface ChildProject {
   id: number;
   title: string;
+  title_en?: string | null;
+  title_pl?: string | null;
+  title_lt?: string | null;
+  title_ro?: string | null;
   categoryId: number;
   subcategoryId?: number;
   parentId?: number;
@@ -149,7 +153,16 @@ export default function ChildProjectFormDialog({
   const [loadingParents, setLoadingParents] = useState(false);
   const [contributors, setContributors] = useState<Contributor[]>([]);
 
+  const [langTab, setLangTab]       = useState('UK');
   const [title, setTitle] = useState('');
+  const [title_en, setTitle_en]     = useState('');
+  const [title_pl, setTitle_pl]     = useState('');
+  const [title_lt, setTitle_lt]     = useState('');
+  const [title_ro, setTitle_ro]     = useState('');
+  const [content_en, setContent_en] = useState<unknown>(null);
+  const [content_pl, setContent_pl] = useState<unknown>(null);
+  const [content_lt, setContent_lt] = useState<unknown>(null);
+  const [content_ro, setContent_ro] = useState<unknown>(null);
   const [fullData, setFullData] = useState<any>(null);
   const [subcategoryInput, setSubcategoryInput] = useState('');
   const [creatingSubcategory, setCreatingSubcategory] = useState(false);
@@ -165,7 +178,7 @@ export default function ChildProjectFormDialog({
       setCategoryId(initial?.categoryId ?? '');
       setSubcategoryId(initial?.subcategoryId ?? '');
       setParentId(initial?.parentId ?? '');
-      setContent(initial?.body ?? null);
+      setContent(fullData?.body ?? initial?.body ?? null);
       setImageBase64(initial?.imageBase64 ?? null);
       setLang(fullData?.lang ?? initial?.lang ?? 'UK');
       setLat(initial?.lat ?? '');
@@ -197,6 +210,14 @@ export default function ChildProjectFormDialog({
     setCategoryId(fullData?.categoryId ?? initial?.categoryId ?? '');
     setSubcategoryId(fullData?.subcategoryId ?? initial?.subcategoryId ?? '');
     setTitle(fullData?.subcategory?.name ?? initial?.title ?? '');
+    setTitle_en(fullData?.title_en ?? initial?.title_en ?? '');
+    setTitle_pl(fullData?.title_pl ?? initial?.title_pl ?? '');
+    setTitle_lt(fullData?.title_lt ?? initial?.title_lt ?? '');
+    setTitle_ro(fullData?.title_ro ?? initial?.title_ro ?? '');
+    setContent_en(fullData?.body_en ?? null);
+    setContent_pl(fullData?.body_pl ?? null);
+    setContent_lt(fullData?.body_lt ?? null);
+    setContent_ro(fullData?.body_ro ?? null);
     setSubcategoryInput(fullData?.subcategory?.name ?? initial?.title ?? '');
     setParentId(fullData?.parentId ?? initial?.parentId ?? '');
     setContent(fullData?.body ?? initial?.body ?? null);
@@ -269,12 +290,34 @@ export default function ChildProjectFormDialog({
       setSubcategories((prev) => [...prev, created]);
       setSubcategoryId(created.id);
       setSubcategoryInput(created.name);
-      setTitle(created.name); // ← додай
     } catch (err: any) {
       setError(err.message);
     } finally {
       setCreatingSubcategory(false);
     }
+  };
+
+  const LANGS = [
+    { code: 'UK', icon: '/flags/UA.svg', label: 'Ukrainian' },
+    { code: 'EN', icon: '/flags/GB.svg', label: 'English' },
+    { code: 'PL', icon: '/flags/PL.svg', label: 'Polish' },
+    { code: 'LT', icon: '/flags/LT.svg', label: 'Lithuanian' },
+    { code: 'RO', icon: '/flags/RO.svg', label: 'Romanian' },
+  ];
+
+  const titleMap: Record<string, { value: string; set: (v: string) => void }> = {
+    EN: { value: title_en, set: setTitle_en },
+    PL: { value: title_pl, set: setTitle_pl },
+    LT: { value: title_lt, set: setTitle_lt },
+    RO: { value: title_ro, set: setTitle_ro },
+  };
+
+  const bodyMap: Record<string, { value: unknown; set: (v: unknown) => void }> = {
+    UK: { value: content,    set: setContent    },
+    EN: { value: content_en, set: setContent_en },
+    PL: { value: content_pl, set: setContent_pl },
+    LT: { value: content_lt, set: setContent_lt },
+    RO: { value: content_ro, set: setContent_ro },
   };
 
   const handleSubmit = async () => {
@@ -323,6 +366,14 @@ export default function ChildProjectFormDialog({
 
       const payload = {
         title,
+        title_en: title_en || null,
+        title_pl: title_pl || null,
+        title_lt: title_lt || null,
+        title_ro: title_ro || null,
+        body_en: content_en ?? { blocks: [] },
+        body_pl: content_pl ?? { blocks: [] },
+        body_lt: content_lt ?? { blocks: [] },
+        body_ro: content_ro ?? { blocks: [] },
         lang,
         categoryId:    Number(categoryId),
         subcategoryId: Number(subcategoryId),
@@ -456,16 +507,46 @@ export default function ChildProjectFormDialog({
 
           <Divider />
 
-          {/* Едітор */}
           <Box>
             <Typography variant="subtitle2" fontWeight={600} mb={1}>Description</Typography>
-            <Box sx={{ border: '1px solid #ddd', borderRadius: 2, p: 2, minHeight: 200 }}>
-              {content !== null ? (
-                <ReactEditor onChange={setContent} initialData={content} />
-              ) : (
-                <ReactEditor onChange={setContent} />
-              )}
-            </Box>
+            <Tabs
+              value={langTab}
+              onChange={(_, v) => setLangTab(v)}
+              variant="scrollable"
+              scrollButtons="auto"
+              sx={{ mb: 2, borderBottom: 1, borderColor: 'divider' }}
+            >
+              {LANGS.map((l) => (
+                <Tab key={l.code} value={l.code} label={
+                  <Box display="flex" alignItems="center" gap={0.75}>
+                    <img src={l.icon} width={20} height={20} alt={l.label} style={{ borderRadius: 2 }} />
+                    {l.label}
+                  </Box>
+                } />
+              ))}
+            </Tabs>
+
+            {LANGS.map((l) => {
+              const tm = l.code === 'UK' ? { value: title, set: setTitle } : titleMap[l.code];
+              const bm = bodyMap[l.code];
+              return (
+                <Box key={l.code} sx={{ display: langTab === l.code ? 'block' : 'none' }}>
+                  <TextField
+                    fullWidth size="small" label={`Title (${l.label})`}
+                    value={tm.value}
+                    onChange={(e) => tm.set(e.target.value)}
+                    sx={{ mb: 2 }}
+                  />
+                  <Box sx={{ border: '1px solid #ddd', borderRadius: 2, p: 2, minHeight: 200 }}>
+                    {(!isEdit || fullData) && (
+                      bm.value !== null
+                        ? <ReactEditor onChange={bm.set} initialData={bm.value} holderId={`editorjs-${l.code.toLowerCase()}`} />
+                        : <ReactEditor onChange={bm.set} holderId={`editorjs-${l.code.toLowerCase()}`} />
+                    )}
+                  </Box>
+                </Box>
+              );
+            })}
           </Box>
 
           <TextField

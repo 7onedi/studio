@@ -31,6 +31,10 @@ import {
 
     const project = await this.repository.create({
       title: data.title,
+      title_en: data.title_en,
+      title_pl: data.title_pl,
+      title_lt: data.title_lt,
+      title_ro: data.title_ro,
       body: data.body,
       body_en: data.body_en,
       body_pl: data.body_pl,
