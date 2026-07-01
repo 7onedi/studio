@@ -529,8 +529,9 @@ export default function ChildProjectFormDialog({
             {LANGS.map((l) => {
               const tm = l.code === 'UK' ? { value: title, set: setTitle } : titleMap[l.code];
               const bm = bodyMap[l.code];
+              if (langTab !== l.code) return null;
               return (
-                <Box key={l.code} sx={{ display: langTab === l.code ? 'block' : 'none' }}>
+                <Box key={l.code}>
                   <TextField
                     fullWidth size="small" label={`Title (${l.label})`}
                     value={tm.value}
@@ -540,8 +541,8 @@ export default function ChildProjectFormDialog({
                   <Box sx={{ border: '1px solid #ddd', borderRadius: 2, p: 2, minHeight: 200 }}>
                     {(!isEdit || fullData) && (
                       bm.value !== null
-                        ? <ReactEditor onChange={bm.set} initialData={bm.value} holderId={`editorjs-${l.code.toLowerCase()}`} />
-                        : <ReactEditor onChange={bm.set} holderId={`editorjs-${l.code.toLowerCase()}`} />
+                        ? <ReactEditor key={l.code} onChange={bm.set} initialData={bm.value} holderId={`editorjs-${l.code.toLowerCase()}`} />
+                        : <ReactEditor key={l.code} onChange={bm.set} holderId={`editorjs-${l.code.toLowerCase()}`} />
                     )}
                   </Box>
                 </Box>
