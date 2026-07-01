@@ -25,8 +25,8 @@ export interface Subcategory {
 }
 
 const LANGUAGES = [
-  { value: 'UK', icon: '/flags/UA.svg', label: 'Ukraine' },
   { value: 'EN', icon: '/flags/GB.svg', label: 'Great Britain' },
+  { value: 'UK', icon: '/flags/UA.svg', label: 'Ukraine' },
   { value: 'PL', icon: '/flags/PL.svg', label: 'Poland' },
   { value: 'LT', icon: '/flags/LT.svg', label: 'Lithuania' },
   { value: 'RO', icon: '/flags/RO.svg', label: 'Romania' },
@@ -153,7 +153,7 @@ export default function ChildProjectFormDialog({
   const [loadingParents, setLoadingParents] = useState(false);
   const [contributors, setContributors] = useState<Contributor[]>([]);
 
-  const [langTab, setLangTab]       = useState('UK');
+  const [langTab, setLangTab] = useState('EN');
   const [title, setTitle] = useState('');
   const [title_en, setTitle_en]     = useState('');
   const [title_pl, setTitle_pl]     = useState('');
@@ -209,7 +209,7 @@ export default function ChildProjectFormDialog({
     if (!open) return;
     setCategoryId(fullData?.categoryId ?? initial?.categoryId ?? '');
     setSubcategoryId(fullData?.subcategoryId ?? initial?.subcategoryId ?? '');
-    setTitle(fullData?.subcategory?.name ?? initial?.title ?? '');
+    setTitle(fullData?.title ?? initial?.title ?? '');
     setTitle_en(fullData?.title_en ?? initial?.title_en ?? '');
     setTitle_pl(fullData?.title_pl ?? initial?.title_pl ?? '');
     setTitle_lt(fullData?.title_lt ?? initial?.title_lt ?? '');
@@ -298,8 +298,8 @@ export default function ChildProjectFormDialog({
   };
 
   const LANGS = [
-    { code: 'UK', icon: '/flags/UA.svg', label: 'Ukrainian' },
     { code: 'EN', icon: '/flags/GB.svg', label: 'English' },
+    { code: 'UK', icon: '/flags/UA.svg', label: 'Ukrainian' },
     { code: 'PL', icon: '/flags/PL.svg', label: 'Polish' },
     { code: 'LT', icon: '/flags/LT.svg', label: 'Lithuanian' },
     { code: 'RO', icon: '/flags/RO.svg', label: 'Romanian' },
@@ -321,7 +321,7 @@ export default function ChildProjectFormDialog({
   };
 
   const handleSubmit = async () => {
-    if (!title.trim())   { setError("Title is required"); return; }
+    if (!title_en.trim()) { setError("English title is required"); return; }
     if (!categoryId)     { setError('Please select a category'); return; }
     if (!parentId)       { setError('Please select a parent project'); return; }
     if (creatingSubcategory) return;
@@ -386,7 +386,7 @@ export default function ChildProjectFormDialog({
         ...(imageId && { imageId }),
         ...(logoId && { logoId }),
         locationData: {
-          name: title,
+          name: title_en,
           url: websiteUrl || `https://studio.pangeya.org.ua/public/Mfk/${subcategories.find(s => s.id === Number(subcategoryId))?.slug ?? subcategoryId}`,
           coordinates: {
             lat: parseFloat(lat) || 0,

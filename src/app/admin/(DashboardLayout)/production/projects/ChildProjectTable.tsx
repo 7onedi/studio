@@ -41,7 +41,7 @@ export default function ChildProjectTable({
 }: Props) {
   const columns: ColumnDef<ChildProject>[] = [
     {
-      accessorKey: 'title',
+      accessorKey: 'title_en',
       header: 'Title',
       cell: ({ getValue }) => (
         <Typography variant="body2" fontWeight={500} noWrap sx={{ maxWidth: 200 }}>
