@@ -4,7 +4,8 @@ import { useLanguage } from "@/app/providers/LanguageProvider";
 import { ArticleBody } from '@blocks/ArticleBody';
 
 function getLocalized(child: any, field: string, locale: string) {
-  return (locale !== 'en' && child[`${field}_${locale}`]) || child[`${field}_en`] || child[field];
+  if (locale === 'uk') return child[field] || child[`${field}_en`];
+  return child[`${field}_${locale}`] || child[`${field}_en`] || child[field];
 }
 
 export function MfkTranslatedTitle({ child }: { child: any }) {
