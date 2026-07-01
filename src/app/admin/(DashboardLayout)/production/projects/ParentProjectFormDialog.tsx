@@ -47,8 +47,8 @@ export interface ParentProjectFormData {
 const PLATFORMS = ['YOUTUBE', 'INSTAGRAM', 'FACEBOOK', 'TIKTOK', 'TWITTER'];
 
 const LANGS = [
-  { code: 'UK', icon: '/flags/UA.svg', label: 'Ukrainian' },
   { code: 'EN', icon: '/flags/GB.svg', label: 'English' },
+  { code: 'UK', icon: '/flags/UA.svg', label: 'Ukrainian' },
   { code: 'PL', icon: '/flags/PL.svg', label: 'Polish' },
   { code: 'LT', icon: '/flags/LT.svg', label: 'Lithuanian' },
   { code: 'RO', icon: '/flags/RO.svg', label: 'Romanian' },
@@ -68,7 +68,7 @@ export default function ParentProjectFormDialog({
   const isEdit = Boolean(initial?.id);
 
   const [categoryId, setCategoryId] = useState<number | ''>('');
-  const [langTab, setLangTab]       = useState('UK');
+  const [langTab, setLangTab]       = useState('EN');
   const [content, setContent]       = useState<unknown>(null);
   const [content_en, setContent_en] = useState<unknown>(null);
   const [content_pl, setContent_pl] = useState<unknown>(null);

@@ -43,12 +43,13 @@ export default function MfkList({ markers, id }: MfkListProps) {
 
   const getTitle = (item: PopupContent) => {
     const map: Record<string, string | null | undefined> = {
+      uk: item.title,
       en: item.title_en,
       pl: item.title_pl,
       lt: item.title_lt,
       ro: item.title_ro,
     };
-    return map[locale] || item.title_en;
+    return map[locale] || item.title_en || item.title;
   };
 
 const LANGS = [
