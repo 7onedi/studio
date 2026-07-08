@@ -25,11 +25,11 @@ export interface Subcategory {
 }
 
 const LANGUAGES = [
-  { value: 'EN', icon: '/flags/GB.svg', label: 'Great Britain' },
+  // { value: 'EN', icon: '/flags/GB.svg', label: 'Great Britain' },
   { value: 'UK', icon: '/flags/UA.svg', label: 'Ukraine' },
   { value: 'PL', icon: '/flags/PL.svg', label: 'Poland' },
   { value: 'LT', icon: '/flags/LT.svg', label: 'Lithuania' },
-  { value: 'RO', icon: '/flags/RO.svg', label: 'Romania' },
+  { value: 'RO', icon: '/flags/RO.svg', label: 'Moldova' },
 ];
 
 export interface ChildProject {
@@ -551,7 +551,7 @@ export default function ChildProjectFormDialog({
           </Box>
 
           <TextField
-            select label="Language" value={lang}
+            select label="Locale" value={lang}
             onChange={(e) => setLang(e.target.value)}
             fullWidth size="small"
           >
