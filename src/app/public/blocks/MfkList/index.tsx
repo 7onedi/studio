@@ -115,7 +115,7 @@ const LANGS = [
     <section className="flex flex-col gap-10" id="mfkList">
 
       {/* СВІТЧЕР МОВ */}
-      { (id === '#CountrysideStudio' || id === 'Imagemapping') &&
+      { (id === '#mfk') &&
         <div className="flex justify-center gap-6 flex-wrap">
           {LANGS.map((l) => {
             const isActive = selectedLangs.includes(l.code);
