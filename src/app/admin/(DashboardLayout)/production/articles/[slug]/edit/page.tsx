@@ -16,6 +16,7 @@ export default function EditArticle({ params }: EditPageProps) {
 
   const [articleId, setArticleId] = useState<number | null>(null);
   const [initialData, setInitialData] = useState<Partial<ArticleFormData> | null>(null);
+  const [initialPublished, setInitialPublished] = useState<boolean>(false);
   const [fetching, setFetching] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,6 +50,7 @@ export default function EditArticle({ params }: EditPageProps) {
         slider: article.slider ?? 'NONE',
         gradient: article.gradient ?? 'NONE',
       });
+      setInitialPublished(article.published ?? false); 
     })
 
     .catch(() => setError("Не вдалося завантажити статтю"))
@@ -115,6 +117,18 @@ export default function EditArticle({ params }: EditPageProps) {
     if (!res.ok) {
       const json = await res.json().catch(() => ({}));
       throw new Error(json?.message || `Error ${res.status}`);
+    }
+    if (data.published !== initialPublished) {
+      const publishRes = await fetch('/api/articles/publish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ id: articleId }),
+      });
+      if (!publishRes.ok) {
+        const json = await publishRes.json().catch(() => ({}));
+        throw new Error(json?.message || `Publish error ${publishRes.status}`);
+      }
     }
     setSuccess(true);
     setTimeout(() => router.push("/admin/production/articles"), 1500);

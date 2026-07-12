@@ -22,6 +22,7 @@ import {
 import { IconEye, IconEyeOff, IconEdit } from "@tabler/icons-react";
 import PageContainer from "../../components/container/PageContainer";
 import DashboardCard from "../../components/shared/DashboardCard";
+import { FieldHelp } from "../../components/shared/FieldHelp";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -221,7 +222,11 @@ const ProfileHeader = ({ user, saving, isOwn, canEdit, editing, isCreate, onEdit
               {user.name}
             </Typography>
             <Chip label={user.role} color={ROLE_COLORS[user.role]} size="small" />
+            <FieldHelp>
+              Fields marked with an asterisk (*) are required.
+            </FieldHelp>
           </Stack>
+
 
           {canEdit && !editing && (
             <Button
