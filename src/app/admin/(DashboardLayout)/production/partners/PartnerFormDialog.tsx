@@ -9,6 +9,7 @@ import {
 import { Partner } from './PartnersTable';
 import dynamic from 'next/dynamic';
 import MediaPickerDialog, { MediaItem } from '../../components/Mediapickerdialog';
+import { FieldHelp } from '../../components/shared/FieldHelp';
 
 const PartnerDescriptionEditor = dynamic(
   () => import('../../components/editor/PartnerDescriptionEditor'),
@@ -263,7 +264,12 @@ export default function PartnerFormDialog({ open, initial, defaultRole, onClose,
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{isEdit ? `Edit ${roleLabel}` : `New ${roleLabel}`}</DialogTitle>
+      <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pr: 3 }}>
+        {isEdit ? `Edit ${roleLabel}` : `New ${roleLabel}`}
+        <FieldHelp>
+          Fields marked with an asterisk (*) are required.
+        </FieldHelp>
+      </DialogTitle>
 
       <DialogContent>
         <Stack spacing={2} mt={1}>

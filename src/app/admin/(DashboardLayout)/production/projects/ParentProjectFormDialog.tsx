@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import { IconTrash, IconPlus, IconMinus } from '@tabler/icons-react';
 import dynamic from 'next/dynamic';
+import { FieldHelp } from '../../components/shared/FieldHelp';
 
 const ReactEditor = dynamic(() => import('../../components/editor/ReactEditor'), { ssr: false });
 
@@ -198,7 +199,12 @@ export default function ParentProjectFormDialog({
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>{isEdit ? 'Edit Project' : 'New Parent Project'}</DialogTitle>
+      <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pr: 3 }}>
+        {isEdit ? 'Edit Project' : 'New Parent Project'}
+        <FieldHelp>
+          Fields marked with an asterisk (*) are required.
+        </FieldHelp>
+      </DialogTitle>
       <DialogContent>
         <Stack spacing={2} mt={1}>
 
@@ -260,7 +266,12 @@ export default function ParentProjectFormDialog({
           <Divider />
 
           {/* Координати */}
-          <Typography variant="subtitle2" fontWeight={600}>Coordinates</Typography>
+          <Box display="flex" alignItems="center" gap={0.5}>
+            <Typography variant="subtitle2" fontWeight={600}>Coordinates</Typography>
+            <FieldHelp>
+              Set the default zoom level for all project maps.
+            </FieldHelp>
+          </Box>
           <Stack direction="row" spacing={2}>
             <TextField fullWidth label="(lat)" value={lat}
               onChange={(e) => setLat(e.target.value)} size="small" placeholder="48.45262" />
