@@ -5,6 +5,7 @@ import {
   Dialog, DialogTitle, DialogContent, DialogActions,
   Button, TextField, Stack, Typography,
 } from '@mui/material';
+import { FieldHelp } from '../../components/shared/FieldHelp';
 
 export interface Category {
   id: number;
@@ -52,7 +53,12 @@ export default function CategoryFormDialog({ open, initial, onClose, onSaved }: 
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>{isEdit ? 'Edit Category' : 'New Category'}</DialogTitle>
+      <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pr: 3 }}>
+        {isEdit ? 'Edit Category' : 'New Category'}
+        <FieldHelp>
+          Fields marked with an asterisk (*) are required.
+        </FieldHelp>
+      </DialogTitle>
       <DialogContent>
         <Stack spacing={2} mt={1}>
           <TextField label="Name" value={name} onChange={(e) => setName(e.target.value)} fullWidth size="small" required />

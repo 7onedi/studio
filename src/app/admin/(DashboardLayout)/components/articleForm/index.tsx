@@ -11,6 +11,7 @@ import {
 import Autocomplete from "@mui/material/Autocomplete";
 import CircularProgress from "@mui/material/CircularProgress";
 import MediaPickerDialog, { MediaItem } from '../../components/Mediapickerdialog';
+import { FieldHelp } from "../shared/FieldHelp";
 
 const ReactEditor = dynamic(() => import("../editor/ReactEditor"), {
   ssr: false,
@@ -81,6 +82,7 @@ export default function ArticleForm({
   const [coverBase64, setCoverBase64] = useState<string | null>(null);
   const [uploadedMedia, setUploadedMedia] = useState<{ id: number; url: string }[]>([]);
   const [published, setPublished] = useState<boolean>(initialData?.published ?? false);
+  const [initialPublished, setInitialPublished] = useState<boolean>(initialData?.published ?? false);
   const [slider, setSlider] = useState<string>(initialData?.slider ?? 'NONE');
   const [gradient, setGradient] = useState<string>(initialData?.gradient ?? 'NONE');
   const [authorInput, setAuthorInput] = useState(initialData?.authorName ?? '');
@@ -100,6 +102,14 @@ export default function ArticleForm({
     avatarId?: number | null;
     avatar?: { url: string } | null;
   }[]>([]);
+
+  const helpItems = [
+    "Fields marked with an asterisk (*) are required.",
+    "Tags are created automatically when entered in the field.",
+    "Use video links for YouTube and Facebook Video. For Instagram video, use the Image + Link tool in the editor.",
+    "To add a link to text, select the text and click the 'Link' icon in the Text tool.",
+    "In the Article Author field, you can search for an existing user or enter any custom name.",
+  ];
 
   useEffect(() => {
     if (!authorInput.trim()) { setAuthorOptions([]); return; }
@@ -128,6 +138,7 @@ export default function ArticleForm({
   setCoverBase64(initialData.coverBase64 ?? null);
   setPreviousImageId(initialData.currentImageId ?? null);
   setPublished(initialData.published ?? false);
+  setInitialPublished(initialData.published ?? false);
   setSlider(initialData.slider ?? 'NONE');
   setGradient(initialData.gradient ?? 'NONE');
 }, [initialData])
@@ -181,13 +192,18 @@ export default function ArticleForm({
   return () => clearTimeout(timer);
 }, [tagInput]);
 
-  const handleAddTag = () => {
-    const trimmed = tagInput.trim();
-    if (trimmed && !tags.includes(trimmed)) setTags((p) => [...p, trimmed]);
-    setTagInput("");
-  };
+const handleAddTag = () => {
+  const trimmed = tagInput.trim();
+  if (trimmed && !tags.includes(trimmed)) setTags((p) => [...p, trimmed]);
+  setTagInput("");
+};
 
 const handleSubmit = () => {
+  if (published !== initialPublished) {
+    const action = published ? 'publish' : 'unpublish';
+    if (!confirm(`You sure you want to ${action} this article?`)) return;
+  }
+
   const bodyContent = content as any;
   
   const usedUrls: string[] = [];
@@ -206,7 +222,6 @@ const handleSubmit = () => {
     }
   });
 
-  // Видаляємо завантажені але невикористані картинки
   uploadedMedia
     .filter(({ url }) => !usedUrls.includes(url))
     .forEach(({ id }) => {
@@ -235,12 +250,24 @@ const handleSubmit = () => {
 
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 4 }}>
         <Typography variant="h4">{title}</Typography>
-        {onCancel && <Button variant="text" onClick={onCancel}>← Cancel</Button>}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <FieldHelp>
+            <Box component="ol" sx={{ pl: 2, m: 0, "& li": { mb: 0.75 } }}>
+              {helpItems.map((item, i) => (
+                <Typography key={i} component="li" variant="body2">
+                  {item}
+                </Typography>
+              ))}
+            </Box>
+          </FieldHelp>
+          {onCancel && <Button variant="text" onClick={onCancel}>← Cancel</Button>}
+        </Box>
       </Box>
+
 
       <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 4 }}>
 
-            {/* основний контент */}
+      {/* основний контент */}
         <Box sx={{ gridColumn: { xs: 'span 12', md: 'span 10' } }}>
           <TextField fullWidth label="Title *" value={formTitle}
             onChange={(e) => setFormTitle(e.target.value)} sx={{ mb: 3 }} />

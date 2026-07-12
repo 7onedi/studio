@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
   Button, TextField, Stack, Typography, MenuItem,
-  Box, IconButton, Divider, Tabs, Tab,
+  Box, IconButton, Divider, Tabs, Tab, CircularProgress
 } from '@mui/material';
 import { IconTrash, IconPlus } from '@tabler/icons-react';
 import ContributorsList from './ContributorsList';
@@ -14,6 +14,7 @@ import { Category, ParentProject, SocialLink } from './ParentProjectFormDialog';
 import { Switch, FormControlLabel } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import MediaPickerDialog, { MediaItem } from '../../components/Mediapickerdialog';
+import { FieldHelp } from '../../components/shared/FieldHelp';
 
 const ReactEditor = dynamic(() => import('../../components/editor/ReactEditor'), { ssr: false });
 
@@ -149,6 +150,7 @@ export default function ChildProjectFormDialog({
   // --- залежні дані ---
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [parentProjects, setParentProjects] = useState<ParentProject[]>([]);
+  const [parentZoom, setParentZoom] = useState<number | null>(null);
   const [loadingSubs, setLoadingSubs]     = useState(false);
   const [loadingParents, setLoadingParents] = useState(false);
   const [contributors, setContributors] = useState<Contributor[]>([]);
@@ -172,6 +174,8 @@ export default function ChildProjectFormDialog({
   const [selectedLogoId, setSelectedLogoId] = useState<number | null>(null);
   const [bannerUrl, setBannerUrl] = useState<string | null>(null);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [dataReady, setDataReady] = useState(false);
+  const [editingWebsite, setEditingWebsite] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -188,6 +192,8 @@ export default function ChildProjectFormDialog({
       setSocials(initial?.socialLinks?.length
         ? initial.socialLinks
         : [{ platform: 'INSTAGRAM', url: '' }]);
+      setDataReady(!initial?.id);
+      setEditingWebsite(false);
       setError('');
     }
   }, [open, initial]);
@@ -198,6 +204,7 @@ export default function ChildProjectFormDialog({
       setFullData(null);
       return;
     }
+    setDataReady(false);
     fetch(`/api/studioprojects/${initial.id}`)
       .then((r) => r.json())
       .then((d) => setFullData(d))
@@ -240,6 +247,7 @@ export default function ChildProjectFormDialog({
     setLogoUrl(null);
     setSelectedBannerId(fullData?.imageId ?? initial?.imageId ?? null);
     setSelectedLogoId(fullData?.logoId ?? null);
+    if (fullData || !initial?.id) setDataReady(true);
   }, [open, fullData]);
 
   // --- підкатегорії по categoryId ---
@@ -265,6 +273,15 @@ export default function ChildProjectFormDialog({
       .catch(console.error)
       .finally(() => setLoadingParents(false));
   }, [categoryId]);
+
+  // зум успадковується від батьківського проекту
+  useEffect(() => {
+    if (!parentId) { setParentZoom(null); return; }
+    fetch(`/api/studioprojects/${parentId}`)
+      .then((r) => r.json())
+      .then((d) => setParentZoom(d?.location?.coordinates?.zoom ?? null))
+      .catch(console.error);
+  }, [parentId]);
 
   const handleClose = () => {
     setFullData(null);
@@ -421,7 +438,12 @@ export default function ChildProjectFormDialog({
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>{isEdit ? 'Edit Project' : 'Create Project'}</DialogTitle>
+      <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pr: 3 }}>
+        {isEdit ? 'Edit Project' : 'Create Project'}
+        <FieldHelp>
+          Fields marked with an asterisk (*) are required.
+        </FieldHelp>
+      </DialogTitle>
       <DialogContent>
         <Stack spacing={2} mt={1}>
 
@@ -539,7 +561,11 @@ export default function ChildProjectFormDialog({
                     sx={{ mb: 2 }}
                   />
                   <Box sx={{ border: '1px solid #ddd', borderRadius: 2, p: 2, minHeight: 200 }}>
-                    {(!isEdit || fullData) && (
+                    {!dataReady ? (
+                      <Box display="flex" alignItems="center" justifyContent="center" minHeight={160}>
+                        <CircularProgress size={24} />
+                      </Box>
+                    ) : (
                       bm.value !== null
                         ? <ReactEditor key={l.code} onChange={bm.set} initialData={bm.value} holderId={`editorjs-${l.code.toLowerCase()}`} />
                         : <ReactEditor key={l.code} onChange={bm.set} holderId={`editorjs-${l.code.toLowerCase()}`} />
@@ -573,7 +599,13 @@ export default function ChildProjectFormDialog({
           <Divider />
 
           {/* Координати */}
-          <Typography variant="subtitle2" fontWeight={600}>Coordinates</Typography>
+          <Box display="flex" alignItems="center" gap={0.5}>
+            <Typography variant="subtitle2" fontWeight={600}>Coordinates</Typography>
+            <FieldHelp>
+              The map inherits the zoom level from the parent project (current: {parentZoom ?? '—'}).
+              Only the map location is specified here.
+            </FieldHelp>
+          </Box>
           <Stack direction="row" spacing={2}>
             <TextField fullWidth label="Latitude (lat)" value={lat}
               onChange={(e) => setLat(e.target.value)} size="small" placeholder="48.45262" />
@@ -581,11 +613,26 @@ export default function ChildProjectFormDialog({
               onChange={(e) => setLng(e.target.value)} size="small" placeholder="28.42077" />
           </Stack>
 
-          <TextField
-            fullWidth label="Website" value={websiteUrl}
-            onChange={(e) => setWebsiteUrl(e.target.value)}
-            size="small" placeholder="https://..."
-          />
+          {editingWebsite ? (
+            <TextField
+              fullWidth label="Website" value={websiteUrl}
+              onChange={(e) => setWebsiteUrl(e.target.value)}
+              onBlur={() => setEditingWebsite(false)}
+              autoFocus
+              size="small" placeholder="https://..."
+            />
+          ) : (
+            <Stack direction="row" spacing={1} alignItems="center">
+              <TextField
+                fullWidth label="Website" value={websiteUrl || '—'}
+                size="small"
+                slotProps={{ input: { readOnly: true } }}
+              />
+              <Button size="small" onClick={() => setEditingWebsite(true)}>
+                Change
+              </Button>
+            </Stack>
+          )}
 
           {/* Банер */}
           <Box>

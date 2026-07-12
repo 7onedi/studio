@@ -6,6 +6,7 @@ import {
   Button, TextField, Stack, Typography, MenuItem,
 } from '@mui/material';
 import { Category } from './CategoryFormDialog';
+import { FieldHelp } from '../../components/shared/FieldHelp';
 
 export interface Subcategory {
   id: number;
@@ -72,7 +73,12 @@ export default function SubcategoryFormDialog({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>{isEdit ? 'Edit Subcategory' : 'New Subcategory'}</DialogTitle>
+      <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pr: 3 }}>
+        {isEdit ? 'Edit Subcategory' : 'New Subcategory'}
+        <FieldHelp>
+          Fields marked with an asterisk (*) are required.
+        </FieldHelp>
+      </DialogTitle>
       <DialogContent>
         <Stack spacing={2} mt={1}>
           <TextField
