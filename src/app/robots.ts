@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/admin', '/api'],
+      disallow: ['/admin', '/api', '/public/Search'],
     },
     sitemap: 'https://studio.pangeya.org.ua/sitemap.xml',
   }
