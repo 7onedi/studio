@@ -13,7 +13,7 @@ const ROUTE_PREFIX_BY_CATEGORY_SLUG: Record<string, string> = {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://studio.pangeya.org.ua'
 
-  const staticRoutes = ['', '/about', '/methodology'].map((route) => ({
+  const staticRoutes = ['/public', '/public/AboutNetwork', '/public/Methodology'].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
