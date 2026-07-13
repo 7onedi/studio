@@ -3,13 +3,6 @@ import { prisma } from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'
 
-const ROUTE_PREFIX_BY_CATEGORY_SLUG: Record<string, string> = {
-  Countrysidestudio: 'Mfk',
-  Youthinsight: 'Festival',
-  // Mozaika: '???',
-  // Imagemapping: '???',
-}
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://studio.pangeya.org.ua'
 
@@ -31,33 +24,49 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }))
 
-  const categories = await prisma.category.findMany({
-    select: { slug: true, updatedAt: true },
-  })
-  const categoryRoutes = categories.map((category) => ({
-    url: `${baseUrl}/public/${category.slug}`,
-    lastModified: category.updatedAt,
+  const categoryRoutes = [
+    'Countrysidestudio',
+    'Youthinsight',
+    'Mozaika',
+    'Imagemapping',
+  ].map((route) => ({
+    url: `${baseUrl}/public/${route}`,
+    lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.8,
   }))
 
-  const projects = await prisma.studioProject.findMany({
-    where: { parentId: { not: null }, published: true },
-    select: {
-      id: true,
-      updatedAt: true,
-      subcategory: { select: { slug: true } },
-      category: { select: { slug: true } },
-    },
-  })
-  const projectRoutes = projects
-    .filter((p) => ROUTE_PREFIX_BY_CATEGORY_SLUG[p.category.slug])
-    .map((p) => ({
-      url: `${baseUrl}/public/${ROUTE_PREFIX_BY_CATEGORY_SLUG[p.category.slug]}/${p.subcategory?.slug ?? p.id}`,
-      lastModified: p.updatedAt,
-      changeFrequency: 'monthly' as const,
-      priority: 0.6,
-    }))
+  const PARENT_CATEGORY_ROUTES: { categoryName: string; routePrefix: string }[] = [
+    { categoryName: '#CountrysideStudio', routePrefix: 'Mfk' },
+    { categoryName: 'Youthinsight', routePrefix: 'Festival' },
+  ]
+
+  const projectRoutesNested = await Promise.all(
+    PARENT_CATEGORY_ROUTES.map(async ({ categoryName, routePrefix }) => {
+      const category = await prisma.category.findFirst({
+        where: { name: categoryName },
+        select: { id: true },
+      })
+      if (!category) return []
+
+      const children = await prisma.studioProject.findMany({
+        where: { categoryId: category.id, parentId: { not: null }, published: true },
+        select: {
+          id: true,
+          updatedAt: true,
+          subcategory: { select: { slug: true } },
+        },
+      })
+
+      return children.map((p) => ({
+        url: `${baseUrl}/public/${routePrefix}/${p.subcategory?.slug ?? p.id}`,
+        lastModified: p.updatedAt,
+        changeFrequency: 'monthly' as const,
+        priority: 0.6,
+      }))
+    })
+  )
+  const projectRoutes = projectRoutesNested.flat()
 
   return [...staticRoutes, ...categoryRoutes, ...articleRoutes, ...projectRoutes]
 }
