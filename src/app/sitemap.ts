@@ -47,6 +47,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         where: { name: categoryName },
         select: { id: true },
       })
+      console.log('DEBUG category', { categoryName, category })
       if (!category) return []
 
       const children = await prisma.studioProject.findMany({
@@ -57,6 +58,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           subcategory: { select: { slug: true } },
         },
       })
+      console.log('DEBUG children', { categoryName, count: children.length, children })
 
       return children.map((p) => ({
         url: `${baseUrl}/public/${routePrefix}/${p.subcategory?.slug ?? p.id}`,
