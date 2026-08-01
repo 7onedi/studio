@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://studio.pangeya.org.ua'
 
-  const staticRoutes = ['/public', '/public/AboutNetwork', '/public/Methodology'].map((route) => ({
+  const staticRoutes = ['/', '/public/AboutNetwork', '/public/Methodology'].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
@@ -57,7 +57,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       console.log('DEBUG allInCategory', { categoryName, count: allInCategory.length, allInCategory })
 
       const children = await prisma.studioProject.findMany({
-        where: { categoryId: category.id, parentId: { not: null }, published: true },
+        where: { categoryId: category.id, parentId: { not: null } },
         select: {
           id: true,
           updatedAt: true,
