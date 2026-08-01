@@ -1,4 +1,6 @@
 "use client";
+import { useMemo, useState } from "react";
+import { ImageViewer, ImageViewerItem } from "@components/ImageViewer";
 import ArticleVideoBlock, { VideoBlockData } from "./ArticleVideoBlock";
 import VideoPlayButton from "@components/PlayButton";
 
@@ -82,6 +84,31 @@ type ArticleBodyProps = {
 };
 
 export function ArticleBody({ blocks }: ArticleBodyProps) {
+  const [lightboxIndex, setLightboxIndex] = useState(-1);
+
+  // збираємо всі зображення статті в один плоский масив + мапу block-index -> global-index
+  const { galleryImages, globalIndexByKey } = useMemo(() => {
+    const galleryImages: ImageViewerItem[] = [];
+    const globalIndexByKey = new Map<string, number>();
+
+    blocks.forEach((block, i) => {
+      if (block.type === "image") {
+        globalIndexByKey.set(`${i}`, galleryImages.length);
+        galleryImages.push({ src: block.data.file?.url ?? "", alt: block.data.caption });
+      } else if (block.type === "gallery") {
+        block.data.files.slice(0, 4).forEach((file, idx) => {
+          globalIndexByKey.set(`${i}-${idx}`, galleryImages.length);
+          galleryImages.push({ src: file.url, alt: file.alt ?? block.data.caption });
+        });
+      } else if (block.type === "customImage") {
+        globalIndexByKey.set(`${i}`, galleryImages.length);
+        galleryImages.push({ src: block.data.url, alt: block.data.caption });
+      }
+    });
+
+    return { galleryImages, globalIndexByKey };
+  }, [blocks]);
+
   return (
     <article className="prose prose-invert max-w-none">
       {blocks.map((block, i) => {
@@ -138,8 +165,9 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
                 <img
                   src={url}
                   alt={block.data.caption ?? ""}
+                  onClick={() => setLightboxIndex(globalIndexByKey.get(`${i}`) ?? 0)}
                   className={[
-                    "w-full object-cover rounded-xl",
+                    "w-full object-cover rounded-xl cursor-pointer",
                     block.data.stretched ? "aspect-auto" : "aspect-[16/9]",
                   ].join(" ")}
                 />
@@ -176,8 +204,11 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
                       <img
                         src={file.url}
                         alt={file.alt ?? block.data.caption ?? ""}
+                        onClick={() =>
+                          setLightboxIndex(globalIndexByKey.get(`${i}-${idx}`) ?? 0)
+                        }
                         className={[
-                          "w-full object-cover",
+                          "w-full object-cover cursor-pointer",
                           block.data.stretched ? "aspect-auto" : "aspect-[4/3]",
                         ].join(" ")}
                       />
@@ -258,6 +289,13 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
             return null;
         }
       })}
+
+       <ImageViewer
+        images={galleryImages}
+        index={lightboxIndex}
+        onIndexChange={setLightboxIndex}
+        renderThumbnails={false}
+      />
     </article>
   );
 }
