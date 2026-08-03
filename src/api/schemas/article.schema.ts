@@ -12,7 +12,7 @@ export const createArticleSchema = z.object({
   gradient: ArticleGradient,
   body: z.any(), // JSON від EditorJS
   authorName: z.string().min(2),
-  authorAvatarId: z.number().optional(),
+  authorAvatarId: z.number().nullable().optional(),
   categoryId: z.number(),
   subcategoryIds: z.array(z.number()).optional(),
   imageId: z.number().optional(),
@@ -29,7 +29,7 @@ export const updateArticleSchema = z.object({
   slider: ArticleSliderEnum.optional(),
   gradient: ArticleGradient.optional(),
   body: z.any().optional(), // JSON від EditorJS
-  authorName: z.string().min(2).optional(),
+  authorName: z.string().min(2),
   authorAvatarId: z.number().nullable().optional(),
   categoryId: z.number().optional(),
   subcategoryIds: z.array(z.number()).optional(),
