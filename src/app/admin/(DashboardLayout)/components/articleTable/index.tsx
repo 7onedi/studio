@@ -8,7 +8,6 @@ import {
   getCoreRowModel,
   flexRender,
   ColumnDef,
-  SortingState,
   RowSelectionState,
 } from '@tanstack/react-table';
 import {
@@ -24,7 +23,6 @@ import {
 } from '@tabler/icons-react';
 import { format } from 'date-fns';
 import Link from 'next/link';
-import StatusDialog from '../StatusDialog';
 
 export interface Article {
   id: number;
@@ -81,9 +79,6 @@ export default function ArticleTable({
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [searchInput, setSearchInput] = useState(search);
   const [tableData, setTableData] = useState<Article[]>(data);
-  const [confirmDialog, setConfirmDialog] = useState<{ open: boolean; id: number; published: boolean }>({
-    open: false, id: 0, published: false,
-  });
 
   useEffect(() => {
     setTableData(data);
@@ -101,26 +96,27 @@ export default function ArticleTable({
   const selectedCount = Object.keys(rowSelection).length;
 
   const handleTogglePublish = async (id: number, currentPublished: boolean) => {
-  const action = currentPublished ? 'зняти з публікації' : 'опублікувати';
-  if (!confirm(`Ви впевнені що хочете ${action} цю статтю?`)) return;
+    const action = currentPublished ? 'unpublish' : 'publish';
+    if (!confirm(`Are you sure you want to ${action} this article?`)) return;
 
-  try {
-    const res = await fetch('/api/articles/publish', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ id }),
-    });
-
-    if (!res.ok) throw new Error(`Error ${res.status}`);
-
-    setTableData((prev) =>
-      prev.map((a) => a.id === id ? { ...a, published: !a.published } : a)
-    );
-  } catch (err: any) {
-    console.error('Error changing status:', err.message);
-  }
-};
+    try {
+      const res = await fetch('/api/articles/publish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ id }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.message ?? `Error ${res.status}`);
+      }
+      setTableData((prev) =>
+        prev.map((a) => a.id === id ? { ...a, published: !a.published } : a)
+      );
+    } catch (err: any) {
+      alert(err.message ?? 'Failed to update publish status');
+    }
+  };
 
   const handleSortClick = (colId: string) => {
     if (!onSortChange) return;
@@ -136,30 +132,37 @@ export default function ArticleTable({
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Видалити статтю?')) return;
+    if (!confirm('Are you sure you want to delete this article?')) return;
     try {
       const res = await fetch(`/api/articles/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error(`Error ${res.status}`);
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.message ?? `Error ${res.status}`);
+      }
       setTableData((prev) => prev.filter((a) => a.id !== id));
       router.refresh();
     } catch (err: any) {
-      console.error('Error deleting article:', err.message);
+      alert(err.message ?? 'Failed to delete article');
     }
   };
 
   const handleBulkDelete = async () => {
     const rows = table.getSelectedRowModel().rows;
     const ids = rows.map((r) => r.original.id);
-    if (!confirm(`Видалити ${ids.length} статей?`)) return;
+    if (!confirm(`Are you sure you want to delete ${ids.length} articles?`)) return;
     try {
-      await Promise.all(
+      const results = await Promise.all(
         rows.map((r) => fetch(`/api/articles/${r.original.id}`, { method: 'DELETE' }))
       );
+      const failed = results.filter((r) => !r.ok);
+      if (failed.length > 0) {
+        throw new Error(`${failed.length} of ${ids.length} articles could not be deleted`);
+      }
       setTableData((prev) => prev.filter((a) => !ids.includes(a.id)));
       setRowSelection({});
       router.refresh();
     } catch (err: any) {
-      console.error('Error bulk deleting articles:', err.message);
+      alert(err.message ?? 'Failed to delete articles');
     }
   };
 
@@ -235,7 +238,7 @@ export default function ArticleTable({
             size="small"
             color={published ? 'success' : 'default'}
             variant="outlined"
-            onClick={() => setConfirmDialog({ open: true, id: row.original.id, published })}
+            onClick={() => handleTogglePublish(row.original.id, published)}
             sx={{ cursor: 'pointer' }}
           />
         );
@@ -425,30 +428,6 @@ export default function ArticleTable({
         onRowsPerPageChange={(e) => onPageSizeChange?.(Number(e.target.value))}
         labelRowsPerPage="Rows per page:"
         labelDisplayedRows={({ from, to, count }) => `${from}–${to} of ${count}`}
-      />
-
-      <StatusDialog
-        open={confirmDialog.open}
-        id={confirmDialog.id}
-        published={confirmDialog.published}
-        onClose={() => setConfirmDialog({ ...confirmDialog, open: false })}
-        onConfirm={async (id) => {
-          setConfirmDialog({ ...confirmDialog, open: false });
-          try {
-            const res = await fetch('/api/articles/publish', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              credentials: 'include',
-              body: JSON.stringify({ id }),
-            });
-            if (!res.ok) throw new Error(`Error ${res.status}`);
-            setTableData((prev) =>
-              prev.map((a) => a.id === id ? { ...a, published: !a.published } : a)
-            );
-          } catch (err: any) {
-            console.error('Error:', err.message);
-          }
-        }}
       />
     </Box>
   );

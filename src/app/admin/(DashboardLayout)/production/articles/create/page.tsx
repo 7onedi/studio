@@ -27,7 +27,7 @@ function CreateArticleContent() {
       .then(r => r.json())
       .then(article => {
         setInitialData({
-          title: article.title + ' (копія)',
+          title: article.title + ' (duplicate)',
           lang: article.lang,
           body: article.body,
           authorName: article.author?.name ?? article.authorName ?? '',

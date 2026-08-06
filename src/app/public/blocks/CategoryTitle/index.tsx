@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { ArticleBody } from '@blocks/ArticleBody';
 import { useLanguage } from "@/app/providers/LanguageProvider";
+import PresentationBlock from "@blocks/PresentationBlock";
 
 interface ProjectPreviewBlockProps {
   image: string;
@@ -11,6 +12,14 @@ interface ProjectPreviewBlockProps {
   hoverGradient: string;
   title: string;
   description?: { blocks: any[] };
+  presentation?: {
+    title?: string | null;
+    description?: string | null;
+    url?: string | null;
+    title_uk?: string | null;
+    description_uk?: string | null;
+    url_uk?: string | null;
+  };
 }
 
 export default function ProjectPreviewBlock({
@@ -20,6 +29,7 @@ export default function ProjectPreviewBlock({
   hoverGradient,
   title,
   description,
+  presentation,
 }: ProjectPreviewBlockProps) {
   const { t } = useLanguage();
 
@@ -73,9 +83,17 @@ export default function ProjectPreviewBlock({
           {t('pages.project_preview_block.description_title')}
         </h1>
         
-        <div className="text-body_mobile lg:text-body leading-relaxed w-full">
-          {description?.blocks && <ArticleBody blocks={description.blocks} />}
-        </div>
+          <div className="text-body_mobile lg:text-body leading-relaxed w-full">
+            {description?.blocks && <ArticleBody blocks={description.blocks} />}
+            <PresentationBlock
+              title={presentation?.title}
+              description={presentation?.description}
+              url={presentation?.url}
+              title_uk={presentation?.title_uk}
+              description_uk={presentation?.description_uk}
+              url_uk={presentation?.url_uk}
+            />
+          </div>
 
       </div>
     </section>

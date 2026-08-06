@@ -9,6 +9,7 @@ import {
 import { IconTrash, IconPlus, IconMinus } from '@tabler/icons-react';
 import dynamic from 'next/dynamic';
 import { FieldHelp } from '../../components/shared/FieldHelp';
+import PresentationUploader from './PresentationUploader';
 
 const ReactEditor = dynamic(() => import('../../components/editor/ReactEditor'), { ssr: false });
 
@@ -83,6 +84,12 @@ export default function ParentProjectFormDialog({
   const [socials, setSocials]       = useState<SocialLink[]>([{ platform: 'INSTAGRAM', url: '' }]);
   const [saving, setSaving]         = useState(false);
   const [error, setError]           = useState('');
+  const [presentationUrl, setPresentationUrl] = useState('');
+  const [presentationTitle, setPresentationTitle] = useState('');
+  const [presentationDescription, setPresentationDescription] = useState('');
+  const [presentationUrlUk, setPresentationUrlUk] = useState('');
+  const [presentationTitleUk, setPresentationTitleUk] = useState('');
+  const [presentationDescriptionUk, setPresentationDescriptionUk] = useState('');
 
   const selectedCategory = categories.find((c) => c.id === Number(categoryId));
   const title = selectedCategory?.name ?? '';
@@ -130,6 +137,12 @@ export default function ParentProjectFormDialog({
         ? fullData.socialLinks.map((s: any) => ({ platform: s.platform, url: s.url }))
         : [{ platform: 'INSTAGRAM', url: '' }]
     );
+    setPresentationUrl(fullData?.presentationUrl ?? '');
+    setPresentationTitle(fullData?.presentationTitle ?? '');
+    setPresentationDescription(fullData?.presentationDescription ?? '');
+    setPresentationUrlUk(fullData?.presentationUrl_uk ?? '');
+    setPresentationTitleUk(fullData?.presentationTitle_uk ?? '');
+    setPresentationDescriptionUk(fullData?.presentationDescription_uk ?? '');
     setError('');
   }, [open, fullData]);
 
@@ -166,6 +179,12 @@ export default function ParentProjectFormDialog({
         socialLinks: socials
           .filter((s) => s.url.trim())
           .map((s) => ({ platform: s.platform, url: s.url })),
+        presentationUrl: presentationUrl || null,
+        presentationTitle: presentationTitle || null,
+        presentationDescription: presentationDescription || null,
+        presentationUrl_uk: presentationUrlUk || null,
+        presentationTitle_uk: presentationTitleUk || null,
+        presentationDescription_uk: presentationDescriptionUk || null,
       };
 
       const res = await fetch(url, {
@@ -258,6 +277,27 @@ export default function ParentProjectFormDialog({
                     initialData={value ?? undefined}
                     holderId={`editorjs-${l.code.toLowerCase()}`}
                   />
+
+                  {l.code === 'EN' && (
+                    <PresentationUploader
+                      url={presentationUrl}
+                      title={presentationTitle}
+                      description={presentationDescription}
+                      onUrlChange={setPresentationUrl}
+                      onTitleChange={setPresentationTitle}
+                      onDescriptionChange={setPresentationDescription}
+                    />
+                  )}
+                  {l.code === 'UK' && (
+                    <PresentationUploader
+                      url={presentationUrlUk}
+                      title={presentationTitleUk}
+                      description={presentationDescriptionUk}
+                      onUrlChange={setPresentationUrlUk}
+                      onTitleChange={setPresentationTitleUk}
+                      onDescriptionChange={setPresentationDescriptionUk}
+                    />
+                  )}
                 </Box>
               );
             })}
