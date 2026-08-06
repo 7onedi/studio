@@ -32,6 +32,7 @@ const LANG_TO_COUNTRY: Record<string, string> = {
   PL: 'PL',
   LT: 'LT',
   RO: 'MD',
+  MK: 'MK',
 };
 
 export default function ChildProjectTable({

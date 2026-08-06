@@ -2,7 +2,7 @@ import { z } from "zod";
 import { socialLinkSchema } from "./socialLink.schema";
 import { createLocationSchema } from "./location.schema";
 
-export const ProjectLangEnum = z.enum(["UK", "EN", "PL", "LT", "RO"]);
+export const ProjectLangEnum = z.enum(["UK", "EN", "PL", "LT", "RO", "MK"]);
 const locationDataSchema = createLocationSchema.omit({
   projectId: true,
   published: true,
@@ -29,6 +29,12 @@ export const createStudioProjectSchema = z.object({
   locationData: locationDataSchema.optional(),
   socialLinks: z.array(socialLinkSchema).optional(),
   parentId: z.number().optional(),
+  presentationUrl: z.url().optional().nullable(),
+  presentationTitle: z.string().optional().nullable(),
+  presentationDescription: z.string().optional().nullable(),
+  presentationUrl_uk: z.url().optional().nullable(),
+  presentationTitle_uk: z.string().optional().nullable(),
+  presentationDescription_uk: z.string().optional().nullable(),
 });
 
 export const updateStudioProjectSchema = z.object({
@@ -53,6 +59,12 @@ export const updateStudioProjectSchema = z.object({
   deleteLocation: z.boolean().optional(),
   socialLinks: z.array(socialLinkSchema).optional(),
   parentId: z.number().optional(),
+  presentationUrl: z.url().optional().nullable(),
+  presentationTitle: z.string().optional().nullable(),
+  presentationDescription: z.string().optional().nullable(),
+  presentationUrl_uk: z.url().optional().nullable(),
+  presentationTitle_uk: z.string().optional().nullable(),
+  presentationDescription_uk: z.string().optional().nullable(),
 });
 
 export const publishStudioProjectSchema = z.object({

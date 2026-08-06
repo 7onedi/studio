@@ -31,7 +31,9 @@ const LANGUAGES = [
   { value: 'PL', icon: '/flags/PL.svg', label: 'Poland' },
   { value: 'LT', icon: '/flags/LT.svg', label: 'Lithuania' },
   { value: 'RO', icon: '/flags/RO.svg', label: 'Moldova' },
+  { value: 'MK', icon: '/flags/MK.svg', label: 'North Macedonia' },
 ];
+
 
 export interface ChildProject {
   id: number;
@@ -161,6 +163,7 @@ export default function ChildProjectFormDialog({
   const [title_pl, setTitle_pl]     = useState('');
   const [title_lt, setTitle_lt]     = useState('');
   const [title_ro, setTitle_ro]     = useState('');
+  const [title_mk, setTitle_mk]     = useState('');
   const [content_en, setContent_en] = useState<unknown>(null);
   const [content_pl, setContent_pl] = useState<unknown>(null);
   const [content_lt, setContent_lt] = useState<unknown>(null);
@@ -313,6 +316,12 @@ export default function ChildProjectFormDialog({
       setCreatingSubcategory(false);
     }
   };
+
+  const selectedCategoryName = categories.find((c) => c.id === Number(categoryId))?.name;
+
+  const AVAILABLE_LANGUAGES = selectedCategoryName === 'Imagemapping'
+    ? LANGUAGES.filter((l) => ['UK', 'LT', 'MK'].includes(l.value))
+    : LANGUAGES;
 
   const LANGS = [
     { code: 'EN', icon: '/flags/GB.svg', label: 'English' },
@@ -581,7 +590,7 @@ export default function ChildProjectFormDialog({
             onChange={(e) => setLang(e.target.value)}
             fullWidth size="small"
           >
-            {LANGUAGES.map((l) => (
+            {AVAILABLE_LANGUAGES.map((l) => (
                 <MenuItem key={l.value} value={l.value}>
                   <Box display="flex" alignItems="center" gap={1}>
                     {l.icon && <img src={l.icon} width={24} height={24} alt={l.label} style={{ borderRadius: 2 }} />}
