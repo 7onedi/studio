@@ -52,13 +52,20 @@ export default function MfkList({ markers, id }: MfkListProps) {
     return map[locale] || item.title_en || item.title;
   };
 
-const LANGS = [
-  { code: 'UK', icon: '/flags/UA.svg', label: t("nav.locale.uk") },
-  // { code: 'EN', icon: '/flags/GB.svg', label: t("nav.locale.en") },
-  { code: 'PL', icon: '/flags/PL.svg', label: t("nav.locale.pl") },
-  { code: 'LT', icon: '/flags/LT.svg', label: t("nav.locale.lt") },
-  { code: 'RO', icon: '/flags/RO.svg', label: t("nav.locale.md") },
-];
+  const ALLOWED_LANGS: Record<string, string[]> = {
+    "#mfk": ["UK", "PL", "LT", "RO"],
+    "#implaces": ["UK", "LT", "MK"],
+  };
+
+  const LANGS = [
+    { code: 'UK', icon: '/flags/UA.svg', label: t("nav.locale.uk") },
+    // { code: 'EN', icon: '/flags/GB.svg', label: t("nav.locale.en") },
+    { code: 'PL', icon: '/flags/PL.svg', label: t("nav.locale.pl") },
+    { code: 'LT', icon: '/flags/LT.svg', label: t("nav.locale.lt") },
+    { code: 'RO', icon: '/flags/RO.svg', label: t("nav.locale.md") },
+    { code: 'MK', icon: '/flags/MK.svg', label: t("nav.locale.mk") },
+  ].filter((l) => (ALLOWED_LANGS[id ?? ""] ?? []).includes(l.code));
+
   const [selectedLangs, setSelectedLangs] = useState<string[]>(
     LANGS.map((l) => l.code)
   );
@@ -114,8 +121,8 @@ const LANGS = [
   return (
     <section className="flex flex-col gap-10" id="mfkList">
 
-      {/* СВІТЧЕР МОВ */}
-      { (id === '#mfk') &&
+      {/* СВІТЧЕР КРАЇН ЛОКАЦІЙ */}
+      { (id === '#mfk' || id === '#implaces') &&
         <div className="flex justify-center gap-6 flex-wrap">
           {LANGS.map((l) => {
             const isActive = selectedLangs.includes(l.code);
@@ -123,16 +130,16 @@ const LANGS = [
               <button
                 key={l.code}
                 onClick={() => toggleLang(l.code)}
-                className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition ${
+                className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition w-16 ${
                   isActive
                     ? "bg-white/10"
                     : "opacity-40 grayscale hover:opacity-60 hover:grayscale-0"
                 }`}
               >
                 {l.icon && (
-                  <img src={l.icon} width={36} height={36} alt={l.label} style={{ borderRadius: 2 }} />
+                  <img src={l.icon} width={36} height={27} alt={l.label} className="rounded-[2px] object-cover" />
                 )}
-                <span className="text-xs font-medium">{l.label}</span>
+                <span className="text-xs font-medium text-center leading-tight break-words">{l.label}</span>
               </button>
             );
           })}
@@ -142,8 +149,14 @@ const LANGS = [
       {/* MOBILE */}
       <div className="flex flex-col gap-8 md:hidden">
         {mobileItems.map((item, index) => (
-          <Link key={index} href={`${id === "#mfk" ? "/public/Mfk" : "/public/Festival"}/${item.slug}`}>
-            {Card(item)}
+          <Link
+            key={index}
+            href={`${
+              id === "#mfk" ? "/public/Mfk"
+              : id === "#implaces" ? "/public/IMlocals"
+              : "/public/Festival"
+            }/${item.slug}`}>
+              {Card(item)}
           </Link>
         ))}
 
@@ -187,8 +200,14 @@ const LANGS = [
               }}
             >
               {row.map((item, index) => (
-                <Link key={index} href={`${id === "#mfk" ? "/public/Mfk" : "/public/Festival"}/${item.slug}`}>
-                  {Card(item)}
+                <Link
+                  key={index}
+                  href={`${
+                    id === "#mfk" ? "/public/Mfk"
+                    : id === "#implaces" ? "/public/IMlocals"
+                    : "/public/Festival"
+                  }/${item.slug}`}>
+                    {Card(item)}
                 </Link>
               ))}
             </div>

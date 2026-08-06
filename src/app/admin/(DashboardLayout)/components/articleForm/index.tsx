@@ -6,7 +6,7 @@ import {
   Box, Button, Container, TextField, Typography,
   MenuItem, Select, FormControl, InputLabel,
   Chip, OutlinedInput, SelectChangeEvent,
-  Switch, FormControlLabel, Avatar
+  Switch, FormControlLabel, Avatar, FormHelperText
 } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -61,9 +61,9 @@ export default function ArticleForm({
   loading,
   error,
   success,
-  successMessage = "Збережено!",
-  submitLabel = "Зберегти",
-  title = "Стаття",
+  successMessage = "Saved successfully",
+  submitLabel = "Save",
+  title = "Article",
   onCancel,
   userRole,
 }: ArticleFormProps) {
@@ -90,6 +90,7 @@ export default function ArticleForm({
   const [authorAvatarId, setAuthorAvatarId] = useState<number | null>(initialData?.authorAvatarId ?? null);
   const [authorAvatarUrl, setAuthorAvatarUrl] = useState<string | null>(null);
   const [authorRole, setAuthorRole] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
   const [selectedMediaId, setSelectedMediaId] = useState<number | null>(initialData?.currentImageId ?? null);
   const [previousImageId, setPreviousImageId] = useState<number | null>(
@@ -125,23 +126,23 @@ export default function ArticleForm({
   }, [authorInput]);
 
   useEffect(() => {
-  if (!initialData) return;
-  setFormTitle(initialData.title ?? "");
-  setLang(initialData.lang ?? "UK");
-  setContent(initialData.body ?? null);
-  setAuthorName(initialData.authorName ?? "");
-  setAuthorAvatarId(initialData.authorAvatarId ?? null);
-  setAuthorAvatarUrl(initialData.authorAvatarUrl ?? null);
-  setCategoryId(initialData.categoryId ?? "");
-  setSubcategoryIds(initialData.subcategoryIds ?? []);
-  setTags(initialData.tags ?? []);
-  setCoverBase64(initialData.coverBase64 ?? null);
-  setPreviousImageId(initialData.currentImageId ?? null);
-  setPublished(initialData.published ?? false);
-  setInitialPublished(initialData.published ?? false);
-  setSlider(initialData.slider ?? 'NONE');
-  setGradient(initialData.gradient ?? 'NONE');
-}, [initialData])
+    if (!initialData) return;
+    setFormTitle(initialData.title ?? "");
+    setLang(initialData.lang ?? "UK");
+    setContent(initialData.body ?? null);
+    setAuthorName(initialData.authorName ?? "");
+    setAuthorAvatarId(initialData.authorAvatarId ?? null);
+    setAuthorAvatarUrl(initialData.authorAvatarUrl ?? null);
+    setCategoryId(initialData.categoryId ?? "");
+    setSubcategoryIds(initialData.subcategoryIds ?? []);
+    setTags(initialData.tags ?? []);
+    setCoverBase64(initialData.coverBase64 ?? null);
+    setPreviousImageId(initialData.currentImageId ?? null);
+    setPublished(initialData.published ?? false);
+    setInitialPublished(initialData.published ?? false);
+    setSlider(initialData.slider ?? 'NONE');
+    setGradient(initialData.gradient ?? 'NONE');
+  }, [initialData])
 
   useEffect(() => {
     fetch("/api/categories")
@@ -151,7 +152,7 @@ export default function ArticleForm({
   }, []);
 
   useEffect(() => {
-    if (initialData) return; // тільки для нової статті
+    if (initialData) return;
     fetch('/api/auth/me', { credentials: 'include' })
       .then(r => r.json())
       .then(me => {
@@ -175,33 +176,54 @@ export default function ArticleForm({
   }, [categoryId]);
 
   useEffect(() => {
-  if (!tagInput.trim()) {
-    setTagOptions([]);
-    return;
-  }
-  const timer = setTimeout(() => {
-    setTagLoading(true);
-    fetch(`/api/tags/search?name=${encodeURIComponent(tagInput.trim())}&page=1&limit=10`)
-      .then((r) => r.json())
-      .then((data) => {
-        setTagOptions(Array.isArray(data.data) ? data.data : []);
-      })
-      .catch(console.error)
-      .finally(() => setTagLoading(false));
-  }, 300);
-  return () => clearTimeout(timer);
-}, [tagInput]);
+    if (!tagInput.trim()) {
+      setTagOptions([]);
+      return;
+    }
+    const timer = setTimeout(() => {
+      setTagLoading(true);
+      fetch(`/api/tags/search?name=${encodeURIComponent(tagInput.trim())}&page=1&limit=10`)
+        .then((r) => r.json())
+        .then((data) => {
+          setTagOptions(Array.isArray(data.data) ? data.data : []);
+        })
+        .catch(console.error)
+        .finally(() => setTagLoading(false));
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [tagInput]);
 
-const handleAddTag = () => {
-  const trimmed = tagInput.trim();
-  if (trimmed && !tags.includes(trimmed)) setTags((p) => [...p, trimmed]);
-  setTagInput("");
-};
+  const validate = (): boolean => {
+    const next: Record<string, string> = {};
+    if (formTitle.trim().length < 3) next.title = "Minimum 3 characters";
+    else if (formTitle.trim().length > 200) next.title = "Maximum 200 characters";
+
+    if (authorName.trim().length < 2) next.authorName = "Minimum 2 characters";
+    else if (authorName.trim().length > 64) next.authorName = "Maximum 64 characters";
+
+    if (!categoryId) next.categoryId = "Please select a category";
+    if (subcategories.length > 0 && subcategoryIds.length === 0) {
+      next.subcategoryIds = "Please select at least one subcategory";
+    }
+    if (!coverBase64) next.cover = "Please select a banner image";
+
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
+
+  const handleAddTag = () => {
+    const trimmed = tagInput.trim();
+    if (trimmed && !tags.includes(trimmed)) setTags((p) => [...p, trimmed]);
+    setTagInput("");
+  };
+  
 
 const handleSubmit = () => {
+  if (!validate()) return;
+
   if (published !== initialPublished) {
-    const action = published ? 'publish' : 'unpublish';
-    if (!confirm(`You sure you want to ${action} this article?`)) return;
+    const action = published ? "publish" : "unpublish";
+    if (!confirm(`Are you sure you want to ${action} this article?`)) return;
   }
 
   const bodyContent = content as any;
@@ -267,56 +289,59 @@ const handleSubmit = () => {
 
       <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 4 }}>
 
-      {/* основний контент */}
         <Box sx={{ gridColumn: { xs: 'span 12', md: 'span 10' } }}>
-          <TextField fullWidth label="Title *" value={formTitle}
-            onChange={(e) => setFormTitle(e.target.value)} sx={{ mb: 3 }} />
-
-        <Box sx={{ mb: 3 }}>
-          <Autocomplete
-            multiple
-            freeSolo
-            options={tagOptions.map((t) => t.name)}
-            value={tags}
-            inputValue={tagInput}
-            loading={tagLoading}
-            onInputChange={(_, value, reason) => {
-              if (reason !== "reset") setTagInput(value);
-            }}
-            onChange={(_, newValue) => {
-              // newValue — масив рядків (існуючі + нові freeSolo)
-              setTags(newValue as string[]);
-              setTagInput("");
-            }}
-            filterOptions={(options) => options} // фільтрація на сервері
-            renderTags={(value, getTagProps) =>
-              value.map((option, index) => (
-                <Chip
-                  label={option}
-                  size="small"
-                  {...getTagProps({ index })}
-                  key={option}
-                />
-              ))
-            }
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Tags"
-                placeholder="Enter tag..."
-                InputProps={{
-                  ...params.InputProps,
-                  endAdornment: (
-                    <>
-                      {tagLoading && <CircularProgress size={16} />}
-                      {params.InputProps.endAdornment}
-                    </>
-                  ),
-                }}
-              />
-            )}
+          <TextField
+            fullWidth label="Title *" value={formTitle}
+            onChange={(e) => { setFormTitle(e.target.value); setErrors(p => ({ ...p, title: "" })); }}
+            error={!!errors.title}
+            helperText={errors.title || " "}
+            sx={{ mb: 3 }}
           />
-        </Box>
+
+          <Box sx={{ mb: 3 }}>
+            <Autocomplete
+              multiple
+              freeSolo
+              options={tagOptions.map((t) => t.name)}
+              value={tags}
+              inputValue={tagInput}
+              loading={tagLoading}
+              onInputChange={(_, value, reason) => {
+                if (reason !== "reset") setTagInput(value);
+              }}
+              onChange={(_, newValue) => {
+                setTags(newValue as string[]);
+                setTagInput("");
+              }}
+              filterOptions={(options) => options}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    label={option}
+                    size="small"
+                    {...getTagProps({ index })}
+                    key={option}
+                  />
+                ))
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Tags"
+                  placeholder="Enter tag..."
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <>
+                        {tagLoading && <CircularProgress size={16} />}
+                        {params.InputProps.endAdornment}
+                      </>
+                    ),
+                  }}
+                />
+              )}
+            />
+          </Box>
 
           <Box sx={{ border: "1px solid #ddd", borderRadius: 2, p: 2, mb: 3, minHeight: 300 }}>
             {content !== null ? (
@@ -353,10 +378,10 @@ const handleSubmit = () => {
               setAuthorInput(value);
               if (reason === 'input') {
                 setAuthorName(value);
-                // якщо вручну — скидаємо аватар
                 setAuthorAvatarId(null);
                 setAuthorAvatarUrl(null);
                 setAuthorRole(null);
+                setErrors(p => ({ ...p, authorName: "" }));
               }
             }}
             onChange={(_, value) => {
@@ -406,6 +431,8 @@ const handleSubmit = () => {
                 {...params}
                 label="Author *"
                 sx={{ mb: 1 }}
+                error={!!errors.authorName}
+                helperText={errors.authorName || " "}
                 InputProps={{
                   ...params.InputProps,
                   startAdornment: authorAvatarUrl ? (
@@ -422,7 +449,6 @@ const handleSubmit = () => {
             )}
           />
 
-          {/* Аватар автора */}
             <Box sx={{ mb: 3 }}>
               <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
                 Author avatar
@@ -552,26 +578,32 @@ const handleSubmit = () => {
             </Select>
           </FormControl>
 
-          <FormControl fullWidth sx={{ mb: 3 }}>
+          <FormControl fullWidth sx={{ mb: 3 }} error={!!errors.categoryId}>
             <InputLabel>Category *</InputLabel>
             <Select
               value={categoryId}
               label="Category *"
-              onChange={(e) => { setCategoryId(e.target.value as number); setSubcategoryIds([]); }}
+              onChange={(e) => {
+                setCategoryId(e.target.value as number);
+                setSubcategoryIds([]);
+                setErrors(p => ({ ...p, categoryId: "" }));
+              }}
             >
               {categories.map((c) => <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>)}
             </Select>
+            {errors.categoryId && <FormHelperText>{errors.categoryId}</FormHelperText>}
           </FormControl>
 
           {subcategories.length > 0 && (
-            <FormControl fullWidth sx={{ mb: 3 }}>
+            <FormControl fullWidth sx={{ mb: 3 }} error={!!errors.subcategoryIds}>
               <InputLabel>Subcategories</InputLabel>
               <Select
                 multiple
                 value={subcategoryIds}
                 onChange={(e) => {
-                const val = e.target.value;
-                setSubcategoryIds((typeof val === 'string' ? val.split(',').map(Number) : val as number[]));
+                  const val = e.target.value;
+                  setSubcategoryIds(typeof val === 'string' ? val.split(',').map(Number) : val as number[]);
+                  setErrors(p => ({ ...p, subcategoryIds: "" }));
                 }}
                 input={<OutlinedInput label="Subcategories" />}
                 renderValue={(selected) => (
@@ -584,17 +616,25 @@ const handleSubmit = () => {
               >
                 {subcategories.map((s) => <MenuItem key={s.id} value={s.id}>{s.name}</MenuItem>)}
               </Select>
+              {errors.subcategoryIds && <FormHelperText>{errors.subcategoryIds}</FormHelperText>}
             </FormControl>
           )}
 
           <Button
             variant="outlined"
             fullWidth
+            color={errors.cover ? 'error' : 'primary'}
             onClick={() => setMediaPickerOpen(true)}
-            sx={{ mb: 1 }}
+            sx={{ mb: errors.cover ? 0.5 : 1 }}
           >
             {coverBase64 ? 'Change Banner' : 'Select Banner'}
           </Button>
+
+          {errors.cover && (
+            <Typography variant="caption" color="error" sx={{ display: 'block', mb: 1 }}>
+              {errors.cover}
+            </Typography>
+          )}
 
           {coverBase64 && (
             <Box sx={{ position: 'relative' }}>
@@ -617,6 +657,7 @@ const handleSubmit = () => {
               setCoverBase64(item.url);
               setSelectedMediaId(item.id);
               setPreviousImageId(item.id);
+              setErrors(p => ({ ...p, cover: "" }));
             }}
           />
         </Box>

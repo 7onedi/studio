@@ -15,9 +15,11 @@ export class BaseService {
   }
 
   protected assertPolicy(user: any, policy?: (user: any) => boolean) {
-    if (policy && !policy(user)) {
+    if (!policy) return;
 
-      if (!user) throw new ApiError(401, "Unauthorized");
+    if (!user) throw new ApiError(401, "Unauthorized");
+
+    if (!policy(user)) {
       throw new ApiError(403, "You don't have permission to perform this action");
     }
   }

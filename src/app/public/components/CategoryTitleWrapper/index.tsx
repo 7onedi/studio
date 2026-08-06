@@ -10,6 +10,12 @@ interface ParentBody {
   body_pl?: any;
   body_lt?: any;
   body_ro?: any;
+  presentationTitle?: string | null;
+  presentationDescription?: string | null;
+  presentationUrl?: string | null;
+  presentationTitle_uk?: string | null;
+  presentationDescription_uk?: string | null;
+  presentationUrl_uk?: string | null;
 }
 
 export default function CategoryTitleWrapper({
@@ -26,6 +32,15 @@ export default function CategoryTitleWrapper({
   const { locale } = useLanguage();
   const categories = getCategoriesData(locale);
   const project = categories.find(c => c.id === projectId)!;
+
+  const presentation = {
+    title: parent?.presentationTitle,
+    description: parent?.presentationDescription,
+    url: parent?.presentationUrl,
+    title_uk: parent?.presentationTitle_uk,
+    description_uk: parent?.presentationDescription_uk,
+    url_uk: parent?.presentationUrl_uk,
+  };
 
   const bodyByLocale: Record<string, any> = {
     uk: parent?.body,
@@ -45,6 +60,7 @@ export default function CategoryTitleWrapper({
       hoverGradient={project.hoverGradient}
       title={title ?? project.title}
       description={description}
+      presentation={presentation}
     />
   );
 }

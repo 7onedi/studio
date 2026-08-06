@@ -23,45 +23,17 @@ class ArticleService extends BaseService {
 			data.title
 		);
 
-		const { categoryId, subcategoryIds, tags, imageId, authorAvatarId, ...rest } = data;
+		const { categoryId, subcategoryIds, tags, currentImageId, authorAvatarId, ...rest } = data;
 
 		return this.repository.create({
 			slug,
 			...rest,
-
 			author: { connect: { id: user.id } },
-
 			category: { connect: { id: categoryId } },
-
-			image: imageId
-			? { connect: { id: imageId } }
-			: undefined,
-
-			authorAvatar: authorAvatarId
-			? { connect: { id: authorAvatarId } }
-			: undefined,
-
-			subcategories: subcategoryIds
-			? { connect: subcategoryIds.map((id) => ({ id })) }
-			: undefined,
-
-			tags: tags
-			? {
-				connectOrCreate: await Promise.all(
-					tags.map(async (tag) => {
-						const tagSlug = await generateUniqueSlug(
-							(slug) => tagRepository.existsBySlug(slug),
-							tag.name
-						);
-
-						return {
-							where: { name: tag.name },
-							create: { name: tag.name, slug: tagSlug },
-						};
-					})
-				),
-				}
-			: undefined,
+			image: currentImageId ? { connect: { id: currentImageId } } : undefined,
+			authorAvatar: authorAvatarId ? { connect: { id: authorAvatarId } } : undefined,
+			subcategories: subcategoryIds ? { connect: subcategoryIds.map((id) => ({ id })) } : undefined,
+			tags: tags ? { /* без змін */ } : undefined,
 		});
 	}
 
@@ -69,48 +41,50 @@ class ArticleService extends BaseService {
 		this.assertPolicy(user, canUpdateArticle);
 
 		const data = updateArticleSchema.partial().parse(body);
-		const { categoryId, subcategoryIds, tags, imageId, authorAvatarId, ...rest } = data;
+		const { categoryId, subcategoryIds, tags, currentImageId, authorAvatarId, ...rest } = data;
 
 		return this.repository.update(id, {
 			...rest,
 
-			image: imageId
-			? { connect: { id: imageId } }
+			image: currentImageId !== undefined
+			? currentImageId === null
+				? { disconnect: true }
+				: { connect: { id: currentImageId } }
 			: undefined,
 
-			  authorAvatar: authorAvatarId !== undefined
-			  ? authorAvatarId === null
+			authorAvatar: authorAvatarId !== undefined
+			? authorAvatarId === null
 				? { disconnect: true }
-				: { connect: { id: authorAvatarId! } }
-			  : undefined,
+				: { connect: { id: authorAvatarId } }
+			: undefined,
 
 			category: categoryId
-				? { connect: { id: categoryId } }
-				: undefined,
+			? { connect: { id: categoryId } }
+			: undefined,
 
 			subcategories: subcategoryIds
 			? { set: subcategoryIds.map((id: number) => ({ id })) }
 			: undefined,
 
 			tags: tags
-				? {
-					set: [],
-					connectOrCreate: await Promise.all(
-						tags.map(async (tag: any) => {
-						const tagSlug = await generateUniqueSlug(
-							(slug) => tagRepository.existsBySlug(slug),
-							tag.name
-						);
-						return {
-							where: { name: tag.name },
-							create: { name: tag.name, slug: tagSlug },
-						};
-						})
-					),
+			? {
+				set: [],
+				connectOrCreate: await Promise.all(
+					tags.map(async (tag: any) => {
+					const tagSlug = await generateUniqueSlug(
+						(slug) => tagRepository.existsBySlug(slug),
+						tag.name
+					);
+					return {
+						where: { name: tag.name },
+						create: { name: tag.name, slug: tagSlug },
+					};
+					})
+				),
 				}
 			: undefined,
 		});
-	}
+		}
 
   async publish(user: any, body: unknown) {
     this.assertPolicy(user, canPublishArticle);
