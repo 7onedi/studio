@@ -2,8 +2,15 @@
 
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { Dialog, DialogContent, IconButton, Button } from '@mui/material';
-import { IconExternalLink, IconDownload, IconPresentation } from '@tabler/icons-react';
+import {
+  Dialog,
+  DialogContent,
+  IconButton,
+  Button,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
+import { IconExternalLink, IconDownload, IconPresentation, IconX } from '@tabler/icons-react';
 import { useLanguage } from '@/app/providers/LanguageProvider';
 
 const PdfPresentationViewer = dynamic(() => import('@components/PdfPresentationViewer'), { ssr: false });
@@ -32,6 +39,8 @@ export default function PresentationBlock({
 }: Props) {
   const [open, setOpen] = useState(false);
   const { locale } = useLanguage();
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const isUk = locale === 'uk';
   const activeUrl = isUk ? (url_uk || url) : url;
@@ -45,54 +54,55 @@ export default function PresentationBlock({
   const downloadUrl = fileId ? `https://drive.google.com/uc?export=download&id=${fileId}` : activeUrl;
 
   return (
-    <div className="my-8 flex justify-end">
-      <div className="relative group">
-        <button
-          onClick={() => setOpen(true)}
-          className="w-16 h-16 rounded-full bg-main-amarant/10 hover:bg-main-amarant/20 flex items-center justify-center transition"
-        >
-          <IconPresentation size={28} className="text-main-amarant" />
-        </button>
-
+    <div className="my-8 flex justify-center lg:justify-end">
+      <button
+        onClick={() => setOpen(true)}
+        className="inline-flex items-center gap-4 max-w-xs sm:max-w-sm px-4 py-3 rounded-2xl bg-indigo-50 hover:bg-indigo-100 transition text-right"
+      >
         {(activeTitle || activeDescription) && (
-          <div
-            className="absolute right-0 top-full mt-2 w-64 rounded-xl bg-white shadow-lg p-4 text-right
-                       opacity-0 invisible translate-y-1
-                       group-hover:opacity-100 group-hover:visible group-hover:translate-y-0
-                       transition pointer-events-none z-10"
-          >
+          <div className="flex flex-col items-end min-w-0">
             {activeTitle && (
-              <p className="text-sm font-semibold mb-1 break-words">{activeTitle}</p>
+              <p className="text-sm font-semibold break-words">{activeTitle}</p>
             )}
             {activeDescription && (
-              <p className="text-xs text-main-text break-words whitespace-pre-line">
-                {activeDescription}
-              </p>
+              <p className="text-xs text-main-text break-words">{activeDescription}</p>
             )}
           </div>
         )}
-      </div>
+        <div className="shrink-0 w-12 h-12 rounded-full bg-main-amarant/10 flex items-center justify-center">
+          <IconPresentation size={24} className="text-main-amarant" />
+        </div>
+      </button>
 
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
         maxWidth="xl"
         fullWidth
-        sx={{ '& .MuiDialog-paper': { height: '92vh' } }}
+        fullScreen={fullScreen}
+        sx={{ '& .MuiDialog-paper': { height: fullScreen ? '100%' : '92vh' } }}
       >
         <IconButton
-          component="a"
-          href={activeUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          sx={{ position: 'absolute', top: 8, right: 8, zIndex: 1, background: 'white' }}
+          onClick={() => setOpen(false)}
+          sx={{ position: 'absolute', top: 8, right: 8, zIndex: 2, background: 'white' }}
         >
-          <IconExternalLink size={20} />
+          <IconX size={20} />
         </IconButton>
+
         <DialogContent sx={{ p: 0, height: '100%' }}>
-            {proxyUrl && <PdfPresentationViewer fileUrl={proxyUrl} />}
+          {proxyUrl && <PdfPresentationViewer fileUrl={proxyUrl} />}
         </DialogContent>
-        <div className="p-3 flex justify-end">
+
+        <div className="p-3 flex items-center justify-between shrink-0">
+          <IconButton
+            component="a"
+            href={activeUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <IconExternalLink size={20} />
+          </IconButton>
+
           <Button
             component="a"
             href={downloadUrl}

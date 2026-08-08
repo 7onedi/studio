@@ -53,16 +53,32 @@ export const articleRepository = {
     return !!article;
   },
 
-  async  update(id: number, data: any) {
-      return prisma.article.update({
+  async update(id: number, data: any) {
+    const updateData = { ...data };
+
+    if (typeof data.published === 'boolean') {
+      const current = await prisma.article.findUnique({
         where: { id },
-        data,
-        include: {
-          category: true,
-          subcategories: true,
-          tags: true,
-          author: true,
-        },
+        select: { publishedAt: true },
       });
+
+      if (data.published && !current?.publishedAt) {
+        updateData.publishedAt = new Date();
+      }
+      if (!data.published) {
+        updateData.publishedAt = null;
+      }
     }
+
+    return prisma.article.update({
+      where: { id },
+      data: updateData,
+      include: {
+        category: true,
+        subcategories: true,
+        tags: true,
+        author: true,
+      },
+    });
+  }
 };

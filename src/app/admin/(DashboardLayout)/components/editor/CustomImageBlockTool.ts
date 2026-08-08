@@ -54,7 +54,7 @@ export class CustomImageBlockTool {
     img.style.cssText = "width:100%;display:block;max-height:400px;object-fit:contain;";
 
     const replaceBtn = document.createElement("button");
-    replaceBtn.textContent = "Замінити";
+    replaceBtn.textContent = "Replace";
     replaceBtn.style.cssText =
       "position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.5);color:#fff;border:none;border-radius:4px;padding:4px 8px;font-size:12px;cursor:pointer;";
     replaceBtn.addEventListener("click", () => this._renderUploadArea(container));
@@ -68,7 +68,7 @@ export class CustomImageBlockTool {
     container.style.cssText = "cursor:pointer;padding:32px;text-align:center;background:#f9fafb;";
 
     const galleryBtn = document.createElement("button");
-    galleryBtn.textContent = "📁 З галереї";
+    galleryBtn.textContent = "📁 Open Gallery";
     galleryBtn.style.cssText =
       "display:block;margin:0 auto 12px;padding:6px 16px;background:#1976d2;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer;";
     galleryBtn.addEventListener("click", async (e) => {
@@ -84,7 +84,7 @@ export class CustomImageBlockTool {
 
     const label = document.createElement("label");
     label.style.cssText = "cursor:pointer;display:block;";
-    label.innerHTML = `<div style="font-size:32px">🌄</div><div style="color:#6b7280;font-size:13px;margin-top:8px;">Клікни або перетягни зображення</div>`;
+    label.innerHTML = `<div style="font-size:32px">🌄</div><div style="color:#6b7280;font-size:13px;margin-top:8px;">Click or drag an image</div>`;
 
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -116,7 +116,7 @@ export class CustomImageBlockTool {
   }
 
   private async _uploadFile(file: File, container: HTMLElement) {
-    container.innerHTML = `<div style="padding:32px;text-align:center;color:#6b7280;font-size:13px;">Завантаження...</div>`;
+    container.innerHTML = `<div style="padding:32px;text-align:center;color:#6b7280;font-size:13px;">Uploading...</div>`;
     try {
       const formData = new FormData();
       formData.append("file", file);
@@ -131,7 +131,7 @@ export class CustomImageBlockTool {
       this.config?.onUpload?.(data.id, data.url);
       this._renderImage(container, data.url);
     } catch {
-      container.innerHTML = `<div style="padding:32px;text-align:center;color:#ef4444;font-size:13px;">Помилка завантаження</div>`;
+      container.innerHTML = `<div style="padding:32px;text-align:center;color:#ef4444;font-size:13px;">Error uploading image</div>`;
     }
   }
 
