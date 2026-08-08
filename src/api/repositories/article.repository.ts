@@ -69,7 +69,6 @@ export const articleRepository = {
         updateData.publishedAt = null;
       }
     }
-
     return prisma.article.update({
       where: { id },
       data: updateData,
