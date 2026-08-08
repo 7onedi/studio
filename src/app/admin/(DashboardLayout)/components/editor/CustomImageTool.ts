@@ -44,7 +44,7 @@ export class CustomImageTool {
 
     const redirectInput = document.createElement("input");
     redirectInput.type = "url";
-    redirectInput.placeholder = "Redirect URL (необов'язково)";
+    redirectInput.placeholder = "Redirect URL (optional)";
     redirectInput.value = this.data.redirectUrl || "";
     redirectInput.style.cssText =
       "flex:1;border:none;outline:none;font-size:13px;color:#374151;background:transparent;";
@@ -55,7 +55,7 @@ export class CustomImageTool {
     // --- Caption ---
     const captionInput = document.createElement("input");
     captionInput.type = "text";
-    captionInput.placeholder = "Підпис...";
+    captionInput.placeholder = "Caption...";
     captionInput.value = this.data.caption || "";
     captionInput.style.cssText =
       "width:100%;border:none;border-top:1px solid #e5e7eb;outline:none;font-size:13px;color:#6b7280;padding:8px 12px;background:#fff;box-sizing:border-box;";
@@ -95,7 +95,7 @@ export class CustomImageTool {
 
     // Кнопка галереї
     const galleryBtn = document.createElement("button");
-    galleryBtn.textContent = "📁 З галереї";
+    galleryBtn.textContent = "📁 Open Gallery";
     galleryBtn.style.cssText = "display:block;margin:0 auto 12px;padding:6px 16px;background:#1976d2;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer;";
     galleryBtn.addEventListener("click", async (e) => {
       e.preventDefault();
@@ -110,7 +110,7 @@ export class CustomImageTool {
 
     const label = document.createElement("label");
     label.style.cssText = "cursor:pointer;display:block;";
-    label.innerHTML = `<div style="font-size:32px">📷</div><div style="color:#6b7280;font-size:13px;margin-top:8px;">Клікни або перетягни зображення</div>`;
+    label.innerHTML = `<div style="font-size:32px">📷</div><div style="color:#6b7280;font-size:13px;margin-top:8px;">Click or drag an image</div>`;
 
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -144,7 +144,7 @@ export class CustomImageTool {
 
   private async _uploadFile(file: File, container: HTMLElement) {
     // Показуємо прогрес
-    container.innerHTML = `<div style="padding:32px;text-align:center;color:#6b7280;font-size:13px;">Завантаження...</div>`;
+    container.innerHTML = `<div style="padding:32px;text-align:center;color:#6b7280;font-size:13px;">Uploading...</div>`;
 
     try {
       const formData = new FormData();
@@ -161,7 +161,7 @@ export class CustomImageTool {
       this.config?.onUpload?.(data.id, data.url);
       this._renderImage(container, data.url);
     } catch {
-      container.innerHTML = `<div style="padding:32px;text-align:center;color:#ef4444;font-size:13px;">Помилка завантаження</div>`;
+      container.innerHTML = `<div style="padding:32px;text-align:center;color:#ef4444;font-size:13px;">Error uploading image</div>`;
     }
   }
 

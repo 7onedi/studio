@@ -107,7 +107,7 @@ export default function EditArticle({ params }: EditPageProps) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...data,
-        coverBase64: undefined, // не відправляємо base64 в тіло
+        coverBase64: undefined,
         categoryId: Number(data.categoryId),
         tags: data.tags.map((name) => ({ name })),
         ...(imageId && { imageId }),
@@ -117,18 +117,6 @@ export default function EditArticle({ params }: EditPageProps) {
     if (!res.ok) {
       const json = await res.json().catch(() => ({}));
       throw new Error(json?.message || `Error ${res.status}`);
-    }
-    if (data.published !== initialPublished) {
-      const publishRes = await fetch('/api/articles/publish', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ id: articleId }),
-      });
-      if (!publishRes.ok) {
-        const json = await publishRes.json().catch(() => ({}));
-        throw new Error(json?.message || `Publish error ${publishRes.status}`);
-      }
     }
     setSuccess(true);
     setTimeout(() => router.push("/admin/production/articles"), 1500);
