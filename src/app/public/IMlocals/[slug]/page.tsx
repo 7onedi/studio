@@ -115,7 +115,7 @@ export default async function IMlocalsPage({ params }: IMlocalsPageProps) {
         <div className="relative space-y-6 rounded-2xl bg-indigo-50 p-6 text-main-text leading-relaxed border-b-2 border-main-amarant">
           <div className="mt-6 flex justify-center">
             <p className="lg:mb-4 text-headline_4_mobile lg:text-headline_4">
-              <TranslatedText tKey="pages.club_preview_block.aboutYFC" />
+              <TranslatedText tKey="pages.club_preview_block.aboutPlaces" />
             </p>
           </div>
           <MfkTranslatedBody child={child} />

@@ -69,9 +69,8 @@ export class CustomGalleryTool {
     const btnRow = document.createElement("div");
     btnRow.style.cssText = "display:flex;gap:8px;margin-bottom:8px;";
 
-    // З галереї
     const galleryBtn = document.createElement("button");
-    galleryBtn.textContent = "📁 З галереї";
+    galleryBtn.textContent = "📁 Open Gallery";
     galleryBtn.style.cssText =
       "padding:6px 14px;background:#1976d2;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer;";
     galleryBtn.addEventListener("click", async (e) => {
@@ -89,7 +88,7 @@ export class CustomGalleryTool {
     const uploadLabel = document.createElement("label");
     uploadLabel.style.cssText =
       "padding:6px 14px;background:#fff;color:#374151;border:1px solid #d1d5db;border-radius:6px;font-size:13px;cursor:pointer;";
-    uploadLabel.textContent = "📷 Завантажити";
+    uploadLabel.textContent = "📷 Upload";
 
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -110,7 +109,6 @@ export class CustomGalleryTool {
     btnRow.appendChild(uploadLabel);
     this.wrapper.appendChild(btnRow);
 
-    // Caption
     const caption = document.createElement("input");
     caption.type = "text";
     caption.placeholder = "Gallery caption";
