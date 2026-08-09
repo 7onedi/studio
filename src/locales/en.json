@@ -65,6 +65,10 @@
     "category_title": {
       "title": "Interesting articles about the project"
     },
+    "pdf_presentation_viewer": {
+      "error": "Failed to load file",
+      "retry": "Retry"
+    },
     "project_preview_block": {
       "title": "Interesting articles about",
       "description_title": "About the project",

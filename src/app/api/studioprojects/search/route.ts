@@ -16,6 +16,14 @@ function parseQuery(req: NextRequest) {
   if (searchParams.get("published") === "true")  filters.published = true;
   if (searchParams.get("published") === "false") filters.published = false;
 
+  if (searchParams.has("markerType")) {
+    filters.markerType = searchParams.get("markerType");
+  } else if (searchParams.get("onlyMarkers") === "true") {
+    filters.markerType = { not: null };
+  } else if (searchParams.get("includeMarkers") !== "true") {
+    filters.markerType = "null";
+  }
+
   const options = {
     page:   Number(searchParams.get("page")  ?? 1),
     limit:  Number(searchParams.get("limit") ?? 10),

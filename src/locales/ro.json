@@ -65,6 +65,10 @@
     "category_title": {
       "title": "Articole interesante despre proiect"
     },
+    "pdf_presentation_viewer": {
+      "error": "Nu s-a putut încărca fișierul",
+      "retry": "Retry"
+    },
     "project_preview_block": {
       "title": "Articole interesante despre",
       "description_title": "Despre proiect",
