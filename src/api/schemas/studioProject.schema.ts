@@ -3,6 +3,7 @@ import { socialLinkSchema } from "./socialLink.schema";
 import { createLocationSchema } from "./location.schema";
 
 export const ProjectLangEnum = z.enum(["UK", "EN", "PL", "LT", "RO", "MK"]);
+export const MarkerTypeEnum  = z.enum(["IMAGEMAPPING", "HISTORICAL", "NATURE"]); 
 const locationDataSchema = createLocationSchema.omit({
   projectId: true,
   published: true,
@@ -29,6 +30,7 @@ export const createStudioProjectSchema = z.object({
   locationData: locationDataSchema.optional(),
   socialLinks: z.array(socialLinkSchema).optional(),
   parentId: z.number().optional(),
+  markerType: MarkerTypeEnum.nullable().optional(), 
   presentationUrl: z.url().optional().nullable(),
   presentationTitle: z.string().optional().nullable(),
   presentationDescription: z.string().optional().nullable(),
@@ -59,6 +61,7 @@ export const updateStudioProjectSchema = z.object({
   deleteLocation: z.boolean().optional(),
   socialLinks: z.array(socialLinkSchema).optional(),
   parentId: z.number().optional(),
+  markerType: MarkerTypeEnum.nullable().optional(),
   presentationUrl: z.url().optional().nullable(),
   presentationTitle: z.string().optional().nullable(),
   presentationDescription: z.string().optional().nullable(),

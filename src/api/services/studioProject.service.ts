@@ -50,6 +50,7 @@ import {
       location: locationInput,
       parent: data.parentId ? { connect: { id: data.parentId } } : undefined,
       author: user.id ? { connect: { id: user.id } } : undefined,
+      markerType: data.markerType ?? null,
       presentationTitle: data.presentationTitle,
       presentationDescription: data.presentationDescription,
       presentationUrl: data.presentationUrl,

@@ -9,6 +9,8 @@ import ParentProjectTable from './ParentProjectTable';
 import ChildProjectTable from './ChildProjectTable';
 import ParentProjectFormDialog, { Category, ParentProject } from './ParentProjectFormDialog';
 import ChildProjectFormDialog, { ChildProject } from './ChildProjectFormDialog';
+import MapMarkerFormDialog, { MapMarkerProject } from './MapMarkerFormDialog';
+import MapMarkerTable from './MapMarkerTable';
 
 function ProjectsContent() {
   const router = useRouter();
@@ -38,6 +40,14 @@ function ProjectsContent() {
   const [childFormOpen, setChildFormOpen] = useState(false);
   const [childEditTarget, setChildEditTarget] = useState<ChildProject | undefined>();
 
+  // --- маркери ---
+  const [markers, setMarkers] = useState<MapMarkerProject[]>([]);
+  const [markerTotal, setMarkerTotal] = useState(0);
+  const [markerLoading, setMarkerLoading] = useState(false);
+  const [markerFormOpen, setMarkerFormOpen] = useState(false);
+  const [markerEditTarget, setMarkerEditTarget] = useState<MapMarkerProject | undefined>();
+  const [allProjects, setAllProjects] = useState<{ id: number; title: string }[]>([]);
+
   // --- параметри ---
   const page   = searchParams.get('page')   ?? '1';
   const search = searchParams.get('search') ?? '';
@@ -51,6 +61,8 @@ function ProjectsContent() {
     if (key !== 'page') params.set('page', '1');
     router.push(`${pathname}?${params}`);
   };
+
+  const imagemappingCategoryId = categories.find((c) => c.name === 'Imagemapping')?.id ?? 0;
 
   useEffect(() => {
     fetch('/api/auth/me', { credentials: 'include' })
@@ -73,12 +85,12 @@ function ProjectsContent() {
 
   // --- зайняті підкатегорії (всі дочірні проекти) ---
   useEffect(() => {
-    fetch('/api/studioprojects/search?limit=1000')
+    fetch('/api/studioprojects/search?limit=1000&includeMarkers=true')
       .then((r) => r.json())
       .then((d) => {
         const all: ChildProject[] = Array.isArray(d.data) ? d.data : [];
         const used = all
-          .filter((p) => p.parentId && p.subcategoryId)
+          .filter((p) => p.subcategoryId)
           .map((p) => p.subcategoryId as number);
         setUsedSubcategoryIds(used);
       })
@@ -118,6 +130,31 @@ function ProjectsContent() {
       .finally(() => setChildLoading(false));
   }, [tab, page, limit, search, sortBy, order]);
 
+  // список усіх проектів як кандидатів на parentId (і батьківські, і дочірні — одна шкала id)
+  useEffect(() => {
+    if (!imagemappingCategoryId) return;
+    fetch(`/api/studioprojects/search?limit=1000&categoryId=${imagemappingCategoryId}&hasParent=true`)
+      .then((r) => r.json())
+      .then((d) => setAllProjects((Array.isArray(d.data) ? d.data : []).map((p: any) => ({ id: p.id, title: p.title_en || p.title }))))
+      .catch(console.error);
+  }, [imagemappingCategoryId]);
+
+  // маркери
+  useEffect(() => {
+    if (tab !== 2) return;
+    setMarkerLoading(true);
+    const params = new URLSearchParams({ page, limit, sortBy, order, onlyMarkers: 'true' });
+    if (search) params.set('title', search);
+    fetch(`/api/studioprojects/search?${params}`)
+      .then((r) => r.json())
+      .then((d) => {
+        setMarkers(Array.isArray(d.data) ? d.data : []);
+        setMarkerTotal(d.total ?? 0);
+      })
+      .catch(console.error)
+      .finally(() => setMarkerLoading(false));
+  }, [tab, page, limit, search, sortBy, order]);
+
   // --- publish ---
   const handlePublish = async (id: number, currentPublished: boolean) => {
     if (!confirm(`${currentPublished ? 'Unpublish' : 'Publish'}?`)) return;
@@ -129,18 +166,21 @@ function ProjectsContent() {
         body: JSON.stringify({ id }),
       });
       if (!res.ok) throw new Error(`Error ${res.status}`);
-      // оновлюємо стан
       if (tab === 0) {
         setParents((prev) =>
           prev.map((p) => p.id === id ? { ...p, published: !p.published } : p)
         );
-      } else {
+      } else if (tab === 1) {
         setChildren((prev) =>
           prev.map((p) => p.id === id ? { ...p, published: !p.published } : p)
         );
+      } else {
+        setMarkers((prev) =>
+          prev.map((m) => m.id === id ? { ...m, published: !m.published } : m)
+        );
       }
     } catch (err: any) {
-      console.error(err.message);
+      alert(err.message ?? 'Failed to update publish status');
     }
   };
 
@@ -219,10 +259,11 @@ function ProjectsContent() {
             startIcon={<IconPlus size={16} />}
             onClick={() => {
               if (tab === 0) { setParentEditTarget(undefined); setParentFormOpen(true); }
-              else           { setChildEditTarget(undefined);  setChildFormOpen(true); }
+              else if (tab === 1) { setChildEditTarget(undefined); setChildFormOpen(true); }
+              else { setMarkerEditTarget(undefined); setMarkerFormOpen(true); }
             }}
           >
-            {tab === 0 ? 'New Parent Project' : 'New Project'}
+            {tab === 0 ? 'New Parent Project' : tab === 1 ? 'New Project' : 'New Marker'}
           </Button>
         </Box>
 
@@ -238,10 +279,9 @@ function ProjectsContent() {
             }}
             sx={{ mb: 3 }}
           >
-              <Tab label="Parent Projects" />
-
+            <Tab label="Parent Projects" />
             <Tab label="Projects" />
-
+            <Tab label="Imagemapping" />
           </Tabs>
         )}
 
@@ -287,6 +327,28 @@ function ProjectsContent() {
             userRole={userRole}
           />
         )}
+
+        {tab === 2 && (
+          <MapMarkerTable
+            data={markers}
+            total={markerTotal}
+            loading={markerLoading}
+            page={Number(page) - 1}
+            pageSize={Number(limit)}
+            search={search}
+            sortBy={sortBy}
+            order={order as 'asc' | 'desc'}
+            onSearchChange={(val) => updateParam('search', val)}
+            onSortChange={(col, dir) => { updateParam('sortBy', col); updateParam('order', dir); }}
+            onPageChange={(p) => updateParam('page', String(p + 1))}
+            onPageSizeChange={(size) => updateParam('limit', String(size))}
+            onEdit={(m) => { setMarkerEditTarget(m); setMarkerFormOpen(true); }}
+            onDelete={handleChildDelete}
+            onBulkDelete={handleChildBulkDelete}
+            onPublish={handlePublish}
+            userRole={userRole}
+          />
+        )}
       </Box>
 
       <ParentProjectFormDialog
@@ -304,6 +366,26 @@ function ProjectsContent() {
         usedSubcategoryIds={usedSubcategoryIds}
         onClose={() => setChildFormOpen(false)}
         onSaved={handleChildSaved}
+      />
+
+      <MapMarkerFormDialog
+        open={markerFormOpen}
+        initial={markerEditTarget}
+        imagemappingCategoryId={imagemappingCategoryId}
+        parentCandidates={allProjects}
+        usedSubcategoryIds={usedSubcategoryIds}
+        onClose={() => setMarkerFormOpen(false)}
+        onSaved={(saved) => {
+          setMarkers((prev) => {
+            const exists = prev.find((m) => m.id === saved.id);
+            if (exists) return prev.map((m) => m.id === saved.id ? saved : m);
+            setMarkerTotal((t) => t + 1);
+            return [saved, ...prev];
+          });
+          if (saved.subcategoryId) {
+            setUsedSubcategoryIds((prev) => [...prev, saved.subcategoryId as number]);
+          }
+        }}
       />
     </PageContainer>
   );

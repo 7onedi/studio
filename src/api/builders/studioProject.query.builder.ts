@@ -11,6 +11,14 @@ export class StudioProjectQueryBuilder extends QueryBuilder {
     if (filters.subcategoryId) where.subcategoryId = Number(filters.subcategoryId);
     if (typeof filters.published === "boolean") where.published = filters.published;
 
+    if (filters.markerType && typeof filters.markerType === "object") {
+      where.markerType = filters.markerType; // { not: null }
+    } else if (filters.markerType === "null") {
+      where.markerType = null;
+    } else if (filters.markerType) {
+      where.markerType = filters.markerType;
+    }
+
     return where;
   }
 }

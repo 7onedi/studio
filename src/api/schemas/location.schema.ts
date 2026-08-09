@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 export const createLocationSchema = z.object({
-  name: z.string().min(1, "Назва локації обов'язкова"),
-  url: z.string().url("Повинен бути валідний URL"),
+  name: z.string().min(1, "Name is required"),
+  url: z.url("URL must be a valid").nullable().optional(),
   coordinates: z
     .object({
       lat: z.number(),

@@ -65,6 +65,10 @@
     "category_title": {
       "title": "Ciekawe artykuły o projekcie"
     },
+    "pdf_presentation_viewer": {
+      "error": "Nie udało się załadować pliku",
+      "retry": "Ponów"
+    },
     "project_preview_block": {
       "title": "Ciekawe artykuły o",
       "description_title": "O projekcie",

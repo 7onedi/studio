@@ -65,6 +65,10 @@
     "category_title": {
       "title": "Įdomūs straipsniai apie projektą"
     },
+    "pdf_presentation_viewer": {
+      "error": "Nepavyko įkelti failo",
+      "retry": "Bandyti dar kartą"
+    },
     "project_preview_block": {
       "title": "Įdomūs straipsniai apie",
       "description_title": "Apie projektą",
