@@ -63,6 +63,12 @@ enum PartnerStatus {
   REJECTED
 }
 
+enum MapMarkerType {
+  IMAGEMAPPING
+  HISTORICAL
+  NATURE
+}
+
 model Partner {
   id          Int           @id @default(autoincrement())
   name        String
@@ -208,12 +214,14 @@ model StudioProject {
 
   published   Boolean   @default(false)
   publishedAt DateTime?
+
+  markerType MapMarkerType? 
 }
 
 model Location {
   id Int @id @default(autoincrement())
   name String
-  url  String @unique
+  url  String? @unique
   coordinates Json?
   description String?
 

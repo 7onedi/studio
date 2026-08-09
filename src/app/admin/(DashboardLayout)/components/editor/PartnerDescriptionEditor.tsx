@@ -6,6 +6,8 @@ const MAX_CHARS = 256;
 interface Props {
   onChange: (data: any) => void;
   initialData?: any;
+  holderId?: string;
+  minimal?: boolean; // ← новий проп: лише текст, без header/marker
 }
 
 function countChars(data: any): number {
@@ -23,10 +25,10 @@ function countChars(data: any): number {
     .reduce((a: number, b: number) => a + b, 0);
 }
 
-export default function PartnerDescriptionEditor({ onChange, initialData }: Props) {
+export default function PartnerDescriptionEditor({ onChange, initialData, holderId, minimal }: Props) {
   const editorRef = useRef<any>(null);
   const onChangeRef = useRef(onChange);
-  const holderRef = useRef(`editorjs-partner-${Math.random().toString(36).slice(2)}`);
+  const holderRef = useRef(holderId ?? `editorjs-partner-${Math.random().toString(36).slice(2)}`);
   const [charCount, setCharCount] = useState(() => countChars(initialData));
 
   useEffect(() => {
@@ -37,17 +39,19 @@ export default function PartnerDescriptionEditor({ onChange, initialData }: Prop
     let isMounted = true;
 
     async function initEditor() {
-      const [
-        { default: EditorJS },
-        { default: Header },
-        { default: List },
-        { default: Marker },
-      ] = await Promise.all([
+      const imports: any[] = [
         import("@editorjs/editorjs"),
-        import("@editorjs/header"),
         import("@editorjs/list"),
-        import("@editorjs/marker"),
-      ]);
+      ];
+      if (!minimal) {
+        imports.push(import("@editorjs/header"), import("@editorjs/marker"));
+      }
+
+      const results = await Promise.all(imports);
+      const { default: EditorJS } = results[0];
+      const { default: List } = results[1];
+      const Header = !minimal ? results[2].default : undefined;
+      const Marker = !minimal ? results[3].default : undefined;
 
       if (!isMounted) return;
 
@@ -56,23 +60,24 @@ export default function PartnerDescriptionEditor({ onChange, initialData }: Prop
         editorRef.current = null;
       }
 
+      const tools: any = {
+        paragraph: {
+          inlineToolbar: true,
+          config: { preserveBlank: true, placeholder: "Description..." },
+        },
+        list: List as any,
+      };
+      if (!minimal) {
+        tools.header = { class: Header, config: { levels: [3, 4], defaultLevel: 4 } };
+        tools.marker = Marker;
+      }
+
       const editor = new EditorJS({
         holder: holderRef.current,
-        inlineToolbar: ["bold", "italic", "marker", "link"],
+        inlineToolbar: minimal ? ["bold", "italic", "link"] : ["bold", "italic", "marker", "link"],
         data: initialData ?? { blocks: [] },
-        tools: {
-          paragraph: {
-            inlineToolbar: true,
-            config: { preserveBlank: true, placeholder: "Description..." },
-          },
-          header: {
-            class: Header as any,
-            config: { levels: [3, 4], defaultLevel: 4 },
-          },
-          list: List as any,
-          marker: Marker as any,
-        },
-        async onChange(api) {
+        tools,
+        async onChange(api: any) {
           const data = await api.saver.save();
           const chars = countChars(data);
           setCharCount(chars);

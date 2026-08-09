@@ -65,6 +65,10 @@
     "category_title": {
       "title": "Цікаві статті про проєкт"
     },
+    "pdf_presentation_viewer": {
+      "error": "Не вдалося завантажити файл",
+      "retry": "Спробувати ще раз"
+    },
     "project_preview_block": {
       "title": "Цікаві статті про",
       "description_title": "Про проєкт",

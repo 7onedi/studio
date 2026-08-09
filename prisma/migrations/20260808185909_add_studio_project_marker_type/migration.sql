@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `StudioProject` ADD COLUMN `markerType` ENUM('IMAGEMAPPING', 'HISTORICAL', 'NATURE') NULL;
