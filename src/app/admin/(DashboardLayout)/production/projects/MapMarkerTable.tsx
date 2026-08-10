@@ -72,7 +72,7 @@ export default function MapMarkerTable({
     {
       id: 'parent',
       header: 'Parent Project',
-      accessorFn: (row: any) => row.parent?.title ?? '—',
+      accessorFn: (row: any) => row.parent?.title_en ?? '—',
       cell: ({ getValue }) => (
         <Typography variant="body2" color="text.secondary" noWrap sx={{ maxWidth: 160 }}>
           {getValue() as string}

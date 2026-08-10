@@ -1,0 +1,7 @@
+.mobile-popup-wide{
+  @media (max-width: 1024px) {
+    .leaflet-popup-content {
+      max-width: 220px !important;
+    }
+  }
+}
