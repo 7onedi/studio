@@ -81,7 +81,7 @@ export default async function IMlocalsPage({ params }: IMlocalsPageProps) {
 
   return (
     <div className="mx-auto mt-4 lg:mt-0">
-      <div className="relative mb-16 lg:mb-0">
+      <div className={`relative ${child.logo?.url ? 'mb-16' : 'mb-4'} lg:mb-0`}>
         <div className="relative w-full h-[145px] lg:h-[700px] mb-6 rounded-[20px] overflow-hidden">
           <Image
             src={child.image?.url ?? ''}
@@ -93,7 +93,7 @@ export default async function IMlocalsPage({ params }: IMlocalsPageProps) {
         </div>
 
         {/* Лого + заголовок */}
-        <div className="-bottom-[40px] w-full absolute lg:bottom-0 lg:left-16 lg:bottom-16 z-20 flex flex-col-reverse lg:flex-row items-start lg:items-center">
+        <div className={`w-full absolute lg:bottom-0 lg:left-16 lg:bottom-16 z-20 flex flex-col-reverse lg:flex-row items-start lg:items-center ${child.logo?.url ? '-bottom-[40px]' : 'bottom-4'}`}>
 
           {child.logo?.url && (
             <div className="flex justify-center w-full lg:w-[376px] h-auto rounded-[20px] overflow-hidden">
@@ -105,7 +105,7 @@ export default async function IMlocalsPage({ params }: IMlocalsPageProps) {
             </div>
           )}
 
-          <div className="mb-5 lg:mb-0 lg:mt-4 text-white text-center text-headline_2_mobile lg:text-headline_1 w-full lg:flex lg:ml-6">
+          <div className={`lg:mb-0 lg:mt-4 text-white text-center text-headline_2_mobile lg:text-headline_1 w-full lg:flex lg:ml-6 ${child.logo?.url ? 'mb-5' : 'mb-0'}`}>
             <MfkTranslatedTitle child={child} />
           </div>
         </div>
