@@ -1,9 +1,11 @@
 'use client';
 
+import { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useLanguage } from "@/app/providers/LanguageProvider";
+import styles from './LocationMap.module.scss';
 
 const MARKER_ICONS: Record<string, string> = {
   IMAGEMAPPING: '/map/Imagemapping.png',
@@ -25,6 +27,10 @@ function extractPreviewText(blocks: any[] | undefined): string | null {
   const paragraphs = blocks.filter((b: any) => b.type === 'paragraph');
   if (!paragraphs.length) return null;
   return paragraphs.map((b: any) => (b.data?.text ?? '').replace(/<[^>]*>/g, '')).join(' ') || null;
+}
+
+function truncateText(text: string, max: number): string {
+  return text.length > max ? text.slice(0, max) + '…' : text;
 }
 
 function pickLocalized<T>(
@@ -71,8 +77,19 @@ interface Props {
 export default function LocationMap({ centerLat, centerLng, zoom, markers }: Props) {
   const { locale } = useLanguage();
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+    const zoomControl = document.querySelector('.leaflet-top.leaflet-left') as HTMLElement;
+    if (zoomControl && window.innerWidth < 1024) {
+      zoomControl.style.left = '20px';
+      zoomControl.style.top = '20px';
+    }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <div className="w-full h-[40vh] lg:h-[50vh] rounded-2xl overflow-hidden">
+    <div className="w-full h-[72vh] lg:h-[50vh] rounded-2xl overflow-hidden">
       <MapContainer
         center={[centerLat, centerLng]}
         zoom={zoom}
@@ -101,39 +118,31 @@ export default function LocationMap({ centerLat, centerLng, zoom, markers }: Pro
           };
           const title = pickLocalizedText(locale, titleByLocale, marker.title_en ?? undefined) ?? marker.title;
           const bodyBlocks = pickLocalized(locale, bodyByLocale, marker.body_en);
-          const previewText = extractPreviewText(bodyBlocks);
+          const previewTextFull = extractPreviewText(bodyBlocks);
+          const previewTextMobile = previewTextFull ? truncateText(previewTextFull, 128) : null;
 
           return (
-            <Marker
-              key={marker.id}
-              position={[marker.lat, marker.lng]}
-              icon={createMarkerIcon(marker.markerType)}
-            >
-              <Popup minWidth={220}>
+            <Marker key={marker.id} position={[marker.lat, marker.lng]} icon={createMarkerIcon(marker.markerType)}>
+              <Popup minWidth={220} maxWidth={220} className={styles['mobile-popup-wide']}>
                 <div className="flex flex-col space-y-2 p-2">
                   {marker.imageUrl && (
-                    <img
-                      src={marker.imageUrl}
-                      alt={title}
-                      className="w-full h-auto rounded-lg object-cover"
-                    />
+                    <img src={marker.imageUrl} alt={title} className="w-full h-auto rounded-lg object-cover" />
                   )}
                   <h3 className="text-base font-bold">{title}</h3>
-                  {previewText && (
-                    <p className={`text-sm ${marker.websiteUrl ? 'line-clamp-3 overflow-hidden' : ''}`}>
-                        {previewText}
+                  {previewTextMobile && (
+                    <p className="text-sm lg:hidden">{previewTextMobile}</p>
+                  )}
+                  {previewTextFull && (
+                    <p className={`text-sm hidden lg:block ${marker.websiteUrl ? 'line-clamp-3 overflow-hidden' : ''}`}>
+                    {previewTextFull}
                     </p>
-                    )}
-                    {marker.websiteUrl && (
-                      <a
-                        href={marker.websiteUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                    >
+                  )}
+
+                  {marker.websiteUrl && (
+                    <a href={marker.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
                         Read more ↗
                     </a>
-                    )}
+                  )}
                 </div>
               </Popup>
             </Marker>
