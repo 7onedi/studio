@@ -84,7 +84,7 @@ export async function buildCategories(): Promise<Category[]> {
             title: c.title,
             description: c.body?.blocks ?? [],
             imageUrl: c.image?.url ?? '',
-            Logo: c.logo?.url ?? '',
+            Logo: c.logo?.url ?? c.image?.url ?? '',
             linkUrl: c.location?.url,
           },
         }));

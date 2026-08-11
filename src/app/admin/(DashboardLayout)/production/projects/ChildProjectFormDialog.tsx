@@ -707,13 +707,13 @@ export default function ChildProjectFormDialog({
                   setSelectedLogoId(item.id);
                 }}
               />
-
-              <FormControlLabel
-                control={<Switch checked={zoom} onChange={(e) => setZoom(e.target.checked)} />}
-                label="Zoom"
-              />
             </>
           )}
+
+          <FormControlLabel
+            control={<Switch checked={zoom} onChange={(e) => setZoom(e.target.checked)} />}
+            label="Zoom"
+          />
 
           <Divider />
 
