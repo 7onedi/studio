@@ -72,7 +72,7 @@ export default async function IMlocalsPage({ params }: IMlocalsPageProps) {
         title_lt: p.title_lt,
         title_ro: p.title_ro,
         Logo:  p.logo?.url ?? p.image?.url ?? '',
-        zoom:  p.zoom ?? false,
+        zoom:  p.body?.zoom ?? false,
         lang:  p.lang ?? 'uk',
       },
     }));

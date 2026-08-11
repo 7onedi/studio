@@ -41,7 +41,7 @@ export default async function FestivalPage({ params }: FestivalPageProps) {
         title_lt: p.title_lt,
         title_ro: p.title_ro,
         Logo:  p.image?.url ?? '',
-        zoom:  false,
+        zoom:  p.body?.zoom ?? false,
       },
     }));
 
