@@ -19,7 +19,7 @@ export default async function Home() {
       title_lt: p.title_lt,
       title_ro: p.title_ro,
       Logo:  p.logo?.url ?? p.image?.url ?? '',
-      zoom:  p.body?.zoom,
+      zoom:  p.body?.zoom ?? false,
       lang:  p.lang ?? 'uk',
     },
   }));
