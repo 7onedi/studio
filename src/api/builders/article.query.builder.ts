@@ -6,7 +6,13 @@ export class ArticleQueryBuilder extends QueryBuilder {
 
     const filters = this.filters;
 
-    if (filters.title) where.title = { contains: filters.title };
+    if (filters.title) {
+      where.OR = [
+        { title: { contains: filters.title } },
+        { authorName: { contains: filters.title } },
+        { author: { name: { contains: filters.title } } },
+      ];
+    }
     if (filters.lang) where.lang = filters.lang;
     if (filters.categoryId) where.categoryId = Number(filters.categoryId);
     if (filters.subcategoryId) where.subcategories = { some: { id: Number(filters.subcategoryId) } };

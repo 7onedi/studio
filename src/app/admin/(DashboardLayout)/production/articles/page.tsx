@@ -38,6 +38,7 @@ function ArticlesContent() {
   const order = searchParams.get('order') ?? 'desc';
   const limit = searchParams.get('limit') ?? '15';
   const lang = searchParams.get('lang') ?? '';
+  const mine = searchParams.get('mine') === '1';
 
   useEffect(() => {
     if (!me) return;
@@ -46,7 +47,7 @@ function ArticlesContent() {
     const params = new URLSearchParams({ page, limit, sortBy, order });
     if (search) params.set('title', search);
     if (lang) params.set('lang', lang);
-    if (me.role === 'USER') params.set('authorId', String(me.id));
+    if (me.role === 'USER' || mine) params.set('authorId', String(me.id));
 
     fetch(`/api/articles/search?${params}`)
       .then((r) => r.json())
@@ -56,12 +57,23 @@ function ArticlesContent() {
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [page, limit, search, sortBy, order, lang, me]);
+  }, [page, limit, search, sortBy, order, lang, me, mine]);
 
   const updateParam = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set(key, value);
     if (key !== 'page') params.set('page', '1');
+    router.push(`${pathname}?${params}`);
+  };
+
+  const toggleMine = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (!mine) {
+      params.set('mine', '1');
+    } else {
+      params.delete('mine');
+    }
+    params.set('page', '1');
     router.push(`${pathname}?${params}`);
   };
 
@@ -81,31 +93,42 @@ function ArticlesContent() {
           </Button>
         </Box>
 
-        <Tabs
-          value={lang}
-          onChange={(_, v) => {
-            const params = new URLSearchParams(searchParams.toString());
-            params.set('lang', v);
-            params.set('page', '1');
-            router.push(`${pathname}?${params}`);
-          }}
-          sx={{ mb: 2 }}
-        >
-          {LANGS.map((l) => (
-            <Tab
-              key={l.code}
-              value={l.code}
-              label={
-                <Box display="flex" alignItems="center" gap={0.75}>
-                  {l.icon && (
-                    <img src={l.icon} width={24} height={24} alt={l.label} style={{ borderRadius: 2 }} />
-                  )}
-                  {l.label}
-                </Box>
-              }
-            />
-          ))}
-        </Tabs>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Tabs
+            value={lang}
+            onChange={(_, v) => {
+              const params = new URLSearchParams(searchParams.toString());
+              params.set('lang', v);
+              params.set('page', '1');
+              router.push(`${pathname}?${params}`);
+            }}
+          >
+            {LANGS.map((l) => (
+              <Tab
+                key={l.code}
+                value={l.code}
+                label={
+                  <Box display="flex" alignItems="center" gap={0.75}>
+                    {l.icon && (
+                      <img src={l.icon} width={24} height={24} alt={l.label} style={{ borderRadius: 2 }} />
+                    )}
+                    {l.label}
+                  </Box>
+                }
+              />
+            ))}
+          </Tabs>
+
+          {me?.role !== 'USER' && (
+            <Button
+              size="small"
+              variant={mine ? 'contained' : 'outlined'}
+              onClick={toggleMine}
+            >
+              My articles
+            </Button>
+          )}
+        </Box>
 
         <ArticleTable
           data={articles}

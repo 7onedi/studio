@@ -1,12 +1,12 @@
-// CustomImageTool.ts
 export class CustomImageTool {
   private data: { url?: string; redirectUrl?: string; caption?: string };
   private wrapper: HTMLElement | null = null;
+  private redirectRow: HTMLElement | null = null;
   private api: any;
   private config: any;
 
   static get toolbox() {
-    return { title: "Image + Link", icon: "🖼" };
+    return { title: "Screensaver + (Video or website)Link", icon: "🖼" };
   }
 
   static get isReadOnlySupported() {
@@ -23,7 +23,6 @@ export class CustomImageTool {
     this.wrapper = document.createElement("div");
     this.wrapper.style.cssText = "border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;";
 
-    // --- Зображення або upload кнопка ---
     const imgContainer = document.createElement("div");
     imgContainer.style.cssText = "position:relative;background:#f9fafb;";
 
@@ -33,10 +32,10 @@ export class CustomImageTool {
       this._renderUploadArea(imgContainer);
     }
 
-    // --- Поле Redirect URL ---
     const redirectRow = document.createElement("div");
     redirectRow.style.cssText =
       "display:flex;align-items:center;gap:8px;padding:8px 12px;border-top:1px solid #e5e7eb;background:#fff;";
+    this.redirectRow = redirectRow;
 
     const linkIcon = document.createElement("span");
     linkIcon.textContent = "🔗";
@@ -44,15 +43,15 @@ export class CustomImageTool {
 
     const redirectInput = document.createElement("input");
     redirectInput.type = "url";
-    redirectInput.placeholder = "Redirect URL (optional)";
+    redirectInput.placeholder = "Redirect URL *";
     redirectInput.value = this.data.redirectUrl || "";
     redirectInput.style.cssText =
       "flex:1;border:none;outline:none;font-size:13px;color:#374151;background:transparent;";
     redirectInput.addEventListener("input", (e) => {
       this.data.redirectUrl = (e.target as HTMLInputElement).value;
+      this._updateValidityStyle();
     });
 
-    // --- Caption ---
     const captionInput = document.createElement("input");
     captionInput.type = "text";
     captionInput.placeholder = "Caption...";
@@ -69,6 +68,8 @@ export class CustomImageTool {
     this.wrapper.appendChild(redirectRow);
     this.wrapper.appendChild(captionInput);
 
+    this._updateValidityStyle();
+
     return this.wrapper;
   }
 
@@ -78,7 +79,6 @@ export class CustomImageTool {
     img.src = url;
     img.style.cssText = "width:100%;display:block;max-height:400px;object-fit:contain;";
 
-    // Кнопка заміни
     const replaceBtn = document.createElement("button");
     replaceBtn.textContent = "Замінити";
     replaceBtn.style.cssText =
@@ -93,7 +93,6 @@ export class CustomImageTool {
     container.innerHTML = "";
     container.style.cssText += "cursor:pointer;padding:32px;text-align:center;";
 
-    // Кнопка галереї
     const galleryBtn = document.createElement("button");
     galleryBtn.textContent = "📁 Open Gallery";
     galleryBtn.style.cssText = "display:block;margin:0 auto 12px;padding:6px 16px;background:#1976d2;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer;";
@@ -122,7 +121,6 @@ export class CustomImageTool {
       await this._uploadFile(file, container);
     });
 
-    // Drag & drop
     container.addEventListener("dragover", (e) => {
       e.preventDefault();
       container.style.background = "#eff6ff";
@@ -143,7 +141,6 @@ export class CustomImageTool {
   }
 
   private async _uploadFile(file: File, container: HTMLElement) {
-    // Показуємо прогрес
     container.innerHTML = `<div style="padding:32px;text-align:center;color:#6b7280;font-size:13px;">Uploading...</div>`;
 
     try {
@@ -165,6 +162,23 @@ export class CustomImageTool {
     }
   }
 
+  private _isValidRedirectUrl(value: string): boolean {
+    if (!value.trim()) return false;
+    try {
+      const url = new URL(value);
+      return url.protocol === 'https:' || url.protocol === 'http:';
+    } catch {
+      return false;
+    }
+  }
+
+  private _updateValidityStyle() {
+    if (!this.redirectRow) return;
+    const isValid = this._isValidRedirectUrl(this.data.redirectUrl || "");
+    this.redirectRow.style.background = isValid ? "#fff" : "#fff5f5";
+    this.redirectRow.style.border = isValid ? "1px solid #e5e7eb" : "1px solid #ef4444";
+  }
+
   save() {
     return {
       url: this.data.url || "",
@@ -177,4 +191,3 @@ export class CustomImageTool {
     return !!data.url;
   }
 }
-

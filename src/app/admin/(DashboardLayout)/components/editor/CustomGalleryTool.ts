@@ -2,6 +2,7 @@ export class CustomGalleryTool {
   private data: { files: { url: string }[]; caption: string };
   private wrapper: HTMLElement | null = null;
   private config: any;
+  private static readonly MAX_FILES = 4;
 
   static get toolbox() {
     return { title: "Gallery", icon: "🖼" };
@@ -34,7 +35,7 @@ export class CustomGalleryTool {
     const grid = document.createElement("div");
     grid.style.cssText = `
       display: grid;
-      grid-template-columns: repeat(${Math.min(Math.max(this.data.files.length, 1), 3)}, 1fr);
+      grid-template-columns: repeat(${Math.min(Math.max(this.data.files.length, 1), CustomGalleryTool.MAX_FILES)}, 1fr);
       gap: 8px;
       margin-bottom: 8px;
     `;
@@ -69,44 +70,50 @@ export class CustomGalleryTool {
     const btnRow = document.createElement("div");
     btnRow.style.cssText = "display:flex;gap:8px;margin-bottom:8px;";
 
-    const galleryBtn = document.createElement("button");
-    galleryBtn.textContent = "📁 Open Gallery";
-    galleryBtn.style.cssText =
-      "padding:6px 14px;background:#1976d2;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer;";
-    galleryBtn.addEventListener("click", async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const picker = (window as any).__openMediaPicker;
-      if (!picker) return;
-      const item = await picker();
-      this.data.files.push({ url: item.url });
-      this.config?.onUpload?.(item.id, item.url);
-      this._renderAll();
-    });
+    const atLimit = this.data.files.length >= CustomGalleryTool.MAX_FILES;
 
-    // Завантажити файл
-    const uploadLabel = document.createElement("label");
-    uploadLabel.style.cssText =
-      "padding:6px 14px;background:#fff;color:#374151;border:1px solid #d1d5db;border-radius:6px;font-size:13px;cursor:pointer;";
-    uploadLabel.textContent = "📷 Upload";
+    if (!atLimit) {
+      const galleryBtn = document.createElement("button");
+      galleryBtn.textContent = "📁 Open Gallery";
+      galleryBtn.style.cssText =
+        "padding:6px 14px;background:#1976d2;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer;";
+      galleryBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const picker = (window as any).__openMediaPicker;
+        if (!picker) return;
+        const item = await picker();
+        this.data.files.push({ url: item.url });
+        this.config?.onUpload?.(item.id, item.url);
+        this._renderAll();
+      });
+      btnRow.appendChild(galleryBtn);
 
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.accept = "image/*";
-    fileInput.multiple = true;
-    fileInput.style.display = "none";
-    fileInput.addEventListener("change", async (e) => {
-      const files = Array.from((e.target as HTMLInputElement).files || []);
-      for (const file of files) {
-        await this._uploadFile(file);
-      }
-      fileInput.value = "";
-      this._renderAll();
-    });
+      const uploadLabel = document.createElement("label");
+      uploadLabel.style.cssText =
+        "padding:6px 14px;background:#fff;color:#374151;border:1px solid #d1d5db;border-radius:6px;font-size:13px;cursor:pointer;";
+      uploadLabel.textContent = "📷 Upload";
 
-    uploadLabel.appendChild(fileInput);
-    btnRow.appendChild(galleryBtn);
-    btnRow.appendChild(uploadLabel);
+      const fileInput = document.createElement("input");
+      fileInput.type = "file";
+      fileInput.accept = "image/*";
+      fileInput.multiple = true;
+      fileInput.style.display = "none";
+      fileInput.addEventListener("change", async (e) => {
+        const files = Array.from((e.target as HTMLInputElement).files || []);
+        const remaining = CustomGalleryTool.MAX_FILES - this.data.files.length;
+        const toUpload = files.slice(0, Math.max(remaining, 0));
+        for (const file of toUpload) {
+          await this._uploadFile(file);
+        }
+        fileInput.value = "";
+        this._renderAll();
+      });
+
+      uploadLabel.appendChild(fileInput);
+      btnRow.appendChild(uploadLabel);
+    }
+
     this.wrapper.appendChild(btnRow);
 
     const caption = document.createElement("input");

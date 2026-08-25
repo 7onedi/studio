@@ -85,6 +85,16 @@ type ArticleBodyProps = {
 
 export function ArticleBody({ blocks }: ArticleBodyProps) {
   const [lightboxIndex, setLightboxIndex] = useState(-1);
+  const [orientations, setOrientations] = useState<Record<string, "landscape" | "portrait">>({});
+
+  const handleImageLoad = (key: string) => (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    if (orientations[key]) return;
+    setOrientations((prev) => ({
+      ...prev,
+      [key]: img.naturalHeight > img.naturalWidth ? "portrait" : "landscape",
+    }));
+  };
 
   // збираємо всі зображення статті в один плоский масив + мапу block-index -> global-index
   const { galleryImages, globalIndexByKey } = useMemo(() => {
@@ -153,11 +163,14 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
 
           case "image": {
             const url = block.data.file?.url ?? "";
+            const key = `${i}`;
+            const isPortrait = orientations[key] === "portrait";
             return (
               <figure
                 key={i}
                 className={[
                   "mb-4",
+                  isPortrait ? "w-2/3 mx-auto" : "w-full",
                   block.data.withBackground ? "bg-white/5 p-2" : "",
                   block.data.withBorder ? "border border-white/10" : "",
                 ].join(" ")}
@@ -165,10 +178,11 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
                 <img
                   src={url}
                   alt={block.data.caption ?? ""}
+                  onLoad={handleImageLoad(key)}
                   onClick={() => setLightboxIndex(globalIndexByKey.get(`${i}`) ?? 0)}
                   className={[
                     "w-full object-cover rounded-xl cursor-pointer",
-                    block.data.stretched ? "aspect-auto" : "aspect-[16/9]",
+                    block.data.stretched ? "aspect-auto" : isPortrait ? "aspect-[3/4]" : "aspect-[16/9]",
                   ].join(" ")}
                 />
                 {block.data.caption && (
@@ -227,12 +241,18 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
           case "customImage": {
             const url = block.data.url ?? "";
             const redirect = block.data.redirectUrl;
+            const key = `${i}`;
+            const isPortrait = orientations[key] === "portrait";
 
             const imgElement = (
               <img
                 src={url}
                 alt={block.data.caption ?? ""}
-                className="w-full object-cover rounded-xl aspect-[16/9]"
+                onLoad={handleImageLoad(key)}
+                className={[
+                  "object-cover",
+                  isPortrait ? "mx-auto max-w-[480px] w-full aspect-[3/4]" : "w-full aspect-[16/9] rounded-xl",
+                ].join(" ")}
               />
             );
 
@@ -240,7 +260,7 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
               <figure key={i} className="mb-4">
                 {redirect ? (
                   <div
-                    className="block border border-transparent hover:border-[#E91651] hover:border-2 rounded-[14px] transition-colors duration-200 relative cursor-pointer"
+                    className="bg-black block border border-transparent hover:border-[#E91651] hover:border-2 rounded-[14px] transition-colors duration-200 relative cursor-pointer"
                   >
                     {imgElement}
                     <div className="absolute inset-0 flex items-center justify-center">

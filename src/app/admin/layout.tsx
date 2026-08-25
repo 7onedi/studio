@@ -1,9 +1,9 @@
-
 import { baselightTheme } from "../utils/theme/DefaultColors";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import './global.css'
-
+import SessionExpiredDialog from "./(DashboardLayout)/components/SessionExpiredDialog";
+import ConnectionLostBanner from "./(DashboardLayout)/components/ConnectionLostBanner";
 
 export default function AdminLayout({
   children,
@@ -14,9 +14,10 @@ export default function AdminLayout({
     <div>
       <div>
         <ThemeProvider theme={baselightTheme}>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
           {children}
+          <SessionExpiredDialog />
+          <ConnectionLostBanner />
         </ThemeProvider>
       </div>
     </div>

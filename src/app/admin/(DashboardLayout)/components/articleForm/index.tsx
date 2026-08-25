@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import {
   Box, Button, Container, TextField, Typography,
@@ -12,6 +12,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import CircularProgress from "@mui/material/CircularProgress";
 import MediaPickerDialog, { MediaItem } from '../../components/Mediapickerdialog';
 import { FieldHelp } from "../shared/FieldHelp";
+import type { ReactEditorHandle } from "../editor/ReactEditor";
 
 const ReactEditor = dynamic(() => import("../editor/ReactEditor"), {
   ssr: false,
@@ -67,12 +68,17 @@ export default function ArticleForm({
   onCancel,
   userRole,
 }: ArticleFormProps) {
+  const editorHandleRef = useRef<ReactEditorHandle | null>(null);
+
   const [formTitle, setFormTitle] = useState(initialData?.title ?? "");
   const [lang, setLang] = useState(initialData?.lang ?? "UK");
   const [content, setContent] = useState<unknown>(initialData?.body ?? null);
   const [authorName, setAuthorName] = useState(initialData?.authorName ?? "");
   const [categoryId, setCategoryId] = useState<number | "">(initialData?.categoryId ?? "");
   const [subcategoryIds, setSubcategoryIds] = useState<number[]>(initialData?.subcategoryIds ?? []);
+  const [subcategoryInput, setSubcategoryInput] = useState("");
+  const [subcategoryLoading, setSubcategoryLoading] = useState(false);
+  const [subcategoryCache, setSubcategoryCache] = useState<Record<number, { id: number; name: string }>>({});
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>(initialData?.tags ?? []);
   const [tagOptions, setTagOptions] = useState<{ id: number; name: string }[]>([]);
@@ -107,7 +113,7 @@ export default function ArticleForm({
   const helpItems = [
     "Fields marked with an asterisk (*) are required.",
     "Tags are created automatically when entered in the field.",
-    "Use video links for YouTube and Facebook Video. For Instagram video, use the Image + Link tool in the editor.",
+    "Use video links for YouTube and Facebook Video. For Instagram video, use the Screensaver + Link tool in the editor.",
     "To add a link to text, select the text and click the 'Link' icon in the Text tool.",
     "In the Article Author field, you can search for an existing user or enter any custom name.",
   ];
@@ -166,14 +172,27 @@ export default function ArticleForm({
   }, []);
 
   useEffect(() => {
-    if (!categoryId) { setSubcategories([]); return; }
-    fetch(`/api/subcategories/search?categoryId=${categoryId}`)
+  if (!categoryId) { setSubcategories([]); return; }
+  const timer = setTimeout(() => {
+    setSubcategoryLoading(true);
+    const params = new URLSearchParams({ categoryId: String(categoryId), limit: '20' });
+    if (subcategoryInput.trim()) params.set('name', subcategoryInput.trim());
+    fetch(`/api/subcategories/search?${params}`)
       .then((r) => r.json())
       .then((data) => {
-        setSubcategories(Array.isArray(data) ? data : data.data ?? data.items ?? []);
+        const list = Array.isArray(data) ? data : data.data ?? data.items ?? [];
+        setSubcategories(list);
+        setSubcategoryCache((prev) => {
+          const next = { ...prev };
+          list.forEach((s: any) => { next[s.id] = { id: s.id, name: s.name }; });
+          return next;
+        });
       })
-      .catch(console.error);
-  }, [categoryId]);
+      .catch(console.error)
+      .finally(() => setSubcategoryLoading(false));
+  }, 300);
+  return () => clearTimeout(timer);
+}, [categoryId, subcategoryInput]);
 
   useEffect(() => {
     if (!tagInput.trim()) {
@@ -218,42 +237,37 @@ export default function ArticleForm({
   };
   
 
-const handleSubmit = () => {
+const isValidUrl = (value: string): boolean => {
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' || url.protocol === 'http:';
+  } catch {
+    return false;
+  }
+};
+
+const handleSubmit = async () => {
   if (!validate()) return;
+
+  const freshContent: any = await editorHandleRef.current?.save();
+
+  const hasInvalidImageBlock = freshContent?.blocks?.some(
+    (b: any) => b.type === 'customImage' && !isValidUrl(b.data?.redirectUrl || '')
+  );
+  if (hasInvalidImageBlock) {
+    setErrors(p => ({ ...p, body: 'Please enter a valid Redirect URL (https:// or http://) in all image blocks.' }));
+    return;
+  }
 
   if (published !== initialPublished) {
     const action = published ? "publish" : "unpublish";
     if (!confirm(`Are you sure you want to ${action} this article?`)) return;
   }
 
-  const bodyContent = content as any;
-  
-  const usedUrls: string[] = [];
-  
-  bodyContent?.blocks?.forEach((b: any) => {
-    if (b.type === 'image' && b.data?.file?.url) {
-      usedUrls.push(b.data.file.url);
-    }
-    if (b.type === 'gallery' && Array.isArray(b.data?.files)) {
-      b.data.files.forEach((f: any) => {
-        if (f.url) usedUrls.push(f.url);
-      });
-    }
-    if (b.type === 'customImage' && b.data?.url) {
-      usedUrls.push(b.data.url);
-    }
-  });
-
-  uploadedMedia
-    .filter(({ url }) => !usedUrls.includes(url))
-    .forEach(({ id }) => {
-      fetch(`/api/media/${id}`, { method: 'DELETE', credentials: 'include' });
-    });
-
   onSave({
     title: formTitle,
     lang,
-    body: content ?? { blocks: [] },
+    body: freshContent ?? { blocks: [] },
     authorName,
     authorAvatarId,
     categoryId,
@@ -342,18 +356,23 @@ const handleSubmit = () => {
               )}
             />
           </Box>
-
           <Box sx={{ border: "1px solid #ddd", borderRadius: 2, p: 2, mb: 3, minHeight: 300 }}>
             {content !== null ? (
-            <ReactEditor 
-              onChange={setContent}
-              initialData={content}
-              onImageUpload={(id, url) => setUploadedMedia(prev => [...prev, { id, url }])}
-            />
+              <ReactEditor 
+                onChange={setContent}
+                initialData={content}
+                onImageUpload={(id, url) => setUploadedMedia(prev => [...prev, { id, url }])}
+                onReady={(handle) => { editorHandleRef.current = handle; }}
+              />
             ) : (
-              <ReactEditor onChange={setContent} />
+              <ReactEditor
+                onChange={setContent}
+                onImageUpload={(id, url) => setUploadedMedia(prev => [...prev, { id, url }])}
+                onReady={(handle) => { editorHandleRef.current = handle; }}
+              />
             )}
           </Box>
+          {errors.body && <Typography variant="caption" color="error">{errors.body}</Typography>}
 
           <Box sx={{ display: "flex", gap: 2 }}>
             <Button variant="contained" onClick={handleSubmit} disabled={loading} size="large">
@@ -594,30 +613,55 @@ const handleSubmit = () => {
             {errors.categoryId && <FormHelperText>{errors.categoryId}</FormHelperText>}
           </FormControl>
 
-          {subcategories.length > 0 && (
-            <FormControl fullWidth sx={{ mb: 3 }} error={!!errors.subcategoryIds}>
-              <InputLabel>Subcategories</InputLabel>
-              <Select
-                multiple
-                value={subcategoryIds}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  setSubcategoryIds(typeof val === 'string' ? val.split(',').map(Number) : val as number[]);
-                  setErrors(p => ({ ...p, subcategoryIds: "" }));
-                }}
-                input={<OutlinedInput label="Subcategories" />}
-                renderValue={(selected) => (
-                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                    {(selected as number[]).map((id) => (
-                      <Chip key={id} label={subcategories.find((s) => s.id === id)?.name ?? id} size="small" />
-                    ))}
-                  </Box>
-                )}
-              >
-                {subcategories.map((s) => <MenuItem key={s.id} value={s.id}>{s.name}</MenuItem>)}
-              </Select>
-              {errors.subcategoryIds && <FormHelperText>{errors.subcategoryIds}</FormHelperText>}
-            </FormControl>
+          {(categoryId) && (
+            <Autocomplete
+              multiple
+              options={subcategories}
+              value={subcategoryIds.map(
+                (id) => subcategoryCache[id] ?? subcategories.find((s) => s.id === id) ?? { id, name: String(id) }
+              )}
+              inputValue={subcategoryInput}
+              loading={subcategoryLoading}
+              getOptionLabel={(option) => option.name}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+              onInputChange={(_, value, reason) => {
+                if (reason !== 'reset') setSubcategoryInput(value);
+              }}
+              onChange={(_, newValue) => {
+                setSubcategoryIds(newValue.map((v) => v.id));
+                setSubcategoryCache((prev) => {
+                  const next = { ...prev };
+                  newValue.forEach((v) => { next[v.id] = { id: v.id, name: v.name }; });
+                  return next;
+                });
+                setErrors((p) => ({ ...p, subcategoryIds: "" }));
+              }}
+              filterOptions={(options) => options}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip label={option.name} size="small" {...getTagProps({ index })} key={option.id} />
+                ))
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Subcategories"
+                  placeholder="Search subcategory..."
+                  error={!!errors.subcategoryIds}
+                  helperText={errors.subcategoryIds || " "}
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <>
+                        {subcategoryLoading && <CircularProgress size={16} />}
+                        {params.InputProps.endAdornment}
+                      </>
+                    ),
+                  }}
+                />
+              )}
+              sx={{ mb: 3 }}
+            />
           )}
 
           <Button
