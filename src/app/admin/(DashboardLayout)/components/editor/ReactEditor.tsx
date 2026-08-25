@@ -6,15 +6,20 @@ import MediaPickerDialog, { MediaItem } from '../Mediapickerdialog';
 import { CustomGalleryTool } from "./CustomGalleryTool";
 import { CustomImageBlockTool } from "./CustomImageBlockTool";
 
+export interface ReactEditorHandle {
+  save: () => Promise<any>;
+}
+
 interface ReactEditorProps {
   onChange: (data: any) => void;
   initialData?: any;
   onImageUpload?: (mediaId: number, url: string) => void;
+  onImageValidityChange?: (blockId: string | null, isValid: boolean) => void; // ← додати
   holderId?: string;
+  onReady?: (handle: ReactEditorHandle) => void;
 }
 
-
-export default function ReactEditor({ onChange, initialData, onImageUpload, holderId = 'editorjs' }: ReactEditorProps) {
+export default function ReactEditor({ onChange, initialData, onImageUpload, onImageValidityChange, holderId = 'editorjs', onReady }: ReactEditorProps) {
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
   const mediaPickerResolveRef = useRef<((item: MediaItem) => void) | null>(null);
 
@@ -28,14 +33,24 @@ export default function ReactEditor({ onChange, initialData, onImageUpload, hold
   const editorRef = useRef<any>(null);
   const onChangeRef = useRef(onChange);
   const onImageUploadRef = useRef(onImageUpload);
+  const onReadyRef = useRef(onReady);
+  const onImageValidityChangeRef = useRef(onImageValidityChange);
+
+  useEffect(() => {
+    onImageValidityChangeRef.current = onImageValidityChange;
+  }, [onImageValidityChange]);
 
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
 
-    useEffect(() => {
+  useEffect(() => {
     onImageUploadRef.current = onImageUpload;
   }, [onImageUpload]);
+
+  useEffect(() => {
+    onReadyRef.current = onReady;
+  }, [onReady]);
 
   useEffect(() => {
     let isMounted = true;
@@ -57,7 +72,6 @@ export default function ReactEditor({ onChange, initialData, onImageUpload, hold
         import("@editorjs/simple-image"),
       ]);
 
-
       if (!isMounted) return;
 
       if (editorRef.current?.destroy) {
@@ -68,7 +82,7 @@ export default function ReactEditor({ onChange, initialData, onImageUpload, hold
       const editor = new EditorJS({
         holder: holderId,
         inlineToolbar: true,
-        data: initialData ?? { blocks: [] }, // ← додай це
+        data: initialData ?? { blocks: [] },
         tools: {
           paragraph: {
             inlineToolbar: true,
@@ -105,6 +119,9 @@ export default function ReactEditor({ onChange, initialData, onImageUpload, hold
               onUpload: (id: number, url: string) => {
                 onImageUploadRef.current?.(id, url);
               },
+              onValidityChange: (blockId: string | null, isValid: boolean) => {
+                onImageValidityChangeRef.current?.(blockId, isValid);
+              },
             },
           },
           fontSize: FontSizeTool,
@@ -117,6 +134,13 @@ export default function ReactEditor({ onChange, initialData, onImageUpload, hold
       });
 
       editorRef.current = editor;
+
+      onReadyRef.current?.({
+        save: async () => {
+          if (!editorRef.current) return initialData ?? { blocks: [] };
+          return editorRef.current.save();
+        },
+      });
     }
 
     initEditor();

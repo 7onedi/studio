@@ -56,3 +56,4 @@ public/uploads
 # test log files
 *.log
 tests/article/*.log
+tests/migrate-imagemapping.js
