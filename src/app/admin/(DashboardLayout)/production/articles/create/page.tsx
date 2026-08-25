@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ArticleForm, { ArticleFormData } from "../../../components/articleForm";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 function CreateArticleContent() {
   const router = useRouter();
@@ -56,7 +57,6 @@ const handleSave = async (data: ArticleFormData) => {
   setSuccess(false);
 
   try {
-    // 1. Завантажуємо банер якщо є
     let imageId: number | null = data.currentImageId ?? null;
 
     if (data.coverBase64 && !data.currentImageId) {
@@ -64,10 +64,9 @@ const handleSave = async (data: ArticleFormData) => {
       const blob = await fetchRes.blob();
       const formData = new FormData();
       formData.append('file', blob, 'cover.jpg');
-      const uploadRes = await fetch('/api/media', {
+      const uploadRes = await fetchWithAuth('/api/media', {
         method: 'POST',
         body: formData,
-        credentials: 'include',
       });
 
       if (!uploadRes.ok) throw new Error('Error uploading cover');
@@ -75,34 +74,27 @@ const handleSave = async (data: ArticleFormData) => {
       imageId = uploadData.id;
     }
 
-    console.log('imageId before fetch:', imageId);
-    console.log('coverBase64 exists:', !!data.coverBase64);
-    // 2. Зберігаємо статтю
-    const res = await fetch(`/api/articles/`, {
+    const res = await fetchWithAuth(`/api/articles/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...data,
-        coverBase64: undefined, // не відправляємо base64 в тіло
+        coverBase64: undefined,
         categoryId: Number(data.categoryId),
         tags: data.tags.map((name) => ({ name })),
         ...(imageId && { imageId }),
       }),
-      
     });
 
     const resData = await res.json();
-    console.log('response:', resData); 
 
     if (!res.ok) {
-      const json = await res.json().catch(() => ({}));
-      throw new Error(json?.message || `Error ${res.status}`);
+      throw new Error(resData?.message || `Error ${res.status}`);
     }
     if (data.published && resData.id) {
-      await fetch('/api/articles/publish', {
+      await fetchWithAuth('/api/articles/publish', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ id: resData.id }),
       });
     }

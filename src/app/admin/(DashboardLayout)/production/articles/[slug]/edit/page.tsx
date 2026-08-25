@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Container, Typography } from "@mui/material";
 import ArticleForm, { ArticleFormData } from "../../../../components/articleForm";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 interface EditPageProps {
   params: Promise<{ slug: string }>;
@@ -72,60 +73,54 @@ export default function EditArticle({ params }: EditPageProps) {
     setSuccess(false);
 
     try {
-      // 1. Завантажуємо банер якщо є
       let imageId: number | null = null;
 
-  if (data.coverBase64 && data.coverBase64.startsWith('data:')) {
-    // Нова картинка — видаляємо стару і завантажуємо нову
-    if (data.currentImageId) {
-      await fetch(`/api/media/${data.currentImageId}`, { method: 'DELETE' });
+      if (data.coverBase64 && data.coverBase64.startsWith('data:')) {
+        if (data.currentImageId) {
+          await fetchWithAuth(`/api/media/${data.currentImageId}`, { method: 'DELETE' });
+        }
+
+        const fetchRes = await fetch(data.coverBase64);
+        const blob = await fetchRes.blob();
+        const formData = new FormData();
+        formData.append('file', blob, 'cover.jpg');
+
+        const uploadRes = await fetchWithAuth('/api/media', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!uploadRes.ok) throw new Error('Error uploading cover image');
+        const uploadData = await uploadRes.json();
+        imageId = uploadData.id;
+      } else if (data.currentImageId) {
+        imageId = data.currentImageId;
+      }
+
+      const res = await fetchWithAuth(`/api/articles/${articleId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...data,
+          coverBase64: undefined,
+          categoryId: Number(data.categoryId),
+          tags: data.tags.map((name) => ({ name })),
+          ...(imageId && { imageId }),
+        }),
+      });
+
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        throw new Error(json?.message || `Error ${res.status}`);
+      }
+      setSuccess(true);
+      setTimeout(() => router.push("/admin/production/articles"), 1500);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-
-    const fetchRes = await fetch(data.coverBase64);
-    const blob = await fetchRes.blob();
-    const formData = new FormData();
-    formData.append('file', blob, 'cover.jpg');
-
-    const uploadRes = await fetch('/api/media', {
-      method: 'POST',
-      body: formData,
-      credentials: 'include',
-    });
-
-    if (!uploadRes.ok) throw new Error('Error uploading cover image');
-    const uploadData = await uploadRes.json();
-    imageId = uploadData.id;
-  } else if (data.currentImageId) {
-    // Картинка не змінилась — залишаємо старий imageId
-    imageId = data.currentImageId;
-  }
-    
-
-    // 2. Зберігаємо статтю
-    const res = await fetch(`/api/articles/${articleId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...data,
-        coverBase64: undefined,
-        categoryId: Number(data.categoryId),
-        tags: data.tags.map((name) => ({ name })),
-        ...(imageId && { imageId }),
-      }),
-    });
-
-    if (!res.ok) {
-      const json = await res.json().catch(() => ({}));
-      throw new Error(json?.message || `Error ${res.status}`);
-    }
-    setSuccess(true);
-    setTimeout(() => router.push("/admin/production/articles"), 1500);
-  } catch (err: any) {
-    setError(err.message);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   if (fetching) {
     return (
