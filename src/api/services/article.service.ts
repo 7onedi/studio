@@ -1,10 +1,10 @@
-import fs from 'fs';
-import path from 'path';
+import { Prisma } from "generated/prisma/client";
+import { ZodError } from "zod";
+import { ApiError } from "@/api/utils/api-error";
 import { articleRepository } from "@/api/repositories/article.repository";
 import { createArticleSchema, updateArticleSchema, publishArticleSchema } from "@/api/schemas/article.schema";
 import { canCreateArticle, canPublishArticle, canUpdateArticle, canDeleteArticle } from "@/api/policies/article.policy";
 import { tagRepository } from "@/api/repositories/tag.repository";
-import { mediaRepository } from "@/api/repositories/media.repository";
 import { generateUniqueSlug } from "@/api/utils/generate-unique-slug";
 import { BaseService } from "./base.service";
 
@@ -16,7 +16,15 @@ class ArticleService extends BaseService {
 	async create(user: any, body: unknown) {
 		this.assertPolicy(user, canCreateArticle);
 
-		const data = createArticleSchema.parse(body);
+		let data;
+		try {
+			data = createArticleSchema.parse(body);
+		} catch (err) {
+			if (err instanceof ZodError) {
+			throw new ApiError(422, "Validation error", err.flatten().fieldErrors);
+			}
+			throw err;
+		}
 
 		const slug = await generateUniqueSlug(
 			(slug) => this.repository.existsBySlug(slug),
@@ -25,7 +33,8 @@ class ArticleService extends BaseService {
 
 		const { categoryId, subcategoryIds, tags, currentImageId, authorAvatarId, ...rest } = data;
 
-		return this.repository.create({
+		try {
+			return await this.repository.create({
 			slug,
 			...rest,
 			author: { connect: { id: user.id } },
@@ -34,7 +43,19 @@ class ArticleService extends BaseService {
 			authorAvatar: authorAvatarId ? { connect: { id: authorAvatarId } } : undefined,
 			subcategories: subcategoryIds ? { connect: subcategoryIds.map((id) => ({ id })) } : undefined,
 			tags: tags ? { /* без змін */ } : undefined,
-		});
+			});
+		} catch (err) {
+			if (err instanceof Prisma.PrismaClientKnownRequestError) {
+			if (err.code === "P2002") {
+				throw new ApiError(409, `Duplicate value for field: ${err.meta?.target}`);
+			}
+			if (err.code === "P2025" || err.code === "P2003") {
+				throw new ApiError(400, `Related record not found (check categoryId, imageId, subcategoryIds)`);
+			}
+			throw new ApiError(500, `Database error: ${err.code}`);
+			}
+			throw err;
+		}
 	}
 
 	async update(user: any, id: number, body: any) {

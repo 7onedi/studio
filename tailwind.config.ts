@@ -50,6 +50,8 @@ const config: Config = {
       colors: {
         'main-blue': '#256BA7',
         'main-amarant': '#E91651',
+        'main-purple': '#7B2FBE',
+        'main-grass': '#81b214',
         'main-text': '#0D0B0B',
         'main-grey': '#D9D9D9',
       },

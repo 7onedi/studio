@@ -4,8 +4,6 @@ import BlogSlider from "../blocks/BlogSlider";
 import { getParentProject } from '@lib/getProjects';
 import TranslatedText from "@components/TranslatedText";
 
-const project = categories.find(c => c.id === 3)!;
-
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {

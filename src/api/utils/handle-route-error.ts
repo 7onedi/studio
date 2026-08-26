@@ -5,7 +5,7 @@ import { ApiError } from "./api-error";
 
 function isPrismaKnownError(
   error: unknown
-): error is { code: string; meta?: { target?: unknown } } {
+): error is { code: string; meta?: { target?: unknown; field_name?: unknown } } {
   return (
     typeof error === "object" &&
     error !== null &&
@@ -38,6 +38,12 @@ export function handleRouteError(error: unknown) {
       return NextResponse.json(
         { message: `Duplicate value: ${error.meta?.target}` },
         { status: 409 }
+      );
+    }
+    if (error.code === "P2003") {
+      return NextResponse.json(
+        { message: `Related record does not exist: ${error.meta?.field_name ?? "unknown field"}` },
+        { status: 400 }
       );
     }
   }
