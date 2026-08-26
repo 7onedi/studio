@@ -319,6 +319,13 @@ export default function ChildProjectFormDialog({
 
   const selectedCategoryName = categories.find((c) => c.id === Number(categoryId))?.name;
 
+  const CATEGORY_URL_SLUGS: Record<string, string> = {
+    'Imagemapping': 'IMlocals',
+    'Youthinsight': 'Festival',
+  };
+
+  const urlCategorySlug = CATEGORY_URL_SLUGS[selectedCategoryName ?? ''] ?? 'Mfk';
+
   const AVAILABLE_LANGUAGES = selectedCategoryName === 'Imagemapping'
     ? LANGUAGES.filter((l) => ['UK', 'LT', 'MK'].includes(l.value))
     : LANGUAGES;
@@ -413,7 +420,7 @@ export default function ChildProjectFormDialog({
         ...(logoId && { logoId }),
         locationData: {
           name: title_en,
-          url: websiteUrl || `https://studio.pangeya.org.ua/public/Mfk/${subcategories.find(s => s.id === Number(subcategoryId))?.slug ?? subcategoryId}`,
+          url: websiteUrl || `https://studio.pangeya.org.ua/public/${urlCategorySlug}/${subcategories.find(s => s.id === Number(subcategoryId))?.slug ?? subcategoryId}`,
           coordinates: {
             lat: parseFloat(lat) || 0,
             lng: parseFloat(lng) || 0,
