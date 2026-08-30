@@ -5,7 +5,7 @@ export async function fetchSearchData() {
     fetch(`${BASE_URL}/api/categories/search?page=1&limit=100`, { cache: 'no-store' }),
     fetch(`${BASE_URL}/api/subcategories/search?page=1&limit=100`, { cache: 'no-store' }),
     fetch(`${BASE_URL}/api/tags/search?page=1&limit=100`, { cache: 'no-store' }),
-    fetch(`${BASE_URL}/api/articles/search?limit=100&sortBy=publishedAt&order=desc&published=true`, { cache: 'no-store' }),
+    fetch(`${BASE_URL}/api/articles/search?limit=200&sortBy=publishedAt&order=desc&published=true`, { cache: 'no-store' }),
   ]);
 
   const categoriesData = await categoriesRes.json().catch(() => null);
