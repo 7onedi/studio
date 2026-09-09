@@ -23,11 +23,16 @@ export function SearchConcern(model: any, BuilderClass?: typeof QueryBuilder) {
         const sortBy = options?.sortBy ?? "createdAt";
         const order = options?.order ?? "desc";
 
+        const orderBy =
+          sortBy === "id"
+            ? [{ id: order }]
+            : [{ [sortBy]: order }, { id: order }];
+
         query = {
           where: filters,
           skip: (page - 1) * limit,
           take: limit,
-          orderBy: { [sortBy]: order },
+          orderBy,
         };
       }
 
