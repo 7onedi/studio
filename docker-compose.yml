@@ -56,6 +56,8 @@ services:
     env_file:
       - .env
 
+    command: --sort_buffer_size=4194304
+
     ports:
       - "3307:3306"
     healthcheck:
