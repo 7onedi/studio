@@ -23,11 +23,16 @@ export class QueryBuilder {
   build() {
     const { page, limit, sortBy, order } = this.options;
 
+    const orderBy =
+      sortBy === "id"
+        ? [{ id: order }]
+        : [{ [sortBy]: order }, { id: order }];
+
     return {
       where: this.buildWhere(),
       skip: (page - 1) * limit,
       take: limit,
-      orderBy: { [sortBy]: order },
+      orderBy,
     };
   }
 
