@@ -55,8 +55,13 @@ interface ArticleTableProps {
   onSortChange?: (col: string, dir: 'asc' | 'desc') => void;
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
-    userRole?: string;
+  userRole?: string;
   userId?: number;
+  categoryFilter?: number;
+  subcategoryFilter?: number;
+  onCategoryFilterChange?: (categoryId: number | undefined) => void;
+  onSubcategoryFilterChange?: (categoryId: number | undefined, subcategoryId: number | undefined) => void;
+
 }
 
 export default function ArticleTable({
@@ -73,7 +78,10 @@ export default function ArticleTable({
   onPageChange,
   onPageSizeChange,
   userRole,
-  userId
+  categoryFilter,
+  subcategoryFilter,
+  onCategoryFilterChange,
+  onSubcategoryFilterChange,
 }: ArticleTableProps) {
   const router = useRouter();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
@@ -166,7 +174,7 @@ export default function ArticleTable({
     }
   };
 
-  const sortableColumns = ['title', 'updatedAt', 'published', 'lang'];
+  const sortableColumns = ['title', 'updatedAt', 'published', 'lang', 'author', 'category'];
 
   const columns: ColumnDef<Article>[] = [
     {
@@ -256,21 +264,60 @@ export default function ArticleTable({
     {
       id: 'category',
       header: 'Category',
-      accessorFn: (row) => row.category?.name ?? '—',
-      cell: ({ getValue }) => (
-        <Typography variant="body2" color="text.secondary" noWrap>{getValue() as string}</Typography>
-      ),
+      cell: ({ row }) => {
+        const cat = row.original.category;
+        if (!cat) return <Typography variant="body2" color="text.secondary">—</Typography>;
+        const active = categoryFilter === cat.id && !subcategoryFilter;
+        return (
+          <Typography
+            variant="body2"
+            noWrap
+            onClick={(e) => {
+              e.stopPropagation();
+              onCategoryFilterChange?.(cat.id);
+            }}
+            sx={{
+              cursor: 'pointer',
+              color: active ? 'primary.main' : 'text.secondary',
+              fontWeight: active ? 600 : 400,
+              textDecoration: 'underline',
+              '&:hover': { color: 'primary.main' },
+            }}
+          >
+            {cat.name}
+          </Typography>
+        );
+      },
       size: 100,
     },
     {
       id: 'subcategory',
       header: 'Subcategory',
-      accessorFn: (row) => row.subcategories?.map((s) => s.name).join(', ') || '—',
-      cell: ({ getValue }) => (
-        <Typography variant="body2" color="text.secondary" noWrap sx={{ maxWidth: 160 }}>
-          {getValue() as string}
-        </Typography>
-      ),
+      cell: ({ row }) => {
+        const subs = row.original.subcategories ?? [];
+        if (subs.length === 0) return <Typography variant="body2" color="text.secondary">—</Typography>;
+        return (
+          <Stack direction="row" spacing={0.5} flexWrap="wrap">
+            {subs.map((sub) => {
+              const active = subcategoryFilter === sub.id;
+              return (
+                <Chip
+                  key={sub.id}
+                  label={sub.name}
+                  size="small"
+                  variant={active ? 'filled' : 'outlined'}
+                  color={active ? 'primary' : 'default'}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSubcategoryFilterChange?.(row.original.categoryId, sub.id);
+                  }}
+                  sx={{ cursor: 'pointer', fontSize: 11 }}
+                />
+              );
+            })}
+          </Stack>
+        );
+      },
       size: 150,
     },
     {

@@ -108,8 +108,10 @@ model User {
 model Article {
   id Int @id @default(autoincrement())
 
-  slug  String      @unique
-  title String
+  slug          String      @unique
+  title         String
+  titleSortKey  String      @default("")
+  
   lang  ArticleLang
 
   body Json
