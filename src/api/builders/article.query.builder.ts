@@ -23,4 +23,18 @@ export class ArticleQueryBuilder extends QueryBuilder {
 
     return where;
   }
+
+  protected buildOrderBy() {
+    const { sortBy, order } = this.options;
+
+    const RELATION_SORT_MAP: Record<string, any> = {
+      author: { authorName: order },
+      category: { category: { name: order } },
+      title: { titleSortKey: order },
+    };
+
+    const primary = RELATION_SORT_MAP[sortBy] ?? { [sortBy]: order };
+
+    return sortBy === "id" ? [{ id: order }] : [primary, { id: order }];
+  }
 }

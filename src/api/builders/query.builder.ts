@@ -1,3 +1,4 @@
+// query.builder.ts
 type Filters = Record<string, any>;
 type Options = {
   page?: number;
@@ -21,19 +22,21 @@ export class QueryBuilder {
   }
 
   build() {
-    const { page, limit, sortBy, order } = this.options;
-
-    const orderBy =
-      sortBy === "id"
-        ? [{ id: order }]
-        : [{ [sortBy]: order }, { id: order }];
+    const { page, limit } = this.options;
 
     return {
       where: this.buildWhere(),
       skip: (page - 1) * limit,
       take: limit,
-      orderBy,
+      orderBy: this.buildOrderBy(),
     };
+  }
+
+  protected buildOrderBy(): any {
+    const { sortBy, order } = this.options;
+    return sortBy === "id"
+      ? [{ id: order }]
+      : [{ [sortBy]: order }, { id: order }];
   }
 
   protected buildWhere(): Filters {
