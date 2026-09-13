@@ -2,8 +2,8 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { Box, Typography, Button, Tabs, Tab } from '@mui/material';
-import { IconPlus } from '@tabler/icons-react';
+import { Box, Typography, Button, Tabs, Tab, Select, MenuItem, FormControl, InputLabel, Tooltip } from '@mui/material';
+import { IconPlus, IconFilterOff } from '@tabler/icons-react';
 import PageContainer from '../../components/container/PageContainer';
 import ArticleTable, { Article } from '../../components/articleTable';
 
@@ -16,6 +16,13 @@ const LANGS = [
   { code: 'RO', icon: '/flags/RO.svg', label: 'Romanian' },
 ];
 
+const SLIDER_OPTIONS = [
+  { value: '', label: 'All' },
+  { value: 'NONE', label: 'Do not display' },
+  { value: 'SLIDER_1', label: 'Banner-Slider' },
+  { value: 'SLIDER_2', label: 'Carousel-Slider' },
+];
+
 function ArticlesContent() {
   const router = useRouter();
   const pathname = usePathname();
@@ -25,6 +32,7 @@ function ArticlesContent() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [me, setMe] = useState<{ id: number; role: string } | null>(null);
+  // прибираємо локальний useState для фільтрів
 
   useEffect(() => {
     fetch('/api/auth/me', { credentials: 'include' })
@@ -39,6 +47,9 @@ function ArticlesContent() {
   const limit = searchParams.get('limit') ?? '15';
   const lang = searchParams.get('lang') ?? '';
   const mine = searchParams.get('mine') === '1';
+  const slider = searchParams.get('slider') ?? '';
+  const categoryFilter = searchParams.get('categoryId') ? Number(searchParams.get('categoryId')) : undefined;
+  const subcategoryFilter = searchParams.get('subcategoryId') ? Number(searchParams.get('subcategoryId')) : undefined;
 
   useEffect(() => {
     if (!me) return;
@@ -47,7 +58,10 @@ function ArticlesContent() {
     const params = new URLSearchParams({ page, limit, sortBy, order });
     if (search) params.set('title', search);
     if (lang) params.set('lang', lang);
+    if (slider) params.set('slider', slider);
     if (me.role === 'USER' || mine) params.set('authorId', String(me.id));
+    if (categoryFilter) params.set('categoryId', String(categoryFilter));
+    if (subcategoryFilter) params.set('subcategoryId', String(subcategoryFilter));
 
     fetch(`/api/articles/search?${params}`)
       .then((r) => r.json())
@@ -57,12 +71,22 @@ function ArticlesContent() {
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [page, limit, search, sortBy, order, lang, me, mine]);
+  }, [page, limit, search, sortBy, order, lang, slider, me, mine, categoryFilter, subcategoryFilter]);
 
   const updateParam = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set(key, value);
     if (key !== 'page') params.set('page', '1');
+    router.push(`${pathname}?${params}`);
+  };
+
+  const updateParams = (updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === null) params.delete(key);
+      else params.set(key, value);
+    });
+    params.set('page', '1');
     router.push(`${pathname}?${params}`);
   };
 
@@ -119,15 +143,43 @@ function ArticlesContent() {
             ))}
           </Tabs>
 
-          {me?.role !== 'USER' && (
-            <Button
-              size="small"
-              variant={mine ? 'contained' : 'outlined'}
-              onClick={toggleMine}
-            >
-              My articles
-            </Button>
-          )}
+          <Box display="flex" alignItems="center" gap={1.5}>
+            <FormControl size="small" sx={{ minWidth: 180 }}>
+              <InputLabel id="slider-filter-label" shrink>Slider placement</InputLabel>
+              <Select
+                labelId="slider-filter-label"
+                label="Slider placement"
+                value={slider}
+                displayEmpty
+                renderValue={(val) => SLIDER_OPTIONS.find((o) => o.value === val)?.label ?? 'All'}
+                onChange={(e) => updateParam('slider', e.target.value)}
+              >
+                {SLIDER_OPTIONS.map((opt) => (
+                  <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            {me?.role !== 'USER' && (
+              <Button
+                size="small"
+                variant={mine ? 'contained' : 'outlined'}
+                onClick={toggleMine}
+              >
+                My articles
+              </Button>
+            )}
+
+            <Tooltip title="Clear filters and sort">
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={() => router.push(pathname)}
+              >
+                <IconFilterOff size={16} />
+              </Button>
+            </Tooltip>
+          </Box>
         </Box>
 
         <ArticleTable
@@ -141,13 +193,28 @@ function ArticlesContent() {
           order={order as 'asc' | 'desc'}
           onSearchChange={(val) => updateParam('search', val)}
           onSortChange={(col, dir) => {
-            updateParam('sortBy', col);
-            updateParam('order', dir);
+            updateParams({ sortBy: col, order: dir });
           }}
           onPageChange={(p) => updateParam('page', String(p + 1))}
           onPageSizeChange={(size) => updateParam('limit', String(size))}
           userRole={me?.role}
           userId={me?.id}
+          categoryFilter={categoryFilter}
+          subcategoryFilter={subcategoryFilter}
+          onCategoryFilterChange={(catId) => {
+            const isActive = categoryFilter === catId && !subcategoryFilter;
+            updateParams({
+              categoryId: isActive ? null : String(catId),
+              subcategoryId: null,
+            });
+          }}
+          onSubcategoryFilterChange={(catId, subId) => {
+            const isActive = subcategoryFilter === subId;
+            updateParams({
+              categoryId: isActive ? null : String(catId),
+              subcategoryId: isActive ? null : String(subId),
+            });
+          }}
         />
       </Box>
     </PageContainer>

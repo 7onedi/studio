@@ -7,6 +7,7 @@ import { canCreateArticle, canPublishArticle, canUpdateArticle, canDeleteArticle
 import { tagRepository } from "@/api/repositories/tag.repository";
 import { generateUniqueSlug } from "@/api/utils/generate-unique-slug";
 import { BaseService } from "./base.service";
+import { normalizeTitleForSort } from "@/api/utils/normalize-for-sort";
 
 class ArticleService extends BaseService {
   constructor() {
@@ -35,14 +36,15 @@ class ArticleService extends BaseService {
 
 		try {
 			return await this.repository.create({
-			slug,
-			...rest,
-			author: { connect: { id: user.id } },
-			category: { connect: { id: categoryId } },
-			image: currentImageId ? { connect: { id: currentImageId } } : undefined,
-			authorAvatar: authorAvatarId ? { connect: { id: authorAvatarId } } : undefined,
-			subcategories: subcategoryIds ? { connect: subcategoryIds.map((id) => ({ id })) } : undefined,
-			tags: tags ? { /* без змін */ } : undefined,
+				slug,
+				...rest,
+				titleSortKey: normalizeTitleForSort(data.title),
+				author: { connect: { id: user.id } },
+				category: { connect: { id: categoryId } },
+				image: currentImageId ? { connect: { id: currentImageId } } : undefined,
+				authorAvatar: authorAvatarId ? { connect: { id: authorAvatarId } } : undefined,
+				subcategories: subcategoryIds ? { connect: subcategoryIds.map((id) => ({ id })) } : undefined,
+				tags: tags ? { /* без змін */ } : undefined,
 			});
 		} catch (err) {
 			if (err instanceof Prisma.PrismaClientKnownRequestError) {
@@ -65,8 +67,9 @@ class ArticleService extends BaseService {
 		const { categoryId, subcategoryIds, tags, currentImageId, authorAvatarId, ...rest } = data;
 
 		return this.repository.update(id, {
-			...rest,
-
+		...rest,
+		...(data.title !== undefined ? { titleSortKey: normalizeTitleForSort(data.title) } : {}),
+		
 			image: currentImageId !== undefined
 			? currentImageId === null
 				? { disconnect: true }

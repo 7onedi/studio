@@ -128,7 +128,7 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
               <p
                 key={i}
                 dangerouslySetInnerHTML={{ __html: block.data.text }}
-                className="mb-4"
+                className="mb-4 [&_a]:text-blue-400 [&_a]:underline [&_a]:hover:text-blue-300"
               />
             );
 
@@ -146,17 +146,25 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
             return block.data.style === "ordered" ? (
               <ol key={i} className="list-decimal pl-6 mb-4">
                 {block.data.items.map((item: any, idx: number) => (
-                  <li key={idx} dangerouslySetInnerHTML={{
-                    __html: typeof item === "string" ? item : item.content ?? "",
-                  }} />
+                  <li
+                    key={idx}
+                    className="[&_a]:text-blue-400 [&_a]:underline"
+                    dangerouslySetInnerHTML={{
+                      __html: typeof item === "string" ? item : item.content ?? "",
+                    }}
+                  />
                 ))}
               </ol>
             ) : (
               <ul key={i} className="list-disc pl-6 mb-4">
                 {block.data.items.map((item: any, idx: number) => (
-                  <li key={idx} dangerouslySetInnerHTML={{
-                    __html: typeof item === "string" ? item : item.content ?? "",
-                  }} />
+                  <li
+                    key={idx}
+                    className="[&_a]:text-blue-400 [&_a]:underline"
+                    dangerouslySetInnerHTML={{
+                      __html: typeof item === "string" ? item : item.content ?? "",
+                    }}
+                  />
                 ))}
               </ul>
             );
