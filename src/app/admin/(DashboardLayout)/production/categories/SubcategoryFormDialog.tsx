@@ -59,8 +59,6 @@ export default function SubcategoryFormDialog({
           categoryId: Number(categoryId),
         })
       });
-      console.log('url:', url);
-      console.log('body:', JSON.stringify({ name, categoryId: Number(categoryId) }));
       if (!res.ok) throw new Error(`Error ${res.status}`);
       onSaved(await res.json());
       onClose();
