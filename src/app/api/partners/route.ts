@@ -52,6 +52,7 @@ export async function POST(req: NextRequest) {
     console.log("result:", result);
     return NextResponse.json(result, { status: 201 });
   } catch (err: any) {
+    console.error("Partner create error:", err);
     if (err?.code === "P2002") {
       return NextResponse.json(
         { message: "Ця електронна адреса вже використовується" },
