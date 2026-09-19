@@ -274,7 +274,6 @@ function renderBlock(block: Block, index: number) {
       );
 
     default:
-      console.log('unknown block:', block.type, block.data);
       return (
         <Box key={index} sx={{ my: 1, p: 1, bgcolor: 'grey.50', borderRadius: 1 }}>
           <Typography variant="caption" color="text.disabled">
