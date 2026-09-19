@@ -47,8 +47,9 @@ export async function POST(req: NextRequest) {
         );
       }
     }
-
+    console.log("partnerData:", partnerData);
     const result = await partnerController.create(partnerData, user?.id);
+    console.log("result:", result);
     return NextResponse.json(result, { status: 201 });
   } catch (err: any) {
     if (err?.code === "P2002") {
