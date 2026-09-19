@@ -37,7 +37,6 @@ function BlogSliderSkeleton({ count }: { count?: number }) {
 }
 
 async function fetchSliderArticles(categoryId?: string, subcategoryId?: string): Promise<any[]> {
-  console.log("Fetching articles for category:", categoryId);
   const params = new URLSearchParams({
     limit: "100",
     sortBy: "publishedAt",

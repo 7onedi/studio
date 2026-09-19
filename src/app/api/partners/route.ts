@@ -39,7 +39,6 @@ export async function POST(req: NextRequest) {
         }
       );
       const verifyData = await verifyRes.json();
-      console.log("Turnstile verify:", verifyData);
       if (!verifyData.success) {
         return NextResponse.json(
           { message: "Перевірка капчі не пройдена" },
@@ -47,9 +46,7 @@ export async function POST(req: NextRequest) {
         );
       }
     }
-    console.log("partnerData:", partnerData);
     const result = await partnerController.create(partnerData, user?.id);
-    console.log("result:", result);
     return NextResponse.json(result, { status: 201 });
   } catch (err: any) {
     console.error("Partner create error:", err);

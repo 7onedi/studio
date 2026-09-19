@@ -39,8 +39,6 @@ export const TagButton: React.FC<{ tag: string; ClassName?: string }> = ({
 };
 
 export const BlogCard: React.FC<BlogCardProps> = ({ meta, hero, onLoad }) => {
-  // збираємо теги для відображення (category + subcategory + tags)
-  console.log("BlogCard meta:", meta);
 const categoryTags = Array.from(
   new Set([meta.category, meta.SubCategory].filter(Boolean))
 ) as string[];

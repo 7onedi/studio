@@ -20,9 +20,7 @@ export default async function MfkPage({ params }: MfkPageProps) {
   const result = await getParentProject('#CountrysideStudio');
   const children = result?.children ?? [];
 
-  // знаходимо поточний дочірній проект по slug підкатегорії
   const child = children.find((p: any) => p.subcategory?.slug === slug);
-  console.log(JSON.stringify(child.body.blocks, null, 2));
 
   if (!child) {
     return (
@@ -49,7 +47,6 @@ export default async function MfkPage({ params }: MfkPageProps) {
     }));
 
   const socialLinks = child.socialLinks ?? [];
-  console.log(JSON.stringify(child, null, 2));
 
   return (
     <div className="mx-auto mt-4 lg:mt-0">

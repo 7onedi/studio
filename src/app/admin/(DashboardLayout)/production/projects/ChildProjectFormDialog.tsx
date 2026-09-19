@@ -306,7 +306,6 @@ export default function ChildProjectFormDialog({
       });
       if (!res.ok) throw new Error(`Error ${res.status}`);
       const created = await res.json();
-      console.log('created subcategory:', created);
       setSubcategories((prev) => [...prev, created]);
       setSubcategoryId(created.id);
       setSubcategoryInput(created.name);
