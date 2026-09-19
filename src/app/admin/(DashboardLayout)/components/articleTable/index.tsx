@@ -18,11 +18,12 @@ import {
   Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
 } from '@mui/material';
 import {
-  IconArrowUp, IconArrowDown, IconArrowsSort,
+  IconArrowUp, IconArrowDown, IconArrowsSort, IconX,
   IconEdit, IconTrash, IconTrashX, IconSearch, IconCopy,
 } from '@tabler/icons-react';
 import { format } from 'date-fns';
 import Link from 'next/link';
+import Autocomplete from "@mui/material/Autocomplete";
 
 export interface Article {
   id: number;
@@ -174,7 +175,7 @@ export default function ArticleTable({
     }
   };
 
-  const sortableColumns = ['title', 'updatedAt', 'published', 'lang', 'author', 'category'];
+  const sortableColumns = ['title', 'updatedAt', 'createdAt', 'published', 'lang', 'author', 'category'];
 
   const columns: ColumnDef<Article>[] = [
     {
@@ -223,17 +224,27 @@ export default function ArticleTable({
       cell: ({ getValue }) => (
         <Typography variant="body2" color="text.secondary">{getValue() as string}</Typography>
       ),
-      size: 120,
+      size: 150,
+    },
+    {
+      accessorKey: 'createdAt',
+      header: 'Created date',
+      cell: ({ getValue }) => (
+        <Typography variant="body2" color="text.secondary">
+          {format(new Date(getValue() as string), 'dd.MM.yy HH:mm')}
+        </Typography>
+      ),
+      size: 150,
     },
     {
       accessorKey: 'updatedAt',
       header: 'Updated date',
       cell: ({ getValue }) => (
-        <Typography variant="body2" color="text.secondary" noWrap>
+        <Typography variant="body2" color="text.secondary">
           {format(new Date(getValue() as string), 'dd.MM.yy HH:mm')}
         </Typography>
       ),
-      size: 130,
+      size: 150,
     },
     {
       accessorKey: 'published',
@@ -251,7 +262,7 @@ export default function ArticleTable({
           />
         );
       },
-      size: 130,
+      size: 100,
     },
     {
       accessorKey: 'lang',
@@ -288,7 +299,7 @@ export default function ArticleTable({
           </Typography>
         );
       },
-      size: 100,
+      size: 130,
     },
     {
       id: 'subcategory',
@@ -372,20 +383,33 @@ export default function ArticleTable({
       <Box maxWidth={1920} mx="auto">
       {/* Toolbar */}
       <Stack direction="row" spacing={2} alignItems="center" mb={2} flexWrap="wrap">
-        <TextField
-          size="small"
-          placeholder="Search..."
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <IconSearch
-                size={16}
-                style={{ marginRight: 4, color: 'var(--mui-palette-text-secondary)', cursor: 'pointer' }}
-                onClick={() => onSearchChange?.(searchInput)}
-              />
-            ),
+        <Autocomplete
+          freeSolo
+          options={[]}
+          disableClearable={false}
+          forcePopupIcon={false}
+          inputValue={searchInput}
+          onInputChange={(_, value, reason) => {
+            setSearchInput(value);
+            if (reason === 'clear') onSearchChange?.('');
           }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              size="small"
+              placeholder="Search..."
+              InputProps={{
+                ...params.InputProps,
+                startAdornment: (
+                  <IconSearch
+                    size={16}
+                    style={{ marginLeft: 4, marginRight: 4, color: 'var(--mui-palette-text-secondary)', cursor: 'pointer' }}
+                    onClick={() => onSearchChange?.(searchInput)}
+                  />
+                ),
+              }}
+            />
+          )}
           sx={{ width: 260 }}
         />
 

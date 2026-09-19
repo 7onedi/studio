@@ -115,6 +115,7 @@ export default function PartnerFormDialog({ open, initial, defaultRole, onClose,
   const [imageBase64, setImageBase64] = useState<string | null>(null);
   const [saving,      setSaving]      = useState(false);
   const [error,       setError]       = useState('');
+  const [errors,      setErrors]      = useState<Record<string, string>>({});
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
   const [selectedImageId, setSelectedImageId] = useState<number | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -127,9 +128,9 @@ export default function PartnerFormDialog({ open, initial, defaultRole, onClose,
       setRole(initial?.role ?? defaultRole ?? 'MEMBER');
       setStatus(initial?.status ?? 'PENDING');
       setPublished(initial?.published ?? false);
-      
       setImageBase64(null);
       setError('');
+      setErrors({});  
       setImageBase64(null);
       setImageUrl(null);
       setSelectedImageId(initial?.imageId ?? null);
@@ -147,9 +148,31 @@ export default function PartnerFormDialog({ open, initial, defaultRole, onClose,
   }
 }, [open, initial]);
 
+  const isValidUrl = (value: string): boolean => {
+    try {
+      const url = new URL(value);
+      return url.protocol === 'https:' || url.protocol === 'http:';
+    } catch {
+      return false;
+    }
+  };
+
+  const validate = (): boolean => {
+  const next: Record<string, string> = {};
+
+  if (name.trim().length < 2) next.name = "2 symbols minimum";
+  else if (name.trim().length > 64) next.name = "Maximum 64 symbols";
+
+  if (!email.trim()) next.email = "Email is required";
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) next.email = "Invalid email";
+  if (link.trim() && !isValidUrl(link.trim())) next.link = "Invalid URL (https:// or http://)";
+
+  setErrors(next);
+  return Object.keys(next).length === 0;
+};
+
   const handleSubmit = async () => {
-    if (!name.trim())  { setError("Name is required"); return; }
-    if (!email.trim()) { setError("Email is required"); return; }
+    if (!validate()) return;
 
     setSaving(true);
     setError('');
@@ -162,7 +185,7 @@ export default function PartnerFormDialog({ open, initial, defaultRole, onClose,
         const fd = new FormData();
         fd.append('file', blob, 'partner.jpg');
         const res = await fetch('/api/media', { method: 'POST', body: fd, credentials: 'include' });
-        if (!res.ok) throw new Error('Помилка завантаження фото');
+        if (!res.ok) throw new Error('Error uploading photo');
         imageId = (await res.json()).id;
       }
 
@@ -307,12 +330,16 @@ export default function PartnerFormDialog({ open, initial, defaultRole, onClose,
 
           <TextField
             label="Name *" value={name} size="small" fullWidth
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => { setName(e.target.value); setErrors(p => ({ ...p, name: "" })); }}
+            error={!!errors.name}
+            helperText={errors.name || " "}
           />
 
           <TextField
             label="Email *" value={email} size="small" fullWidth
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => { setEmail(e.target.value); setErrors(p => ({ ...p, email: "" })); }}
+            error={!!errors.email}
+            helperText={errors.email || " "}
           />
 
           <Box>
@@ -325,10 +352,11 @@ export default function PartnerFormDialog({ open, initial, defaultRole, onClose,
 
           <TextField
             label="Link (URL)" value={link} size="small" fullWidth
-            onChange={(e) => setLink(e.target.value)}
+            onChange={(e) => { setLink(e.target.value); setErrors(p => ({ ...p, link: "" })); }}
             placeholder="https://..."
+            error={!!errors.link}
+            helperText={errors.link || " "}
           />
-
 
           <TextField
             select label="Role" value={role} size="small" fullWidth
