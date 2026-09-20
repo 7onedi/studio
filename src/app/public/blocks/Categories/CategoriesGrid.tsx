@@ -72,44 +72,44 @@ function SvgCard({ category, x, y, W, H, path, isReversed, isDesktop, scale = 1,
       >
       <defs>
         {isFourth && (
-  <pattern
-    id={`grad-wave-${category.id}`}
-    patternUnits="userSpaceOnUse"
-    width={W}
-    height={H}
-    patternTransform={`scale(-1,1) translate(-${W},0)`}
-  >
-    {/* фон — темно-синій (небо) */}
-    <rect x="0" y="0" width={W} height={H} fill="#1A4D8F" />
+          <pattern
+            id={`grad-wave-${category.id}`}
+            patternUnits="userSpaceOnUse"
+            width={W}
+            height={H}
+            patternTransform={`scale(-1,1) translate(-${W},0)`}
+          >
+            {/* фон — темно-синій (небо) */}
+            <rect x="0" y="0" width={W} height={H} fill="#064d69" />
 
-    {/* помаранчева "гора" — плавний пік, трохи нижче */}
-    <path
-      d={`
-        M ${W},${H * 0.46}
-        C ${W - W * 0.14},${H * 0.38} ${W - W * 0.20},${H * 0.20} ${W - W * 0.34},${H * 0.28}
-        C ${W - W * 0.46},${H * 0.36} ${W - W * 0.40},${H * 0.62} ${W - W * 0.58},${H * 0.68}
-        C ${W - W * 0.74},${H * 0.74} ${W - W * 0.84},${H * 0.60} 0,${H * 0.84}
-        L 0,${H} L ${W},${H} Z
-      `}
-      fill="#F5A623"
-    />
+            {/* помаранчева "гора" — плавний пік, трохи нижче */}
+            <path
+              d={`
+                M ${W},${H * 0.46}
+                C ${W - W * 0.14},${H * 0.38} ${W - W * 0.20},${H * 0.20} ${W - W * 0.34},${H * 0.28}
+                C ${W - W * 0.46},${H * 0.36} ${W - W * 0.40},${H * 0.62} ${W - W * 0.58},${H * 0.68}
+                C ${W - W * 0.74},${H * 0.74} ${W - W * 0.84},${H * 0.60} 0,${H * 0.84}
+                L 0,${H} L ${W},${H} Z
+              `}
+              fill="#F5A623"
+            />
 
-    {/* товста біла хвиляста межа */}
-    <path
-      d={`
-        M ${W},${H * 0.46}
-        C ${W - W * 0.14},${H * 0.38} ${W - W * 0.20},${H * 0.20} ${W - W * 0.34},${H * 0.28}
-        C ${W - W * 0.46},${H * 0.36} ${W - W * 0.40},${H * 0.62} ${W - W * 0.58},${H * 0.68}
-        C ${W - W * 0.74},${H * 0.74} ${W - W * 0.84},${H * 0.60} 0,${H * 0.84}
-      `}
-      fill="none"
-      stroke="#ffffff"
-      strokeWidth={H * 0.133}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </pattern>
-)}
+            {/* товста біла хвиляста межа */}
+            <path
+              d={`
+                M ${W},${H * 0.46}
+                C ${W - W * 0.14},${H * 0.38} ${W - W * 0.20},${H * 0.20} ${W - W * 0.34},${H * 0.28}
+                C ${W - W * 0.46},${H * 0.36} ${W - W * 0.40},${H * 0.62} ${W - W * 0.58},${H * 0.68}
+                C ${W - W * 0.74},${H * 0.74} ${W - W * 0.84},${H * 0.60} 0,${H * 0.84}
+              `}
+              fill="none"
+              stroke="#ffffff"
+              strokeWidth={H * 0.133}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </pattern>
+        )}
         <clipPath id={clipId}>
           <path d={path} transform={isReversed ? flipTransform : undefined} />
         </clipPath>
@@ -173,7 +173,7 @@ function SvgCard({ category, x, y, W, H, path, isReversed, isDesktop, scale = 1,
               ? `url(#grad-diag-${category.id})`
               : gradColor
           }
-          style={{ opacity: hovered ? 0 : 0.4, transition: "opacity 0.5s" }}
+          style={{ opacity: isFourth ? (hovered ? 0 : 0.66) : hovered ? 0 : 0.4, transition: "opacity 0.5s",}}
         />
       </g>
 

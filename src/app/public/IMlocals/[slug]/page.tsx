@@ -35,28 +35,32 @@ export default async function IMlocalsPage({ params }: IMlocalsPageProps) {
   const rawMarkers = await getProjectMarkers(child.id);
 
   const mapMarkers = rawMarkers
-  .filter((m) => m.location?.coordinates)
-  .map((m) => {
-    const coords = m.location!.coordinates as { lat: number; lng: number };
-    return {
-      id: m.id,
-      title: m.title,
-      title_en: m.title_en,
-      title_pl: m.title_pl,
-      title_lt: m.title_lt,
-      title_ro: m.title_ro,
-      body: (m.body as any)?.blocks ?? [],
-      body_en: (m.body_en as any)?.blocks ?? [],
-      body_pl: (m.body_pl as any)?.blocks ?? [],
-      body_lt: (m.body_lt as any)?.blocks ?? [],
-      body_ro: (m.body_ro as any)?.blocks ?? [],
-      markerType: m.markerType ?? 'IMAGEMAPPING',
-      imageUrl: m.image?.url,
-      websiteUrl: m.location?.url ?? null,
-      lat: coords.lat,
-      lng: coords.lng,
-    };
-  });
+    .filter((m) => m.location?.coordinates)
+    .map((m) => {
+      const coords = m.location!.coordinates as { lat: number; lng: number };
+      return {
+        id: m.id,
+        title: m.title,
+        title_en: m.title_en,
+        title_pl: m.title_pl,
+        title_lt: m.title_lt,
+        title_ro: m.title_ro,
+        body: (m.body as any)?.blocks ?? [],
+        body_en: (m.body_en as any)?.blocks ?? [],
+        body_pl: (m.body_pl as any)?.blocks ?? [],
+        body_lt: (m.body_lt as any)?.blocks ?? [],
+        body_ro: (m.body_ro as any)?.blocks ?? [],
+        markerType: m.markerType ?? 'IMAGEMAPPING',
+        imageUrl: m.image?.url,
+        websiteUrl: (m.body as any)?.websiteUrl ?? null,
+        websiteUrl_en: (m.body_en as any)?.websiteUrl ?? null,
+        websiteUrl_pl: (m.body_pl as any)?.websiteUrl ?? null,
+        websiteUrl_lt: (m.body_lt as any)?.websiteUrl ?? null,
+        websiteUrl_ro: (m.body_ro as any)?.websiteUrl ?? null,
+        lat: coords.lat,
+        lng: coords.lng,
+      };
+    });
 
   const centerLat = child.location?.coordinates?.lat ?? 49.23;
   const centerLng = child.location?.coordinates?.lng ?? 28.47;

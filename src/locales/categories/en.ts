@@ -60,11 +60,11 @@ export const categoriesDataEn: CategoryData[] = [
     gradient: "from-main-grass/60 to-main-grass/60",
     hoverGradient: "from-main-grass/40 to-main-grass/40",
     link: "/public/Imagemapping",
-    title: "Imagemapping",
+    title: "Image Mapping",
     description: [
-      { strong: "Imagemapping" },
+      { strong: "Image Mapping" },
       " is an English-speaking amateur theater that operates at an international level, raising important social topics. Participants are often people without experience who are looking for an opportunity to try themselves as actors, to unlock their potential and develop their soft skills such as public speaking, teamwork, etc. Also, ",
-      { strong: "Imagemapping" },
+      { strong: "Image Mapping" },
       " is a community of individuals who are ready for creativity and crazy drive in their performances that captivate!"
     ],
   },
