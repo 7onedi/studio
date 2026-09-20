@@ -47,12 +47,12 @@ export const categoriesDataUk: CategoryData[] = [
   },
   {
     id: 4,
-    title: "Imagemapping",
+    title: "Image Mapping",
     image: "/categories/category4.webp",
     pattern: "/categories/cetegory4_pattern.png",
     gradient: "from-main-grass/60 to-main-grass/60",
     hoverGradient: "from-main-grass/40 to-main-grass/40",
     link: "/public/Imagemapping",
-    description: [{ strong: "Imagemapping" }, ' - це англомовний аматорський театр, котрий працює на міжнародному рівні, підіймаючи важливі соціальні теми. Учасники це часто люди без досвіду, котрі шукають нагоди спробувати себе акторами, розкрити свій потенціал та потренувати власні м’які навички як public speaking, співпраця в командах і т.д. Також ', { strong: "Imagemapping" }, ' це спільнота осіб, котрі готові до креативу та шаленого драйву у своїх перфомансах, що захоплюють!'],
+    description: [{ strong: "Image Mapping" }, ' - це англомовний аматорський театр, котрий працює на міжнародному рівні, підіймаючи важливі соціальні теми. Учасники це часто люди без досвіду, котрі шукають нагоди спробувати себе акторами, розкрити свій потенціал та потренувати власні м’які навички як public speaking, співпраця в командах і т.д. Також ', { strong: "Imagemapping" }, ' це спільнота осіб, котрі готові до креативу та шаленого драйву у своїх перфомансах, що захоплюють!'],
   },
 ];

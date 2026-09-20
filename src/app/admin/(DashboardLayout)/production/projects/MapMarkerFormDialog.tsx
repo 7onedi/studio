@@ -106,6 +106,10 @@ export default function MapMarkerFormDialog({
   const [bannerPickerOpen, setBannerPickerOpen] = useState(false);
   const [selectedBannerId, setSelectedBannerId] = useState<number | null>(initial?.imageId ?? null);
   const [websiteUrl, setWebsiteUrl] = useState('');
+  const [websiteUrl_en, setWebsiteUrl_en] = useState('');
+  const [websiteUrl_pl, setWebsiteUrl_pl] = useState('');
+  const [websiteUrl_lt, setWebsiteUrl_lt] = useState('');
+  const [websiteUrl_ro, setWebsiteUrl_ro] = useState('');
   const [bannerUrl, setBannerUrl] = useState<string | null>(null);
   const [dataReady, setDataReady] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -179,7 +183,11 @@ export default function MapMarkerFormDialog({
     setContent(fullData?.body ?? initial?.body ?? null);
     setLat(String(fullData?.location?.coordinates?.lat ?? initial?.lat ?? ''));
     setLng(String(fullData?.location?.coordinates?.lng ?? initial?.lng ?? ''));
-    setWebsiteUrl(fullData?.location?.url ?? initial?.websiteUrl ?? '');
+    setWebsiteUrl((fullData?.body as any)?.websiteUrl ?? '');
+    setWebsiteUrl_en((fullData?.body_en as any)?.websiteUrl ?? '');
+    setWebsiteUrl_pl((fullData?.body_pl as any)?.websiteUrl ?? '');
+    setWebsiteUrl_lt((fullData?.body_lt as any)?.websiteUrl ?? '');
+    setWebsiteUrl_ro((fullData?.body_ro as any)?.websiteUrl ?? '');
     setImageBase64(null);
     setBannerUrl(null);
     setSelectedBannerId(fullData?.imageId ?? initial?.imageId ?? null);
@@ -239,6 +247,14 @@ export default function MapMarkerFormDialog({
     RO: { value: content_ro, set: setContent_ro },
   };
 
+  const websiteMap: Record<string, { value: string; set: (v: string) => void }> = {
+    UK: { value: websiteUrl, set: setWebsiteUrl },
+    EN: { value: websiteUrl_en, set: setWebsiteUrl_en },
+    PL: { value: websiteUrl_pl, set: setWebsiteUrl_pl },
+    LT: { value: websiteUrl_lt, set: setWebsiteUrl_lt },
+    RO: { value: websiteUrl_ro, set: setWebsiteUrl_ro },
+  };
+
   const handleSubmit = async () => {
     if (!validate()) return;
     if (creatingSubcategory) return;
@@ -265,19 +281,19 @@ export default function MapMarkerFormDialog({
         title_pl: title_pl || null,
         title_lt: title_lt || null,
         title_ro: title_ro || null,
-        body_en: content_en ?? { blocks: [] },
-        body_pl: content_pl ?? { blocks: [] },
-        body_lt: content_lt ?? { blocks: [] },
-        body_ro: content_ro ?? { blocks: [] },
+        body_en: { ...(content_en as any ?? { blocks: [] }), websiteUrl: websiteUrl_en.trim() || null },
+        body_pl: { ...(content_pl as any ?? { blocks: [] }), websiteUrl: websiteUrl_pl.trim() || null },
+        body_lt: { ...(content_lt as any ?? { blocks: [] }), websiteUrl: websiteUrl_lt.trim() || null },
+        body_ro: { ...(content_ro as any ?? { blocks: [] }), websiteUrl: websiteUrl_ro.trim() || null },
         categoryId: imagemappingCategoryId,
         subcategoryId: Number(subcategoryId),
         parentId: Number(parentId),
         markerType,
-        body: { ...(content as any ?? { blocks: [] }) },
+        body: { ...(content as any ?? { blocks: [] }), websiteUrl: websiteUrl.trim() || null },
         ...(imageId && { imageId }),
         locationData: {
           name: title_en,
-          url: websiteUrl.trim() || null,
+          url: null,
           coordinates: {
             lat: parseFloat(lat) || 0,
             lng: parseFloat(lng) || 0,
@@ -420,6 +436,7 @@ export default function MapMarkerFormDialog({
             {LANGS.map((l) => {
               const tm = l.code === 'UK' ? { value: title, set: setTitle } : titleMap[l.code];
               const bm = bodyMap[l.code];
+              const wm = websiteMap[l.code];
               if (langTab !== l.code) return null;
               return (
                 <Box key={l.code}>
@@ -427,20 +444,27 @@ export default function MapMarkerFormDialog({
                     fullWidth size="small" label={`Title (${l.label})`}
                     value={tm.value}
                     onChange={(e) => {
-                        tm.set(e.target.value);
-                        if (l.code === 'EN') setErrors(p => ({ ...p, title_en: '' }));
+                      tm.set(e.target.value);
+                      if (l.code === 'EN') setErrors(p => ({ ...p, title_en: '' }));
                     }}
                     error={l.code === 'EN' && !!errors.title_en}
                     helperText={l.code === 'EN' ? (errors.title_en || ' ') : ' '}
                     sx={{ mb: 2 }}
                   />
+                  <TextField
+                    fullWidth size="small" label={`Website (${l.label}, optional)`}
+                    value={wm.value}
+                    onChange={(e) => wm.set(e.target.value)}
+                    placeholder="https://..."
+                    sx={{ mb: 2 }}
+                  />
                   <Box sx={{ border: '1px solid #ddd', borderRadius: 2, p: 2, minHeight: 200 }}>
                     {!dataReady ? (
-                    <Box display="flex" alignItems="center" justifyContent="center" minHeight={160}>
+                      <Box display="flex" alignItems="center" justifyContent="center" minHeight={160}>
                         <CircularProgress size={24} />
-                    </Box>
+                      </Box>
                     ) : (
-                    bm.value !== null
+                      bm.value !== null
                         ? <PartnerDescriptionEditor key={l.code} onChange={bm.set} initialData={bm.value} holderId={`marker-editorjs-${l.code.toLowerCase()}`} minimal />
                         : <PartnerDescriptionEditor key={l.code} onChange={bm.set} holderId={`marker-editorjs-${l.code.toLowerCase()}`} minimal />
                     )}
@@ -467,12 +491,6 @@ export default function MapMarkerFormDialog({
                 helperText={errors.lng || ' '}
             />
             </Stack>
-
-            <TextField
-                fullWidth label="Website (optional)" value={websiteUrl}
-                onChange={(e) => setWebsiteUrl(e.target.value)}
-                size="small" placeholder="https://..."
-            />
 
           <Box>
             <Typography variant="body2" color="text.secondary" mb={1}>Marker Image</Typography>

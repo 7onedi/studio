@@ -55,16 +55,16 @@ export const categoriesDataLt: CategoryData[] = [
   },
   {
     id: 4,
-    title: "Imagemapping",
+    title: "Image Mapping",
     image: "/categories/category4.webp",
     pattern: "/categories/cetegory4_pattern.png",
     gradient: "from-main-grass/60 to-main-grass/60",
     hoverGradient: "from-main-grass/40 to-main-grass/40",
     link: "/public/Imagemapping",
     description: [
-      { strong: "Imagemapping" },
+      { strong: "Image Mapping" },
       " – tai anglakalbis mėgėjų teatras, veikiantis tarptautiniu lygiu ir nagrinėjantis svarbias socialines temas. Dalyviai dažnai yra žmonės be patirties, kurie ieško galimybės išbandyti save kaip aktoriai, atskleisti savo potencialą ir lavinti minkštuosius įgūdžius, tokius kaip viešasis kalbėjimas, komandinis darbas ir kt. Taip pat ",
-      { strong: "Imagemapping" },
+      { strong: "Image Mapping" },
       " yra bendruomenė žmonių, pasiruošusių kūrybai ir energingiems pasirodymams, kurie įtraukia!"
     ],
   },
