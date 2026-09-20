@@ -30,7 +30,7 @@ export default async function Home() {
         <CategoryTitleWrapper
           projectId={4}
           image={parent?.image?.url}
-          title={parent?.title}
+          title={'Image Mapping'}
           parent={parent}
         />
       </div>
@@ -40,7 +40,7 @@ export default async function Home() {
       <div className="my-8 flex justify-center">
         <p className="text-headline_3">
           <TranslatedText tKey="pages.project_preview_block.title" />
-          {' Imagemapping'}
+          {' Image Mapping'}
         </p>
       </div>
       <div className="">

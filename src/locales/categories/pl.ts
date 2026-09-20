@@ -55,16 +55,16 @@ export const categoriesDataPl: CategoryData[] = [
   },
   {
     id: 4,
-    title: "Imagemapping",
+    title: "Image Mapping",
     image: "/categories/category4.webp",
     pattern: "/categories/cetegory4_pattern.png",
     gradient: "from-main-grass/60 to-main-grass/60",
     hoverGradient: "from-main-grass/40 to-main-grass/40",
     link: "/public/Imagemapping",
     description: [
-      { strong: "Imagemapping" },
+      { strong: "Image Mapping" },
       " – to anglojęzyczny teatr amatorski działający na poziomie międzynarodowym, poruszający ważne tematy społeczne. Uczestnikami są często osoby bez doświadczenia, które chcą spróbować swoich sił jako aktorzy, odkryć swój potencjał oraz rozwijać umiejętności miękkie, takie jak wystąpienia publiczne, praca zespołowa itp. ",
-      { strong: "Imagemapping" },
+      { strong: "Image Mapping" },
       " to także społeczność ludzi gotowych na kreatywność i pełne energii występy, które zachwycają!"
     ],
   },

@@ -60,11 +60,11 @@ export const categoriesDataRo: CategoryData[] = [
     gradient: "from-main-grass/60 to-main-grass/60",
     hoverGradient: "from-main-grass/40 to-main-grass/40",
     link: "/public/Imagemapping",
-    title: "Imagemapping",
+    title: "Image Mapping",
     description: [
-      { strong: "Imagemapping" },
+      { strong: "Image Mapping" },
       " – este un teatru amator în limba engleză care operează la nivel internațional, abordând teme sociale importante. Participanții sunt adesea persoane fără experiență, care caută oportunități de a se încerca ca actori, de a-și descoperi potențialul și de a-și dezvolta abilitățile soft, precum vorbitul în public, lucrul în echipă etc. De asemenea, ",
-      { strong: "Imagemapping" },
+      { strong: "Image Mapping" },
       " este o comunitate de persoane pregătite pentru creativitate și energie intensă în performanțele lor captivante!"
     ],
   },

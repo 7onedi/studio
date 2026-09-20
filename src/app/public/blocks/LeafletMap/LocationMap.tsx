@@ -60,9 +60,13 @@ export interface LocationMarker {
   body_pl?: any[];
   body_lt?: any[];
   body_ro?: any[];
+  websiteUrl?: string | null;
+  websiteUrl_en?: string | null;
+  websiteUrl_pl?: string | null;
+  websiteUrl_lt?: string | null;
+  websiteUrl_ro?: string | null;
   markerType: string;
   imageUrl?: string;
-  websiteUrl?: string | null;
   lat: number;
   lng: number;
 }
@@ -116,6 +120,14 @@ export default function LocationMap({ centerLat, centerLng, zoom, markers }: Pro
             ro: marker.body_ro,
             en: marker.body_en,
           };
+          const websiteByLocale: Record<string, string | undefined> = {
+            uk: marker.websiteUrl ?? undefined,
+            pl: marker.websiteUrl_pl ?? undefined,
+            lt: marker.websiteUrl_lt ?? undefined,
+            ro: marker.websiteUrl_ro ?? undefined,
+            en: marker.websiteUrl_en ?? undefined,
+          };
+          const websiteUrl = pickLocalizedText(locale, websiteByLocale, marker.websiteUrl_en ?? undefined) ?? null;
           const title = pickLocalizedText(locale, titleByLocale, marker.title_en ?? undefined) ?? marker.title;
           const bodyBlocks = pickLocalized(locale, bodyByLocale, marker.body_en);
           const previewTextFull = extractPreviewText(bodyBlocks);
@@ -133,14 +145,14 @@ export default function LocationMap({ centerLat, centerLng, zoom, markers }: Pro
                     <p className="text-sm lg:hidden">{previewTextMobile}</p>
                   )}
                   {previewTextFull && (
-                    <p className={`text-sm hidden lg:block ${marker.websiteUrl ? 'line-clamp-3 overflow-hidden' : ''}`}>
-                    {previewTextFull}
+                    <p className={`text-sm hidden lg:block ${websiteUrl ? 'line-clamp-3 overflow-hidden' : ''}`}>
+                      {previewTextFull}
                     </p>
                   )}
 
-                  {marker.websiteUrl && (
-                    <a href={marker.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                        Read more ↗
+                  {websiteUrl && (
+                    <a href={websiteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                      Read more ↗
                     </a>
                   )}
                 </div>

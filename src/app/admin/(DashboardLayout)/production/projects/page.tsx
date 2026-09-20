@@ -281,7 +281,7 @@ function ProjectsContent() {
           >
             <Tab label="Parent Projects" />
             <Tab label="Projects" />
-            <Tab label="Imagemapping" />
+            <Tab label="Imagemapping map markers" />
           </Tabs>
         )}
 
