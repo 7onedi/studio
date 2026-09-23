@@ -6,10 +6,11 @@ import {
   Button, TextField, Stack, Typography, MenuItem,
   Box, IconButton, Divider, Tabs, Tab,
 } from '@mui/material';
-import { IconTrash, IconPlus, IconMinus } from '@tabler/icons-react';
+import { IconTrash, IconPlus, IconMinus, IconPencil, IconPresentation } from '@tabler/icons-react';
 import dynamic from 'next/dynamic';
 import { FieldHelp } from '../../components/shared/FieldHelp';
 import PresentationUploader from './PresentationUploader';
+import PresentationEntryDialog from './PresentationEntryDialog';
 
 const ReactEditor = dynamic(() => import('../../components/editor/ReactEditor'), { ssr: false });
 
@@ -46,6 +47,23 @@ export interface ParentProjectFormData {
   socialLinks: SocialLink[];
 }
 
+interface PresentationEntry {
+  title: string;
+  description: string;
+  url: string;
+  title_uk: string;
+  description_uk: string;
+  url_uk: string;
+  logo: string;
+  logoId: number | null;
+}
+
+const EMPTY_PRESENTATION: PresentationEntry = {
+  title: '', description: '', url: '',
+  title_uk: '', description_uk: '', url_uk: '',
+  logo: '', logoId: null,
+};
+
 const PLATFORMS = ['YOUTUBE', 'INSTAGRAM', 'FACEBOOK', 'TIKTOK', 'TWITTER'];
 
 const LANGS = [
@@ -55,6 +73,8 @@ const LANGS = [
   { code: 'LT', icon: '/flags/LT.svg', label: 'Lithuanian' },
   { code: 'RO', icon: '/flags/RO.svg', label: 'Romanian' },
 ];
+
+const PRESENTATIONS_LIST_CATEGORY = 'Mozaїka';
 
 interface Props {
   open: boolean;
@@ -90,9 +110,13 @@ export default function ParentProjectFormDialog({
   const [presentationUrlUk, setPresentationUrlUk] = useState('');
   const [presentationTitleUk, setPresentationTitleUk] = useState('');
   const [presentationDescriptionUk, setPresentationDescriptionUk] = useState('');
+  const [presentations, setPresentations] = useState<PresentationEntry[]>([]);
+  const [presentationDialogOpen, setPresentationDialogOpen] = useState(false);
+  const [editingPresentationIndex, setEditingPresentationIndex] = useState<number | null>(null);
 
   const selectedCategory = categories.find((c) => c.id === Number(categoryId));
   const title = selectedCategory?.name ?? '';
+  const isPresentationsListCategory = title === PRESENTATIONS_LIST_CATEGORY;
 
   useEffect(() => {
     if (open) {
@@ -143,6 +167,7 @@ export default function ParentProjectFormDialog({
     setPresentationUrlUk(fullData?.presentationUrl_uk ?? '');
     setPresentationTitleUk(fullData?.presentationTitle_uk ?? '');
     setPresentationDescriptionUk(fullData?.presentationDescription_uk ?? '');
+    setPresentations((fullData?.body as any)?.presentations ?? (initial?.body as any)?.presentations ?? []);
     setError('');
   }, [open, fullData]);
 
@@ -150,6 +175,35 @@ export default function ParentProjectFormDialog({
 
   const updateSocial = (idx: number, field: keyof SocialLink, val: string) =>
     setSocials((prev) => prev.map((s, i) => i === idx ? { ...s, [field]: val } : s));
+
+  const updatePresentation = (idx: number, field: keyof PresentationEntry, val: string) =>
+    setPresentations((prev) => prev.map((p, i) => i === idx ? { ...p, [field]: val } : p));
+
+  const openNewPresentation = () => {
+    setEditingPresentationIndex(null);
+    setPresentationDialogOpen(true);
+  };
+
+  const openEditPresentation = (idx: number) => {
+    setEditingPresentationIndex(idx);
+    setPresentationDialogOpen(true);
+  };
+
+  const handleSavePresentation = (entry: PresentationEntry) => {
+    if (editingPresentationIndex === null) {
+      setPresentations((prev) => [...prev, entry]);
+    } else {
+      setPresentations((prev) =>
+        prev.map((p, i) => (i === editingPresentationIndex ? entry : p))
+      );
+    }
+    setPresentationDialogOpen(false);
+  };
+
+  const deletePresentation = (idx: number) => {
+    if (!window.confirm('Delete this presentation? This cannot be undone.')) return;
+    setPresentations((prev) => prev.filter((_, i) => i !== idx));
+  };
 
   const handleSubmit = async () => {
     if (!title.trim()) { setError('Title is required'); return; }
@@ -166,7 +220,9 @@ export default function ParentProjectFormDialog({
       const payload = {
         title,
         categoryId: Number(categoryId),
-        body:    content    ?? { blocks: [] },
+        body: isPresentationsListCategory
+          ? { ...(content as any ?? { blocks: [] }), presentations }
+          : content ?? { blocks: [] },
         body_en: content_en ?? { blocks: [] },
         body_pl: content_pl ?? { blocks: [] },
         body_lt: content_lt ?? { blocks: [] },
@@ -217,164 +273,230 @@ export default function ParentProjectFormDialog({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pr: 3 }}>
-        {isEdit ? 'Edit Project' : 'New Parent Project'}
-        <FieldHelp>
-          Fields marked with an asterisk (*) are required.
-        </FieldHelp>
-      </DialogTitle>
-      <DialogContent>
-        <Stack spacing={2} mt={1}>
+    <>
+      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+        <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pr: 3 }}>
+          {isEdit ? 'Edit Project' : 'New Parent Project'}
+          <FieldHelp>
+            Fields marked with an asterisk (*) are required.
+          </FieldHelp>
+        </DialogTitle>
+        <DialogContent>
+          <Stack spacing={2} mt={1}>
 
-          <TextField
-            select label="Category *" value={categoryId}
-            onChange={(e) => setCategoryId(Number(e.target.value))}
-            fullWidth size="small"
-          >
-            {categories.map((c) => (
-              <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>
-            ))}
-          </TextField>
-
-          <Divider />
-
-          {/* Мовні таби */}
-          <Box>
-            <Typography variant="subtitle2" fontWeight={600} mb={1}>Description</Typography>
-            <Tabs
-              value={langTab}
-              onChange={(_, v) => setLangTab(v)}
-              variant="scrollable"
-              scrollButtons="auto"
-              sx={{ mb: 2, borderBottom: 1, borderColor: 'divider' }}
-            >
-              {LANGS.map((l) => (
-                <Tab
-                  key={l.code}
-                  value={l.code}
-                  label={
-                    <Box display="flex" alignItems="center" gap={0.75}>
-                      <img src={l.icon} width={20} height={20} alt={l.label} style={{ borderRadius: 2 }} />
-                      {l.label}
-                    </Box>
-                  }
-                />
-              ))}
-            </Tabs>
-
-            {LANGS.map((l) => {
-              const { value, set } = bodyMap[l.code];
-              if (langTab !== l.code) return null;
-              return (
-                <Box
-                  key={l.code}
-                  sx={{ border: '1px solid #ddd', borderRadius: 2, p: 2, minHeight: 200 }}
-                >
-                  <ReactEditor
-                    key={l.code}
-                    onChange={set}
-                    initialData={value ?? undefined}
-                    holderId={`editorjs-${l.code.toLowerCase()}`}
-                  />
-
-                  {l.code === 'EN' && (
-                    <PresentationUploader
-                      url={presentationUrl}
-                      title={presentationTitle}
-                      description={presentationDescription}
-                      onUrlChange={setPresentationUrl}
-                      onTitleChange={setPresentationTitle}
-                      onDescriptionChange={setPresentationDescription}
-                    />
-                  )}
-                  {l.code === 'UK' && (
-                    <PresentationUploader
-                      url={presentationUrlUk}
-                      title={presentationTitleUk}
-                      description={presentationDescriptionUk}
-                      onUrlChange={setPresentationUrlUk}
-                      onTitleChange={setPresentationTitleUk}
-                      onDescriptionChange={setPresentationDescriptionUk}
-                    />
-                  )}
-                </Box>
-              );
-            })}
-          </Box>
-
-          <Divider />
-
-          {/* Координати */}
-          <Box display="flex" alignItems="center" gap={0.5}>
-            <Typography variant="subtitle2" fontWeight={600}>Coordinates</Typography>
-            <FieldHelp>
-              Set the default zoom level for all project maps.
-            </FieldHelp>
-          </Box>
-          <Stack direction="row" spacing={2}>
-            <TextField fullWidth label="(lat)" value={lat}
-              onChange={(e) => setLat(e.target.value)} size="small" placeholder="48.45262" />
-            <TextField fullWidth label="(lng)" value={lng}
-              onChange={(e) => setLng(e.target.value)} size="small" placeholder="28.42077" />
-          </Stack>
-
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'nowrap' }}>Zoom</Typography>
-            <IconButton size="small" onClick={() => setZoom((z) => Math.max(1, z - 1))}>
-              <IconMinus size={14} />
-            </IconButton>
             <TextField
-              value={zoom}
-              onChange={(e) => setZoom(Math.min(20, Math.max(1, Number(e.target.value))))}
-              size="small"
-              slotProps={{ htmlInput: { min: 1, max: 20, style: { textAlign: 'center', width: 40 } } }}
-            />
-            <IconButton size="small" onClick={() => setZoom((z) => Math.min(20, z + 1))}>
-              <IconPlus size={14} />
-            </IconButton>
-          </Stack>
+              select label="Category *" value={categoryId}
+              onChange={(e) => setCategoryId(Number(e.target.value))}
+              fullWidth size="small"
+            >
+              {categories.map((c) => (
+                <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>
+              ))}
+            </TextField>
 
-          <Divider />
+            <Divider />
 
-          {/* Соцмережі */}
-          <Stack direction="row" alignItems="center" justifyContent="space-between">
-            <Typography variant="subtitle2" fontWeight={600}>Social Media</Typography>
-            <Button size="small" startIcon={<IconPlus size={14} />}
-              onClick={() => setSocials((p) => [...p, { platform: 'INSTAGRAM', url: '' }])}>
-              Add
-            </Button>
-          </Stack>
-          {socials.map((s, idx) => (
-            <Stack key={idx} direction="row" spacing={1} alignItems="center">
-              <TextField
-                select label="Platform" value={s.platform}
-                onChange={(e) => updateSocial(idx, 'platform', e.target.value)}
-                sx={{ width: 160, flexShrink: 0 }} size="small"
+            {/* Мовні таби */}
+            <Box>
+              <Typography variant="subtitle2" fontWeight={600} mb={1}>Description</Typography>
+              <Tabs
+                value={langTab}
+                onChange={(_, v) => setLangTab(v)}
+                variant="scrollable"
+                scrollButtons="auto"
+                sx={{ mb: 2, borderBottom: 1, borderColor: 'divider' }}
               >
-                {PLATFORMS.map((p) => <MenuItem key={p} value={p}>{p}</MenuItem>)}
-              </TextField>
+                {LANGS.map((l) => (
+                  <Tab
+                    key={l.code}
+                    value={l.code}
+                    label={
+                      <Box display="flex" alignItems="center" gap={0.75}>
+                        <img src={l.icon} width={20} height={20} alt={l.label} style={{ borderRadius: 2 }} />
+                        {l.label}
+                      </Box>
+                    }
+                  />
+                ))}
+              </Tabs>
+
+              {LANGS.map((l) => {
+                const { value, set } = bodyMap[l.code];
+                if (langTab !== l.code) return null;
+                return (
+                  <Box
+                    key={l.code}
+                    sx={{ border: '1px solid #ddd', borderRadius: 2, p: 2, minHeight: 200 }}
+                  >
+                    <ReactEditor
+                      key={l.code}
+                      onChange={set}
+                      initialData={value ?? undefined}
+                      holderId={`editorjs-${l.code.toLowerCase()}`}
+                    />
+
+                    {l.code === 'EN' && (
+                      <PresentationUploader
+                        url={presentationUrl}
+                        title={presentationTitle}
+                        description={presentationDescription}
+                        onUrlChange={setPresentationUrl}
+                        onTitleChange={setPresentationTitle}
+                        onDescriptionChange={setPresentationDescription}
+                      />
+                    )}
+                    {l.code === 'UK' && (
+                      <PresentationUploader
+                        url={presentationUrlUk}
+                        title={presentationTitleUk}
+                        description={presentationDescriptionUk}
+                        onUrlChange={setPresentationUrlUk}
+                        onTitleChange={setPresentationTitleUk}
+                        onDescriptionChange={setPresentationDescriptionUk}
+                      />
+                    )}
+                  </Box>
+                );
+              })}
+            </Box>
+
+            {isPresentationsListCategory && (
+              <>
+                <Divider />
+                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                  <Typography variant="subtitle2" fontWeight={600}>Presentations list</Typography>
+                  <Button
+                    size="small"
+                    startIcon={<IconPlus size={14} />}
+                    onClick={openNewPresentation}
+                  >
+                    Add
+                  </Button>
+                </Stack>
+
+                {presentations.map((p, idx) => (
+                  <Stack
+                    key={idx}
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    spacing={1.5}
+                    sx={{ border: '1px solid #ddd', borderRadius: 2, p: 1.5 }}
+                  >
+                    <Stack direction="row" alignItems="center" spacing={1.5} sx={{ minWidth: 0, flex: 1 }}>
+                      <Box
+                        sx={{
+                          width: 40, height: 40, flexShrink: 0,
+                          borderRadius: 1, border: '1px solid #eee',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          overflow: 'hidden', bgcolor: 'grey.50',
+                        }}
+                      >
+                        {p.logo ? (
+                          <Box component="img" src={p.logo}
+                            sx={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                        ) : (
+                          <IconPresentation size={20} color="#bbb" />
+                        )}
+                      </Box>
+                      <Box sx={{ minWidth: 0 }}>
+                        <Typography variant="body2" fontWeight={600} noWrap>{p.title || '(untitled)'}</Typography>
+                        <Typography variant="caption" color="text.secondary" noWrap>{p.description}</Typography>
+                      </Box>
+                    </Stack>
+                    <Stack direction="row" spacing={0.5}>
+                      <IconButton size="small" onClick={() => openEditPresentation(idx)}>
+                        <IconPencil size={16} />
+                      </IconButton>
+                      <IconButton size="small" color="error" onClick={() => deletePresentation(idx)}>
+                        <IconTrash size={16} />
+                      </IconButton>
+                    </Stack>
+                  </Stack>
+                ))}
+              </>
+            )}
+
+            <Divider />
+
+            {/* Координати */}
+            <Box display="flex" alignItems="center" gap={0.5}>
+              <Typography variant="subtitle2" fontWeight={600}>Coordinates</Typography>
+              <FieldHelp>
+                Set the default zoom level for all project maps.
+              </FieldHelp>
+            </Box>
+            <Stack direction="row" spacing={2}>
+              <TextField fullWidth label="(lat)" value={lat}
+                onChange={(e) => setLat(e.target.value)} size="small" placeholder="48.45262" />
+              <TextField fullWidth label="(lng)" value={lng}
+                onChange={(e) => setLng(e.target.value)} size="small" placeholder="28.42077" />
+            </Stack>
+
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'nowrap' }}>Zoom</Typography>
+              <IconButton size="small" onClick={() => setZoom((z) => Math.max(1, z - 1))}>
+                <IconMinus size={14} />
+              </IconButton>
               <TextField
-                fullWidth label="Link" value={s.url} size="small"
-                onChange={(e) => updateSocial(idx, 'url', e.target.value)}
-                placeholder="https://..."
+                value={zoom}
+                onChange={(e) => setZoom(Math.min(20, Math.max(1, Number(e.target.value))))}
+                size="small"
+                slotProps={{ htmlInput: { min: 1, max: 20, style: { textAlign: 'center', width: 40 } } }}
               />
-              <IconButton size="small" color="error"
-                onClick={() => setSocials((p) => p.filter((_, i) => i !== idx))}>
-                <IconTrash size={16} />
+              <IconButton size="small" onClick={() => setZoom((z) => Math.min(20, z + 1))}>
+                <IconPlus size={14} />
               </IconButton>
             </Stack>
-          ))}
 
-          {error && <Typography variant="caption" color="error">{error}</Typography>}
-        </Stack>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} disabled={saving}>Cancel</Button>
-        <Button variant="contained" onClick={handleSubmit} disabled={saving}>
-          {saving ? 'Saving...' : isEdit ? 'Save' : 'Create'}
-        </Button>
-      </DialogActions>
-    </Dialog>
+            <Divider />
+
+            {/* Соцмережі */}
+            <Stack direction="row" alignItems="center" justifyContent="space-between">
+              <Typography variant="subtitle2" fontWeight={600}>Social Media</Typography>
+              <Button size="small" startIcon={<IconPlus size={14} />}
+                onClick={() => setSocials((p) => [...p, { platform: 'INSTAGRAM', url: '' }])}>
+                Add
+              </Button>
+            </Stack>
+            {socials.map((s, idx) => (
+              <Stack key={idx} direction="row" spacing={1} alignItems="center">
+                <TextField
+                  select label="Platform" value={s.platform}
+                  onChange={(e) => updateSocial(idx, 'platform', e.target.value)}
+                  sx={{ width: 160, flexShrink: 0 }} size="small"
+                >
+                  {PLATFORMS.map((p) => <MenuItem key={p} value={p}>{p}</MenuItem>)}
+                </TextField>
+                <TextField
+                  fullWidth label="Link" value={s.url} size="small"
+                  onChange={(e) => updateSocial(idx, 'url', e.target.value)}
+                  placeholder="https://..."
+                />
+                <IconButton size="small" color="error"
+                  onClick={() => setSocials((p) => p.filter((_, i) => i !== idx))}>
+                  <IconTrash size={16} />
+                </IconButton>
+              </Stack>
+            ))}
+
+            {error && <Typography variant="caption" color="error">{error}</Typography>}
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} disabled={saving}>Cancel</Button>
+          <Button variant="contained" onClick={handleSubmit} disabled={saving}>
+            {saving ? 'Saving...' : isEdit ? 'Save' : 'Create'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <PresentationEntryDialog
+        open={presentationDialogOpen}
+        initial={editingPresentationIndex === null ? EMPTY_PRESENTATION : presentations[editingPresentationIndex]}
+        isEdit={editingPresentationIndex !== null}
+        onClose={() => setPresentationDialogOpen(false)}
+        onSave={handleSavePresentation}
+      />
+    </>
   );
 }
