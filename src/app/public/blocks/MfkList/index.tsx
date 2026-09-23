@@ -3,9 +3,11 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { IconPresentation } from "@tabler/icons-react";
 import { SvgIcon } from "@/app/public/components/SvgIcon";
 import { useLanguage } from "@/app/providers/LanguageProvider";
 import type { RichTextItem } from "@/app/public/components/RenderRichText";
+import PresentationViewerDialog from "@blocks/PresentationViewerDialog";
 
 interface PopupContent {
   slug?: string;
@@ -20,8 +22,19 @@ interface PopupContent {
   lang?: string;
 }
 
+interface PresentationItem {
+  title?: string | null;
+  title_uk?: string | null;
+  description?: string | null;
+  description_uk?: string | null;
+  url?: string | null;
+  url_uk?: string | null;
+  logo?: string | null;
+}
+
 interface MfkListProps {
-  markers: { popupContent: PopupContent }[];
+  markers?: { popupContent: PopupContent }[];
+  presentations?: PresentationItem[];
   id?: string;
 }
 
@@ -38,8 +51,12 @@ function splitIntoRows<T>(items: T[]) {
   return rows;
 }
 
-export default function MfkList({ markers, id }: MfkListProps) {
+export default function MfkList({ markers = [], presentations, id }: MfkListProps) {
   const { t, locale } = useLanguage();
+  const isUk = locale === "uk";
+  const isPresentationMode = Array.isArray(presentations);
+
+  const [viewerUrl, setViewerUrl] = useState<string | null>(null);
 
   const getTitle = (item: PopupContent) => {
     const map: Record<string, string | null | undefined> = {
@@ -51,6 +68,12 @@ export default function MfkList({ markers, id }: MfkListProps) {
     };
     return map[locale] || item.title_en || item.title;
   };
+
+  const getPresentationTitle = (item: PresentationItem) =>
+    (isUk ? (item.title_uk || item.title) : item.title) ?? "";
+
+  const getPresentationUrl = (item: PresentationItem) =>
+    (isUk ? (item.url_uk || item.url) : item.url) ?? "";
 
   const ALLOWED_LANGS: Record<string, string[]> = {
     "#mfk": ["UK", "PL", "LT", "RO"],
@@ -73,7 +96,6 @@ export default function MfkList({ markers, id }: MfkListProps) {
   const toggleLang = (code: string) => {
     setSelectedLangs((prev) => {
       if (prev.includes(code)) {
-        // не дозволяємо зняти всі — мінімум одна активна
         if (prev.length === 1) return prev;
         return prev.filter((l) => l !== code);
       }
@@ -82,47 +104,96 @@ export default function MfkList({ markers, id }: MfkListProps) {
     setVisibleCount(4);
   };
 
-  const items = markers
+  const markerItems = markers
     .map((m) => m.popupContent)
     .filter((p) => !p.lang || selectedLangs.includes(p.lang.toUpperCase()));
+
+  const items: (PopupContent | PresentationItem)[] = isPresentationMode
+    ? presentations ?? []
+    : markerItems;
 
   const [visibleCount, setVisibleCount] = useState(4);
   const mobileItems = items.slice(0, visibleCount);
   const isAllVisible = visibleCount >= items.length;
   const rows = splitIntoRows(items);
 
-  const Card = (item: PopupContent) => {
-    const icon = LANGS.find((l) => l.code === item.lang)?.icon;
-    return (
+  const renderCard = (item: PopupContent | PresentationItem, index: number) => {
+    if (isPresentationMode) {
+      const p = item as PresentationItem;
+      const title = getPresentationTitle(p);
+      return (
+        <button
+          type="button"
+          onClick={() => setViewerUrl(getPresentationUrl(p))}
+          className="relative group w-full text-left"
+        >
+          <div className={`bg-transparent overflow-hidden rounded-t-2xl border-b-2 ${id === "#mfk" ? "border-main-amarant" : "border-none"}`}>
+            <div className="relative h-[220px] w-full flex items-center justify-center bg-black/5">
+              {p.logo ? (
+                <Image
+                  src={p.logo}
+                  alt={title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              ) : (
+                <IconPresentation size={64} className="text-black/20" />
+              )}
+            </div>
+          </div>
+
+          <div className={`absolute text-center left-1/2 -translate-x-1/2 -bottom-4 px-6 py-2 ${id === "#mfk" ? "bg-main-amarant border-main-amarant" : "bg-main-blue border-main-blue"} text-white text-sm font-semibold rounded-full border-b-2 flex items-center gap-2`}>
+            <IconPresentation size={16} className="shrink-0" />
+            {title}
+          </div>
+        </button>
+      );
+    }
+
+    const p = item as PopupContent;
+    const icon = LANGS.find((l) => l.code === p.lang)?.icon;
+    const card = (
       <div className="relative group">
         <div className={`bg-transparent overflow-hidden rounded-t-2xl border-b-2 ${id === "#mfk" ? "border-main-amarant" : "border-none"}`}>
           <div className="relative h-[220px] w-full">
             <Image
-              src={item.Logo!}
-              alt={getTitle(item) ?? item.title}
+              src={p.Logo!}
+              alt={getTitle(p) ?? p.title}
               fill
-              className={`${!item.zoom ? "object-contain" : "object-cover"} transition-transform duration-500 group-hover:scale-105`}
+              className={`${!p.zoom ? "object-contain" : "object-cover"} transition-transform duration-500 group-hover:scale-105`}
             />
             {icon && (
               <div className="absolute bottom-2 right-2 text-2xl leading-none drop-shadow-md">
-                <img src={icon} width={36} height={36} alt={item.lang} style={{ borderRadius: 2 }} />
+                <img src={icon} width={36} height={36} alt={p.lang} style={{ borderRadius: 2 }} />
               </div>
             )}
           </div>
         </div>
 
         <div className={`absolute text-center left-1/2 -translate-x-1/2 -bottom-4 px-6 py-2 ${id === "#mfk" ? "bg-main-amarant border-main-amarant" : "bg-main-blue border-main-blue"} text-white text-sm font-semibold rounded-full border-b-2`}>
-          {getTitle(item)}
+          {getTitle(p)}
         </div>
       </div>
+    );
+
+    return (
+      <Link
+        key={index}
+        href={`${
+          id === "#mfk" ? "/public/Mfk"
+          : id === "#implaces" ? "/public/IMlocals"
+          : "/public/Festival"
+        }/${p.slug}`}>
+          {card}
+      </Link>
     );
   };
 
   return (
     <section className="flex flex-col gap-10" id="mfkList">
 
-      {/* СВІТЧЕР КРАЇН ЛОКАЦІЙ */}
-      { (id === '#mfk' || id === '#implaces') &&
+      {/* СВІТЧЕР КРАЇН ЛОКАЦІЙ — лише для режиму маркерів */}
+      { !isPresentationMode && (id === '#mfk' || id === '#implaces') &&
         <div className="flex justify-center gap-6 flex-wrap">
           {LANGS.map((l) => {
             const isActive = selectedLangs.includes(l.code);
@@ -148,17 +219,11 @@ export default function MfkList({ markers, id }: MfkListProps) {
 
       {/* MOBILE */}
       <div className="flex flex-col gap-8 md:hidden">
-        {mobileItems.map((item, index) => (
-          <Link
-            key={index}
-            href={`${
-              id === "#mfk" ? "/public/Mfk"
-              : id === "#implaces" ? "/public/IMlocals"
-              : "/public/Festival"
-            }/${item.slug}`}>
-              {Card(item)}
-          </Link>
-        ))}
+        {mobileItems.map((item, index) =>
+          isPresentationMode
+            ? <div key={index}>{renderCard(item, index)}</div>
+            : renderCard(item, index)
+        )}
 
         <button
           onClick={() => {
@@ -199,21 +264,23 @@ export default function MfkList({ markers, id }: MfkListProps) {
                 paddingInline: isThreeRow ? "16.666%" : undefined,
               }}
             >
-              {row.map((item, index) => (
-                <Link
-                  key={index}
-                  href={`${
-                    id === "#mfk" ? "/public/Mfk"
-                    : id === "#implaces" ? "/public/IMlocals"
-                    : "/public/Festival"
-                  }/${item.slug}`}>
-                    {Card(item)}
-                </Link>
-              ))}
+              {row.map((item, index) =>
+                isPresentationMode
+                  ? <div key={index}>{renderCard(item, index)}</div>
+                  : renderCard(item, index)
+              )}
             </div>
           );
         })}
       </div>
+
+      {isPresentationMode && (
+        <PresentationViewerDialog
+          open={!!viewerUrl}
+          onClose={() => setViewerUrl(null)}
+          url={viewerUrl ?? ''}
+        />
+      )}
 
     </section>
   );
