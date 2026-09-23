@@ -54,6 +54,7 @@ interface ArticleFormProps {
   title?: string;
   onCancel?: () => void;
   userRole?: string;
+  defaultLang?: string;
 }
 
 export default function ArticleForm({
@@ -67,11 +68,12 @@ export default function ArticleForm({
   title = "Article",
   onCancel,
   userRole,
+  defaultLang,
 }: ArticleFormProps) {
   const editorHandleRef = useRef<ReactEditorHandle | null>(null);
 
   const [formTitle, setFormTitle] = useState(initialData?.title ?? "");
-  const [lang, setLang] = useState(initialData?.lang ?? "UK");
+  const [lang, setLang] = useState(initialData?.lang ?? defaultLang ?? "EN");
   const [content, setContent] = useState<unknown>(initialData?.body ?? null);
   const [authorName, setAuthorName] = useState(initialData?.authorName ?? "");
   const [categoryId, setCategoryId] = useState<number | "">(initialData?.categoryId ?? "");
@@ -134,7 +136,7 @@ export default function ArticleForm({
   useEffect(() => {
     if (!initialData) return;
     setFormTitle(initialData.title ?? "");
-    setLang(initialData.lang ?? "UK");
+    setLang(initialData.lang ?? "EN");
     setContent(initialData.body ?? null);
     setAuthorName(initialData.authorName ?? "");
     setAuthorAvatarId(initialData.authorAvatarId ?? null);

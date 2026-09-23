@@ -2,10 +2,13 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { Box, Typography, Button, Tabs, Tab, Select, MenuItem, FormControl, InputLabel, Tooltip } from '@mui/material';
+import {
+  Box, Typography, Button, Tabs, Tab, Select, MenuItem, FormControl, InputLabel, Tooltip,
+} from '@mui/material';
 import { IconPlus, IconFilterOff } from '@tabler/icons-react';
 import PageContainer from '../../components/container/PageContainer';
 import ArticleTable, { Article } from '../../components/articleTable';
+import LanguageDialog, { LangOption } from '../../components/LanguageDialog';
 
 const LANGS = [
   { code: '', icon: null, label: 'All' },
@@ -32,7 +35,18 @@ function ArticlesContent() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [me, setMe] = useState<{ id: number; role: string } | null>(null);
-  // прибираємо локальний useState для фільтрів
+  const [langDialogOpen, setLangDialogOpen] = useState(false);
+  const [chosenLang, setChosenLang] = useState('EN');
+
+  const openCreateDialog = () => {
+    setChosenLang(lang || 'EN');
+    setLangDialogOpen(true);
+  };
+
+  const confirmCreate = () => {
+    setLangDialogOpen(false);
+    router.push(`/admin/production/articles/create?lang=${chosenLang}`);
+  };
 
   useEffect(() => {
     fetch('/api/auth/me', { credentials: 'include' })
@@ -111,7 +125,7 @@ function ArticlesContent() {
           <Button
             variant="contained"
             startIcon={<IconPlus size={16} />}
-            href="/admin/production/articles/create"
+            onClick={openCreateDialog}
           >
             New Article
           </Button>
@@ -215,6 +229,14 @@ function ArticlesContent() {
               subcategoryId: isActive ? null : String(subId),
             });
           }}
+        />
+        <LanguageDialog
+          open={langDialogOpen}
+          value={chosenLang}
+          onChange={setChosenLang}
+          onClose={() => setLangDialogOpen(false)}
+          onConfirm={confirmCreate}
+          languages={LANGS as LangOption[]}
         />
       </Box>
     </PageContainer>
