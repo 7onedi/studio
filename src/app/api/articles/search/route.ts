@@ -12,6 +12,7 @@ export async function GET(req: NextRequest) {
     if (query.title) filters.title = query.title;
     if (query.lang) filters.lang = query.lang;
     if (query.categoryId) filters.categoryId = Number(query.categoryId);
+    if (query.excludeCategoryId) filters.excludeCategoryId = Number(query.excludeCategoryId);
     if (query.subcategoryId) filters.subcategoryId = Number(query.subcategoryId);
     if (query.slider) filters.slider = query.slider;
     if (query.published === "true") filters.published = true;

@@ -7,6 +7,7 @@ import {
   IconUsersGroup,
   IconBook,
   IconWorld,
+  IconPhoto
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
@@ -17,6 +18,7 @@ const allMenuItems = [
   { id: uniqueId(), title: "Users", icon: IconUsersGroup, href: "/admin/users", roles: ["OWNER", "ADMIN"] },
   { navlabel: true, subheader: "PRODUCTION" },
   { id: uniqueId(), title: "Articles", icon: IconTypography, href: "/admin/production/articles" },
+  { id: uniqueId(), title: "IM articles", icon: IconPhoto, href: "/admin/production/imagemapping" },
   { id: uniqueId(), title: "Tags", icon: IconTags, href: "/admin/production/tags", roles: ["OWNER", "ADMIN"] },
   { id: uniqueId(), title: "Categories and Sub", icon: IconBook, href: "/admin/production/categories", roles: ["OWNER"] },
   { id: uniqueId(), title: "Subcategories", icon: IconBook, href: "/admin/production/categories", roles: ["ADMIN"] },

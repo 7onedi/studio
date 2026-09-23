@@ -14,7 +14,11 @@ export class ArticleQueryBuilder extends QueryBuilder {
       ];
     }
     if (filters.lang) where.lang = filters.lang;
-    if (filters.categoryId) where.categoryId = Number(filters.categoryId);
+    if (filters.categoryId) {
+      where.categoryId = Number(filters.categoryId);
+    } else if (filters.excludeCategoryId) {
+      where.categoryId = { not: Number(filters.excludeCategoryId) };
+    };
     if (filters.subcategoryId) where.subcategories = { some: { id: Number(filters.subcategoryId) } };
     if (filters.authorId) where.authorId = Number(filters.authorId);
     if (filters.tagId) where.tags = { some: { id: Number(filters.tagId) } };

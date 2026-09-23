@@ -3,10 +3,10 @@
 import { Suspense } from 'react';
 import ArticlesContent from '../../components/ArticlesContent';
 
-export default function ArticlesPage() {
+export default function ImagemappingArticlesPage() {
   return (
     <Suspense>
-      <ArticlesContent />
+      <ArticlesContent mode="imagemapping" />
     </Suspense>
   );
 }
