@@ -10,19 +10,7 @@ export default async function Home() {
   const result = await getParentProject('Mozaїka');
   const parent = result?.parent;
 
-  const markers = (result?.children ?? []).map((p: any) => ({
-    popupContent: {
-      slug:  p.subcategory?.slug ?? String(p.id),
-      title: p.title,
-      title_en: p.title_en,
-      title_pl: p.title_pl,
-      title_lt: p.title_lt,
-      title_ro: p.title_ro,
-      Logo:  p.logo?.url ?? p.image?.url ?? '',
-      zoom:  p.body?.zoom,
-      lang:  p.lang ?? 'uk',
-    },
-  }));
+  const presentations = (parent?.body as any)?.presentations ?? [];
 
   return (
     <div>
@@ -35,7 +23,7 @@ export default async function Home() {
         />
       </div>
       <div className="my-12 lg:mt-16 px-4 lg:px-0">
-        <MfkList markers={markers} id="#mfk" />
+        <MfkList presentations={presentations} id="#mfk" />
       </div>
       <div className="my-8 flex justify-center">
         <p className="text-headline_3">
