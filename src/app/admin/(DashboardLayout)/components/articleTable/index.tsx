@@ -15,7 +15,6 @@ import {
   TableHead, TableRow, TablePagination, Checkbox, Chip,
   IconButton, TextField, Tooltip, Typography, Paper,
   Avatar, Stack, Button, CircularProgress,
-  Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
 } from '@mui/material';
 import {
   IconArrowUp, IconArrowDown, IconArrowsSort, IconX,
@@ -24,6 +23,7 @@ import {
 import { format } from 'date-fns';
 import Link from 'next/link';
 import Autocomplete from "@mui/material/Autocomplete";
+import LanguageDialog, { LangOption } from '../../components/LanguageDialog';
 
 export interface Article {
   id: number;
@@ -88,6 +88,9 @@ export default function ArticleTable({
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [searchInput, setSearchInput] = useState(search);
   const [tableData, setTableData] = useState<Article[]>(data);
+  const [duplicateDialogOpen, setDuplicateDialogOpen] = useState(false);
+  const [pendingDuplicateSlug, setPendingDuplicateSlug] = useState<string | null>(null);
+  const [duplicateLang, setDuplicateLang] = useState('EN');
 
   useEffect(() => {
     setTableData(data);
@@ -103,6 +106,14 @@ export default function ArticleTable({
   }, [searchInput]);
 
   const selectedCount = Object.keys(rowSelection).length;
+
+  const DUPLICATE_LANGS: LangOption[] = [
+    { code: 'EN', icon: '/flags/GB.svg', label: 'English' },
+    { code: 'UK', icon: '/flags/UA.svg', label: 'Ukrainian' },
+    { code: 'PL', icon: '/flags/PL.svg', label: 'Polish' },
+    { code: 'LT', icon: '/flags/LT.svg', label: 'Lithuanian' },
+    { code: 'RO', icon: '/flags/RO.svg', label: 'Romanian' },
+  ];
 
   const handleTogglePublish = async (id: number, currentPublished: boolean) => {
     const action = currentPublished ? 'unpublish' : 'publish';
@@ -137,7 +148,15 @@ export default function ArticleTable({
   };
 
   const handleDuplicate = (slug: string) => {
-    router.push(`/admin/production/articles/create?duplicate=${slug}`);
+    setPendingDuplicateSlug(slug);
+    setDuplicateLang('EN');
+    setDuplicateDialogOpen(true);
+  };
+
+  const confirmDuplicate = () => {
+    if (!pendingDuplicateSlug) return;
+    setDuplicateDialogOpen(false);
+    router.push(`/admin/production/articles/create?duplicate=${pendingDuplicateSlug}&lang=${duplicateLang}`);
   };
 
   const handleDelete = async (id: number) => {
@@ -381,7 +400,7 @@ export default function ArticleTable({
 
   return (
       <Box maxWidth={1920} mx="auto">
-      {/* Toolbar */}
+        
       <Stack direction="row" spacing={2} alignItems="center" mb={2} flexWrap="wrap">
         <Autocomplete
           freeSolo
@@ -424,7 +443,6 @@ export default function ArticleTable({
         </Typography>
       </Stack>
 
-      {/* Table */}
       <TableContainer component={Paper} variant="outlined" sx={{ position: 'relative' }}>
         {loading && (
           <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'rgba(255,255,255,0.6)', zIndex: 1 }}>
@@ -488,7 +506,6 @@ export default function ArticleTable({
         </Table>
       </TableContainer>
 
-      {/* Pagination */}
       <TablePagination
         component="div"
         count={total}
@@ -499,6 +516,16 @@ export default function ArticleTable({
         onRowsPerPageChange={(e) => onPageSizeChange?.(Number(e.target.value))}
         labelRowsPerPage="Rows per page:"
         labelDisplayedRows={({ from, to, count }) => `${from}–${to} of ${count}`}
+      />
+
+      <LanguageDialog
+        open={duplicateDialogOpen}
+        value={duplicateLang}
+        onChange={setDuplicateLang}
+        onClose={() => setDuplicateDialogOpen(false)}
+        onConfirm={confirmDuplicate}
+        languages={DUPLICATE_LANGS}
+        description="Confirm the language for the duplicated article — it controls which language tab it appears under."
       />
     </Box>
   );

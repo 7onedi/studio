@@ -9,6 +9,7 @@ function CreateArticleContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const duplicateSlug = searchParams.get('duplicate');
+  const langParam = searchParams.get('lang');
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +30,7 @@ function CreateArticleContent() {
       .then(article => {
         setInitialData({
           title: article.title + ' (duplicate)',
-          lang: article.lang,
+          lang: langParam ?? article.lang,
           body: article.body,
           authorName: article.author?.name ?? article.authorName ?? '',
           authorAvatarId: article.authorAvatarId ?? null,
@@ -116,6 +117,7 @@ if (duplicateSlug && !initialData) return null;
       submitLabel="Create Article"
       successMessage="Article created successfully! Redirecting..."
       initialData={initialData}
+      defaultLang={langParam ?? 'EN'}
       onSave={handleSave}
       loading={loading}
       error={error}
