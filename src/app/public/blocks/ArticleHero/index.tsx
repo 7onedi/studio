@@ -12,7 +12,7 @@ type ArticleHeroProps = {
   tags?: readonly string[];
 
   category?: string;
-  subCategory?: string;
+  subCategory?: string | string[];
 
   tegsBgColor?: string;
   date?: string;
@@ -34,8 +34,10 @@ export default function ArticleHero({
   const { t, locale } = useLanguage();
   const [imageLoaded, setImageLoaded] = useState(false);
 
+  const subCategories = ([] as (string | undefined)[]).concat(subCategory ?? []);
+
   const categoryTags = Array.from(
-    new Set([category, subCategory].filter(Boolean))
+    new Set([category, ...subCategories].filter(Boolean))
   ) as string[];
 
   const tagTags = Array.from(

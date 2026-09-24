@@ -83,6 +83,48 @@ function rgbToHex(rgb: string): string {
   return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
 }
 
+// ─── Палітра та історія кольорів ────────────────────────────────────────────
+
+const PRESET_COLORS = [
+  '#FF1300', '#FF7A00', '#FFBF00', '#3DBE29', '#00A3FF',
+  '#0070FF', '#7B2FF7', '#E91E8C', '#000000', '#666666',
+];
+
+function recentColorsKey(type: 'text' | 'bg'): string {
+  return `editorColorTool_recent_${type}`;
+}
+
+function getRecentColors(type: 'text' | 'bg'): string[] {
+  try {
+    const raw = localStorage.getItem(recentColorsKey(type));
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function rememberColor(type: 'text' | 'bg', color: string) {
+  try {
+    const list = getRecentColors(type).filter(c => c.toLowerCase() !== color.toLowerCase());
+    list.unshift(color);
+    localStorage.setItem(recentColorsKey(type), JSON.stringify(list.slice(0, 3)));
+  } catch {
+    // localStorage недоступний — просто пропускаємо
+  }
+}
+
+function makeSwatch(color: string, onClick: () => void): HTMLButtonElement {
+  const sw = document.createElement('button');
+  sw.type = 'button';
+  sw.style.cssText = `
+    width:22px; height:22px; border-radius:5px; cursor:pointer;
+    border:1px solid #ddd; background:${color}; padding:0;
+  `;
+  sw.title = color;
+  sw.addEventListener('click', onClick);
+  return sw;
+}
+
 function openColorPicker(
   type: 'text' | 'bg',
   savedRange: Range | null,
@@ -111,12 +153,11 @@ function openColorPicker(
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 14px;
+    gap: 10px;
     min-width: 200px;
     position: relative;
   `;
 
-  // Хрестик закриття
   const closeBtn = document.createElement('button');
   closeBtn.innerHTML = '✕';
   closeBtn.style.cssText = `
@@ -138,6 +179,58 @@ function openColorPicker(
   picker.value = currentColor;
   picker.style.cssText = 'width:80px; height:44px; border:none; cursor:pointer; border-radius:6px;';
 
+  // ── спільна логіка застосування кольору ──
+  const applyColor = (color: string) => {
+    if (savedRange) {
+      const sel = window.getSelection();
+      sel?.removeAllRanges();
+      sel?.addRange(savedRange);
+    }
+    // Без styleWithCSS Chrome/Edge вставляють <font color="...">, який
+    // sanitize-схема (span[style]) видаляє при збереженні — тому колір
+    // тексту "зникав" після save/reload.
+    document.execCommand('styleWithCSS', false, 'true');
+    if (type === 'text') {
+      document.execCommand('foreColor', false, color);
+      button.style.color = color;
+    } else {
+      document.execCommand('hiliteColor', false, color);
+      button.style.background = color;
+    }
+    rememberColor(type, color);
+    overlay.remove();
+  };
+
+  // ── палітра готових кольорів ──
+  const paletteRow = document.createElement('div');
+  paletteRow.style.cssText = 'display:flex; gap:6px; flex-wrap:wrap; width:100%; max-width:200px;';
+  PRESET_COLORS.forEach(c => {
+    paletteRow.appendChild(makeSwatch(c, () => {
+      picker.value = c;
+      applyColor(c);
+    }));
+  });
+
+  // ── останні використані кольори ──
+  const recent = getRecentColors(type);
+  const recentBlock = document.createElement('div');
+  recentBlock.style.cssText = 'display:flex; flex-direction:column; gap:4px; width:100%; align-self:flex-start;';
+  if (recent.length) {
+    const recentLabel = document.createElement('div');
+    recentLabel.innerText = 'Останні';
+    recentLabel.style.cssText = 'font-size:11px; color:#888;';
+    const recentRow = document.createElement('div');
+    recentRow.style.cssText = 'display:flex; gap:6px;';
+    recent.forEach(c => {
+      recentRow.appendChild(makeSwatch(c, () => {
+        picker.value = c;
+        applyColor(c);
+      }));
+    });
+    recentBlock.appendChild(recentLabel);
+    recentBlock.appendChild(recentRow);
+  }
+
   const btnRow = document.createElement('div');
   btnRow.style.cssText = 'display:flex; gap:8px; width:100%;';
 
@@ -149,6 +242,7 @@ function openColorPicker(
     border:none; border-radius:6px;
     cursor:pointer; font-size:13px; font-weight:500;
   `;
+  confirmBtn.addEventListener('click', () => applyColor(picker.value));
 
   const cancelBtn = document.createElement('button');
   cancelBtn.innerText = 'Скасувати';
@@ -158,26 +252,8 @@ function openColorPicker(
     border:none; border-radius:6px;
     cursor:pointer; font-size:13px;
   `;
-
-  confirmBtn.addEventListener('click', () => {
-    if (savedRange) {
-      const sel = window.getSelection();
-      sel?.removeAllRanges();
-      sel?.addRange(savedRange);
-    }
-    if (type === 'text') {
-      document.execCommand('foreColor', false, picker.value);
-      button.style.color = picker.value;
-    } else {
-      document.execCommand('hiliteColor', false, picker.value);
-      button.style.background = picker.value;
-    }
-    overlay.remove();
-  });
-
   cancelBtn.addEventListener('click', () => overlay.remove());
 
-  // Закриття по кліку на оверлей
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) overlay.remove();
   });
@@ -187,28 +263,32 @@ function openColorPicker(
   modal.appendChild(closeBtn);
   modal.appendChild(label);
   modal.appendChild(picker);
+  modal.appendChild(paletteRow);
+  if (recent.length) modal.appendChild(recentBlock);
   modal.appendChild(btnRow);
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
+
   if (type === 'bg') {
-  const clearBtn = document.createElement('button');
-  clearBtn.innerText = 'Очистити фон';
-  clearBtn.style.cssText = `
-    width:100%; padding:7px 0;
-    background:#fff; color:#e53935;
-    border:1px solid #e53935; border-radius:6px;
-    cursor:pointer; font-size:13px; font-weight:500;
-  `;
-  clearBtn.addEventListener('click', () => {
-    if (savedRange) {
-      const sel = window.getSelection();
-      sel?.removeAllRanges();
-      sel?.addRange(savedRange);
-    }
-    document.execCommand('hiliteColor', false, 'transparent');
-    button.style.background = '#FFBF00';
-    overlay.remove();
-  });
-  modal.appendChild(clearBtn);
-}
+    const clearBtn = document.createElement('button');
+    clearBtn.innerText = 'Очистити фон';
+    clearBtn.style.cssText = `
+      width:100%; padding:7px 0;
+      background:#fff; color:#e53935;
+      border:1px solid #e53935; border-radius:6px;
+      cursor:pointer; font-size:13px; font-weight:500;
+    `;
+    clearBtn.addEventListener('click', () => {
+      if (savedRange) {
+        const sel = window.getSelection();
+        sel?.removeAllRanges();
+        sel?.addRange(savedRange);
+      }
+      document.execCommand('styleWithCSS', false, 'true');
+      document.execCommand('hiliteColor', false, 'transparent');
+      button.style.background = '#FFBF00';
+      overlay.remove();
+    });
+    modal.appendChild(clearBtn);
+  }
 }

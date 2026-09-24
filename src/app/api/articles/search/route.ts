@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { articleController } from "@/api/controllers/article.controller";
 import { handleRouteError } from "@/api/utils/handle-route-error";
 
+const toIdList = (v?: string) =>
+  v ? v.split(",").map(Number).filter(Boolean) : [];
+
 export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
@@ -12,7 +15,12 @@ export async function GET(req: NextRequest) {
     if (query.title) filters.title = query.title;
     if (query.lang) filters.lang = query.lang;
     if (query.categoryId) filters.categoryId = Number(query.categoryId);
+    if (query.excludeCategoryId) filters.excludeCategoryId = Number(query.excludeCategoryId);
     if (query.subcategoryId) filters.subcategoryId = Number(query.subcategoryId);
+    if (query.tagId) filters.tagId = Number(query.tagId);
+    if (query.categoryIds) filters.categoryIds = toIdList(query.categoryIds);
+    if (query.subcategoryIds) filters.subcategoryIds = toIdList(query.subcategoryIds);
+    if (query.tagIds) filters.tagIds = toIdList(query.tagIds);
     if (query.slider) filters.slider = query.slider;
     if (query.published === "true") filters.published = true;
     if (query.published === "false") filters.published = false;
