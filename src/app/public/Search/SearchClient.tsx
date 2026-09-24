@@ -27,31 +27,38 @@ interface Props {
   initialSubcategories: Subcategory[];
   initialTags: Tag[];
   initialArticles: Article[];
-}
-
-function norm(s: string) {
-  return (s ?? '').toLowerCase().trim();
+  initialTotal: number;
+  initialFilters: { tags: string[]; cats: string[]; subs: string[] };
 }
 
 const SEARCH_ROUTE = '/public/Search';
+const ITEMS_PER_PAGE = 10;
 
 export default function SearchPageClient({
   initialCategories,
   initialSubcategories,
   initialTags,
   initialArticles,
+  initialTotal,
+  initialFilters,
 }: Props) {
   const { t } = useLanguage();
   const searchParams = useSearchParams();
   const router = useRouter();
   const didInitFromUrl = useRef(false);
+  const isFirstRender = useRef(true);
 
   const [query, setQuery] = useState('');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedSubCategories, setSelectedSubCategories] = useState<string[]>([]);
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [selectedTags, setSelectedTags] = useState<string[]>(initialFilters.tags);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(initialFilters.cats);
+  const [selectedSubCategories, setSelectedSubCategories] = useState<string[]>(initialFilters.subs);
   const [page, setPage] = useState(1);
-  const ITEMS_PER_PAGE = 10;
+  const [articles, setArticles] = useState<Article[]>(initialArticles);
+  const [total, setTotal] = useState(initialTotal);
+  
+
+  const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
 
   const allCategories = useMemo(
     () => initialCategories.map(c => c.name).sort((a, b) => a.localeCompare(b, 'uk')),
@@ -68,63 +75,32 @@ export default function SearchPageClient({
     [initialTags]
   );
 
-  const filtered = useMemo(() => {
-    const q = norm(query);
-
-    return initialArticles.filter(a => {
-      const haystack = norm([
-        a.title,
-        a.slug,
-        a.category?.name ?? '',
-        ...(a.subcategories?.map(s => s.name) ?? []),
-        ...(a.tags?.map(t => t.name) ?? []),
-      ].join(' '));
-
-  const matchesQuery = q.length === 0 || q.length < 3 || haystack.includes(q);
-
-      const matchesCategory =
-        selectedCategories.length === 0 ||
-        selectedCategories.includes(a.category?.name ?? '');
-
-      const matchesSubCategory =
-        selectedSubCategories.length === 0 ||
-        (a.subcategories ?? []).some(s => selectedSubCategories.includes(s.name));
-
-      const matchesTags =
-        selectedTags.length === 0 ||
-        (a.tags ?? []).some(t => selectedTags.includes(t.name));
-
-      return matchesQuery && matchesCategory && matchesSubCategory && matchesTags;
-    });
-  }, [initialArticles, query, selectedCategories, selectedSubCategories, selectedTags]);
-
-  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
-
-  const paginatedArticles = useMemo(
-    () => filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE),
-    [filtered, page]
-  );
-
   const hasAnyFilter =
     query.trim().length > 0 ||
     selectedTags.length > 0 ||
     selectedCategories.length > 0 ||
     selectedSubCategories.length > 0;
 
-  const toggleCategory = (cat: string) =>
+  const toggleCategory = (cat: string) => {
+    setPage(1);
     setSelectedCategories(prev =>
       prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
     );
+  };
 
-  const toggleSubCategory = (sub: string) =>
+  const toggleSubCategory = (sub: string) => {
+    setPage(1);
     setSelectedSubCategories(prev =>
       prev.includes(sub) ? prev.filter(s => s !== sub) : [...prev, sub]
     );
+  };
 
-  const toggleTag = (tag: string) =>
+  const toggleTag = (tag: string) => {
+    setPage(1);
     setSelectedTags(prev =>
       prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
     );
+  };
 
   const clearFilters = () => {
     setQuery('');
@@ -135,18 +111,8 @@ export default function SearchPageClient({
     router.replace(SEARCH_ROUTE, { scroll: false });
   };
 
-  // Ініціалізація з URL
+  // Фільтри з URL вже застосовані на сервері
   useEffect(() => {
-    const tags = searchParams.getAll('tag').flatMap(v => v.split(',')).map(s => s.trim()).filter(Boolean);
-    if (tags.length > 0) setSelectedTags(Array.from(new Set(tags)));
-
-    const q = (searchParams.get('q') ?? '').trim();
-    if (q) {
-      if (allCategories.includes(q)) setSelectedCategories([q]);
-      if (allSubCategories.includes(q)) setSelectedSubCategories([q]);
-      if (allTags.includes(q)) setSelectedTags(prev => [...new Set([...prev, q])]);
-    }
-
     didInitFromUrl.current = true;
   }, []);
 
@@ -163,9 +129,69 @@ export default function SearchPageClient({
     router.replace(qs ? `${SEARCH_ROUTE}?${qs}` : SEARCH_ROUTE, { scroll: false });
   }, [selectedTags, selectedCategories, selectedSubCategories]);
 
+  // Застосування ?q= при переході з кнопок карток, коли сторінка вже відкрита
   useEffect(() => {
+    const q = (searchParams.get('q') ?? '').trim();
+    if (!q) return;
+
     setPage(1);
-  }, [query, selectedCategories, selectedSubCategories, selectedTags]);
+    if (allCategories.includes(q)) {
+      setSelectedCategories(prev => (prev.includes(q) ? prev : [...prev, q]));
+    }
+    if (allSubCategories.includes(q)) {
+      setSelectedSubCategories(prev => (prev.includes(q) ? prev : [...prev, q]));
+    }
+    if (allTags.includes(q)) {
+      setSelectedTags(prev => (prev.includes(q) ? prev : [...prev, q]));
+    }
+  }, [searchParams]);
+
+  // Debounce пошукового тексту
+  useEffect(() => {
+    const id = setTimeout(() => setDebouncedQuery(query.trim()), 300);
+    return () => clearTimeout(id);
+  }, [query]);
+
+  // Запит статей до API
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    const ids = (list: { id: number; name: string }[], selected: string[]) =>
+      list.filter(x => selected.includes(x.name)).map(x => x.id);
+
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(ITEMS_PER_PAGE),
+      sortBy: 'publishedAt',
+      order: 'desc',
+      published: 'true',
+    });
+    if (debouncedQuery.length >= 3) params.set('title', debouncedQuery);
+
+    const catIds = ids(initialCategories, selectedCategories);
+    const subIds = ids(initialSubcategories, selectedSubCategories);
+    const tagIds = ids(initialTags, selectedTags);
+    if (catIds.length) params.set('categoryIds', catIds.join(','));
+    if (subIds.length) params.set('subcategoryIds', subIds.join(','));
+    if (tagIds.length) params.set('tagIds', tagIds.join(','));
+
+    const controller = new AbortController();
+    fetch(`/api/articles/search?${params}`, { signal: controller.signal })
+      .then(r => r.json())
+      .then(d => {
+        setArticles(Array.isArray(d.data) ? d.data : []);
+        setTotal(d.total ?? 0);
+      })
+      .catch(e => {
+        if (e.name !== 'AbortError') console.error(e);
+      });
+
+    return () => controller.abort();
+  }, [page, debouncedQuery, selectedCategories, selectedSubCategories, selectedTags]);
+
   return (
     <main className="pb-20">
       <section className="mx-auto w-full max-w-6xl pt-10 lg:pt-14">
@@ -175,7 +201,7 @@ export default function SearchPageClient({
             <div className="flex h-[54px] w-full items-center rounded-full bg-white/95 px-5 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
               <input
                 value={query}
-                onChange={e => setQuery(e.target.value)}
+                onChange={e => { setQuery(e.target.value); setPage(1); }}
                 placeholder={t("search.placeholder")}
                 className="w-full bg-transparent text-[16px] text-black outline-none placeholder:text-black/45"
               />
@@ -259,7 +285,7 @@ export default function SearchPageClient({
           {hasAnyFilter && (
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
               <div className="text-headline_5">
-                {t("search.result")}: <span className="font-semibold text-[green]">{filtered.length}</span>
+                {t("search.result")}: <span className="font-semibold text-[green]">{total}</span>
               </div>
               <button
                 type="button"
@@ -275,14 +301,14 @@ export default function SearchPageClient({
 
       {/* Results */}
       <section className="mx-auto mt-10 max-w-6xl px-4">
-        {filtered.length === 0 ? (
+        {total === 0 ? (
           <div className="mx-auto mt-14 max-w-2xl rounded-2xl border border-white/10 bg-white/5 p-8 text-center">
             <p className="text-[18px] font-semibold text-main-text">{t("search.no_result")}</p>
             <p className="mt-2 text-[14px] text-main-gray/70">{t("search.no_result_description")}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
-            {paginatedArticles.map((article, i) => (
+            {articles.map((article, i) => (
               <div key={article.slug ?? i} className="h-[260px] sm:h-[320px]">
                 <BlogCard {...toCardProps(article)} />
               </div>

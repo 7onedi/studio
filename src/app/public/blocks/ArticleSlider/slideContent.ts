@@ -12,7 +12,7 @@ export type ArticleMeta = {
   status: ArticleStatus;
   placement?: readonly Placement[];
   category: string;
-  SubCategory?: string;
+  SubCategory?: string | string[];
 };
 
 export type ArticleHero = {

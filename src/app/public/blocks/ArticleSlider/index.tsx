@@ -19,14 +19,13 @@ const iconNames = [
   { title: "pangeya", link: "https://pangeya.org.ua/" },
 ];
 
-async function fetchSlider1Articles(): Promise<any[]> {
+async function fetchSlider1Articles(lang: string): Promise<any[]> {
   const res = await fetch(
-    `${BASE_URL}/api/articles/search?limit=100&sortBy=publishedAt&order=desc&published=true`
+    `${BASE_URL}/api/articles/search?limit=20&sortBy=publishedAt&order=desc&published=true&slider=SLIDER_1&lang=${lang.toUpperCase()}`
   );
   if (!res.ok) return [];
   const data = await res.json().catch(() => null);
-  const all = Array.isArray(data?.data) ? data.data : [];
-  return all.filter((a: any) => a.slider === "SLIDER_1");
+  return Array.isArray(data?.data) ? data.data : [];
 }
 
 function toSlide(article: any) {
@@ -107,9 +106,8 @@ const { t, locale } = useLanguage();
   });
 
   useEffect(() => {
-    fetchSlider1Articles().then((articles) => {
-      const filtered = articles.filter((a: any) => a.lang?.toLowerCase() === locale).map(toSlide);
-      setSlides(filtered);
+    fetchSlider1Articles(locale).then((articles) => {
+      setSlides(articles.map(toSlide));
       setSlideKey((k) => k + 1);
       setReady(false);
       firstImageLoadedRef.current = false;

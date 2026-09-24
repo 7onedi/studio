@@ -2,25 +2,27 @@ export function toCardProps(article: any) {
   if (article?.meta) return article;
 
   const categoryName = article.category?.name ?? '';
-  const subCategoryName = article.subcategories?.[0]?.name ?? '';
+  const subCategoryNames: string[] = (article.subcategories ?? [])
+    .map((s: any) => (typeof s === 'string' ? s : s?.name ?? ''))
+    .filter(Boolean);
   const tags = (article.tags ?? [])
     .map((t: any) => (typeof t === 'string' ? t : t?.name ?? ''))
     .filter(Boolean);
-const g = article.gradient;
+  const g = article.gradient;
 
-const gradient =
-  g === 'GRADIENT_1'
-    ? 'bg-gradient-to-t from-main-blue/70 via-main-blue/25 to-transparent'
-    : g === 'GRADIENT_2'
-    ? 'bg-gradient-to-t from-main-amarant/70 via-main-amarant/25 to-transparent'
-    : '';
+  const gradient =
+    g === 'GRADIENT_1'
+      ? 'bg-gradient-to-t from-main-blue/70 via-main-blue/25 to-transparent'
+      : g === 'GRADIENT_2'
+      ? 'bg-gradient-to-t from-main-amarant/70 via-main-amarant/25 to-transparent'
+      : '';
 
   return {
     meta: {
       slug: article.slug ?? '',
       title: article.title ?? '',
       category: categoryName,
-      SubCategory: subCategoryName,
+      SubCategory: subCategoryNames,
       tags,
       placement: ['list'],
     },

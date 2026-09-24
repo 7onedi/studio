@@ -39,8 +39,10 @@ export const TagButton: React.FC<{ tag: string; ClassName?: string }> = ({
 };
 
 export const BlogCard: React.FC<BlogCardProps> = ({ meta, hero, onLoad }) => {
+const subCategories = ([] as (string | undefined)[]).concat(meta.SubCategory ?? []);
+
 const categoryTags = Array.from(
-  new Set([meta.category, meta.SubCategory].filter(Boolean))
+  new Set([meta.category, ...subCategories].filter(Boolean))
 ) as string[];
 
 const tagTags = Array.from(

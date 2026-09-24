@@ -14,14 +14,28 @@ export class ArticleQueryBuilder extends QueryBuilder {
       ];
     }
     if (filters.lang) where.lang = filters.lang;
+
     if (filters.categoryId) {
       where.categoryId = Number(filters.categoryId);
+    } else if (filters.categoryIds?.length) {
+      where.categoryId = { in: filters.categoryIds };
     } else if (filters.excludeCategoryId) {
       where.categoryId = { not: Number(filters.excludeCategoryId) };
-    };
-    if (filters.subcategoryId) where.subcategories = { some: { id: Number(filters.subcategoryId) } };
+    }
+
+    if (filters.subcategoryId) {
+      where.subcategories = { some: { id: Number(filters.subcategoryId) } };
+    } else if (filters.subcategoryIds?.length) {
+      where.subcategories = { some: { id: { in: filters.subcategoryIds } } };
+    }
+
+    if (filters.tagId) {
+      where.tags = { some: { id: Number(filters.tagId) } };
+    } else if (filters.tagIds?.length) {
+      where.tags = { some: { id: { in: filters.tagIds } } };
+    }
+
     if (filters.authorId) where.authorId = Number(filters.authorId);
-    if (filters.tagId) where.tags = { some: { id: Number(filters.tagId) } };
     if (filters.slider) where.slider = filters.slider;
     if (typeof filters.published === "boolean") where.published = filters.published;
 
