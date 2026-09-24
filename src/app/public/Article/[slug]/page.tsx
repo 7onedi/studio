@@ -67,7 +67,7 @@ function toArticleProps(article: any) {
       title: article.title ?? "",
       lang: article.lang ?? "", 
       category: article.category?.name ?? "",
-      SubCategory: article.subcategories?.[0]?.name ?? "",
+      SubCategory: (article.subcategories ?? []).map((s: any) => s?.name ?? "").filter(Boolean),
       tags: (article.tags ?? []).map((t: any) => t?.name ?? "").filter(Boolean),
       date: article.publishedAt ?? article.createdAt ?? "",
     },
@@ -102,8 +102,8 @@ const subArticles = allRaw
   .map(toArticleProps)
   .filter(
     (a: ReturnType<typeof toArticleProps>) =>
-      a.meta.SubCategory === article.meta.SubCategory &&
-      a.meta.slug !== article.meta.slug
+      a.meta.slug !== article.meta.slug &&
+      a.meta.SubCategory.some((s: string) => article.meta.SubCategory.includes(s))
   );
   console.log("article =", article.author);
   const categoryId = await getCategoryId(article.meta.category);
