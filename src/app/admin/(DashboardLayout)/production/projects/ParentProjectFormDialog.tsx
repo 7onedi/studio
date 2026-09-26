@@ -12,6 +12,17 @@ import { FieldHelp } from '../../components/shared/FieldHelp';
 import PresentationUploader from './PresentationUploader';
 import PresentationEntryDialog from './PresentationEntryDialog';
 
+const PresentationCoverThumbnail = dynamic(
+  () => import('@blocks/PresentationsGrid/PresentationCoverThumbnail'),
+  { ssr: false }
+);
+
+function extractDriveId(url: string): string | null {
+  if (!url) return null;
+  const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) ?? url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  return match ? match[1] : null;
+}
+
 const ReactEditor = dynamic(() => import('../../components/editor/ReactEditor'), { ssr: false });
 
 export interface Category {
@@ -54,14 +65,11 @@ interface PresentationEntry {
   title_uk: string;
   description_uk: string;
   url_uk: string;
-  logo: string;
-  logoId: number | null;
 }
 
 const EMPTY_PRESENTATION: PresentationEntry = {
   title: '', description: '', url: '',
   title_uk: '', description_uk: '', url_uk: '',
-  logo: '', logoId: null,
 };
 
 const PLATFORMS = ['YOUTUBE', 'INSTAGRAM', 'FACEBOOK', 'TIKTOK', 'TWITTER'];
@@ -384,21 +392,27 @@ export default function ParentProjectFormDialog({
                     sx={{ border: '1px solid #ddd', borderRadius: 2, p: 1.5 }}
                   >
                     <Stack direction="row" alignItems="center" spacing={1.5} sx={{ minWidth: 0, flex: 1 }}>
-                      <Box
-                        sx={{
-                          width: 40, height: 40, flexShrink: 0,
-                          borderRadius: 1, border: '1px solid #eee',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          overflow: 'hidden', bgcolor: 'grey.50',
-                        }}
-                      >
-                        {p.logo ? (
-                          <Box component="img" src={p.logo}
-                            sx={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                        ) : (
-                          <IconPresentation size={20} color="#bbb" />
-                        )}
-                      </Box>
+                      {(() => {
+                        const fileId = extractDriveId(p.url || p.url_uk);
+                        const proxyUrl = fileId ? `/api/presentation-proxy/${fileId}` : null;
+                        return (
+                          <Box
+                            sx={{
+                              width: 40, height: 56, flexShrink: 0,
+                              borderRadius: 1, border: '1px solid #eee',
+                              position: 'relative', overflow: 'hidden', bgcolor: 'grey.50',
+                            }}
+                          >
+                            {proxyUrl ? (
+                              <PresentationCoverThumbnail fileUrl={proxyUrl} />
+                            ) : (
+                              <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <IconPresentation size={20} color="#bbb" />
+                              </Box>
+                            )}
+                          </Box>
+                        );
+                      })()}
                       <Box sx={{ minWidth: 0 }}>
                         <Typography variant="body2" fontWeight={600} noWrap>{p.title || '(untitled)'}</Typography>
                         <Typography variant="caption" color="text.secondary" noWrap>{p.description}</Typography>

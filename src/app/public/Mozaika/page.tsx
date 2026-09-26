@@ -1,5 +1,5 @@
 import CategoryTitleWrapper from "@components/CategoryTitleWrapper";
-import MfkList from "@/app/public/blocks/MfkList";
+import PresentationsGrid from "@blocks/PresentationsGrid";
 import BlogSlider from "../blocks/BlogSlider";
 import { getParentProject } from '@lib/getProjects';
 import TranslatedText from "@components/TranslatedText";
@@ -23,7 +23,7 @@ export default async function Home() {
         />
       </div>
       <div className="my-12 lg:mt-16 px-4 lg:px-0">
-        <MfkList presentations={presentations} id="#mfk" />
+        <PresentationsGrid presentations={presentations} />
       </div>
       <div className="my-8 flex justify-center">
         <p className="text-headline_3">

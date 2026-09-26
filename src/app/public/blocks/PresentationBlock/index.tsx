@@ -15,7 +15,12 @@ interface Props {
 }
 
 export default function PresentationBlock({
-  title, description, url, title_uk, description_uk, url_uk,
+  title,
+  description,
+  url,
+  title_uk,
+  description_uk,
+  url_uk,
 }: Props) {
   const [open, setOpen] = useState(false);
   const { locale } = useLanguage();
@@ -35,8 +40,12 @@ export default function PresentationBlock({
       >
         {(activeTitle || activeDescription) && (
           <div className="flex flex-col items-end min-w-0">
-            {activeTitle && <p className="text-sm font-semibold break-words">{activeTitle}</p>}
-            {activeDescription && <p className="text-xs text-main-text break-words">{activeDescription}</p>}
+            {activeTitle && (
+              <p className="text-sm font-semibold break-words">{activeTitle}</p>
+            )}
+            {activeDescription && (
+              <p className="text-xs text-main-text break-words">{activeDescription}</p>
+            )}
           </div>
         )}
         <div className="shrink-0 w-12 h-12 rounded-full bg-main-amarant/10 flex items-center justify-center">
@@ -44,7 +53,12 @@ export default function PresentationBlock({
         </div>
       </button>
 
-      <PresentationViewerDialog open={open} onClose={() => setOpen(false)} url={activeUrl} />
+      <PresentationViewerDialog
+        open={open}
+        onClose={() => setOpen(false)}
+        url={activeUrl}
+        title={activeTitle}
+      />
     </div>
   );
 }
