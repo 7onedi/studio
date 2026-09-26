@@ -55,19 +55,21 @@ export default function PresentationViewerDialog({ open, onClose, url, title, de
       </DialogContent>
 
       <div className="p-3 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 shrink-0">
-        <div className="flex justify-start">
+        <div className="col-start-1 flex justify-start">
           <IconButton component="a" href={url} target="_blank" rel="noopener noreferrer">
             <IconExternalLink size={20} />
           </IconButton>
         </div>
 
-        {description && (
-          <p className="hidden lg:block min-w-0 text-sm text-main-text text-center truncate">
-            {description}
-          </p>
-        )}
+        <div className="col-start-2 min-w-0">
+          {description && (
+            <p className="hidden lg:block text-sm text-main-text text-center truncate">
+              {description}
+            </p>
+          )}
+        </div>
 
-        <div className="flex justify-end">
+        <div className="col-start-3 flex justify-end">
           <Button
             component="a"
             href={downloadUrl}
