@@ -39,7 +39,7 @@ export default function PresentationCard({ presentation }: { presentation: Prese
     <>
       <button onClick={() => setOpen(true)} className="relative group w-full text-left">
         <div className="bg-transparent overflow-hidden rounded-t-2xl border-b-2 border-main-amarant">
-          <div className="relative aspect-[210/305] w-full">
+          <div className="relative aspect-[210/297] w-full">
             {proxyUrl ? (
               <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-105">
                 <PresentationCoverThumbnail fileUrl={proxyUrl} />
