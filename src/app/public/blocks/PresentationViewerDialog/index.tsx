@@ -2,8 +2,12 @@
 
 import dynamic from 'next/dynamic';
 import {
-  Dialog, DialogContent, IconButton, Button,
-  useMediaQuery, useTheme,
+  Dialog,
+  DialogContent,
+  IconButton,
+  Button,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { IconExternalLink, IconDownload, IconX } from '@tabler/icons-react';
 
@@ -13,6 +17,8 @@ interface Props {
   open: boolean;
   onClose: () => void;
   url: string;
+  title?: string | null;
+  description?: string | null;
 }
 
 function extractDriveId(url: string): string | null {
@@ -20,11 +26,9 @@ function extractDriveId(url: string): string | null {
   return match ? match[1] : null;
 }
 
-export default function PresentationViewerDialog({ open, onClose, url }: Props) {
+export default function PresentationViewerDialog({ open, onClose, url, title, description }: Props) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
-  if (!url) return null;
 
   const fileId = extractDriveId(url);
   const proxyUrl = fileId ? `/api/presentation-proxy/${fileId}` : null;
@@ -47,24 +51,34 @@ export default function PresentationViewerDialog({ open, onClose, url }: Props) 
       </IconButton>
 
       <DialogContent sx={{ p: 0, height: '100%' }}>
-        {proxyUrl && <PdfPresentationViewer fileUrl={proxyUrl} />}
+        {proxyUrl && <PdfPresentationViewer fileUrl={proxyUrl} description={description} />}
       </DialogContent>
 
-      <div className="p-3 flex items-center justify-between shrink-0">
-        <IconButton component="a" href={url} target="_blank" rel="noopener noreferrer">
-          <IconExternalLink size={20} />
-        </IconButton>
+      <div className="p-3 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 shrink-0">
+        <div className="flex justify-start">
+          <IconButton component="a" href={url} target="_blank" rel="noopener noreferrer">
+            <IconExternalLink size={20} />
+          </IconButton>
+        </div>
 
-        <Button
-          component="a"
-          href={downloadUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          startIcon={<IconDownload size={16} />}
-          variant="outlined"
-        >
-          Download
-        </Button>
+        {description && (
+          <p className="hidden lg:block min-w-0 text-sm text-main-text text-center truncate">
+            {description}
+          </p>
+        )}
+
+        <div className="flex justify-end">
+          <Button
+            component="a"
+            href={downloadUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            startIcon={<IconDownload size={16} />}
+            variant="outlined"
+          >
+            Download
+          </Button>
+        </div>
       </div>
     </Dialog>
   );

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Box, TextField, Stack, CircularProgress, IconButton, InputAdornment } from '@mui/material';
 import { IconCheck, IconX } from '@tabler/icons-react';
 
+
 interface Props {
   url: string;
   title: string;
@@ -16,6 +17,7 @@ interface Props {
 type ValidationStatus = 'idle' | 'checking' | 'valid' | 'invalid';
 
 function extractDriveId(url: string): string | null {
+  if (!url) return null;
   const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) ?? url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
   return match ? match[1] : null;
 }

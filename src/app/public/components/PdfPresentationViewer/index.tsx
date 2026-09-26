@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
-import TranslatedText from "@components/TranslatedText";
 import {
   IconChevronLeft,
   IconChevronRight,
@@ -12,14 +11,13 @@ import {
   IconChevronsRight,
   IconZoomIn,
   IconZoomOut,
-  IconCloudOff,
-  IconRefresh
 } from '@tabler/icons-react';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 interface Props {
   fileUrl: string;
+  description?: string | null;
 }
 
 const PREFETCH_AHEAD = 2;
@@ -28,14 +26,13 @@ const ZOOM_MIN = 0.5;
 const ZOOM_MAX = 3;
 const ZOOM_STEP = 0.25;
 
-export default function PdfPresentationViewer({ fileUrl }: Props) {
+export default function PdfPresentationViewer({ fileUrl, description }: Props) {
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [aspect, setAspect] = useState<number | null>(null);
   const [zoom, setZoom] = useState(1);
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
-  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -78,28 +75,9 @@ export default function PdfPresentationViewer({ fileUrl }: Props) {
       >
         <Document
           file={fileUrl}
-          key={retryCount}
           onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-          loading={
-            <div className="flex items-center justify-center py-12">
-              <div className="h-8 w-8 rounded-full border-2 border-black/10 border-t-black/50 animate-spin" />
-            </div>
-          }
-          error={
-            <div className="flex flex-col items-center justify-center gap-3 py-12 text-red-500">
-              <IconCloudOff size={32} strokeWidth={1.5} />
-              <div className="text-sm">
-                <TranslatedText tKey="pages.pdf_presentation_viewer.error" />
-              </div>
-              <button
-                onClick={() => setRetryCount((c) => c + 1)}
-                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border border-red-200 hover:bg-red-50 transition"
-              >
-                <IconRefresh size={14} />
-                <TranslatedText tKey="pages.pdf_presentation_viewer.retry" />
-              </button>
-            </div>
-          }
+          loading={<div className="text-sm text-gray-500 py-12">Завантаження...</div>}
+          error={<div className="text-sm text-red-500 py-12">Не вдалося завантажити файл</div>}
         >
           {renderWidth > 0 && (
             <Page
@@ -128,6 +106,12 @@ export default function PdfPresentationViewer({ fileUrl }: Props) {
             ))}
         </Document>
       </div>
+
+      {description && (
+        <p className="lg:hidden text-xs text-main-text text-center line-clamp-2 px-4 py-2 shrink-0">
+          {description}
+        </p>
+      )}
 
       <div className="flex items-center justify-center gap-2 py-2 shrink-0 border-t border-black/5">
         <button
