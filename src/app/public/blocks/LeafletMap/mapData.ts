@@ -14,6 +14,10 @@ export interface MarkerInfo {
     slug?: string;
     title: string;
     description?: string | string[] | RichTextItem[];
+    description_en?: RichTextItem[];
+    description_pl?: RichTextItem[];
+    description_lt?: RichTextItem[];
+    description_ro?: RichTextItem[];
     imageUrl: string;
     linkUrl?: string;
     Logo?: string;
@@ -83,6 +87,10 @@ export async function buildCategories(): Promise<Category[]> {
             slug: c.subcategory?.slug,
             title: c.title,
             description: c.body?.blocks ?? [],
+            description_en: c.body_en?.blocks,
+            description_pl: c.body_pl?.blocks,
+            description_lt: c.body_lt?.blocks,
+            description_ro: c.body_ro?.blocks,
             imageUrl: c.image?.url ?? '',
             Logo: c.logo?.url ?? c.image?.url ?? '',
             linkUrl: c.location?.url,

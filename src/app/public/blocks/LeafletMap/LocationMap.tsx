@@ -79,7 +79,7 @@ interface Props {
 }
 
 export default function LocationMap({ centerLat, centerLng, zoom, markers }: Props) {
-  const { locale } = useLanguage();
+  const { t, locale } = useLanguage();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -152,7 +152,7 @@ export default function LocationMap({ centerLat, centerLng, zoom, markers }: Pro
 
                   {websiteUrl && (
                     <a href={websiteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                      Read more ↗
+                      {t('views.article.read_more')} ↗
                     </a>
                   )}
                 </div>
