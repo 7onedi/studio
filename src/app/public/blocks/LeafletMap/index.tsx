@@ -22,6 +22,27 @@ const createCategoryIcon = (iconUrl: string) =>
     popupAnchor: [0, -35],
   });
 
+const decodeEntities = (s: string) =>
+  s
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+
+const extractPreviewText = (blocks: any[] | undefined): string | null => {
+  if (!Array.isArray(blocks)) return null;
+  const text = blocks
+    .filter((b: any) => b.type === 'paragraph')
+    .slice(0, 2)
+    .map((b: any) => decodeEntities((b.data?.text ?? '').replace(/<[^>]*>/g, '')))
+    .join(' ')
+    .trim();
+  if (!text) return null;
+  return text.length > 128 ? text.slice(0, 128) + '…' : text;
+};
+
 function MapUpdater({ activeCategory, categories }: { 
   activeCategory: string | null;
   categories: Category[];
@@ -54,7 +75,7 @@ function MapUpdater({ activeCategory, categories }: {
 
 
 export default function MapComponent() {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const [categories, setCategories] = useState<Category[]>([]);
   const [visibleTextFor, setVisibleTextFor] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -120,6 +141,19 @@ export default function MapComponent() {
           const icon = currentIcon || 
             (category ? createCategoryIcon(category.icon) : undefined);
 
+          const pc: any = marker.popupContent;
+          const byLocale: Record<string, any[] | undefined> = {
+            uk: pc.description,
+            en: pc.description_en,
+            pl: pc.description_pl,
+            lt: pc.description_lt,
+            ro: pc.description_ro,
+          };
+          const localized = byLocale[locale.toLowerCase()];
+          const descBlocks =
+            Array.isArray(localized) && localized.length > 0 ? localized : pc.description_en;
+          const previewText = extractPreviewText(descBlocks);
+
           return (
             <Marker key={marker.id} position={marker.position} icon={icon}>
               <Popup minWidth={250}>
@@ -136,18 +170,9 @@ export default function MapComponent() {
                         e.currentTarget.src = `https://placehold.co/200x100/F0F4F8/333333?text=${marker.popupContent.title}`;
                     }}
                   />
-                    {Array.isArray(marker.popupContent.description) && marker.popupContent.description.length > 0 && (
+                    {previewText && (
                       <p className="mt-4 text-body_mobile lg:text-body line-clamp-3 overflow-hidden">
-                        {(() => {
-                          const paragraphs = (marker.popupContent.description as any[])
-                            .filter((block: any) => block.type === 'paragraph')
-                            .slice(0, 2);
-                          if (!paragraphs.length) return null;
-                          const text = paragraphs
-                            .map((block: any) => block.data.text.replace(/<[^>]*>/g, ''))
-                            .join(' ');
-                          return text.length > 128 ? text.slice(0, 128) + '…' : text;
-                        })()}
+                        {previewText}
                       </p>
                     )}
 
@@ -159,7 +184,7 @@ export default function MapComponent() {
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:text-blue-800 font-medium"
                     >
-                      Перейти за посиланням ↗
+                      {t('views.article.read_more')} ↗
                     </Link>
                   )}
                 </div>

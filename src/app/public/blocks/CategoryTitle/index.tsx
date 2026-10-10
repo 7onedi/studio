@@ -34,10 +34,10 @@ export default function ProjectPreviewBlock({
   const { t } = useLanguage();
 
   return (
-    <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 ">
+    <section className="lg:columns-2 lg:gap-16">
       
       {/* LEFT — VISUAL */}
-      <div className="relative w-full h-[145px] lg:h-[335px] overflow-hidden group rounded-[20px]">
+      <div className="relative w-full h-[145px] lg:h-[335px] overflow-hidden group rounded-[20px] mb-12 lg:mb-8 break-inside-avoid">
         
         <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.05]">
 
@@ -78,8 +78,8 @@ export default function ProjectPreviewBlock({
       </div>
 
       {/* RIGHT — CONTENT */}
-      <div className="flex items-center lg:items-start flex-col gap-6 lg:gap-8 text-main-text">
-        <h1 className="text-headline_4_mobile lg:text-headline_4 font-bold text-main-text">
+      <div className="text-main-text">
+        <h1 className="mb-6 lg:mb-8 text-center lg:text-left break-after-avoid text-headline_4_mobile lg:text-headline_4 font-bold text-main-text">
           {t('pages.project_preview_block.description_title')}
         </h1>
         

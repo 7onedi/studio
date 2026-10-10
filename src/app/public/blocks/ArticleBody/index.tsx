@@ -136,7 +136,7 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
             return (
               <div
                 key={i}
-                className={`mb-4 text-headline_${block.data.level}_mobile lg:text-headline_${block.data.level}`}
+                className={`mb-4 break-after-avoid text-headline_${block.data.level}_mobile lg:text-headline_${block.data.level}`}
               >
                 {block.data.text}
               </div>
@@ -177,7 +177,7 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
               <figure
                 key={i}
                 className={[
-                  "mb-4",
+                  "mb-4 break-inside-avoid",
                   isPortrait ? "w-2/3 mx-auto" : "w-full",
                   block.data.withBackground ? "bg-white/5 p-2" : "",
                   block.data.withBorder ? "border border-white/10" : "",
@@ -212,7 +212,7 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
               "grid-cols-2 lg:grid-cols-4";
 
             return (
-              <figure key={i} className="mb-4">
+              <figure key={i} className="mb-4 break-inside-avoid">
                 <div className={`grid ${colsClass} gap-3`}>
                   {files.slice(0, 4).map((file, idx) => (
                     <div
@@ -289,7 +289,7 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
 
           case "video":
             return (
-              <div key={i} className="my-6">
+              <div key={i} className="my-6 break-inside-avoid">
                 <ArticleVideoBlock data={block.data} />
               </div>
             );
