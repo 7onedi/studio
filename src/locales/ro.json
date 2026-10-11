@@ -23,7 +23,8 @@
   },
   "views": {
     "article": {
-      "read_more": "Vezi"
+      "View": "Vezi",
+      "read_more": "Citește mai mult"
     }
   },
   "join": {

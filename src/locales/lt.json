@@ -23,7 +23,8 @@
   },
   "views": {
     "article": {
-      "read_more": "Peržiūrėti"
+      "View": "Peržiūrėti",
+      "read_more": "Skaityti daugiau"
     }
   },
   "join": {

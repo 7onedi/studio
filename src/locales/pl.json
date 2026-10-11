@@ -23,7 +23,8 @@
   },
   "views": {
     "article": {
-      "read_more": "Zobacz"
+      "View": "Zobacz",
+      "read_more": "Czytaj więcej"
     }
   },
   "join": {

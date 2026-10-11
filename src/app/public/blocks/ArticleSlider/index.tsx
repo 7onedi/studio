@@ -210,7 +210,7 @@ const { t, locale } = useLanguage();
 
                       <Link href={`/public/Article/${s.slug}`}>
                         <Button variant="secondary-alt">
-                          <span className="mr-3">{t("views.article.read_more")}</span>
+                          <span className="mr-3">{t("views.article.View")}</span>
                           <SvgIcon name="right" size={24} color="white" />
                         </Button>
                       </Link>
