@@ -12,6 +12,8 @@ import {
   ListItemText,
 } from "@mui/material";
 
+import { IconLogout } from "@tabler/icons-react";
+
 import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
 
 interface User {
@@ -154,6 +156,7 @@ const Profile = () => {
             fullWidth
             onClick={handleLogout}
           >
+            <IconLogout width={20} style={{ marginRight: "8px" }} />
             Logout
           </Button>
         </Box>

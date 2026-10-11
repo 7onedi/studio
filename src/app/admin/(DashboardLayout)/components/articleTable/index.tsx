@@ -24,6 +24,7 @@ import { format } from 'date-fns';
 import Link from 'next/link';
 import Autocomplete from "@mui/material/Autocomplete";
 import LanguageDialog, { LangOption } from '../../components/LanguageDialog';
+import SubcategoryCell from '../../components/SubcategoryCell';
 
 export interface Article {
   id: number;
@@ -323,31 +324,14 @@ export default function ArticleTable({
     {
       id: 'subcategory',
       header: 'Subcategory',
-      cell: ({ row }) => {
-        const subs = row.original.subcategories ?? [];
-        if (subs.length === 0) return <Typography variant="body2" color="text.secondary">—</Typography>;
-        return (
-          <Stack direction="row" spacing={0.5} flexWrap="wrap">
-            {subs.map((sub) => {
-              const active = subcategoryFilter === sub.id;
-              return (
-                <Chip
-                  key={sub.id}
-                  label={sub.name}
-                  size="small"
-                  variant={active ? 'filled' : 'outlined'}
-                  color={active ? 'primary' : 'default'}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSubcategoryFilterChange?.(row.original.categoryId, sub.id);
-                  }}
-                  sx={{ cursor: 'pointer', fontSize: 11 }}
-                />
-              );
-            })}
-          </Stack>
-        );
-      },
+      cell: ({ row }) => (
+        <SubcategoryCell
+          subcategories={row.original.subcategories ?? []}
+          categoryId={row.original.categoryId}
+          activeId={subcategoryFilter}
+          onSelect={onSubcategoryFilterChange}
+        />
+      ),
       size: 150,
     },
     {

@@ -1,5 +1,5 @@
 import {
-  IconLogout,
+  IconLogin,
   IconTypography,
   IconUser,
   IconMapPin,
@@ -25,7 +25,7 @@ const allMenuItems = [
   { id: uniqueId(), title: "Projects", icon: IconMapPin, href: "/admin/production/projects", roles: ["OWNER", "ADMIN"] },
   { id: uniqueId(), title: "Partners", icon: IconWorld, href: "/admin/production/partners", roles: ["OWNER", "ADMIN"] },
   { navlabel: true, subheader: "AUTH" },
-  { id: uniqueId(), title: "Logout", icon: IconLogout, href: "/admin/authentication/login" },
+  { id: uniqueId(), title: "ReLogin", icon: IconLogin, href: "/admin/authentication/login" },
 ];
 
 export const getMenuItems = (role?: string) =>
