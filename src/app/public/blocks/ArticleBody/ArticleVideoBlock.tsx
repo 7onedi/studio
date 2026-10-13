@@ -13,7 +13,7 @@ export type VideoBlockData = {
   preview?: string; // для IG/FB бажано давати з бекенду
 };
 
-function getYouTubeId(url: string): string | null {
+export function getYouTubeId(url: string): string | null {
   try {
     const u = new URL(url);
 
