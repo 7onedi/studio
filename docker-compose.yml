@@ -29,6 +29,9 @@ services:
     memswap_limit: 2g
     cpus: "0.5"
 
+    environment:
+     NODE_OPTIONS: --max-old-space-size=1024
+
     entrypoint: /entrypoint.sh
 
     depends_on:
