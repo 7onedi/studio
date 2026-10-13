@@ -10,20 +10,18 @@ import { IconTrash, IconPlus, IconMinus, IconPencil, IconPresentation } from '@t
 import dynamic from 'next/dynamic';
 import { FieldHelp } from '../../components/shared/FieldHelp';
 import PresentationUploader from './PresentationUploader';
-import PresentationEntryDialog from './PresentationEntryDialog';
+import PresentationEntryDialog, { type PresentationEntry } from './PresentationEntryDialog';
 
+const ReactEditor = dynamic(() => import('../../components/editor/ReactEditor'), { ssr: false });
 const PresentationCoverThumbnail = dynamic(
   () => import('@blocks/PresentationsGrid/PresentationCoverThumbnail'),
   { ssr: false }
 );
 
 function extractDriveId(url: string): string | null {
-  if (!url) return null;
   const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) ?? url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
   return match ? match[1] : null;
 }
-
-const ReactEditor = dynamic(() => import('../../components/editor/ReactEditor'), { ssr: false });
 
 export interface Category {
   id: number;
@@ -58,18 +56,9 @@ export interface ParentProjectFormData {
   socialLinks: SocialLink[];
 }
 
-interface PresentationEntry {
-  title: string;
-  description: string;
-  url: string;
-  title_uk: string;
-  description_uk: string;
-  url_uk: string;
-}
-
 const EMPTY_PRESENTATION: PresentationEntry = {
   title: '', description: '', url: '',
-  title_uk: '', description_uk: '', url_uk: '',
+  title_uk: '', description_uk: '', url_uk: '', cover: '',
 };
 
 const PLATFORMS = ['YOUTUBE', 'INSTAGRAM', 'FACEBOOK', 'TIKTOK', 'TWITTER'];
@@ -382,52 +371,75 @@ export default function ParentProjectFormDialog({
                   </Button>
                 </Stack>
 
-                {presentations.map((p, idx) => (
-                  <Stack
-                    key={idx}
-                    direction="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    spacing={1.5}
-                    sx={{ border: '1px solid #ddd', borderRadius: 2, p: 1.5 }}
-                  >
-                    <Stack direction="row" alignItems="center" spacing={1.5} sx={{ minWidth: 0, flex: 1 }}>
-                      {(() => {
-                        const fileId = extractDriveId(p.url || p.url_uk);
-                        const proxyUrl = fileId ? `/api/presentation-proxy/${fileId}` : null;
-                        return (
-                          <Box
-                            sx={{
-                              width: 40, height: 56, flexShrink: 0,
-                              borderRadius: 1, border: '1px solid #eee',
-                              position: 'relative', overflow: 'hidden', bgcolor: 'grey.50',
-                            }}
+                {presentations.map((p, idx) => {
+                  const hasCover = Boolean(p.cover);
+                  const driveId = extractDriveId(p.url || p.url_uk || '');
+                  const borderColor = hasCover ? 'success.main' : 'warning.main';
+
+                  return (
+                    <Stack
+                      key={idx}
+                      direction="row"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      sx={{ border: '1px solid #ddd', borderRadius: 2, p: 1.5 }}
+                    >
+                      <Stack direction="row" spacing={1.5} alignItems="center" sx={{ minWidth: 0 }}>
+                        <Box
+                          sx={{
+                            position: 'relative',
+                            width: 56,
+                            aspectRatio: '210 / 297',
+                            borderRadius: 0.5,
+                            overflow: 'hidden',
+                            bgcolor: 'grey.200',
+                            flexShrink: 0,
+                            border: '2px solid',
+                            borderColor,
+                            '& > div': { position: 'absolute', inset: 0 },
+                          }}
+                        >
+                          {hasCover ? (
+                            <Box
+                              component="img"
+                              src={p.cover}
+                              sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                            />
+                          ) : driveId ? (
+                            <PresentationCoverThumbnail fileUrl={`/api/presentation-proxy/${driveId}`} />
+                          ) : null}
+                        </Box>
+
+                        <Box sx={{ minWidth: 0 }}>
+                          <Typography variant="body2" fontWeight={600} noWrap>{p.title || '(untitled)'}</Typography>
+                          <Typography variant="caption" color="text.secondary" noWrap display="block">
+                            {p.description}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            display="block"
+                            sx={{ color: hasCover ? 'success.main' : 'warning.main' }}
                           >
-                            {proxyUrl ? (
-                              <PresentationCoverThumbnail fileUrl={proxyUrl} />
-                            ) : (
-                              <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <IconPresentation size={20} color="#bbb" />
-                              </Box>
-                            )}
-                          </Box>
-                        );
-                      })()}
-                      <Box sx={{ minWidth: 0 }}>
-                        <Typography variant="body2" fontWeight={600} noWrap>{p.title || '(untitled)'}</Typography>
-                        <Typography variant="caption" color="text.secondary" noWrap>{p.description}</Typography>
-                      </Box>
+                            {hasCover
+                              ? 'Cover uploaded'
+                              : driveId
+                                ? 'No cover: first PDF page is used'
+                                : 'No cover and no valid PDF link'}
+                          </Typography>
+                        </Box>
+                      </Stack>
+
+                      <Stack direction="row" spacing={0.5}>
+                        <IconButton size="small" onClick={() => openEditPresentation(idx)}>
+                          <IconPencil size={16} />
+                        </IconButton>
+                        <IconButton size="small" color="error" onClick={() => deletePresentation(idx)}>
+                          <IconTrash size={16} />
+                        </IconButton>
+                      </Stack>
                     </Stack>
-                    <Stack direction="row" spacing={0.5}>
-                      <IconButton size="small" onClick={() => openEditPresentation(idx)}>
-                        <IconPencil size={16} />
-                      </IconButton>
-                      <IconButton size="small" color="error" onClick={() => deletePresentation(idx)}>
-                        <IconTrash size={16} />
-                      </IconButton>
-                    </Stack>
-                  </Stack>
-                ))}
+                  );
+                })}
               </>
             )}
 
