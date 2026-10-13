@@ -30,7 +30,10 @@ services:
     cpus: "0.5"
 
     environment:
-     NODE_OPTIONS: --max-old-space-size=1024
+      NODE_OPTIONS: --max-old-space-size=1024
+
+    extra_hosts:
+      - "studio.pangeya.org.ua:host-gateway"
 
     entrypoint: /entrypoint.sh
 
