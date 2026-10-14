@@ -10,7 +10,14 @@ import PageContainer from '../../components/container/PageContainer';
 import ArticleTable, { Article } from '../../components/articleTable';
 import LanguageDialog, { LangOption } from '../../components/LanguageDialog';
 
-const IMAGEMAPPING_SLUG = 'imagemapping';
+const MODES = {
+  imagemapping: { slug: 'imagemapping', title: 'Imagemapping articles' },
+  mozaika: { slug: 'mozaika', title: 'Mozaїka articles' },
+  youthinsight: { slug: 'youthinsight', title: 'Youthinsight articles' },
+  countrysidestudio: { slug: 'countrysidestudio', title: '#CountrysideStudio articles' },
+} as const;
+
+type Mode = keyof typeof MODES;
 
 const LANGS = [
   { code: '', icon: null, label: 'All' },
@@ -28,9 +35,8 @@ const SLIDER_OPTIONS = [
   { value: 'SLIDER_2', label: 'Carousel-Slider' },
 ];
 
-export default function ArticlesContent({ mode = 'all' }: { mode?: 'all' | 'imagemapping' }) {
-  const isIM = mode === 'imagemapping';
-  const title = isIM ? 'Imagemapping articles' : 'Articles';
+export default function ArticlesContent({ mode = 'countrysidestudio' }: { mode?: Mode }) {
+  const { slug: modeSlug, title } = MODES[mode];
 
   const router = useRouter();
   const pathname = usePathname();
@@ -43,7 +49,7 @@ export default function ArticlesContent({ mode = 'all' }: { mode?: 'all' | 'imag
   const [langDialogOpen, setLangDialogOpen] = useState(false);
   const [chosenLang, setChosenLang] = useState('EN');
   // undefined = ще вантажиться, null = категорію не знайдено
-  const [imId, setImId] = useState<number | null | undefined>(undefined);
+  const [catId, setCatId] = useState<number | null | undefined>(undefined);
 
   const openCreateDialog = () => {
     setChosenLang(lang || 'EN');
@@ -62,19 +68,20 @@ export default function ArticlesContent({ mode = 'all' }: { mode?: 'all' | 'imag
   }, []);
 
   useEffect(() => {
+    setCatId(undefined);
     fetch('/api/categories', { credentials: 'include' })
       .then((r) => r.json())
       .then((d) => {
         const list = Array.isArray(d) ? d : d.data ?? [];
-        const im = list.find((c: { slug: string }) => c.slug === IMAGEMAPPING_SLUG);
-        if (!im) console.error('Imagemapping category not found');
-        setImId(im ? im.id : null);
+        const cat = list.find((c: { slug: string }) => c.slug === modeSlug);
+        if (!cat) console.error(`Category "${modeSlug}" not found`);
+        setCatId(cat ? cat.id : null);
       })
       .catch((e) => {
         console.error(e);
-        setImId(null);
+        setCatId(null);
       });
-  }, []);
+  }, [modeSlug]);
 
   const page = searchParams.get('page') ?? '1';
   const search = searchParams.get('search') ?? '';
@@ -84,15 +91,13 @@ export default function ArticlesContent({ mode = 'all' }: { mode?: 'all' | 'imag
   const lang = searchParams.get('lang') ?? '';
   const mine = searchParams.get('mine') === '1';
   const slider = searchParams.get('slider') ?? '';
-  const categoryFilter = isIM
-    ? imId ?? undefined
-    : searchParams.get('categoryId') ? Number(searchParams.get('categoryId')) : undefined;
+  const categoryFilter = catId ?? undefined;
   const subcategoryFilter = searchParams.get('subcategoryId') ? Number(searchParams.get('subcategoryId')) : undefined;
 
   useEffect(() => {
-    if (!me || imId === undefined) return;
+    if (!me || catId === undefined) return;
 
-    if (isIM && imId === null) {
+    if (catId === null) {
       setArticles([]);
       setTotal(0);
       setLoading(false);
@@ -107,7 +112,6 @@ export default function ArticlesContent({ mode = 'all' }: { mode?: 'all' | 'imag
     if (me.role === 'USER' || mine) params.set('authorId', String(me.id));
     if (categoryFilter) params.set('categoryId', String(categoryFilter));
     if (subcategoryFilter) params.set('subcategoryId', String(subcategoryFilter));
-    if (!isIM && imId) params.set('excludeCategoryId', String(imId));
 
     fetch(`/api/articles/search?${params}`)
       .then((r) => r.json())
@@ -117,7 +121,7 @@ export default function ArticlesContent({ mode = 'all' }: { mode?: 'all' | 'imag
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [page, limit, search, sortBy, order, lang, slider, me, mine, categoryFilter, subcategoryFilter, imId, isIM]);
+  }, [page, limit, search, sortBy, order, lang, slider, me, mine, categoryFilter, subcategoryFilter, catId]);
 
   const updateParam = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -247,17 +251,9 @@ export default function ArticlesContent({ mode = 'all' }: { mode?: 'all' | 'imag
           userId={me?.id}
           categoryFilter={categoryFilter}
           subcategoryFilter={subcategoryFilter}
-          onCategoryFilterChange={isIM ? undefined : (catId) => {
-            const isActive = categoryFilter === catId && !subcategoryFilter;
-            updateParams({
-              categoryId: isActive ? null : String(catId),
-              subcategoryId: null,
-            });
-          }}
-          onSubcategoryFilterChange={(catId, subId) => {
+          onSubcategoryFilterChange={(_catId, subId) => {
             const isActive = subcategoryFilter === subId;
             updateParams({
-              categoryId: isActive ? null : String(catId),
               subcategoryId: isActive ? null : String(subId),
             });
           }}
