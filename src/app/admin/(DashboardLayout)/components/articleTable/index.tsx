@@ -195,7 +195,7 @@ export default function ArticleTable({
     }
   };
 
-  const sortableColumns = ['title', 'updatedAt', 'createdAt', 'published', 'lang', 'author', 'category'];
+  const sortableColumns = ['title', 'updatedAt', 'createdAt', 'published', 'lang', 'author'];
 
   const columns: ColumnDef<Article>[] = [
     {
@@ -231,11 +231,11 @@ export default function ArticleTable({
       accessorKey: 'title',
       header: 'Title',
       cell: ({ getValue }) => (
-        <Typography variant="body2" fontWeight={500} noWrap sx={{ maxWidth: 220 }}>
+        <Typography variant="body2" fontWeight={500} noWrap sx={{ maxWidth: 250 }}>
           {getValue() as string}
         </Typography>
       ),
-      size: 200,
+      size: 250,
     },
     {
       id: 'author',
@@ -282,7 +282,7 @@ export default function ArticleTable({
           />
         );
       },
-      size: 100,
+      size: 120,
     },
     {
       accessorKey: 'lang',
@@ -291,35 +291,6 @@ export default function ArticleTable({
         <Chip label={getValue() as string} size="small" variant="filled" sx={{ fontWeight: 600, fontSize: 11 }} />
       ),
       size: 64,
-    },
-    {
-      id: 'category',
-      header: 'Category',
-      cell: ({ row }) => {
-        const cat = row.original.category;
-        if (!cat) return <Typography variant="body2" color="text.secondary">—</Typography>;
-        const active = categoryFilter === cat.id && !subcategoryFilter;
-        return (
-          <Typography
-            variant="body2"
-            noWrap
-            onClick={(e) => {
-              e.stopPropagation();
-              onCategoryFilterChange?.(cat.id);
-            }}
-            sx={{
-              cursor: 'pointer',
-              color: active ? 'primary.main' : 'text.secondary',
-              fontWeight: active ? 600 : 400,
-              textDecoration: 'underline',
-              '&:hover': { color: 'primary.main' },
-            }}
-          >
-            {cat.name}
-          </Typography>
-        );
-      },
-      size: 130,
     },
     {
       id: 'subcategory',
