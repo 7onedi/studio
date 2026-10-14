@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import { ImageViewer, ImageViewerItem } from "@components/ImageViewer";
-import ArticleVideoBlock, { VideoBlockData } from "./ArticleVideoBlock";
+import ArticleVideoBlock, { VideoBlockData, getYouTubeId } from "./ArticleVideoBlock";
 import VideoPlayButton from "@components/PlayButton";
 
 type ParagraphBlock = {
@@ -86,6 +86,7 @@ type ArticleBodyProps = {
 export function ArticleBody({ blocks }: ArticleBodyProps) {
   const [lightboxIndex, setLightboxIndex] = useState(-1);
   const [orientations, setOrientations] = useState<Record<string, "landscape" | "portrait">>({});
+  const [playing, setPlaying] = useState<Record<string, boolean>>({});
 
   const handleImageLoad = (key: string) => (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
@@ -251,6 +252,8 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
             const redirect = block.data.redirectUrl;
             const key = `${i}`;
             const isPortrait = orientations[key] === "portrait";
+            const ytId = redirect ? getYouTubeId(redirect) : null;
+            const isPlaying = !!playing[key];
 
             const imgElement = (
               <img
@@ -267,14 +270,32 @@ export function ArticleBody({ blocks }: ArticleBodyProps) {
             return (
               <figure key={i} className="mb-4">
                 {redirect ? (
-                  <div
-                    className="bg-black block border border-transparent hover:border-[#E91651] hover:border-2 rounded-[14px] transition-colors duration-200 relative cursor-pointer"
-                  >
-                    {imgElement}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <VideoPlayButton href={redirect} />
+                  ytId && isPlaying ? (
+                    <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-black">
+                      <iframe
+                        src={`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`}
+                        title={block.data.caption ?? "YouTube video"}
+                        allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+                        allowFullScreen
+                        className="absolute inset-0 h-full w-full border-0"
+                      />
                     </div>
-                  </div>
+                  ) : (
+                    <div
+                      className="bg-black block border border-transparent hover:border-[#E91651] hover:border-2 rounded-[14px] transition-colors duration-200 relative cursor-pointer"
+                      onClick={ytId ? () => setPlaying((p) => ({ ...p, [key]: true })) : undefined}
+                    >
+                      {imgElement}
+                      <div
+                        className={
+                          "absolute inset-0 flex items-center justify-center" +
+                          (ytId ? " pointer-events-none" : "")
+                        }
+                      >
+                        <VideoPlayButton href={ytId ? "" : redirect} />
+                      </div>
+                    </div>
+                  )
                 ) : (
                   imgElement
                 )}

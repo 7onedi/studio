@@ -2,6 +2,7 @@ export class CustomImageTool {
   private data: { url?: string; redirectUrl?: string; caption?: string };
   private wrapper: HTMLElement | null = null;
   private redirectRow: HTMLElement | null = null;
+  private imgContainer: HTMLElement | null = null;
   private api: any;
   private config: any;
 
@@ -23,8 +24,9 @@ export class CustomImageTool {
     this.wrapper = document.createElement("div");
     this.wrapper.style.cssText = "border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;";
 
-    const imgContainer = document.createElement("div");
+        const imgContainer = document.createElement("div");
     imgContainer.style.cssText = "position:relative;background:#f9fafb;";
+    this.imgContainer = imgContainer;
 
     if (this.data.url) {
       this._renderImage(imgContainer, this.data.url);
@@ -50,6 +52,7 @@ export class CustomImageTool {
     redirectInput.addEventListener("input", (e) => {
       this.data.redirectUrl = (e.target as HTMLInputElement).value;
       this._updateValidityStyle();
+      this._updatePlayOverlay();
     });
 
     const captionInput = document.createElement("input");
@@ -87,6 +90,7 @@ export class CustomImageTool {
 
     container.appendChild(img);
     container.appendChild(replaceBtn);
+    this._updatePlayOverlay();
   }
 
   private _renderUploadArea(container: HTMLElement) {
@@ -170,6 +174,50 @@ export class CustomImageTool {
     } catch {
       return false;
     }
+  }
+
+  private _getYoutubeId(value: string): string | null {
+    try {
+      const u = new URL(value);
+      const host = u.hostname.replace(/^www\.|^m\./, "");
+      if (host === "youtu.be") return u.pathname.slice(1) || null;
+      if (host === "youtube.com" || host === "youtube-nocookie.com") {
+        if (u.pathname === "/watch") return u.searchParams.get("v");
+        const m = u.pathname.match(/^\/(embed|shorts|live)\/([\w-]+)/);
+        if (m) return m[2];
+      }
+    } catch {}
+    return null;
+  }
+
+  private _updatePlayOverlay() {
+    const c = this.imgContainer;
+    if (!c) return;
+    c.querySelectorAll(".yt-play, .yt-embed").forEach((el) => el.remove());
+
+    const id = this._getYoutubeId(this.data.redirectUrl || "");
+    if (!id || !this.data.url) return;
+
+    const play = document.createElement("button");
+    play.className = "yt-play";
+    play.type = "button";
+    play.textContent = "▶";
+    play.style.cssText =
+      "position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;border:none;background:rgba(0,0,0,0.65);color:#fff;font-size:24px;cursor:pointer;";
+    play.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const iframe = document.createElement("iframe");
+      iframe.className = "yt-embed";
+      iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+      iframe.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+      iframe.allowFullscreen = true;
+      iframe.style.cssText =
+        "position:absolute;inset:0;width:100%;height:100%;border:0;background:#000;";
+      c.appendChild(iframe);
+      play.remove();
+    });
+    c.appendChild(play);
   }
 
   private _updateValidityStyle() {

@@ -1,13 +1,15 @@
 import {
   IconLogin,
-  IconTypography,
+  IconBuildingCastle,
   IconUser,
   IconMapPin,
   IconTags,
   IconUsersGroup,
   IconBook,
   IconWorld,
-  IconPhoto
+  IconPhoto,
+  IconPuzzle2,
+  IconBulb
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
@@ -17,8 +19,12 @@ const allMenuItems = [
   { id: uniqueId(), title: "Profile", icon: IconUser, href: "/admin/profile" },
   { id: uniqueId(), title: "Users", icon: IconUsersGroup, href: "/admin/users", roles: ["OWNER", "ADMIN"] },
   { navlabel: true, subheader: "PRODUCTION" },
-  { id: uniqueId(), title: "Articles", icon: IconTypography, href: "/admin/production/articles" },
-  { id: uniqueId(), title: "IM articles", icon: IconPhoto, href: "/admin/production/imagemapping" },
+  { navlabel: true, subheader: "Articles", sub: true },
+  { id: uniqueId(), title: "#CountrysideStudio", icon: IconBuildingCastle, href: "/admin/production/articles" },
+  { id: uniqueId(), title: "Youthinsight", icon: IconBulb, href: "/admin/production/youthinsight" },
+  { id: uniqueId(), title: "Mozaїka", icon: IconPuzzle2, href: "/admin/production/mozaika" },
+  { id: uniqueId(), title: "Imagemapping", icon: IconPhoto, href: "/admin/production/imagemapping" },
+  { navlabel: true, subheader: "Management" },
   { id: uniqueId(), title: "Tags", icon: IconTags, href: "/admin/production/tags", roles: ["OWNER", "ADMIN"] },
   { id: uniqueId(), title: "Categories and Sub", icon: IconBook, href: "/admin/production/categories", roles: ["OWNER"] },
   { id: uniqueId(), title: "Subcategories", icon: IconBook, href: "/admin/production/categories", roles: ["ADMIN"] },
