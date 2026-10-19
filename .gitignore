@@ -57,3 +57,5 @@ public/uploads
 *.log
 tests/article/*.log
 tests/migrate-imagemapping.js
+
+/.cache/
