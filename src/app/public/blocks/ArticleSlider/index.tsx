@@ -196,7 +196,12 @@ const { t, locale } = useLanguage();
                 <div className="container h-full flex flex-col justify-between items-start lg:items-stretch"> 
                   
                   {/* Заголовок — тільки десктоп, зверху */}
-                  <div className={`hidden lg:block mt-36 text-white text-headline_2 ${s.textStyle} max-w-[600px] lg:pt-16 text-left`}>
+                  <div className={`hidden lg:block mt-36 text-white text-headline_2 ${s.textStyle} max-w-[600px] lg:pt-16 text-left`}
+                    style={{
+                      WebkitTextStroke: "1px black",
+                      paintOrder: "stroke fill",
+                    }}
+                  >
                     {s.title.length > 128 ? s.title.slice(0, 128) + '…' : s.title}
                   </div>
 
@@ -204,14 +209,24 @@ const { t, locale } = useLanguage();
                     <div className="w-full flex flex-col lg:block justify-center">
                       
                       {/* Заголовок — тільки мобільний, над кнопкою */}
-                      <div className={`mb-8 lg:hidden text-white text-headline_2_mobile ${s.textStyle} max-w-[600px] text-left`}>
+                      <div className={`mb-8 lg:hidden text-white text-headline_2_mobile ${s.textStyle} max-w-[600px] text-left`}
+                        style={{
+                          WebkitTextStroke: "1px black",
+                          paintOrder: "stroke fill",
+                        }}
+                      >
                         {s.title.length > 128 ? s.title.slice(0, 128) + '…' : s.title}
                       </div>
 
                       <Link href={`/public/Article/${s.slug}`}>
                         <Button variant="secondary-alt">
-                          <span className="mr-3">{t("views.article.View")}</span>
-                          <SvgIcon name="right" size={24} color="white" />
+                          <span className="mr-3"
+                            style={{
+                              WebkitTextStroke: "1px black",
+                              paintOrder: "stroke fill",
+                            }}
+                          >{t("views.article.View")}</span>
+                          <SvgIcon name="right" size={24} color="white-stroke" />
                         </Button>
                       </Link>
                     </div>
