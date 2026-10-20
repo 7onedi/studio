@@ -18,6 +18,7 @@ interface PopupContent {
   Logo?: string;
   zoom?: boolean;
   lang?: string;
+  city?: string | null;
 }
 
 interface MfkListProps {
@@ -55,6 +56,7 @@ export default function MfkList({ markers, id }: MfkListProps) {
   const ALLOWED_LANGS: Record<string, string[]> = {
     "#mfk": ["UK", "PL", "LT", "RO"],
     "#implaces": ["UK", "LT", "MK"],
+    youthinsight: ["VINNYTSIA", "VORONOVYTSIA"],
   };
 
   const LANGS = [
@@ -64,6 +66,8 @@ export default function MfkList({ markers, id }: MfkListProps) {
     { code: 'LT', icon: '/flags/LT.svg', label: t("nav.locale.lt") },
     { code: 'RO', icon: '/flags/RO.svg', label: t("nav.locale.md") },
     { code: 'MK', icon: '/flags/MK.svg', label: t("nav.locale.mk") },
+    { code: 'VINNYTSIA', icon: '/cities/vinnytsia.webp', label: t("public.mfkList.city.vinnytsia"), size: { width: 50, height: 50 } },
+    { code: 'VORONOVYTSIA', icon: '/cities/voronovytsia.webp', label: t("public.mfkList.city.voronovytsia"), size: { width: 50, height: 50 } },
   ].filter((l) => (ALLOWED_LANGS[id ?? ""] ?? []).includes(l.code));
 
   const [selectedLangs, setSelectedLangs] = useState<string[]>(
@@ -82,9 +86,17 @@ export default function MfkList({ markers, id }: MfkListProps) {
     setVisibleCount(4);
   };
 
+  const getLangKey = (p: PopupContent, id?: string) => {
+    const raw = id === "youthinsight" ? (p.city ?? p.lang) : (p.lang ?? p.city);
+    return raw?.toUpperCase();
+  };
+
   const items = markers
     .map((m) => m.popupContent)
-    .filter((p) => !p.lang || selectedLangs.includes(p.lang.toUpperCase()));
+    .filter((p) => {
+      const key = getLangKey(p, id);
+      return !key || selectedLangs.includes(key);
+    });
 
   const [visibleCount, setVisibleCount] = useState(4);
   const mobileItems = items.slice(0, visibleCount);
@@ -92,7 +104,8 @@ export default function MfkList({ markers, id }: MfkListProps) {
   const rows = splitIntoRows(items);
 
   const Card = (item: PopupContent) => {
-    const icon = LANGS.find((l) => l.code === item.lang)?.icon;
+    const key = getLangKey(item, id);
+    const icon = LANGS.find((l) => l.code === key)?.icon;
     return (
       <div className="relative group">
         <div className={`bg-transparent overflow-hidden rounded-t-2xl border-b-2 ${id === "#mfk" ? "border-main-amarant" : "border-none"}`}>
@@ -105,7 +118,7 @@ export default function MfkList({ markers, id }: MfkListProps) {
             />
             {icon && (
               <div className="absolute bottom-2 right-2 text-2xl leading-none drop-shadow-md">
-                <img src={icon} width={36} height={36} alt={item.lang} style={{ borderRadius: 2 }} />
+                <img src={icon} width={36} height={36} alt={key} style={{ borderRadius: 2 }} />
               </div>
             )}
           </div>
@@ -122,7 +135,7 @@ export default function MfkList({ markers, id }: MfkListProps) {
     <section className="flex flex-col gap-10" id="mfkList">
 
       {/* СВІТЧЕР МОВ */}
-      { (id === '#mfk' || id === '#implaces') &&
+      { LANGS.length > 0 &&
         <div className="flex justify-center gap-6 flex-wrap">
           {LANGS.map((l) => {
             const isActive = selectedLangs.includes(l.code);
@@ -130,14 +143,14 @@ export default function MfkList({ markers, id }: MfkListProps) {
               <button
                 key={l.code}
                 onClick={() => toggleLang(l.code)}
-                className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition w-16 ${
+                className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition min-w-16 ${
                   isActive
                     ? "bg-white/10"
                     : "opacity-40 grayscale hover:opacity-60 hover:grayscale-0"
                 }`}
               >
                 {l.icon && (
-                  <img src={l.icon} width={36} height={27} alt={l.label} className="rounded-[2px] object-cover" />
+                  <img src={l.icon} width={l.size?.width || 36} height={l.size?.height || 27} alt={l.label} className="rounded-[2px] object-contain" />
                 )}
                 <span className="text-xs font-medium text-center leading-tight break-words">{l.label}</span>
               </button>

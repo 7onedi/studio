@@ -18,7 +18,11 @@
   "public": {
     "mfkList": {
       "showMore": "Arată mai mult",
-      "showLess": "Restrânge"
+      "showLess": "Restrânge",
+      "city": {
+        "vinnytsia" : "Vinnița",
+        "voronovytsia" : "Voronovița"
+      }
     }
   },
   "views": {

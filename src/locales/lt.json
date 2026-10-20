@@ -18,7 +18,11 @@
   "public": {
     "mfkList": {
       "showMore": "Rodyti daugiau",
-      "showLess": "Sumažinti"
+      "showLess": "Sumažinti",
+      "city": {
+        "vinnytsia" : "Vinnica",
+        "voronovytsia" : "Voronovycia"
+      }
     }
   },
   "views": {
