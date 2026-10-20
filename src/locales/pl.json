@@ -18,7 +18,11 @@
   "public": {
     "mfkList": {
       "showMore": "Pokaż więcej",
-      "showLess": "Zwiń"
+      "showLess": "Zwiń",
+      "city": {
+        "vinnytsia" : "Winnica",
+        "voronovytsia" : "Woronowica"
+      }
     }
   },
   "views": {

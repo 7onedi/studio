@@ -18,7 +18,11 @@
   "public": {
     "mfkList": {
       "showMore": "Show More",
-      "showLess": "Show Less"
+      "showLess": "Show Less",
+      "city": {
+        "vinnytsia" : "Vinnytsia",
+        "voronovytsia" : "Voronovytsia"
+      }
     }
   },
   "views": {

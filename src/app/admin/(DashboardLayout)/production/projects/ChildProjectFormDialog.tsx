@@ -34,6 +34,10 @@ const LANGUAGES = [
   { value: 'MK', icon: '/flags/MK.svg', label: 'North Macedonia' },
 ];
 
+const CITY_COA = [
+  { value: 'VINNYTSIA', icon: '/cities/vinnytsia.webp', label: 'Vinnytsia' },
+  { value: 'VORONOVYTSIA', icon: '/cities/voronovytsia.webp', label: 'Voronovytsia' },
+];
 
 export interface ChildProject {
   id: number;
@@ -187,7 +191,6 @@ export default function ChildProjectFormDialog({
       setParentId(initial?.parentId ?? '');
       setContent(fullData?.body ?? initial?.body ?? null);
       setImageBase64(initial?.imageBase64 ?? null);
-      setLang(fullData?.lang ?? initial?.lang ?? 'UK');
       setLat(initial?.lat ?? '');
       setLng(initial?.lng ?? '');
       setWebsiteUrl(initial?.websiteUrl ?? '');
@@ -214,6 +217,16 @@ export default function ChildProjectFormDialog({
       .catch(console.error);
   }, [open, initial?.id]);
 
+  useEffect(() => {
+  if (!open || !fullData) return;
+  const catName = categories.find((c) => c.id === Number(fullData.categoryId))?.name;
+  if (catName === 'Youthinsight') {
+    const city = (fullData.body as any)?.city;
+    setLang(CITY_COA.some((c) => c.value === city) ? city : CITY_COA[0].value);
+  } else {
+    setLang(fullData.lang ?? 'UK');
+  }
+}, [open, fullData, categories]);
   // заповнюємо форму після отримання даних
   useEffect(() => {
     if (!open) return;
@@ -325,9 +338,13 @@ export default function ChildProjectFormDialog({
 
   const urlCategorySlug = CATEGORY_URL_SLUGS[selectedCategoryName ?? ''] ?? 'Mfk';
 
-  const AVAILABLE_LANGUAGES = selectedCategoryName === 'Imagemapping'
+  const AVAILABLE_LANGUAGES =
+  selectedCategoryName === 'Imagemapping'
     ? LANGUAGES.filter((l) => ['UK', 'LT', 'MK'].includes(l.value))
-    : LANGUAGES;
+    : selectedCategoryName === 'Youthinsight'
+      ? CITY_COA
+      : LANGUAGES;
+
 
   const LANGS = [
     { code: 'EN', icon: '/flags/GB.svg', label: 'English' },
@@ -406,7 +423,9 @@ export default function ChildProjectFormDialog({
         body_pl: content_pl ?? { blocks: [] },
         body_lt: content_lt ?? { blocks: [] },
         body_ro: content_ro ?? { blocks: [] },
-        lang,
+        ...(selectedCategoryName !== 'Youthinsight' && {
+          lang,
+        }),
         categoryId:    Number(categoryId),
         subcategoryId: Number(subcategoryId),
         parentId:      Number(parentId),
@@ -414,6 +433,9 @@ export default function ChildProjectFormDialog({
           ...(content as any ?? { blocks: [] }),
           contributors,
           zoom,
+          ...(selectedCategoryName === 'Youthinsight' && {
+            city: lang,
+          }),
         },
         ...(imageId && { imageId }),
         ...(logoId && { logoId }),
@@ -466,9 +488,12 @@ export default function ChildProjectFormDialog({
           <TextField
             select label="Category *" value={categoryId}
             onChange={(e) => {
-              setCategoryId(Number(e.target.value));
+              const newId = Number(e.target.value);
+              const newName = categories.find((c) => c.id === newId)?.name;
+              setCategoryId(newId);
               setSubcategoryId('');
               setParentId('');
+              setLang(newName === 'Youthinsight' ? CITY_COA[0].value : 'UK');
             }}
             fullWidth size="small"
           >
