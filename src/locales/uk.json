@@ -18,7 +18,11 @@
   "public": {
     "mfkList": {
       "showMore": "Показати ще",
-      "showLess": "Згорнути"
+      "showLess": "Згорнути",
+      "city": {
+        "vinnytsia" : "Вінниця",
+        "voronovytsia" : "Вороновиця"
+      }
     }
   },
   "views": {

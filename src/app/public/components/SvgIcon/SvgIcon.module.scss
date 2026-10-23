@@ -22,3 +22,12 @@
   color: black;
   svg { fill: currentColor; }
 }
+.white-stroke {
+  color: white;
+  svg {
+    fill: currentColor;
+    stroke: black;
+    stroke-width: 1px;
+    paint-order: stroke fill;
+  }
+}

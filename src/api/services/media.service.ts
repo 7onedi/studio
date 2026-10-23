@@ -3,6 +3,7 @@ import path from "path";
 import { randomUUID } from "crypto";
 import { ApiError } from "@/api/utils/api-error";
 import { mediaRepository } from "@/api/repositories/media.repository";
+import type { MediaWhere } from "@/api/controllers/media.controller";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -44,31 +45,37 @@ export const mediaService = {
         });
     },
 
-    async list(page = 1, limit = 24) {
+    async list(page = 1, limit = 24, where?: MediaWhere, focusId?: number) {
+        if (focusId && !where) page = await mediaRepository.pageOf(focusId, limit);
         const skip = (page - 1) * limit;
         const [data, total] = await Promise.all([
-            mediaRepository.findMany({ skip, take: limit }),
-            mediaRepository.count(),
+            mediaRepository.findMany({ skip, take: limit, where }),
+            mediaRepository.count(where),
         ]);
         return { data, total, page, limit };
     },
 
     async delete(user: any, id: number) {
-    if (!user) throw new ApiError(401, "Unauthorized");
-    if (user.role !== 'ADMIN' && user.role !== 'OWNER')
-        throw new ApiError(403, "Only ADMIN can delete media");
+        if (!user) throw new ApiError(401, "Unauthorized");
+        if (user.role !== 'ADMIN' && user.role !== 'OWNER')
+            throw new ApiError(403, "Only ADMIN can delete media");
 
-    const media = await mediaRepository.findById(id);
-    if (!media) throw new ApiError(404, "Media not found");
+        const media = await mediaRepository.findById(id);
+        if (!media) throw new ApiError(404, "Media not found");
 
-    const filePath = path.join(process.cwd(), "public", media.url);
+        const filePath = path.join(process.cwd(), "public", media.url);
 
-    try {
-        fs.unlinkSync(filePath);
-    } catch {
-    }
+        try {
+            fs.unlinkSync(filePath);
+        } catch {
+        }
 
-    return mediaRepository.delete(id);
+        try {
+            fs.unlinkSync(path.join(process.cwd(), ".cache", "thumbs", `${id}-240.webp`));
+        } catch {
+        }
+
+        return mediaRepository.delete(id);
     },
 
     async findByUrl(url: string) {
