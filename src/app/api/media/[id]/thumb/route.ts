@@ -11,6 +11,16 @@ const headers = {
   'Cache-Control': 'public, max-age=31536000, immutable',
 };
 
+sharp.cache(false);
+sharp.concurrency(1);
+
+let queue: Promise<unknown> = Promise.resolve();
+const enqueue = <T,>(fn: () => Promise<T>): Promise<T> => {
+  const run = queue.then(fn, fn);
+  queue = run.catch(() => {});
+  return run;
+};
+
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const id = Number((await params).id);
   if (!id) return new NextResponse(null, { status: 400 });
@@ -25,7 +35,13 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
 
   try {
     const src = path.join(process.cwd(), 'public', m.url);
-    const buf = await sharp(src).rotate().resize(W, W, { fit: 'cover' }).webp({ quality: 70 }).toBuffer();
+    const buf = await enqueue(() =>
+      sharp(src, { limitInputPixels: 100_000_000 })
+        .rotate()
+        .resize(W, W, { fit: 'cover' })
+        .webp({ quality: 70 })
+        .toBuffer()
+    );
     await fs.mkdir(CACHE, { recursive: true });
     await fs.writeFile(file, buf);
     return new NextResponse(new Uint8Array(buf), { headers });
