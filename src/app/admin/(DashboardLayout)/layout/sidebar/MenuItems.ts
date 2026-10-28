@@ -9,7 +9,8 @@ import {
   IconWorld,
   IconPhoto,
   IconPuzzle2,
-  IconBulb
+  IconBulb,
+  IconCarouselHorizontal
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
@@ -22,8 +23,9 @@ const allMenuItems = [
   { navlabel: true, subheader: "Articles", sub: true },
   { id: uniqueId(), title: "#CountrysideStudio", icon: IconBuildingCastle, href: "/admin/production/articles" },
   { id: uniqueId(), title: "Youthinsight", icon: IconBulb, href: "/admin/production/youthinsight" },
-  { id: uniqueId(), title: "Mozaїka", icon: IconPuzzle2, href: "/admin/production/mozaika" },
+  // { id: uniqueId(), title: "Mozaїka", icon: IconPuzzle2, href: "/admin/production/mozaika" },
   { id: uniqueId(), title: "Imagemapping", icon: IconPhoto, href: "/admin/production/imagemapping" },
+    { id: uniqueId(), title: "Sliders", icon: IconCarouselHorizontal, href: "/admin/production/sliders" },
   { navlabel: true, subheader: "Management" },
   { id: uniqueId(), title: "Tags", icon: IconTags, href: "/admin/production/tags", roles: ["OWNER", "ADMIN"] },
   { id: uniqueId(), title: "Categories and Sub", icon: IconBook, href: "/admin/production/categories", roles: ["OWNER"] },

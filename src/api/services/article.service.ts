@@ -2,12 +2,13 @@ import { Prisma } from "generated/prisma/client";
 import { ZodError } from "zod";
 import { ApiError } from "@/api/utils/api-error";
 import { articleRepository } from "@/api/repositories/article.repository";
-import { createArticleSchema, updateArticleSchema, publishArticleSchema } from "@/api/schemas/article.schema";
+import { createArticleSchema, updateArticleSchema, publishArticleSchema, updateSliderOrderSchema } from "@/api/schemas/article.schema";
 import { canCreateArticle, canPublishArticle, canUpdateArticle, canDeleteArticle } from "@/api/policies/article.policy";
 import { tagRepository } from "@/api/repositories/tag.repository";
 import { generateUniqueSlug } from "@/api/utils/generate-unique-slug";
 import { BaseService } from "./base.service";
 import { normalizeTitleForSort } from "@/api/utils/normalize-for-sort";
+import { prisma } from "@/lib/prisma";
 
 class ArticleService extends BaseService {
   constructor() {
@@ -108,13 +109,32 @@ class ArticleService extends BaseService {
 				}
 			: undefined,
 		});
-		}
+	}
 
-  async publish(user: any, body: unknown) {
-    this.assertPolicy(user, canPublishArticle);
-    const data = publishArticleSchema.parse(body);
-    return this.repository.publish(data.id);
-  }
+	async updateSliderOrder(user: any, body: unknown) {
+		this.assertPolicy(user, canPublishArticle);
+
+		const data = updateSliderOrderSchema.parse(body);
+		const { lang, slider, ids } = data;
+
+		await prisma.$transaction([
+			prisma.article.updateMany({
+				where: { lang, slider, id: { notIn: ids } },
+				data: { slider: 'NONE', sliderOrder: 0 },
+			}),
+			...ids.map((id, i) =>
+				prisma.article.update({ where: { id }, data: { slider, sliderOrder: i } })
+			),
+		]);
+
+		return { ok: true };
+	}
+
+	async publish(user: any, body: unknown) {
+		this.assertPolicy(user, canPublishArticle);
+		const data = publishArticleSchema.parse(body);
+		return this.repository.publish(data.id);
+	}
 
 	async delete(user: any, id: number) {
 		this.assertPolicy(user, canDeleteArticle);

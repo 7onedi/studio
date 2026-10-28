@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import {
   useReactTable,
@@ -86,6 +86,11 @@ export default function ArticleTable({
   onSubcategoryFilterChange,
 }: ArticleTableProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const returnTo = encodeURIComponent(
+    `${pathname}${searchParams.toString() ? `?${searchParams}` : ''}`
+  );
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [searchInput, setSearchInput] = useState(search);
   const [tableData, setTableData] = useState<Article[]>(data);
@@ -98,6 +103,7 @@ export default function ArticleTable({
   }, [data]);
 
   useEffect(() => {
+    if (searchInput === search) return;
     if (searchInput.length === 0 || searchInput.length >= 3) {
       const timer = setTimeout(() => {
         onSearchChange?.(searchInput);
@@ -157,7 +163,7 @@ export default function ArticleTable({
   const confirmDuplicate = () => {
     if (!pendingDuplicateSlug) return;
     setDuplicateDialogOpen(false);
-    router.push(`/admin/production/articles/create?duplicate=${pendingDuplicateSlug}&lang=${duplicateLang}`);
+    router.push(`/admin/production/articles/create?duplicate=${pendingDuplicateSlug}&lang=${duplicateLang}&returnTo=${returnTo}`);
   };
 
   const handleDelete = async (id: number) => {
@@ -318,7 +324,7 @@ export default function ArticleTable({
               </Tooltip>
               {(userRole === 'ADMIN' || userRole === 'OWNER' || userRole === 'EDITOR') && (
                 <Tooltip title="Edit">
-                  <IconButton size="small" href={`/admin/production/articles/${row.original.slug}/edit`}>
+                  <IconButton size="small" href={`/admin/production/articles/${row.original.slug}/edit?returnTo=${returnTo}`}>
                     <IconEdit size={16} />
                   </IconButton>
                 </Tooltip>
