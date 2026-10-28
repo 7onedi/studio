@@ -41,7 +41,9 @@ export default function ArticlesContent({ mode = 'countrysidestudio' }: { mode?:
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
+  const returnTo = encodeURIComponent(
+    `${pathname}${searchParams.toString() ? `?${searchParams}` : ''}`
+  );
   const [articles, setArticles] = useState<Article[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -58,7 +60,7 @@ export default function ArticlesContent({ mode = 'countrysidestudio' }: { mode?:
 
   const confirmCreate = () => {
     setLangDialogOpen(false);
-    router.push(`/admin/production/articles/create?lang=${chosenLang}`);
+    router.push(`/admin/production/articles/create?lang=${chosenLang}&returnTo=${returnTo}`);
   };
 
   useEffect(() => {

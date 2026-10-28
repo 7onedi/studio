@@ -131,6 +131,7 @@ model Article {
   image   Media? @relation(fields: [imageId], references: [id])
 
   slider ArticleSlider @default(NONE)
+  sliderOrder Int             @default(0)
   gradient ArticleGradient @default(NONE)
   subcategories Subcategory[] @relation("ArticleSubcategories")
 
@@ -143,6 +144,7 @@ model Article {
   updatedAt DateTime @updatedAt
 
   @@index([categoryId, published])
+  @@index([slider, lang, sliderOrder])
 }
 
 model SocialLink {

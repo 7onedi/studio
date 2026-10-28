@@ -19,6 +19,12 @@ const baseArticleFields = {
   published: z.boolean().optional(),
 };
 
+export const updateSliderOrderSchema = z.object({
+  lang: ArticleLangEnum,
+  slider: z.enum(["SLIDER_1", "SLIDER_2"]),
+  ids: z.array(z.number().int().positive()),
+});
+
 export const createArticleSchema = z.object(baseArticleFields);
 export const updateArticleSchema = z.object(baseArticleFields).partial();
 
