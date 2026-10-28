@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Container, Typography } from "@mui/material";
 import ArticleForm, { ArticleFormData } from "../../../../components/articleForm";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
@@ -14,7 +14,9 @@ interface EditPageProps {
 export default function EditArticle({ params }: EditPageProps) {
   const { slug } = React.use(params);
   const router = useRouter();
-
+  const searchParams = useSearchParams();
+  const rawReturnTo = searchParams.get('returnTo');
+  const returnTo = rawReturnTo?.startsWith('/admin/') ? rawReturnTo : '/admin/production/articles';
   const [articleId, setArticleId] = useState<number | null>(null);
   const [initialData, setInitialData] = useState<Partial<ArticleFormData> | null>(null);
   const [initialPublished, setInitialPublished] = useState<boolean>(false);
@@ -114,7 +116,7 @@ export default function EditArticle({ params }: EditPageProps) {
         throw new Error(json?.message || `Error ${res.status}`);
       }
       setSuccess(true);
-      setTimeout(() => router.push("/admin/production/articles"), 1500);
+      setTimeout(() => router.push(returnTo), 1500);
     } catch (err: any) {
       setError(err.message);
     } finally {

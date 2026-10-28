@@ -10,7 +10,8 @@ function CreateArticleContent() {
   const searchParams = useSearchParams();
   const duplicateSlug = searchParams.get('duplicate');
   const langParam = searchParams.get('lang');
-
+  const rawReturnTo = searchParams.get('returnTo');
+  const returnTo = rawReturnTo?.startsWith('/admin/') ? rawReturnTo : '/admin/production/articles';
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -100,7 +101,7 @@ const handleSave = async (data: ArticleFormData) => {
       });
     }
     setSuccess(true);
-    setTimeout(() => router.push("/admin/production/articles"), 1500);
+    setTimeout(() => router.push(returnTo), 1500);
   } catch (err: any) {
     setError(err.message);
   } finally {

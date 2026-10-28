@@ -12,4 +12,5 @@ export const articleController = {
     search: (filters: Record<string, any>, options?: any) => {
         return articleService.search(filters, options, ArticleInclude);
     },
+    updateSliderOrder: (body: any, user: any) => articleService.updateSliderOrder(user, body),
 };
