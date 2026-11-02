@@ -5,6 +5,7 @@ import { BlogCard } from '@/app/public/blocks/BlogSlider/BlogCard';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { toCardProps } from '@blocks/BlogSlider/toCardProps';
 import { useLanguage } from "@/app/providers/LanguageProvider";
+import { SvgIcon } from "@/app/public/components/SvgIcon";
 
 interface Category { id: number; name: string; }
 interface Subcategory { id: number; name: string; categoryId: number; }
@@ -48,12 +49,21 @@ export default function SearchPageClient({
   const didInitFromUrl = useRef(false);
   const isFirstRender = useRef(true);
 
-  const [query, setQuery] = useState('');
-  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const initialQuery = (searchParams.get('text') ?? '').trim();
+  const initialPage = Math.max(1, Number(searchParams.get('page')) || 1);
+  const hasInitialFilters =
+    initialFilters.tags.length + initialFilters.cats.length + initialFilters.subs.length > 0;
+
+  const needsInitialFetch = useRef(initialQuery.length >= 3 || initialPage > 1);
+  const openedByHover = useRef(false);
+
+  const [query, setQuery] = useState(initialQuery);
+  const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
+  const [filtersOpen, setFiltersOpen] = useState(!(hasInitialFilters || initialQuery));
   const [selectedTags, setSelectedTags] = useState<string[]>(initialFilters.tags);
   const [selectedCategories, setSelectedCategories] = useState<string[]>(initialFilters.cats);
   const [selectedSubCategories, setSelectedSubCategories] = useState<string[]>(initialFilters.subs);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(initialPage);
   const [articles, setArticles] = useState<Article[]>(initialArticles);
   const [total, setTotal] = useState(initialTotal);
   
@@ -80,6 +90,29 @@ export default function SearchPageClient({
     selectedTags.length > 0 ||
     selectedCategories.length > 0 ||
     selectedSubCategories.length > 0;
+
+  const activeFiltersCount =
+    selectedTags.length + selectedCategories.length + selectedSubCategories.length;
+
+  // Якщо список відкрито наведенням, не згортаємо при кліку, щоб можна було швидко перебирати теги
+  const collapseAfterPick = () => {
+    if (!openedByHover.current) setFiltersOpen(false);
+  };
+
+  const toggleFilters = () => {
+    if (openedByHover.current) {
+      openedByHover.current = false; // клік закріплює відкритий стан
+      return;
+    }
+    setFiltersOpen(o => !o);
+  };
+
+  const handleSearch = () => {
+    setDebouncedQuery(query.trim());
+    setPage(1);
+    setFiltersOpen(false);
+    openedByHover.current = false;
+  };
 
   const toggleCategory = (cat: string) => {
     setPage(1);
@@ -108,6 +141,7 @@ export default function SearchPageClient({
     setSelectedCategories([]);
     setSelectedSubCategories([]);
     setPage(1);
+    setFiltersOpen(true);
     router.replace(SEARCH_ROUTE, { scroll: false });
   };
 
@@ -124,10 +158,12 @@ export default function SearchPageClient({
     selectedTags.forEach(t => params.append('tag', t));
     selectedCategories.forEach(c => params.append('cat', c));
     selectedSubCategories.forEach(s => params.append('sub', s));
+    if (debouncedQuery) params.set('text', debouncedQuery);
+    if (page > 1) params.set('page', String(page));
 
     const qs = params.toString();
     router.replace(qs ? `${SEARCH_ROUTE}?${qs}` : SEARCH_ROUTE, { scroll: false });
-  }, [selectedTags, selectedCategories, selectedSubCategories]);
+  }, [selectedTags, selectedCategories, selectedSubCategories, debouncedQuery, page]);
 
   // Застосування ?q= при переході з кнопок карток, коли сторінка вже відкрита
   useEffect(() => {
@@ -156,7 +192,7 @@ export default function SearchPageClient({
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
-      return;
+      if (!needsInitialFetch.current) return;
     }
 
     const ids = (list: { id: number; name: string }[], selected: string[]) =>
@@ -197,17 +233,19 @@ export default function SearchPageClient({
       <section className="mx-auto w-full max-w-6xl pt-10 lg:pt-14">
         <div className="mx-auto max-w-4xl">
           {/* Search bar */}
-          <div className="flex items-center gap-3">
+          <div className="mt-6 flex items-center gap-3">
             <div className="flex h-[54px] w-full items-center rounded-full bg-white/95 px-5 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
               <input
                 value={query}
                 onChange={e => { setQuery(e.target.value); setPage(1); }}
                 placeholder={t("search.placeholder")}
                 className="w-full bg-transparent text-[16px] text-black outline-none placeholder:text-black/45"
+                onKeyDown={e => { if (e.key === 'Enter') handleSearch(); }}
               />
             </div>
             <button
               type="button"
+              onClick={handleSearch}
               className="flex h-[54px] shrink-0 items-center gap-2 rounded-full bg-sky-600 px-6 text-[14px] font-semibold uppercase tracking-wide text-white shadow-[0_10px_30px_rgba(0,0,0,0.35)] transition hover:bg-sky-500"
               aria-label={t("search.search_button")}
             >
@@ -219,83 +257,126 @@ export default function SearchPageClient({
             </button>
           </div>
 
-          {/* Categories */}
-          {allCategories.length > 0 && (
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
-              {allCategories.map(c => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => toggleCategory(c)}
-                  className={[
-                    'rounded-full px-4 py-2 text-[13px] font-semibold uppercase tracking-wide transition',
-                    selectedCategories.includes(c)
-                      ? 'bg-main-amarant text-white shadow-[0_10px_25px_rgba(0.35,0.35,0.35,0.7)]'
-                      : 'bg-main-amarant/70 text-white/95 hover:bg-main-amarant',
-                  ].join(' ')}
-                >
-                  {c}
-                </button>
-              ))}
-            </div>
-          )}
+          {/* Filters dropdown */}
+          <div
+            onPointerEnter={e => {
+              if (e.pointerType === 'mouse' && !filtersOpen) {
+                openedByHover.current = true;
+                setFiltersOpen(true);
+              }
+            }}
+            onPointerLeave={e => {
+              if (e.pointerType === 'mouse' && openedByHover.current) {
+                openedByHover.current = false;
+                setFiltersOpen(false);
+              }
+            }}
+            className="mt-6"
+          >
+            <button
+              type="button"
+              onClick={toggleFilters}
+              aria-expanded={filtersOpen}
+              className="mx-auto flex items-center gap-2 rounded-full border border-main-blue/60 bg-main-blue/20 px-5 py-2 text-[13px] font-semibold uppercase tracking-wide text-white transition hover:bg-main-blue/40"
+            >
+              {t("search.filters")}
+              {activeFiltersCount > 0 && (
+                <span className="rounded-full bg-main-amarant px-2 text-[12px]">{activeFiltersCount}</span>
+              )}
+              <span className={`transition-transform duration-1000 ${filtersOpen ? 'rotate-180' : ''}`}>
+                <SvgIcon name="down" size={20} color="white" />
+              </span>
+            </button>
 
-          {/* SubCategories */}
-          {allSubCategories.length > 0 && (
-            <div className="mt-3 flex flex-wrap justify-center gap-3">
-              {allSubCategories.map(s => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => toggleSubCategory(s)}
-                  className={[
-                    'rounded-full px-4 py-2 text-[13px] font-semibold uppercase tracking-wide transition',
-                    selectedSubCategories.includes(s)
-                      ? 'bg-main-amarant text-white shadow-[0_10px_25px_rgba(0.35,0.35,0.35,0.7)]'
-                      : 'bg-main-amarant/70 text-white/95 hover:bg-main-amarant',
-                  ].join(' ')}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          )}
+            <div
+              aria-hidden={!filtersOpen}
+              className={`grid transition-all duration-1000 ease-in-out ${
+                filtersOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+              }`}
+            >
+              <div className="overflow-hidden">
+                {/* Categories */}
+                {allCategories.length > 0 && (
+                  <div className="mt-8 flex flex-wrap justify-center gap-3">
+                    {allCategories.map(c => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => toggleCategory(c)}
+                        className={[
+                          'rounded-full px-4 py-2 text-[13px] font-semibold uppercase tracking-wide transition',
+                          selectedCategories.includes(c)
+                            ? 'bg-main-amarant text-white shadow-[0_10px_25px_rgba(0.35,0.35,0.35,0.7)]'
+                            : 'bg-main-amarant/70 text-white/95 hover:bg-main-amarant',
+                        ].join(' ')}
+                      >
+                        {c}
+                      </button>
+                    ))}
+                  </div>
+                )}
 
-          {/* Tags */}
-          {allTags.length > 0 && (
-            <div className="mt-4 flex flex-wrap justify-center gap-3">
-              {allTags.map(t => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => toggleTag(t)}
-                  className={[
-                    'rounded-full px-4 py-2 text-[13px] font-semibold uppercase tracking-wide transition',
-                    selectedTags.includes(t)
-                      ? 'bg-main-blue text-white shadow-[0_10px_25px_rgba(0.35,0.35,0.35,0.7)]'
-                      : 'bg-main-blue/70 text-white/95 hover:bg-main-blue',
-                  ].join(' ')}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
-          )}
+                {/* SubCategories */}
+                {allSubCategories.length > 0 && (
+                  <div className="mt-3 flex flex-wrap justify-center gap-3">
+                    {allSubCategories.map(s => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => toggleSubCategory(s)}
+                        className={[
+                          'rounded-full px-4 py-2 text-[13px] font-semibold uppercase tracking-wide transition',
+                          selectedSubCategories.includes(s)
+                            ? 'bg-main-amarant text-white shadow-[0_10px_25px_rgba(0.35,0.35,0.35,0.7)]'
+                            : 'bg-main-amarant/70 text-white/95 hover:bg-main-amarant',
+                        ].join(' ')}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                )}
 
-          {hasAnyFilter && (
+                {/* Tags */}
+                {allTags.length > 0 && (
+                  <div className="mt-4 flex flex-wrap justify-center gap-3">
+                    {allTags.map(t => (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => toggleTag(t)}
+                        className={[
+                          'rounded-full px-4 py-2 text-[13px] font-semibold uppercase tracking-wide transition',
+                          selectedTags.includes(t)
+                            ? 'bg-main-blue text-white shadow-[0_10px_25px_rgba(0.35,0.35,0.35,0.7)]'
+                            : 'bg-main-blue/70 text-white/95 hover:bg-main-blue',
+                        ].join(' ')}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+              </div>
+            </div>
+          </div>
+
+          
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
               <div className="text-headline_5">
                 {t("search.result")}: <span className="font-semibold text-[green]">{total}</span>
               </div>
-              <button
-                type="button"
-                onClick={clearFilters}
-                className="rounded-full border border-main-amarant p-4 text-button font-semibold text-main-amarant transition hover:bg-main-amarant/90 hover:text-white/90"
-              >
-                {t("search.clear_button")}
-              </button>
+              {hasAnyFilter && (
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="rounded-full border border-main-amarant p-4 text-button font-semibold text-main-amarant transition hover:bg-main-amarant/90 hover:text-white/90"
+                >
+                  {t("search.clear_button")}
+                </button>
+              )}
             </div>
-          )}
         </div>
       </section>
 

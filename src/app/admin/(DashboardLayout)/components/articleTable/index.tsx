@@ -360,49 +360,62 @@ export default function ArticleTable({
   });
 
   return (
-      <Box maxWidth={1920} mx="auto">
-        
-      <Stack direction="row" spacing={2} alignItems="center" mb={2} flexWrap="wrap">
-        <Autocomplete
-          freeSolo
-          options={[]}
-          disableClearable={false}
-          forcePopupIcon={false}
-          inputValue={searchInput}
-          onInputChange={(_, value, reason) => {
-            setSearchInput(value);
-            if (reason === 'clear') onSearchChange?.('');
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              size="small"
-              placeholder="Search..."
-              InputProps={{
-                ...params.InputProps,
-                startAdornment: (
-                  <IconSearch
-                    size={16}
-                    style={{ marginLeft: 4, marginRight: 4, color: 'var(--mui-palette-text-secondary)', cursor: 'pointer' }}
-                    onClick={() => onSearchChange?.(searchInput)}
-                  />
-                ),
+    <Box maxWidth={1920} mx="auto">
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+          <Stack direction="row" spacing={2} alignItems="center" mb={2} flexWrap="wrap">
+            <Autocomplete
+              freeSolo
+              options={[]}
+              disableClearable={false}
+              forcePopupIcon={false}
+              inputValue={searchInput}
+              onInputChange={(_, value, reason) => {
+                setSearchInput(value);
+                if (reason === 'clear') onSearchChange?.('');
               }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  size="small"
+                  placeholder="Search..."
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: (
+                      <IconSearch
+                        size={16}
+                        style={{ marginLeft: 4, marginRight: 4, color: 'var(--mui-palette-text-secondary)', cursor: 'pointer' }}
+                        onClick={() => onSearchChange?.(searchInput)}
+                      />
+                    ),
+                  }}
+                />
+              )}
+              sx={{ width: 260 }}
             />
-          )}
-          sx={{ width: 260 }}
-        />
 
-        {selectedCount > 0 && (userRole === 'ADMIN' || userRole === 'OWNER') && (
-          <Button variant="outlined" color="error" size="small" startIcon={<IconTrashX size={16} />} onClick={handleBulkDelete}>
-            Delete selected ({selectedCount})
-          </Button>
-        )}
+            {selectedCount > 0 && (userRole === 'ADMIN' || userRole === 'OWNER') && (
+              <Button variant="outlined" color="error" size="small" startIcon={<IconTrashX size={16} />} onClick={handleBulkDelete}>
+                Delete selected ({selectedCount})
+              </Button>
+            )}
 
-        <Typography variant="body2" color="text.secondary" sx={{ ml: 'auto' }}>
-          {loading ? 'Loading...' : `Total: ${total}`}
-        </Typography>
-      </Stack>
+            <Typography variant="body2" color="text.secondary" sx={{ ml: 'auto' }}>
+              {loading ? 'Loading...' : `Total: ${total}`}
+            </Typography>
+          </Stack>
+
+          <TablePagination
+            component="div"
+            count={total}
+            page={page}
+            rowsPerPage={pageSize}
+            rowsPerPageOptions={[10, 15, 25, 50]}
+            onPageChange={(_, p) => onPageChange?.(p)}
+            onRowsPerPageChange={(e) => onPageSizeChange?.(Number(e.target.value))}
+            labelRowsPerPage="Rows per page:"
+            labelDisplayedRows={({ from, to, count }) => `${from}–${to} of ${count}`}
+          />
+      </Box>
 
       <TableContainer component={Paper} variant="outlined" sx={{ position: 'relative' }}>
         {loading && (
