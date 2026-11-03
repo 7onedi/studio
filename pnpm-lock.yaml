@@ -149,6 +149,9 @@ importers:
       react-dom:
         specifier: 19.1.0
         version: 19.1.0(react@19.1.0)
+      react-easy-crop:
+        specifier: ^6.2.4
+        version: 6.2.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react-leaflet:
         specifier: ^5.0.0
         version: 5.0.0(leaflet@1.9.4)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -4122,6 +4125,9 @@ packages:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
     engines: {node: '>=0.10.0'}
 
+  normalize-wheel@1.0.1:
+    resolution: {integrity: sha512-1OnlAPZ3zgrk8B91HyRj+eVv+kS5u+Z0SCsak6Xil/kmgEia50ga7zfkumayonZrImffAxPU/5WcyGhzetHNPA==}
+
   nypm@0.6.5:
     resolution: {integrity: sha512-K6AJy1GMVyfyMXRVB88700BJqNUkByijGJM8kEHpLdcAt+vSQAVfkWWHYzuRXHSY6xA2sNc5RjTj0p9rE2izVQ==}
     engines: {node: '>=18'}
@@ -4485,6 +4491,12 @@ packages:
     resolution: {integrity: sha512-Xs1hdnE+DyKgeHJeJznQmYMIBG3TKIHJJT95Q58nHLSrElKlGQqDTR2HQ9fx5CN/Gk6Vh/kupBTDLU11/nDk/g==}
     peerDependencies:
       react: ^19.1.0
+
+  react-easy-crop@6.2.4:
+    resolution: {integrity: sha512-OWdnFYctzUNlekjob+bQfloG9wyhIBkkmeISnM5XVE4Byqn0jmVxDF7oz85ovUF+EIPQyj0yAHbBEFtnxwGv4g==}
+    peerDependencies:
+      react: '>=16.4.0'
+      react-dom: '>=16.4.0'
 
   react-immutable-proptypes@2.2.0:
     resolution: {integrity: sha512-Vf4gBsePlwdGvSZoLSBfd4HAP93HDauMY4fDjXhreg/vg6F3Fj/MXDNyTbltPC/xZKmZc+cjLu3598DdYK6sgQ==}
@@ -9670,6 +9682,8 @@ snapshots:
 
   normalize-path@3.0.0: {}
 
+  normalize-wheel@1.0.1: {}
+
   nypm@0.6.5:
     dependencies:
       citty: 0.2.1
@@ -10028,6 +10042,12 @@ snapshots:
     dependencies:
       react: 19.1.0
       scheduler: 0.26.0
+
+  react-easy-crop@6.2.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+    dependencies:
+      normalize-wheel: 1.0.1
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
 
   react-immutable-proptypes@2.2.0(immutable@3.8.3):
     dependencies:

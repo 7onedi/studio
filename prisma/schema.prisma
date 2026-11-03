@@ -285,6 +285,11 @@ model Media {
   mimeType String
   size     Int
 
+  cropDesktop    Json?
+  cropMobile     Json?
+  cropDesktopUrl String?
+  cropMobileUrl  String?
+
   uploaderId Int
   uploader   User @relation("UserMedia", fields: [uploaderId], references: [id], onDelete: Cascade)
 

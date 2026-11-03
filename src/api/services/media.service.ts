@@ -4,6 +4,7 @@ import { randomUUID } from "crypto";
 import { ApiError } from "@/api/utils/api-error";
 import { mediaRepository } from "@/api/repositories/media.repository";
 import type { MediaWhere } from "@/api/controllers/media.controller";
+import { mediaCropService } from "@/api/services/media-crop.service";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -74,6 +75,8 @@ export const mediaService = {
             fs.unlinkSync(path.join(process.cwd(), ".cache", "thumbs", `${id}-240.webp`));
         } catch {
         }
+
+        await mediaCropService.removeFiles(media);
 
         return mediaRepository.delete(id);
     },

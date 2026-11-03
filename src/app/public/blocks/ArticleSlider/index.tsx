@@ -49,6 +49,8 @@ function toSlide(article: any) {
     slug: article.slug ?? "",
     title: article.title ?? "",
     img: article.image?.url ?? null,
+    imgDesktop: article.image?.cropDesktopUrl ?? null,
+    imgMobile: article.image?.cropMobileUrl ?? null,
     gradient,
     gradientMob,
     textStyle: "",
@@ -172,16 +174,25 @@ const { t, locale } = useLanguage();
           {slides.map((s, i) => (
             <div key={s.slug} className="keen-slider__slide relative">
               {s.img && (
-                <Image
-                  src={s.img}
-                  alt={s.title}
-                  fill
-                  className="object-cover"
-                  sizes="100vw"
-                  priority={i === 0}
-                  fetchPriority={i === 0 ? "high" : "low"}
-                  onLoad={i === 0 ? handleFirstImageLoad : undefined}
-                />
+                <picture>
+                  {s.imgMobile && (
+                    <source media="(max-width: 1023px)" srcSet={encodeURI(s.imgMobile)} type="image/avif" />
+                  )}
+                  {s.imgDesktop && (
+                    <source media="(min-width: 1024px)" srcSet={encodeURI(s.imgDesktop)} type="image/avif" />
+                  )}
+                  <Image
+                    src={s.img}
+                    alt={s.title}
+                    fill
+                    className="object-cover"
+                    sizes="100vw"
+                    priority={i === 0 && !(s.imgDesktop || s.imgMobile)}
+                    loading={i === 0 && (s.imgDesktop || s.imgMobile) ? "eager" : undefined}
+                    fetchPriority={i === 0 ? "high" : "low"}
+                    onLoad={i === 0 ? handleFirstImageLoad : undefined}
+                  />
+                </picture>
               )}
 
               {/* Мобільний градієнт */}
