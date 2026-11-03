@@ -1,10 +1,15 @@
 "use client";
 import { createTheme } from "@mui/material/styles";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import localFont from "next/font/local";
 
-export const plus = Plus_Jakarta_Sans({
-  weight: ["300", "400", "500", "600", "700"],
-  subsets: ["latin"],
+export const plus = localFont({
+  src: [
+    { path: "../../../fonts/plus-jakarta-sans-300.woff2", weight: "300", style: "normal" },
+    { path: "../../../fonts/plus-jakarta-sans-400.woff2", weight: "400", style: "normal" },
+    { path: "../../../fonts/plus-jakarta-sans-500.woff2", weight: "500", style: "normal" },
+    { path: "../../../fonts/plus-jakarta-sans-600.woff2", weight: "600", style: "normal" },
+    { path: "../../../fonts/plus-jakarta-sans-700.woff2", weight: "700", style: "normal" },
+  ],
   display: "optional",
   fallback: ["Helvetica", "Arial", "sans-serif"],
 });
