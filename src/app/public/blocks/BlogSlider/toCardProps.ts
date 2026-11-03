@@ -28,6 +28,7 @@ export function toCardProps(article: any) {
     },
     hero: {
       img: article.image?.url ?? null,
+      imgDesktop: article.image?.cropDesktopUrl ?? null,
       gradient,
     },
   };

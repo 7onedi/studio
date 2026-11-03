@@ -39,6 +39,12 @@ function splitIntoRows<T>(items: T[]) {
   return rows;
 }
 
+const splitTitle = (title: string) => {
+  const num = Number(title.match(/\d+/)?.[0] ?? 0);
+  const text = title.replace(/[\d\s-]+/g, " ").trim();
+  return { text, num };
+};
+
 export default function MfkList({ markers, id }: MfkListProps) {
   const { t, locale } = useLanguage();
 
@@ -57,6 +63,11 @@ export default function MfkList({ markers, id }: MfkListProps) {
     "#mfk": ["UK", "PL", "LT", "RO"],
     "#implaces": ["UK", "LT", "MK"],
     youthinsight: ["VINNYTSIA", "VORONOVYTSIA"],
+  };
+
+  const PRIORITY_LANG: Record<string, Record<string, string>> = {
+    "#mfk": { uk: "UK", pl: "PL", lt: "LT", ro: "RO" },
+    "#implaces": { uk: "UK", lt: "LT" },
   };
 
   const LANGS = [
@@ -91,11 +102,26 @@ export default function MfkList({ markers, id }: MfkListProps) {
     return raw?.toUpperCase();
   };
 
+  const priorityLang = id && PRIORITY_LANG[id] ? PRIORITY_LANG[id][locale] ?? "UK" : null;
+
   const items = markers
     .map((m) => m.popupContent)
     .filter((p) => {
       const key = getLangKey(p, id);
       return !key || selectedLangs.includes(key);
+    })
+    .sort((a, b) => {
+      if (priorityLang) {
+        const ra = getLangKey(a, id) === priorityLang ? 0 : 1;
+        const rb = getLangKey(b, id) === priorityLang ? 0 : 1;
+        if (ra !== rb) return ra - rb;
+      }
+      const A = splitTitle(getTitle(a) ?? a.title);
+      const B = splitTitle(getTitle(b) ?? b.title);
+      return (
+        A.text.localeCompare(B.text, locale, { sensitivity: "base" }) ||
+        B.num - A.num
+      );
     });
 
   const [visibleCount, setVisibleCount] = useState(4);
