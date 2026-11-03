@@ -54,16 +54,21 @@ const tagTags = Array.from(
       <div className="relative h-[220px] sm:h-[260px] lg:h-full lg:flex-grow overflow-hidden rounded-xl group">
         <Link href={`/public/Article/${meta.slug}`} className="block h-full w-full">
           {hero.img ? (
-            <Image
-              src={hero.img}
-              alt={meta.title}
-              fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              onLoad={onLoad}
-            />
+            <picture>
+              {hero.imgDesktop && (
+                <source srcSet={encodeURI(hero.imgDesktop)} type="image/avif" />
+              )}
+              <Image
+                src={hero.img}
+                alt={meta.title}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                onLoad={onLoad}
+              />
+            </picture>
           ) : (
-              <div className="absolute inset-0 bg-gray-200" /> // плейсхолдер
+            <div className="absolute inset-0 bg-gray-200" />
           )}
             <div
               className={`absolute inset-0 transition-all duration-300 group-hover:opacity-90 ${hero.gradient || 'bg-black/30'}`}

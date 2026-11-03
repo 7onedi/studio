@@ -8,6 +8,8 @@ import { useLanguage } from "@/app/providers/LanguageProvider";
 type ArticleHeroProps = {
   title: string;
   image: string;
+  imageDesktop?: string;
+  imageMobile?: string;
 
   tags?: readonly string[];
 
@@ -23,6 +25,8 @@ type ArticleHeroProps = {
 export default function ArticleHero({
   title,
   image,
+  imageDesktop,
+  imageMobile,
   tags = [],
   category,
   subCategory,
@@ -33,6 +37,8 @@ export default function ArticleHero({
 }: ArticleHeroProps) {
   const { t, locale } = useLanguage();
   const [imageLoaded, setImageLoaded] = useState(false);
+
+  const hasCrop = !!(imageDesktop || imageMobile);
 
   const subCategories = ([] as (string | undefined)[]).concat(subCategory ?? []);
 
@@ -71,14 +77,24 @@ export default function ArticleHero({
           <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-3xl" />
         )}
 
-        <Image
-          src={image}
-          alt={title}
-          fill
-          priority
-          onLoad={() => setImageLoaded(true)}
-          className={`h-[700px] w-full object-cover transition-opacity duration-500 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
-        />
+        <picture>
+          {imageMobile && (
+            <source media="(max-width: 1023px)" srcSet={encodeURI(imageMobile)} type="image/avif" />
+          )}
+          {imageDesktop && (
+            <source media="(min-width: 1024px)" srcSet={encodeURI(imageDesktop)} type="image/avif" />
+          )}
+          <Image
+            src={image}
+            alt={title}
+            fill
+            priority={!hasCrop}
+            loading={hasCrop ? "eager" : undefined}
+            fetchPriority="high"
+            onLoad={() => setImageLoaded(true)}
+            className={`h-[700px] w-full object-cover transition-opacity duration-500 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+          />
+        </picture>
 
         {gradient && <div className={`absolute inset-0 ${gradient}`} />}
 

@@ -19,6 +19,7 @@ export type ArticleHero = {
   gradient: string;
   gradientMob: string;
   img: string;
+  imgDesktop?: string;
   tegsBgColor: string;
   textStyle: string;
 };

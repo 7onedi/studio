@@ -56,6 +56,7 @@
     "react": "19.1.0",
     "react-apexcharts": "^2.0.1",
     "react-dom": "19.1.0",
+    "react-easy-crop": "^6.2.4",
     "react-leaflet": "^5.0.0",
     "react-mui-sidebar": "^1.6.10",
     "react-pdf": "^10.4.1",

@@ -73,6 +73,8 @@ function toArticleProps(article: any) {
     },
     hero: {
       img: article.image?.url ?? "",
+      imgDesktop: article.image?.cropDesktopUrl ?? "",
+      imgMobile: article.image?.cropMobileUrl ?? "",
       gradient,
       tegsBgColor: "",
     },
@@ -116,6 +118,8 @@ const subArticles = allRaw
         <ArticleHero
           title={article.meta.title}
           image={article.hero.img}
+          imageDesktop={article.hero.imgDesktop}
+          imageMobile={article.hero.imgMobile}
           tags={article.meta.tags}
           category={article.meta.category}
           subCategory={article.meta.SubCategory}

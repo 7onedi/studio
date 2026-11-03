@@ -6,8 +6,11 @@ import {
   Button, Box, Typography, IconButton, Tooltip,
   CircularProgress, Pagination, Stack, TextField
 } from '@mui/material';
-import { IconUpload, IconTrash, IconCheck, IconX } from '@tabler/icons-react';
+import { IconUpload, IconTrash, IconCheck, IconX, IconCrop, IconDeviceDesktop, IconDeviceMobile } from '@tabler/icons-react';
 import { FieldHelp } from '../shared/FieldHelp';
+import MediaCropDialog from '../MediaCropDialog';
+
+export interface MediaCrop { x: number; y: number; width: number; height: number }
  
 export interface MediaItem {
   id: number;
@@ -15,6 +18,10 @@ export interface MediaItem {
   filename: string;
   mimeType: string;
   size: number;
+  cropDesktop?: MediaCrop | null;
+  cropMobile?: MediaCrop | null;
+  cropDesktopUrl?: string | null;
+  cropMobileUrl?: string | null;
 }
  
 interface Props {
@@ -52,6 +59,8 @@ export default function MediaPickerDialog({ open, onClose, onSelect, selected }:
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState<number | null>(null);
+  const [cropping, setCropping] = useState<MediaItem | null>(null);
+  const [cropFresh, setCropFresh] = useState(false);
   const [hovering, setHovering] = useState<number | null>(null);
   const [usage, setUsage] = useState<Record<number, Usage[]>>({});
   const [q, setQ] = useState('');
@@ -118,8 +127,8 @@ export default function MediaPickerDialog({ open, onClose, onSelect, selected }:
       // Додаємо на початок і вибираємо
       setMedia((prev) => [created, ...prev.slice(0, PAGE_SIZE - 1)]);
       setTotal((t) => t + 1);
-      onSelect(created);
-      onClose();
+      setCropFresh(true);
+      setCropping(created);
     } catch (e: any) {
       console.error(e.message);
     } finally {
@@ -175,6 +184,11 @@ export default function MediaPickerDialog({ open, onClose, onSelect, selected }:
                 <Typography variant="body2">{KIND_LABEL[kind]}</Typography>
               </Box>
             ))}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.75 }}>
+              <IconDeviceDesktop size={14} />
+              <IconDeviceMobile size={14} />
+              <Typography variant="body2">Desktop / mobile crop is set</Typography>
+            </Box>
             <Typography variant="caption" color="text.secondary">
               No label on the image means it is not used anywhere.
             </Typography>
@@ -333,8 +347,24 @@ export default function MediaPickerDialog({ open, onClose, onSelect, selected }:
                           alignItems: 'flex-start',
                           justifyContent: 'flex-end',
                           p: 0.5,
+                          gap: 0.5,
                         }}
                       >
+                        <Tooltip title="Crop">
+                          <IconButton
+                            size="small"
+                            onClick={(e) => { e.stopPropagation(); setCropping(item); }}
+                            sx={{
+                              bgcolor: 'primary.main',
+                              color: 'white',
+                              width: 22,
+                              height: 22,
+                              '&:hover': { bgcolor: 'primary.dark' },
+                            }}
+                          >
+                            <IconCrop size={12} />
+                          </IconButton>
+                        </Tooltip>
                         <Tooltip title="Delete">
                           <IconButton
                             size="small"
@@ -376,6 +406,21 @@ export default function MediaPickerDialog({ open, onClose, onSelect, selected }:
                         <IconCheck size={12} color="white" />
                       </Box>
                     )}
+
+                    {(item.cropDesktopUrl || item.cropMobileUrl) && (
+                      <Box sx={{ position: 'absolute', bottom: 4, left: 4, display: 'flex', gap: 0.5, pointerEvents: 'none' }}>
+                        {item.cropDesktopUrl && (
+                          <Box sx={{ bgcolor: 'rgba(0,0,0,0.65)', borderRadius: 1, width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <IconDeviceDesktop size={12} color="white" />
+                          </Box>
+                        )}
+                        {item.cropMobileUrl && (
+                          <Box sx={{ bgcolor: 'rgba(0,0,0,0.65)', borderRadius: 1, width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <IconDeviceMobile size={12} color="white" />
+                          </Box>
+                        )}
+                      </Box>
+                    )}
                   </Box>
                 );
               })}
@@ -403,6 +448,21 @@ export default function MediaPickerDialog({ open, onClose, onSelect, selected }:
         </Typography>
         <Button onClick={onClose} variant="outlined" size="small">Cancel</Button>
       </DialogActions>
+      <MediaCropDialog
+        media={cropping}
+        fresh={cropFresh}
+        onClose={() => {
+          if (cropFresh && cropping) { onSelect(cropping); onClose(); }
+          setCropping(null);
+          setCropFresh(false);
+        }}
+        onSaved={(m) => {
+          setMedia((prev) => prev.map((x) => (x.id === m.id ? { ...x, ...m } : x)));
+          if (cropFresh) { onSelect({ ...cropping!, ...m }); onClose(); }
+          setCropping(null);
+          setCropFresh(false);
+        }}
+      />
     </Dialog>
   );
 }
