@@ -52,13 +52,20 @@ export default async function MfkPage({ params }: MfkPageProps) {
     <div className="mx-auto mt-4 lg:mt-0">
       <div className="relative mb-16 lg:mb-0">
         <div className="relative w-full h-[145px] lg:h-[700px] mb-6 rounded-[20px] overflow-hidden">
-          <Image
-            src={child.image?.url ?? ''}
-            alt={child.title}
-            fill
-            className="object-cover"
-            priority
-          />
+          <picture>
+            {child.image?.cropDesktopUrl && (
+              <source srcSet={encodeURI(child.image.cropDesktopUrl)} type="image/avif" />
+            )}
+            <Image
+              src={child.image?.url ?? ''}
+              alt={child.title}
+              fill
+              className="object-cover"
+              priority={!child.image?.cropDesktopUrl}
+              loading={child.image?.cropDesktopUrl ? 'eager' : undefined}
+              fetchPriority="high"
+            />
+          </picture>
         </div>
 
         {/* Лого + заголовок */}
@@ -66,11 +73,16 @@ export default async function MfkPage({ params }: MfkPageProps) {
           
           {child.logo?.url && (
             <div className="flex justify-center w-full lg:w-[376px] h-auto rounded-[20px] overflow-hidden">
-              <img
-                src={child.logo.url}
-                alt="MFK logo"
-                className="w-auto h-[65px] lg:w-[376px] lg:h-auto object-cover rounded-[20px]"
-              />
+              <picture>
+                {child.logo.cropDesktopUrl && (
+                  <source srcSet={encodeURI(child.logo.cropDesktopUrl)} type="image/avif" />
+                )}
+                <img
+                  src={child.logo.url}
+                  alt="MFK logo"
+                  className="w-auto h-[65px] lg:w-[376px] lg:h-auto object-cover rounded-[20px]"
+                />
+              </picture>
             </div>
           )}
 
