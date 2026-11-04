@@ -275,7 +275,15 @@ export default function MediaPickerDialog({ open, onClose, onSelect, selected }:
                 return (
                   <Box
                     key={item.id}
-                    onClick={() => { onSelect(item); onClose(); }}
+                    onClick={() => {
+                      if (isSelected || (item.cropDesktopUrl && item.cropMobileUrl)) {
+                        onSelect(item);
+                        onClose();
+                        return;
+                      }
+                      setCropFresh(true);
+                      setCropping(item);
+                    }}
                     onMouseEnter={() => setHovering(item.id)}
                     onMouseLeave={() => setHovering(null)}
                     sx={{
@@ -350,21 +358,23 @@ export default function MediaPickerDialog({ open, onClose, onSelect, selected }:
                           gap: 0.5,
                         }}
                       >
-                        <Tooltip title="Crop">
-                          <IconButton
-                            size="small"
-                            onClick={(e) => { e.stopPropagation(); setCropping(item); }}
-                            sx={{
-                              bgcolor: 'primary.main',
-                              color: 'white',
-                              width: 22,
-                              height: 22,
-                              '&:hover': { bgcolor: 'primary.dark' },
-                            }}
-                          >
-                            <IconCrop size={12} />
-                          </IconButton>
-                        </Tooltip>
+                        {isSelected && (
+                          <Tooltip title="Crop">
+                            <IconButton
+                              size="small"
+                              onClick={(e) => { e.stopPropagation(); setCropFresh(false); setCropping(item); }}
+                              sx={{
+                                bgcolor: 'primary.main',
+                                color: 'white',
+                                width: 22,
+                                height: 22,
+                                '&:hover': { bgcolor: 'primary.dark' },
+                              }}
+                            >
+                              <IconCrop size={12} />
+                            </IconButton>
+                          </Tooltip>
+                        )}
                         <Tooltip title="Delete">
                           <IconButton
                             size="small"

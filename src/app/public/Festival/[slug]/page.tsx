@@ -56,12 +56,20 @@ export default async function FestivalPage({ params }: FestivalPageProps) {
         <div className="w-full lg:left-16 lg:bottom-16 z-20 flex flex-col lg:flex-row items-start lg:items-center">
           <div className="lg:flex-col flex items-center w-full lg:w-auto">
             <div className="relative w-full h-[200px] lg:w-[516px] lg:h-[327px] shrink-0 rounded-[20px] overflow-hidden">
-              <Image
-                src={child.image?.url ?? ''}
-                alt={child.title}
-                fill
-                className="object-cover"
-              />
+              <picture>
+                {child.image?.cropDesktopUrl && (
+                  <source srcSet={encodeURI(child.image.cropDesktopUrl)} type="image/avif" />
+                )}
+                <Image
+                  src={child.image?.url ?? ''}
+                  alt={child.title}
+                  fill
+                  className="object-cover"
+                  priority={!child.image?.cropDesktopUrl}
+                  loading={child.image?.cropDesktopUrl ? 'eager' : undefined}
+                  fetchPriority="high"
+                />
+              </picture>
             </div>
 
                 {/* Соцмережі під банером */}

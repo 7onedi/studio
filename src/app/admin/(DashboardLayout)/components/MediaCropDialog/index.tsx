@@ -115,7 +115,7 @@ function Inner({ media, fresh, onClose, onSaved }: { media: MediaItem } & Omit<P
 
   return (
     <>
-      <DialogTitle>{fresh ? 'Crop new image (optional)' : 'Crop image'}</DialogTitle>
+      <DialogTitle>{fresh ? 'Crop image (optional)' : 'Crop image'}</DialogTitle>
       <DialogContent>
         <Tabs value={tab} onChange={(_, v) => changeTab(v)} sx={{ mb: 1 }}>
           {VARIANTS.map((v) => (
