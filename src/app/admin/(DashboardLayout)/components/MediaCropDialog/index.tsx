@@ -68,15 +68,13 @@ function Inner({ media, fresh, onClose, onSaved }: { media: MediaItem } & Omit<P
     const y = Math.max(0, Math.round(px.y));
     const width = Math.round(px.width);
     const height = Math.round(px.height);
-    setCrops((c) => ({
-      ...c,
-      [tab]: {
-        x,
-        y,
-        width: w ? Math.min(width, w - x) : width,
-        height: h ? Math.min(height, h - y) : height,
-      },
-    }));
+    const next = {
+      x,
+      y,
+      width: w ? Math.min(width, w - x) : width,
+      height: h ? Math.min(height, h - y) : height,
+    };
+    setCrops((c) => (same(c[tab], next) ? c : { ...c, [tab]: next }));
   };
 
   const confirm = () => {
@@ -141,7 +139,7 @@ function Inner({ media, fresh, onClose, onSaved }: { media: MediaItem } & Omit<P
             onZoomChange={setZoom}
             onCropComplete={onCropComplete}
             onMediaLoaded={(m) => { natural.current = { w: m.naturalWidth, h: m.naturalHeight }; }}
-            initialCroppedAreaPixels={cur ?? undefined}
+            initialCroppedAreaPixels={saved[tab] ?? undefined}
           />
           {locked && (
             <Box sx={{ position: 'absolute', inset: 0, zIndex: 2, bgcolor: 'rgba(0,0,0,0.35)' }} />
