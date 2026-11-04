@@ -9,7 +9,7 @@ sharp.cache(false);
 sharp.concurrency(1);
 
 const PUBLIC = path.join(process.cwd(), 'public');
-const WIDTH = { desktop: 1920, mobile: 800 } as const;
+const WIDTH = { desktop: 1920, mobile: 1080 } as const;
 type Variant = keyof typeof WIDTH;
 
 const cropSchema = z.object({
@@ -36,7 +36,7 @@ async function render(srcUrl: string, crop: Crop, variant: Variant) {
     .rotate()
     .extract({ left: crop.x, top: crop.y, width: crop.width, height: crop.height })
     .resize({ width: WIDTH[variant], withoutEnlargement: true })
-    .avif({ quality: 55, effort: 3 })
+    .avif({ quality: 85, effort: 4 })
     .toFile(path.join(PUBLIC, url));
   return url;
 }
