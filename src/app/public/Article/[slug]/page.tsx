@@ -9,15 +9,11 @@ import ClientBg from "@/app/public/providers/ClientBg";
 import { getCategoryId } from '@lib/getCategoryId';
 import BlogSlider from "@/app/public/blocks/BlogSlider";
 import TranslatedText from "@components/TranslatedText";
+import type { Metadata } from "next";
+import ShareIcons from "@/app/public/components/ShareIcons";
+import { buildMetadata, extractDescription, absoluteUrl, OG_LOCALE } from "@/lib/seo";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "";
-
-const iconNames = [
-  { title: "facebook", link: "https://www.facebook.com/icyst" },
-  { title: "instagram", link: "https://www.instagram.com/intercultural.youth.studio/" },
-  { title: "tiktok", link: "https://www.tiktok.com/@pangeya.ultima" },
-  { title: "Link", link: "#" },
-];
 
 async function fetchArticleBySlug(slug: string) {
   const res = await fetch(`${BASE_URL}/api/articles/by-slug/${slug}`, { cache: "no-store" });
@@ -86,6 +82,21 @@ function toArticleProps(article: any) {
   };
 }
 
+export async function generateMetadata(
+  { params }: { params: Promise<{ slug: string }> }
+): Promise<Metadata> {
+  const { slug } = await params;
+  const raw = await fetchArticleBySlug(slug);
+  if (!raw) return {};
+  return buildMetadata({
+    path: `/public/Article/${slug}`,
+    title: raw.title,
+    description: extractDescription(raw.body),
+    image: raw.image?.url,
+    locale: OG_LOCALE[raw.lang],
+  });
+}
+
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const [raw, allRaw] = await Promise.all([
@@ -140,19 +151,10 @@ const subArticles = allRaw
                 <b>
                   <TranslatedText tKey="article.share" />
                 </b>
-                <div className="my-2 flex gap-4 z-20">
-                  {iconNames.map((iconName, i) => (
-                    <Link key={i} href={iconName.link} className="flex items-center">
-                      <Button
-                        variant="accent-alt"
-                        iconOnly
-                        className="lg:mx-1 shadow-[0_4px_6px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_8px_rgba(0,0,0,0.3)] transition-shadow hover:bg-gray-200"
-                      >
-                        <SvgIcon name={iconName.title} size={24} color="main-blue" />
-                      </Button>
-                    </Link>
-                  ))}
-                </div>
+<ShareIcons
+  url={absoluteUrl(`/public/Article/${article.meta.slug}`)}
+  title={article.meta.title}
+/>
               </div>
               <ArticleMfkList
                 articles={subArticles}
