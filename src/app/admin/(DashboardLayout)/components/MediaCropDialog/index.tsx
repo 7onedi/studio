@@ -44,6 +44,7 @@ function Inner({ media, fresh, onClose, onSaved }: { media: MediaItem } & Omit<P
     desktop: !!saved.desktop,
     mobile: !!saved.mobile,
   });
+  const [removed, setRemoved] = useState<Record<Variant, boolean>>({ desktop: false, mobile: false });
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [saving, setSaving] = useState(false);
@@ -52,7 +53,7 @@ function Inner({ media, fresh, onClose, onSaved }: { media: MediaItem } & Omit<P
 
   const src = encodeURI(media.url);
   const dirty = VARIANTS.some((v) => !same(crops[v], saved[v]));
-  const allConfirmed = confirmed.desktop && confirmed.mobile;
+  const ready = VARIANTS.every((v) => confirmed[v] || removed[v]);
   const cur = crops[tab];
   const locked = confirmed[tab];
 
@@ -85,6 +86,16 @@ function Inner({ media, fresh, onClose, onSaved }: { media: MediaItem } & Omit<P
 
   const unlock = () => setConfirmed((c) => ({ ...c, [tab]: false }));
 
+  const remove = () => {
+    setRemoved((r) => ({ ...r, [tab]: true }));
+    setConfirmed((c) => ({ ...c, [tab]: false }));
+    setCrops((c) => ({ ...c, [tab]: null }));
+    const next = other(tab);
+    if (!confirmed[next] && !removed[next]) changeTab(next);
+  };
+
+  const restore = () => setRemoved((r) => ({ ...r, [tab]: false }));
+
   const save = async () => {
     const body: Partial<Record<Variant, MediaCrop | null>> = {};
     VARIANTS.forEach((v) => { if (!same(crops[v], saved[v])) body[v] = crops[v]; });
@@ -105,11 +116,9 @@ function Inner({ media, fresh, onClose, onSaved }: { media: MediaItem } & Omit<P
     }
   };
 
-  const hint = allConfirmed
-    ? 'Both crops are fixed. You can save now.'
-    : confirmed[other(tab)]
-      ? `${LABEL[other(tab)]} crop is fixed. Now set the ${LABEL[tab].toLowerCase()} crop.`
-      : 'Set the crop and fix it. Save unlocks after both desktop and mobile are fixed.';
+  const hint = ready
+    ? 'Both variants are set. You can save now.'
+    : 'Fix or remove the crop for each variant. Save unlocks when both are done.';
 
   return (
     <>
@@ -121,7 +130,7 @@ function Inner({ media, fresh, onClose, onSaved }: { media: MediaItem } & Omit<P
               key={v}
               value={v}
               iconPosition="end"
-              icon={confirmed[v] ? <IconCheck size={16} /> : undefined}
+              icon={confirmed[v] || removed[v] ? <IconCheck size={16} /> : undefined}
               label={LABEL[v]}
               sx={{ minHeight: 48 }}
             />
@@ -129,46 +138,64 @@ function Inner({ media, fresh, onClose, onSaved }: { media: MediaItem } & Omit<P
         </Tabs>
 
         <Box sx={{ position: 'relative', height: 420, bgcolor: '#111', borderRadius: 1, overflow: 'hidden' }}>
-          <Cropper
-            key={tab}
-            image={src}
-            crop={pos}
-            zoom={zoom}
-            aspect={ASPECT[tab]}
-            onCropChange={setPos}
-            onZoomChange={setZoom}
-            onCropComplete={onCropComplete}
-            onMediaLoaded={(m) => { natural.current = { w: m.naturalWidth, h: m.naturalHeight }; }}
-            initialCroppedAreaPixels={saved[tab] ?? undefined}
-          />
-          {locked && (
-            <Box sx={{ position: 'absolute', inset: 0, zIndex: 2, bgcolor: 'rgba(0,0,0,0.35)' }} />
+          {removed[tab] ? (
+            <>
+              <Box component="img" src={src} alt="" sx={{ width: '100%', height: '100%', objectFit: 'contain', opacity: 0.5 }} />
+              <Button
+                variant="contained"
+                onClick={restore}
+                sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
+              >
+                Add {tab} crop
+              </Button>
+            </>
+          ) : (
+            <>
+              <Cropper
+                key={tab}
+                image={src}
+                crop={pos}
+                zoom={zoom}
+                aspect={ASPECT[tab]}
+                onCropChange={setPos}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+                onMediaLoaded={(m) => { natural.current = { w: m.naturalWidth, h: m.naturalHeight }; }}
+                initialCroppedAreaPixels={saved[tab] ?? undefined}
+              />
+              {locked && (
+                <Box sx={{ position: 'absolute', inset: 0, zIndex: 2, bgcolor: 'rgba(0,0,0,0.35)' }} />
+              )}
+            </>
           )}
         </Box>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1.5 }}>
-          <Typography variant="caption">Zoom</Typography>
-          <Slider
-            size="small"
-            min={1}
-            max={4}
-            step={0.01}
-            value={zoom}
-            onChange={(_, v) => setZoom(v as number)}
-            disabled={locked}
-            sx={{ flex: 1 }}
-          />
-          <Typography variant="caption" color="text.secondary">
-            {cur ? `${cur.width}×${cur.height}px` : ''}
-          </Typography>
-          {locked ? (
-            <Button size="small" variant="outlined" onClick={unlock}>Edit</Button>
-          ) : (
-            <Button size="small" variant="contained" onClick={confirm} disabled={!cur}>
-              Fix {LABEL[tab].toLowerCase()} crop
-            </Button>
-          )}
-        </Box>
+        {!removed[tab] && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1.5 }}>
+            <Typography variant="caption">Zoom</Typography>
+            <Slider
+              size="small"
+              min={1}
+              max={4}
+              step={0.01}
+              value={zoom}
+              onChange={(_, v) => setZoom(v as number)}
+              disabled={locked}
+              sx={{ flex: 1 }}
+            />
+            <Typography variant="caption" color="text.secondary">
+              {cur ? `${cur.width}×${cur.height}px` : ''}
+            </Typography>
+            {locked ? (
+              <Button size="small" variant="outlined" onClick={unlock}>Edit</Button>
+            ) : (
+              <Button size="small" variant="contained" onClick={confirm} disabled={!cur}>
+                Fix {LABEL[tab].toLowerCase()} crop
+              </Button>
+            )}
+            <Button size="small" color="error" onClick={remove}>Remove crop</Button>
+          </Box>
+        )}
 
         <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
           {hint}
@@ -177,7 +204,7 @@ function Inner({ media, fresh, onClose, onSaved }: { media: MediaItem } & Omit<P
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
         <Button onClick={onClose} variant="outlined" size="small">{fresh ? 'Skip' : 'Cancel'}</Button>
-        <Button onClick={save} variant="contained" size="small" disabled={!allConfirmed || !dirty || saving}>
+        <Button onClick={save} variant="contained" size="small" disabled={!ready || !dirty || saving}>
           {saving ? 'Saving…' : 'Save'}
         </Button>
       </DialogActions>
