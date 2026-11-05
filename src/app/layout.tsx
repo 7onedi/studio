@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { LanguageProvider } from "@/app/providers/LanguageProvider";
 import localFont from "next/font/local";
+import { SITE_URL } from "@/lib/seo";
 
 const firaSans = localFont({
   src: [
@@ -44,6 +45,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Міжкультурна Молодіжна Студія",
   description: "...",
 };
