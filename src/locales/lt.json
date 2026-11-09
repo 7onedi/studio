@@ -86,7 +86,8 @@
   },
   "article": {
     "share": "Podėliotis naujieną",
-    "author": "Autorius"
+    "author": "Autorius",
+    "linkCopied": "Nuoroda nukopijuota į iškarpinę"
   },
   "partners_data": {
     "topic": "Apie tinklą",

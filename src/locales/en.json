@@ -86,7 +86,8 @@
   },
   "article": {
     "share": "Share news",
-    "author": "Author"
+    "author": "Author",
+    "linkCopied": "Link copied to clipboard"
   },
   "partners_data": {
     "topic": "The Network",
