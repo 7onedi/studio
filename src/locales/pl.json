@@ -86,7 +86,8 @@
   },
   "article": {
     "share": "Udostępnij wiadomość",
-    "author": "Autor"
+    "author": "Autor",
+    "linkCopied": "Link skopiowany do schowka"
   },
   "partners_data": {
     "topic": "O sieci",
