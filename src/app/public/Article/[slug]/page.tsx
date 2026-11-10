@@ -91,7 +91,7 @@ export async function generateMetadata(
   return buildMetadata({
     path: `/public/Article/${slug}`,
     title: raw.title,
-    description: extractDescription(raw.body),
+    description: extractDescription(raw.body, 128),
     image: raw.image?.url,
     locale: OG_LOCALE[raw.lang],
   });

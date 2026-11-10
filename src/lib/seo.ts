@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://studio.pangeya.org.ua';
-export const SITE_NAME = 'Міжкультурна Молодіжна Студія';
+export const SITE_NAME = 'studio.pangeya.org.ua';
 
 export const absoluteUrl = (path: string) => `${SITE_URL}${path}`;
 
