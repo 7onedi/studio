@@ -7,20 +7,19 @@ import TranslatedText from "@components/TranslatedText";
 const btnClass =
   "lg:mx-1 shadow-[0_4px_6px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_8px_rgba(0,0,0,0.3)] transition-shadow hover:bg-gray-200";
 
-export default function ShareIcons({ url, title }: { url: string; title: string }) {
+export default function ShareIcons({ url }: { url: string }) {
   const [copied, setCopied] = useState(false);
   const u = encodeURIComponent(url);
-  const t = encodeURIComponent(title);
 
   const links = [
     { name: "facebook", href: `https://www.facebook.com/sharer/sharer.php?u=${u}` },
-    { name: "telegram", href: `https://t.me/share/url?url=${u}&text=${t}` },
-    { name: "whatsapp", href: `https://wa.me/?text=${t}%20${u}` },
+    { name: "telegram", href: `https://t.me/share/url?url=${u}` },
+    { name: "whatsapp", href: `https://wa.me/?text=${u}` },
   ];
 
   const shareLink = async () => {
     if (navigator.share) {
-      try { await navigator.share({ url, title }); } catch {}
+      try { await navigator.share({ url }); } catch {}
       return;
     }
     await navigator.clipboard.writeText(url);
