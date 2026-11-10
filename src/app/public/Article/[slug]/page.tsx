@@ -151,10 +151,7 @@ const subArticles = allRaw
                 <b>
                   <TranslatedText tKey="article.share" />
                 </b>
-<ShareIcons
-  url={absoluteUrl(`/public/Article/${article.meta.slug}`)}
-  title={article.meta.title}
-/>
+                <ShareIcons url={absoluteUrl(`/public/Article/${article.meta.slug}`)} />
               </div>
               <ArticleMfkList
                 articles={subArticles}
