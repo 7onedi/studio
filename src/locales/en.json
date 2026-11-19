@@ -4,7 +4,7 @@
     "methodology": "Methodology",
     "directions": "Directions",
     "places": "Places",
-    "support": "Support",
+    "support": "JOIN/DONATE",
     "search": "Search",
     "locale": {
       "uk": "Ukraine",
@@ -46,7 +46,7 @@
       "donor": "Donor",
       "partner": "Partner"
     },
-    "join_us": "Join Us"
+    "join_us": "Join."
   },
   "map": {
     "mobile": {

@@ -5,7 +5,7 @@ export const createPartnerSchema = z.object({
   email:       z.string().email("Невалідний email"),
   role:        z.enum(["PARTNER", "MEMBER", "DONOR"]),
   description: z.string().optional().nullable(),
-  link:        z.string().url("Невалідний URL").optional(),
+  link:        z.string().url("Невалідний URL").nullable().optional(),
   imageId:     z.number().optional(),
 });
 
