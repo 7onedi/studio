@@ -3,6 +3,11 @@ import { cookies } from "next/headers";
 import { partnerController } from "@/api/controllers/partner.controller";
 import { verifyToken } from "@/api/utils/jwt";
 import { userRepository } from "@/api/repositories/user.repository";
+import { sendMail } from "@/lib/mailer";
+import { partnerReceived, ownerNewPartner } from "@/lib/mail-templates";
+import { emailDomainExists } from "@/lib/email-check";
+
+export const runtime = "nodejs";
 
 async function getCurrentUser() {
   try {
@@ -45,8 +50,30 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
       }
+
+      if (!(await emailDomainExists(partnerData.email))) {
+        return NextResponse.json(
+          { message: "Невірна електронна адреса" },
+          { status: 400 }
+        );
+      }
     }
+
     const result = await partnerController.create(partnerData, user?.id);
+
+    if (!isAdminRequest && result?.email) {
+      try {
+        const toPartner = partnerReceived(result.name);
+        const toOwner = ownerNewPartner(result);
+        await Promise.all([
+          sendMail(result.email, toPartner.subject, toPartner.html),
+          sendMail(process.env.OWNER_EMAIL!, toOwner.subject, toOwner.html),
+        ]);
+      } catch (e) {
+        console.error("Mail error:", e);
+      }
+    }
+
     return NextResponse.json(result, { status: 201 });
   } catch (err: any) {
     console.error("Partner create error:", err);

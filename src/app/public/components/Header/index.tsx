@@ -313,10 +313,13 @@ export default function Header() {
                 ))}
               </div>
 
-              {/* Mobile Support Button — не закриває меню */}
+              {/* Mobile Support Button */}
               <Button
                 variant="primary"
-                onClick={() => router.push('/public/AboutNetwork#joinUs')}
+                onClick={() => {
+                  closeMobileMenu();
+                  router.push('/public/AboutNetwork#joinUs')
+                }}
               >
                 {t("nav.support")}
               </Button>
