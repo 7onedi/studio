@@ -39,6 +39,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const PARENT_CATEGORY_ROUTES: { categoryName: string; routePrefix: string }[] = [
     { categoryName: '#CountrysideStudio', routePrefix: 'Mfk' },
     { categoryName: 'Youthinsight', routePrefix: 'Festival' },
+    { categoryName: 'Imagemapping', routePrefix: 'IMlocals' },
   ]
 
   const projectRoutesNested = await Promise.all(
@@ -47,24 +48,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         where: { name: categoryName },
         select: { id: true },
       })
-      console.log('DEBUG category', { categoryName, category })
       if (!category) return []
 
-      const allInCategory = await prisma.studioProject.findMany({
-        where: { categoryId: category.id },
-        select: { id: true, parentId: true, published: true, subcategory: { select: { slug: true } } },
-      })
-      console.log('DEBUG allInCategory', { categoryName, count: allInCategory.length, allInCategory })
-
       const children = await prisma.studioProject.findMany({
-        where: { categoryId: category.id, parentId: { not: null } },
+        where: { categoryId: category.id, parentId: { not: null }, published: true },
         select: {
           id: true,
           updatedAt: true,
           subcategory: { select: { slug: true } },
         },
       })
-      console.log('DEBUG children', { categoryName, count: children.length, children })
 
       return children.map((p) => ({
         url: `${baseUrl}/public/${routePrefix}/${p.subcategory?.slug ?? p.id}`,
